@@ -39,6 +39,8 @@ Hands can be entered and analyzed in various ways:
 - Paste (CTRL-V on Windows/Linux, CMD-V on Mac) on the frontpage
 - Using the respective button on the frontpage to retrieve data from the clipboard
 - Manual input of single hands by using the respective button on the frontpage
+- Loading a remote file via an URL parameter (e.g. `?file=https://example.com/tournament.pbn)`). 
+The remote server has to allow loading data via HTTP header `Header set Access-Control-Allow-Origin *` or specifically `Header set Access-Control-Allow-Origin "https://thedomain.com"`.
 
 Supported file formats:
 

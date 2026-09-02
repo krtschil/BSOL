@@ -53,7 +53,7 @@ Supported file formats:
 - .lin (BBO play and hand record files)
 
 ### Handling of content in .pbn files
-The "[Result ]" section of a .pbn file can optionally contain plain text enclosed by curly brackets. 
+The `[Result ` section of a .pbn file can optionally contain plain text enclosed in curly brackets. 
 If present the text contained within is displayed at the bottom of the respective board in a highlighted box.
 The text may contain HTML markup for styling purposes.
 

@@ -41,5 +41,8 @@ Supported file formats:
 - .lin (BBO play and hand record files)
 
 ### Double Dummy Solver
-Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein. 
-The provided version is based on the DDS3 project (https://github.com/dds-bridge/dds) currently using the released version 3.1
+Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein implemented as a WebAssembly module.
+
+The provided version is based on the DDS3 project (https://github.com/dds-bridge/dds) currently using the released version 3.1.
+
+The sources for the WebAssembly module can be downloaded from here: https://github.com/krtschil/bsol-wasm/releases

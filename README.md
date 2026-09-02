@@ -1,7 +1,7 @@
 # BSOL
 
 ## Bridge Solver Online
-This is a fork of the original Bridge Solver authored by John Goacher (https://mirgo2.co.uk/bridgesolver/)
+This is a fork of the original Bridge Solver Online authored by John Goacher (https://mirgo2.co.uk/bridgesolver/)
 
 ## Javscript 
 Code has been split into several files:
@@ -21,6 +21,12 @@ To allow text (help text and display text) to appear in other languages the foll
 - Currently English and German are implemented
 - The default language is defined in `ddummy6.js` (e.g. language="en"). Language codes follow the 2-character code (e.g. en, de)
 
+## Styles
+Inline Styles have been removed and added to the respective style sheet
+
+## HTML
+HTML has been corrected to comply with W3C standards.
+
 ## Functionality
 ### Layout and buttons
 The frontpage has been changed such that navigational buttons are visible at all times.
@@ -32,7 +38,7 @@ Hands can be entered and analyzed in various ways:
 - Dropping a file onto the area on the frontpage covering the buttons
 - Paste (CTRL-V on Windows/Linux, CMD-V on Mac) on the frontpage
 - Using the respective button on the frontpage to retrieve data from the clipboard
-- Manual input by using the respective button on the frontpage
+- Manual input of single hands by using the respective button on the frontpage
 
 Supported file formats:
 
@@ -41,7 +47,8 @@ Supported file formats:
 - .lin (BBO play and hand record files)
 
 ### Double Dummy Solver
-Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein implemented as a WebAssembly module.
+Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein and implemented as a WebAssembly module.
+The analysis runs completely in the browser (no server component necessary).
 
 The provided version is based on the DDS3 project (https://github.com/dds-bridge/dds) currently using the released version 3.1.
 

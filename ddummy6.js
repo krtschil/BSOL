@@ -4861,7 +4861,7 @@ function load(data,statusText,jqXHR,ctx)
 	resetTimeout();
 	var tmp = data;
 	
-	tmp = eval("(" + tmp + ")");
+	tmp = JSON.parse("(" + tmp + ")");
 	tmp = tmp.sess;
 	
 	if (load.arguments.length>3)	// being performed locally, not on server
@@ -4897,7 +4897,7 @@ function load2(data,statusText,	jqXHR)
 	resetTimeout();
 	
 	var tmp = data;
-	tmp = eval("(" + tmp + ")");
+	tmp = JSON.parse("(" + tmp + ")");
 	
 	switch(language)
 	{
@@ -4925,7 +4925,7 @@ function dddloadfunc(data,statusText,jqXHR,context)
 	if (g_mode==1)
 	{
 		var tmp =data;
-		tmp = eval("(" + tmp + ")");
+		tmp = JSON.parse("(" + tmp + ")");
 //				alert(tmp.sess.deltaElapsed);
 		
 		if ((tmp.sess.status<200)&&(tmp.sess.status!=0))
@@ -5542,7 +5542,7 @@ function setOptions(optionsStr)
 	try {
 		if (optionsStr!==null)
 		{
-			var options = eval("(" + optionsStr + ")");
+			var options = JSON.parse("(" + optionsStr + ")");
 			document.getElementById("nsrad1").checked = options.options.ns[0]==="true";
 			document.getElementById("nsrad2").checked = options.options.ns[1]==="true";
 			document.getElementById("nsrad3").checked = options.options.ns[2]==="true";
@@ -10434,7 +10434,7 @@ function loadTraveller_1(data,statusText,jqXHR,context)
 					alert(JSON.stringify(data));
 			}
 				
-			g_travellers = eval("(" + data + ")");
+			g_travellers = JSON.parse("(" + data + ")");
 			
 			if ((typeof g_travellers.event.participants.pair)!="undefined")
 			{
@@ -10797,7 +10797,7 @@ function generatePBN(all)
 				}
 
 				score = calculateBridgeScore({  // Calculate actual Score from play. Output is e.g. -430
-					level: level,
+					level: Number(level),
 					suit: suit,
 					doubled: doubled,
 					declarerVulnerable: vulnerable,
@@ -12164,7 +12164,7 @@ function loadHands_1(data,statusText,jqXHR,context)
 		hands = data;
 	}
 	
-	hands = eval("(" + hands + ")");
+	hands = JSON.parse("(" + hands + ")");
     
     var saved_boards = g_hands.boards;
 	
@@ -13196,7 +13196,7 @@ function buildPage1(data,options)
 	if ((typeof g_hands.lin)!=="undefined")
 	{
 		var linstr = linToJson(g_hands.lin);
-		var linhands = eval("(" + linstr + ")");
+		var linhands = JSON.parse("(" + linstr + ")");
 		g_hands.boards = linhands.boards;
 	}
 	
@@ -13425,7 +13425,7 @@ function doit(para)
 	para = para.replace(/\\"/g,'"');
 	para = para.replace(/\\r\\n/g,"\r\n");
 	var data = pbnToJson(para);
-	var hands = eval("(" + data + ")");
+	var hands = JSON.parse("(" + data + ")");
 	g_hands = new Object();
 	g_hands.boards = new Array();
 	g_hands.boards[0] = new Object();

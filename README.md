@@ -11,6 +11,7 @@ Code has been split into several files:
 - Help text into helpText.js
 - Inline javascript moved into the respective files
 - Upgraded jQuery to newest version
+- Main functionalities remain in `ddummy6.js`
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:
@@ -18,7 +19,7 @@ To allow text (help text and display text) to appear in other languages the foll
 - A language switcher has been created (changeLanguage()). Whereever possible displayed text is piped through this function
 - Added flags to allow the switch of language
 - Currently English and German are implemented
-- The default language is defined in `ddummy6.js` (e.g. language="en"). Language code follow the 2-character code (e.g. en, de)
+- The default language is defined in `ddummy6.js` (e.g. language="en"). Language codes follow the 2-character code (e.g. en, de)
 
 ## Functionality
 ### Layout and buttons
@@ -38,3 +39,7 @@ Supported file formats:
 - .pbn 
 - .dlm
 - .lin (BBO play and hand record files)
+
+### Double Dummy Solver
+Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein. 
+The provided version is based on the DDS3 project (https://github.com/dds-bridge/dds) currently using the released version 3.1

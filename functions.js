@@ -116,8 +116,8 @@ function startup(){
 		cacheTimeout = 300000;			// Limit in milliseconds on how long PBN and json are kept in Local Storage
 		//processRequest();
 		extractParas();
-} 
- 
+}
+
  function getParaName(parameters,i)
   {
 	var temp = parameters[i].split("=");
@@ -126,7 +126,7 @@ function startup(){
 
 	return pname;
   }
-  
+
   function getPara(parameters,i)
   {
 	var temp = parameters[i].split("=");
@@ -141,7 +141,7 @@ function startup(){
 		  l = l.substring(1, l.length);
 		}
 		if (l.charAt(l.length-1)=="\"")
-		{  
+		{
 		  l = l.substring(0, l.length - 1);
 		}
 	}
@@ -188,21 +188,21 @@ function startup(){
 			str = str.replace(/V/g,"Q");
 			str = str.replace(/H/g,"K");
 		}
-		
+
 		return str;
 	}
-  
+
   function extractParas()
   {
     var validDealers = "NSEW";
     var i;
 	var p = location.search;
-	
-	if (p.length==0) 
+
+	if (p.length==0)
 	{
 		return false;	// No parameters
 	}
-	else 
+	else
 	{
 		p = location.search.substring(1).split("&");
 
@@ -236,7 +236,7 @@ function startup(){
 		//console.log(p);
 
 		//-----------
-		
+
 		if ((p.length == 1) && (getParaName(p,0).toLowerCase() == "lang"))
 		{
 			pname = getParaName(p,0).toLowerCase();
@@ -252,19 +252,19 @@ function startup(){
 		{
 			var b = new Object();
 			b.boards = new Array();
-			
+
 			var board = new Object();
 			var deal = new Array();
 			var ddPresent = false;
 			var pname;
 			var pvalue;
 			var jsonlin = "";
-			
+
 			for (i=0;i<p.length;i++)
 			{
 				pname = getParaName(p,i).toLowerCase();
 				pvalue = getPara(p,i);
-				
+
 				if (pname=="board")
 				{
 					if (pvalue.length>15)
@@ -279,13 +279,13 @@ function startup(){
 						}
 						return "";
 					}
-					
+
 					board.board = pvalue;
 				}
 				else if (pname=="dealer")
 				{
 					pvalue = pvalue.toUpperCase();
-					
+
 					if (pvalue.length!=1)
 					{
 						switch(language)
@@ -300,7 +300,7 @@ function startup(){
 					else
 					{
 						var index = validDealers.indexOf(pvalue);
-			
+
 						if (index==-1)
 						{
 							switch(language)
@@ -314,13 +314,13 @@ function startup(){
 							return "";
 						}
 					}
-					
+
 					board.Dealer = pvalue;
 				}
 				else if (pname=="vul")
 				{
 					pvalue = pvalue.toUpperCase();
-					
+
 					if ((pvalue!="NS")&&(pvalue!="EW")&&(pvalue!="ALL")&&(pvalue!="NONE"))
 					{
 						switch(language)
@@ -333,11 +333,11 @@ function startup(){
 						}
 						return "";
 					}
-					
+
 					if (pvalue=="ALL") pvalue = "All";
 					if (pvalue=="BOTH") pvalue = "All";
 					if (pvalue=="NONE") pvalue = "None";
-						
+
 					board.Vulnerable = pvalue;
 				}
 				else if (pname=="north")
@@ -353,14 +353,14 @@ function startup(){
 					var contract = pvalue.toUpperCase();
 					pvalue = pvalue.replace(/X/g,"x");
 					pvalue = pvalue.replace(/\*/g,"x");
-					
+
 					if (validateContract(pvalue))
 						board.Contract = pvalue;
 				}
 				else if (pname=="declarer")
 				{
 					pvalue = pvalue.toUpperCase();
-					
+
 					if (pvalue.length==1)
 						if (validDealers.indexOf(pvalue)!=-1)
 							board.Declarer = pvalue.toUpperCase();
@@ -377,7 +377,7 @@ function startup(){
 				else if (pname=="dd")
 				{
 					pvalue = pvalue.toLowerCase();
-					
+
 					if (pvalue.length!=20)
 					{
 						switch(language)
@@ -390,9 +390,9 @@ function startup(){
 						}
 						return "";
 					}
-					
+
 					var substr = pvalue.replace(/[^1234567890abcd\-\*]/g,"");
-					
+
 					if (substr.length!=pvalue.length)
 					{
 						switch(language)
@@ -405,10 +405,10 @@ function startup(){
 						}
 						return "";
 					}
-					
+
 					var fullInfo = 0;	// Set to 1 if full information is present in the dd string (not just for makeable contracts);
 					var j;
-					
+
 					for (j=0;j<20;j++)
 					{
 						if ((pvalue.charAt(j)>"1")&&(pvalue.charAt(j)<"7"))
@@ -419,9 +419,9 @@ function startup(){
 							break;
 						}
 					}
-					
+
 					var pvalue2 = "";
-					
+
 					for (j=0;j<20;j++)
 					{
 						if (fullInfo==0)
@@ -434,10 +434,10 @@ function startup(){
 						else
 							pvalue2 = pvalue2.concat(pvalue.charAt(j));
 					}
-					
+
 					board.DoubleDummyTricks = pvalue2;
-					
-					ddPresent = true;	
+
+					ddPresent = true;
 				}
 				else if (pname=="optimumscore")
 				{
@@ -446,27 +446,27 @@ function startup(){
 				else if (pname=="leadcard")
 				{
 					pvalue = pvalue.toUpperCase();
-					
+
 					var validCard = true;
-					
+
 					if (pvalue.length!=2)
 						validCard = false;
 					else
 					{
 						var cvalue = pvalue.charAt(0);
 						var cards = "23456789TJQKA";
-						
+
 						if (cards.indexOf(cvalue)==-1)
 							validCard = false;
 						else
 						{
 							var suit = "CHDS";
-							
+
 							if (suit.indexOf(pvalue.charAt(1))==-1)
 								validCard = false;
 						}
 					}
-					
+
 					if (validCard)
 					{
 						pvalue = pvalue.toUpperCase();
@@ -525,7 +525,7 @@ function startup(){
 				else if (pname=="display")
 				{
 					pvalue = pvalue.toLowerCase();
-					
+
 					if ((pvalue!="allpairs")&&(pvalue!="personal")&&(pvalue!="board"))
 					{
 						switch(language)
@@ -542,7 +542,7 @@ function startup(){
 						b.display = pvalue;
 					}
 				}
-				else if (pname=="analysis")	
+				else if (pname=="analysis")
 				{
 						// Request is from BridgeWebs. This means that "Results Analysis" button will be displayed. If any 3rd party
 						// site sets this parameter the button will be displayed but won't display any data.
@@ -556,7 +556,7 @@ function startup(){
 				else if (pname=="jsonlin")
 				{
 					jsonlin = pvalue;
-				} 
+				}
 				else if (pname=="lang")
 				{
 					language = pvalue;
@@ -582,14 +582,14 @@ function startup(){
 				}*/
 				else return false;
 			}
-			
+
 			if (jsonlin=="")
 			{
 				if (!ddPresent) board.DoubleDummyTricks = "********************";
-				
+
 				board.Deal = deal;
 				b.boards[0] = board;
-				
+
 				if (((typeof b.file)=="undefined")&&((typeof b.lin)=="undefined"))
 				{
 					var dealstr = deal[0] + deal[1] + deal[2] + deal[3];
@@ -601,7 +601,7 @@ function startup(){
 
 					if (validateBoard(board)==0) return "";
 				}
-				
+
 				if (!((typeof board.Declarer)!=undefined)&&((typeof board.Contract!=undefined)))
 				{
 						// Delete all these if either declarer or contract is not defined.
@@ -615,7 +615,7 @@ function startup(){
 			{
 				board = JSON.parse(jsonlin);
 				b.boards[0] = board;
-				
+
 				if (validateBoard(board)==0) return "";
 			}
 		}
@@ -629,23 +629,23 @@ function startup(){
 		return b;
 	}
   }
-  
+
   function validateContract(pvalue)
   {
   	var suits = "NSHDC";
-	
+
 	if (pvalue.length>5) return false;
 
 	var level = pvalue.charAt(0);
-	
+
 	if ((level<"1")|(level>"7")) return false;
 	if (suits.indexOf(pvalue.charAt(1))==-1) return false;
-	
+
 	return true;
   }
-  
+
   function checkDeal(board,polarity)
-  {	
+  {
   		var p = ["North","East","South","West"];
 		var dir = p[polarity];
   		var str = board.Deal[polarity].replace(/[23456789TAJQK]/g,"");
@@ -663,31 +663,31 @@ function startup(){
 		}
 		return 1;
   }
-  
+
   function checkForDuplicates(board)
   {
   		var cvalues = "23456789TJQKA";
   		var i,j,k,cardIndex;
 		var cards = new Array(4);
-		
+
 		for (i=0;i<cards.length;i++)
 			cards[i] = new Array(13);
-			
+
 		for (i=0;i<4;i++)
 			for (j=0;j<13;j++)
 				cards[i][j] = 0;
-				
+
 		for (i=0;i<4;i++)	// For each polarity N,E,S,W
 		{
 			var hand = board.Deal[i];
 			hand = hand.split(".");
-			
+
 			for (j=0;j<4;j++)
 			{
 				for (k=0;k<hand[j].length;k++)
 				{
 					cardIndex = cvalues.indexOf(hand[j][k]);
-					
+
 					if (cards[j][cardIndex]!=0)
 					{
 						switch(language)
@@ -705,7 +705,7 @@ function startup(){
 				}
 			}
 		}
-		
+
 		return 1;
   }
 
@@ -732,17 +732,17 @@ function startup(){
 				if ((typeof board.Deal[2])=="undefined") {alert("South hand not specified");return 0;};
 				if ((typeof board.Deal[3])=="undefined") {alert("West hand not specified");return 0;};
 		}
-		
+
 		if (checkDeal(board,0)==0) return 0;
 		if (checkDeal(board,1)==0) return 0;
 		if (checkDeal(board,2)==0) return 0;
 		if (checkDeal(board,3)==0) return 0;
-		
+
 		if (checkForDuplicates(board)==0) return 0;
-		
+
 		return 1;
   }
-  
+
   function createEmptyBoard()
   {
         g_worker = null;
@@ -761,20 +761,20 @@ function startup(){
 		board.DoubleDummyTricks = "********************";
 		result.boards = new Array();
 		result.boards.push(board);
-		
+
 // 		document.getElementById("form1").style.display = "none";
-		buildPage(result,'{\'options\':{\'ns\':[\'true\',\'false\',\'false\'],\'ew\':[\'true\',\'false\',\'false\'],\'mk\':[\'true\',\'false\'],\'auto\':\'true\'}}');
+		buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
   }
-  
+
   function readText(file)
   {
       const reader = new FileReader();
       reader.addEventListener(
           "load",
           (e) => {
-                var result = new Object();			
+                var result = new Object();
                 result.handstr = e.target.result;
-			
+
                 var filename = file.name.toUpperCase();
 
                 if (filename.endsWith(".PBN"))
@@ -783,48 +783,48 @@ function startup(){
                     result.handstrType = "lin";
                 else
                     result.handstrType = "dlm";
-				
+
                 result.board=1;
-		
+
                 if (result!="")
                 {
 // 				    document.getElementById("form1").style.display = "none";
-                    buildPage(result,'{\'options\':{\'ns\':[\'true\',\'false\',\'false\'],\'ew\':[\'true\',\'false\',\'false\'],\'mk\':[\'true\',\'false\'],\'auto\':\'true\'}}');			
+                    buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
                 }
           },
           false,
         );
-  
+
 // 		var reader = new FileReader();
 // 		reader.onload = function (e) {
-// 			var result = new Object();			
+// 			var result = new Object();
 // 			result.handstr = e.target.result;
-// 			
+//
 // 			var filename = file.name.toUpperCase();
-// 
+//
 // 			if (filename.endsWith(".PBN"))
 // 				result.handstrType = "pbn";
 // 			else if (filename.endsWith(".LIN"))
 // 				result.handstrType = "lin";
 // 			else
 // 				result.handstrType = "dlm";
-// 				
+//
 // 			result.board=1;
-// 		
+//
 // 			if (result!="")
 // 			{
 // // 				document.getElementById("form1").style.display = "none";
-// 				buildPage(result,'{\'options\':{\'ns\':[\'true\',\'false\',\'false\'],\'ew\':[\'true\',\'false\',\'false\'],\'mk\':[\'true\',\'false\'],\'auto\':\'true\'}}');			
+// 				buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
 // 			}
 // 		};//end onload()
-		
+
 		reader.readAsText(file);
   }
-  
+
   function handleLoadFileSelect(evt)
   {
 		var files = evt.target.files;
-		
+
 		if (files.length>0)
 		{
 			var infile = files[0];
@@ -849,7 +849,7 @@ function startup(){
 			}
 		}
   }
-	
+
   function processRequest()
   {
   		var result = extractParas();
@@ -863,16 +863,16 @@ function startup(){
  			return;
 		}
 */
-		
+
 		if (result!=""){
-			buildPage(result,'{\'options\':{\'ns\':[\'true\',\'false\',\'false\'],\'ew\':[\'true\',\'false\',\'false\'],\'mk\':[\'true\',\'false\'],\'auto\':\'true\'}}');
+			buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
 		}
 
 		setupGeneralHelp();
 		/*document.getElementById("showGeneralHelp").onclick = function()
 		{
 			showHelp(this,"generalHelp");
-		}*/		
+		}*/
 		window.focus();
   }
 
@@ -890,14 +890,14 @@ function startup(){
 	  S: 30,
 	  N: [40, 30] // first NT trick is 40, rest 30
 	};
-  
+
 	const contractTricks = 6 + eval(level);
 	const made = tricksTaken >= contractTricks;
 	const doubledMultiplier = doubled === 'XX' ? 4 : doubled === 'X' ? 2 : 1;
 	const insultBonus = doubled === 'XX' ? 100 : doubled === 'X' ? 50 : 0;
-  
+
 	let baseScore = 0;
-  
+
 	if (made) {
 	  // Trick score
 	  if (suit === 'N') {
@@ -905,11 +905,11 @@ function startup(){
 	  } else {
 		baseScore = trickValues[suit] * level * doubledMultiplier;
 	  }
-  
+
 	  // Overtricks
 	  const overtricks = tricksTaken - contractTricks;
 	  let overtrickScore = 0;
-  
+
 	  if (doubledMultiplier === 1) {
 		if (suit=='N'){
 			overtrickScore = trickValues.N[1] * overtricks;
@@ -924,7 +924,7 @@ function startup(){
 		  : (declarerVulnerable ? 400 : 200);
 		overtrickScore = perOver * overtricks;
 	  }
-  
+
 	  // Bonuses
 	  let bonus = 0;
 	  if (baseScore >= 100) {
@@ -932,21 +932,21 @@ function startup(){
 	  } else {
 		bonus = 50; // partscore bonus
 	  }
-  
+
 	  // Slam bonuses
 	  if (level === 6) {
 		bonus += declarerVulnerable ? 750 : 500;
 	  } else if (level === 7) {
 		bonus += declarerVulnerable ? 1500 : 1000;
 	  }
-  
+
 	  return baseScore + overtrickScore + bonus + insultBonus;
-  
+
 	} else {
 	  // Undertricks
 	  const undertricks = contractTricks - tricksTaken;
 	  let penalty = 0;
-  
+
 	  if (doubledMultiplier === 1) {
 		penalty = undertricks * (declarerVulnerable ? 100 : 50);
 	  } else {
@@ -960,10 +960,10 @@ function startup(){
 		  else if (undertricks === 3) penalty = 500;
 		  else penalty = 500 + (undertricks - 3) * 300;
 		}
-  
+
 		penalty *= doubledMultiplier / 2; // doubled = ×1, redoubled = ×2
 	  }
-  
+
 	  return -penalty;
 	}
   }
@@ -978,7 +978,7 @@ function roundSym (num,decPlaces) {
 function higherHonourCount(suit,base)
 {
 	var honours = "";
-	
+
 	if (base=="T")
 		honours = "JQKA";
 	else if (base=="J")
@@ -987,95 +987,95 @@ function higherHonourCount(suit,base)
 		honours = "KA";
 	else if (base=="K")
 		honours = "A";
-		
+
 	var cnt = 0;
-	
+
 	for (var i=0;i<honours.length;i++)
 	{
 		if (suit.includes(honours[i]))
 			cnt++;
 	}
-	
+
 	return cnt;
 }
 
 function krCalc(suits)
 {
 	var totcards = 0;
-	
+
 	for (var i=0;i<4;i++)
 	{
 		totcards += suits[i].length;
 	}
-	
+
 	if (totcards!=13) return "";
-	
+
 		// Kaplan Rubens Evaluator
 	var total = 0;
-	
+
 	for (var i=0;i<4;i++)
 	{
 		var suit = suits[i];
-		var krpoints = 0;	
-	
+		var krpoints = 0;
+
 		if (suit.includes("A")) krpoints += 4;
 		if (suit.includes("K")) krpoints += 3;
 		if (suit.includes("Q")) krpoints += 2;
 		if (suit.includes("J")) krpoints += 1;
 		if (suit.includes("T")) krpoints += 0.5;
-		
+
 		if ((suit.length>=2)&&(suit.length<=6))
 		{
 			if (suit.includes("T"))
 				if ((suit.includes("J"))|(higherHonourCount(suit,"J")>=2))
 					krpoints += 0.5;	// Rule 6
-					
+
 			if (suit.includes("9"))
 				if (suit.includes("8")|suit.includes("T")|(higherHonourCount(suit,"T")==2))
 					krpoints += 0.5; //Rule 7
 		}
-		
+
 		if ((suit.length>=4)&&(suit.length<=6))
 		{
 			if (suit.includes("9"))
 				if ((!suit.includes("8"))&&(!suit.includes("T"))&&(higherHonourCount(suit,"T")==3))
 					krpoints += 0.5;	// Rule 8
 		}
-		
+
 		if (suit.length>=7)
 			if ((!suit.includes("Q"))|(!suit.includes("J")))
 				krpoints += 1;	// Rule 9
-				
+
 		if (suit.length>=8)
 			if (!suit.includes("Q"))
 				krpoints += 1;	// Rule 10
-				
+
 		if (suit.length>=9)
 			if ((!suit.includes("Q"))&&(!suit.includes("J")))
 				krpoints += 1;	// Rule 11
-				
+
 		krpoints = (suit.length*krpoints)/10.0;	// Rule 12
-		
+
 //		alert(krpoints);
-		
+
 		if (suit.includes("A"))
 			krpoints += 3;	//Rule 13
-			
+
 		if ((suit.includes("K"))&&(suit.length>=2))
 			krpoints += 2; // Rule 14
-			
+
 		if ((suit.includes("K"))&&(suit.length==1))
 			krpoints += 0.5;  // Rule 15
-		
+
 		if ((suit.length>=3)&&(suit.includes("Q")))
 		{
 			if ((suit.includes("A"))|(suit.includes("K")))
 				krpoints += 1;	// Rule 16
-				
+
 			if ((!suit.includes("A"))&&(!suit.includes("K")))
 				krpoints += 0.75;	// Rule 17
 		}
-		
+
 		if ((suit.length==2)&&(suit.includes("Q")))
 		{
 			if ((suit.includes("A"))|(suit.includes("K")))
@@ -1083,72 +1083,72 @@ function krCalc(suits)
 			else
 				krpoints += 0.25;	// Rule 19
 		}
-		
+
 		if (suit.includes("J"))
 		{
 			var cnt = higherHonourCount(suit,"J");
-			
+
 			if (cnt==2)
 				krpoints += 0.5;	// Rule 20
 			else if (cnt==1)
 				krpoints += 0.25;	// Rule 21
 		}
-		
+
 		if (suit.includes("T"))
 		{
 			var cnt = higherHonourCount(suit,"T");
-			
+
 			if (cnt==2)
 				krpoints += 0.25;	// Rule 22
-			
+
 			if ((suit.includes("9"))&&(cnt==1))
 				krpoints += 0.25;	// Rule 23
 		}
-		
+
 		if (suit.length==0)
 			krpoints += 3;	// Rule 24
 		else if (suit.length==1)
 			krpoints += 2;	// Rule 25
 		else if (suit.length==2)
 			krpoints += 1;	// Rule 26
-			
+
 		total += krpoints;
 	}
-	
+
 	total = total - 1;
-	
+
 	var cnt3 = 0;
-	
+
 	for (var i=0;i<4;i++)
 	{
 		var suit = suits[i];
-		
+
 		if (suit.length==3) cnt3++;
 	}
-	
+
 	if (cnt3==3)	// shape is 4-3-3-3
 		total += 0.5;
-		
+
 	return total;
 }
 
 function updatePointsDisplay()
 {
 	var npts,epts,spts,wpts;
-	
+
 	var tindex = g_lastBindex;
-	
+
 	if (!g_handEntryMode)
 	{
 		var handstr = createHandString(g_hands.boards[tindex],0);
 		npts = handstr.points;
-		
+
 		handstr = createHandString(g_hands.boards[tindex],1);
 		epts = handstr.points;
-		
+
 		handstr = createHandString(g_hands.boards[tindex],2);
 		spts = handstr.points;
-		
+
 		handstr = createHandString(g_hands.boards[tindex],3);
 		wpts = handstr.points;
 	}
@@ -1156,7 +1156,7 @@ function updatePointsDisplay()
 	{
 		npts = epts = spts = wpts = "";
 	}
-	
+
 	var points = document.getElementById("points");
 	points.rows[0].cells[1].innerHTML = npts;
 	points.rows[1].cells[0].innerHTML = wpts;
@@ -1183,7 +1183,7 @@ function changeLanguage(l) {
 			document.getElementById("computeMakeable").innerHTML = "Analyse";
 			document.getElementById("tools").innerHTML = "Mehr..";
 
-			
+
 			document.getElementById("optionsClose").innerHTML = "Schließen";
 			document.getElementById("toolsSubMenuClose").innerHTML = "<span class=\"font-bold\">Schließen</span>";
 			document.getElementById("optionsSave").innerHTML = "Als Standard speichern";
@@ -1198,7 +1198,7 @@ function changeLanguage(l) {
 			document.getElementById("showSettings").innerHTML = "Einstellungen...";
 			document.getElementById("showReleaseHistory").innerHTML = "Versionshinweise...";
 			document.getElementById("toolsSubMenuClose").innerHTML = "Schließen";
-			
+
 			document.getElementById("nslab1").innerHTML = "Zahlen und Farben";
 			document.getElementById("nslab2").innerHTML = "Nur Farben";
 			document.getElementById("nslab3").innerHTML = "Weder Farben noch Zahlen";
@@ -1268,7 +1268,7 @@ function changeLanguage(l) {
 			document.getElementById("ranking3").innerHTML = "N/S Spielernamen";
 			document.getElementById("rankingDD").innerHTML = "Dbl Dummy";
 			document.getElementById("rankcheck1").innerHTML = "Tabellen nach Paarnummer sortieren";
-			
+
 			document.getElementById("scoring_summary1").innerHTML = "Zusammenfassung";
 
 			document.getElementById("ascorecard").innerHTML = "Persönlich";
@@ -1293,7 +1293,7 @@ function changeLanguage(l) {
 			document.getElementById("help").innerHTML = "Help";
 			document.getElementById("computeMakeable").innerHTML = "Analyse";
 			document.getElementById("tools").innerHTML = "More..";
-			
+
 			document.getElementById("optionsClose").innerHTML = "Close";
 			document.getElementById("toolsSubMenuClose").innerHTML = "<span  class=\"font-bold\">Close</span>";
 			document.getElementById("optionsSave").innerHTML = "Save As Default";
@@ -1393,7 +1393,7 @@ function processClipboardData(text)
 {
 	var clipBoardData = text;  // + "\n";  // To make sure boards are recognized
 
-	var result = new Object();	
+	var result = new Object();
 	result.handstr = clipBoardData;
 	result.board=1;
 
@@ -1410,12 +1410,12 @@ function processClipboardData(text)
 			result.handstr = "[Dealer \"N\"\n" + result.handstr;
 		}
 	}
-	
+
 	var isPBN = (result.handstr.includes("% PBN ") || ( (result.handstr.includes("[Dealer ")) && (result.handstr.includes("[Deal ")) && (result.handstr.includes("[Vulnerable "))) );//result.handstr.includes("[Deal ") && result.handstr.includes("[Board ");
-	var isLIN = result.handstr.includes("|md|"); 
+	var isLIN = result.handstr.includes("|md|");
 	var isDLM = result.handstr.includes("[Document]");
 
-	if (isPBN) 
+	if (isPBN)
 	{
 		result.handstrType = "pbn";
 		switch(language)
@@ -1456,7 +1456,7 @@ function processClipboardData(text)
 
 	if (isPBN || isLIN || isDLM)
 	{
-		buildPage(result,'{\'options\':{\'ns\':[\'true\',\'false\',\'false\'],\'ew\':[\'true\',\'false\',\'false\'],\'mk\':[\'true\',\'false\'],\'auto\':\'true\'}}');
+		buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
 	} else {
 		switch(language)
 		{
@@ -1471,7 +1471,7 @@ function processClipboardData(text)
 
 
 // Read clipboard when pressing the respective button
-// Check whether clipboard contains only one text object. 
+// Check whether clipboard contains only one text object.
 // Only text data is accepted. Mixed content is rejected.
 
 async function readClipboard() {
@@ -1485,7 +1485,7 @@ async function readClipboard() {
 		{
 			const blob = await item.getType("text/plain");
 			const text = await blob.text();
-			
+
 			// Save it to a variable for further processing
 			var clipBoardData = text + "\n";  // To make sure boards are recognized
 			processClipboardData(clipBoardData);
@@ -1502,7 +1502,7 @@ async function readClipboard() {
 			}
 		}
 	}
-    
+
   } catch (err) {
     	console.error('Failed to read clipboard: ', err);
   }

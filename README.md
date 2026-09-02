@@ -3,7 +3,7 @@
 ## Bridge Solver Online
 This is a fork of the original Bridge Solver Online authored by John Goacher (https://mirgo2.co.uk/bridgesolver/)
 
-## Javscript 
+## Javascript 
 Code has been split into several files:
 
 - Function definitions into functsions.js

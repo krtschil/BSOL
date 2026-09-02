@@ -1,0 +1,658 @@
+<!DOCTYPE HTML>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content=*>
+    <meta http-equiv="Access-Control-Allow_Methods" content="GET,POST">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    
+    <meta name="viewport" content="width=device-width" />
+    
+    <link rel="stylesheet" href="ddummy.css" type="text/css">
+    <title>Bridge Solver Online</title>
+    
+    <script src="jquery-4.0.0.min.js"></script>
+    <script src="helpText.js"></script>
+    <script src="ddummy6.js"></script>
+    <script src="convertXML.js"></script>
+    <script src="functions.js" defer></script>
+    <script src="events.js" defer></script>
+   
+</head>
+
+<body id="bdy">
+    
+<div id="ruler">
+</div>
+<div id="dropzone"><!-- Area for pasting PBN/LIN data or dropping a file with PBN/LIN content-->
+    <fieldset id="data">
+        <legend id="data-legend"><span id="flegend"><b>Analysiere Bridgehände (PBN/LIN/DLM): Datei/manuell eingeben/Paste/Drop</b></span>&nbsp;
+            <img id="switchEnglish" title="English" src="pics/gb.gif"/>
+            <img id="empty" title="white space" src="pics/empty.gif"/>
+            <img id="switchGerman" title="Deutsch" src="pics/de.gif"/>
+            <span id="filename"></span></legend>
+
+        <form id="input-file" method="post" action="." enctype="multipart/form-data"><!-- label for="loadFile1">Datei ausw&auml;hlen:</label -->
+            <input type="button" id="loadFile1"  value="Datei auswählen"/>
+            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm" id="loadFile" name="loadfiles[]"/>
+        </form>
+
+        <!-- Buttons are handled by event triggers (see events.js)-->
+        <button id="blankInput"         type="button">Hand manuell eingeben</button>
+        <button id="clipboard"          type="button">Hole Boards aus der Zwischenablage</button>
+        <button id="showGeneralHelp"    type="button">Allgemeine Hilfe</button>
+        <button id="video-i"            type="button">Erklärvideo</button>
+        <button id="author-reference-i" type="button">BSOL (John Goacher)</button>
+
+    </fieldset>
+</div>
+
+<div id=abuttons>
+	<div id="abuttons-content">
+		<button type="button" class=menuButton        id=aboard>    Nochmal spielen</button>
+		<button type="button" class=sessionMenuButton id=aranking>  Alle Paare</button>
+		<button type="button" class=sessionMenuButton id=ascorecard>Personal</button>
+		<button type="button" class=sessionMenuButton id=aacc>      Genauigkeit</button>
+		<button type="button" class=sessionMenuButton id=atraveller>Board</button>
+		<button type="button" class=sessionMenuButton id=aprev>     &lt;</button>		
+		<button type="button" class=sessionMenuButton id=agotoboard>Gehe zu..</button>
+		<button type="button" class=sessionMenuButton id=anext>     &gt;</button>		
+		<button type="button" class=sessionMenuButton id=acheck>    Überprüfen</button>		
+		<button type="button" class=sessionMenuButton id=ahelp>     Hilfe</button>
+	</div>
+	<div class="inlr1"></div>
+</div>
+
+<table class="results inlr2">
+    <tr id=mainTitle>
+        <td id=titleText></td>
+    </tr>
+    <tr id=scoreandtraveller>
+        <td class="v-top inlr3">
+            <div id=travellerDIV>
+                <table  id="traveller" class=traveller>
+                    <tr>
+                        <th>
+                            <table class=results id=board>
+                                <tr>
+                                    <td class="width-33">&nbsp;</td>
+                                    <td id=northHand>
+                                        &#9824; K 4 2
+                                        <br>
+                                        <span class="color-red">&#9829;</span> K 3 2
+                                        <br>
+                                        <span class="color-red">&#9830;</span> K J 7
+                                        <br>&#9827; 10 9 8 4
+                                        <br>
+                                    </td>
+                                    <td id=currentPosition>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td id=westHand>&#9824; A 8 7 5<br>
+                                        <span class="color-red">&#9829;</span> 10 9 7 6<br>
+                                        <span class="color-red">&#9830;</span> Q 6<br>&#9827; A J 7<br>
+                                    </td>
+                                    <td class="width-33 h-100 v-middle t-center">
+                                        <table id=vul class=vul>
+                                            <tr class="h-20">
+                                                <td class="w-20"></td>
+                                                <td id=nvul></td>
+                                                <td class="w-20"></td>
+                                            </tr>
+                                            <tr class="h-100">
+                                                <td id=wvul></td>
+                                                <td id = boardNumber></td>
+                                                <td id=evul></td>
+                                            </tr>
+                                            <tr class="h-20">
+                                                <td class="h-20"></td>
+                                                <td id=svul>O</td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td id=eastHand>&#9824; J 10
+                                        <br>
+                                        <span class="color-red">&#9829;</span> Q J 4
+                                        <br>
+                                        <span class="color-red">&#9830;</span> A 10 9 8 2
+                                        <br>&#9827; Q 6 5
+                                        <br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="width-33" id="krLabel-t">
+                                        <div id=ptsctl>
+                                            <label id=krLabel><input id="krcalc" type="checkbox" name="krcalc">KR</label>
+                                          <input title="Info zu Kaplan-Rubens" id=krhelp readonly value=? />
+                                          </div>
+                                        <table id=points class=pointsTable>
+                                            <tr>
+                                                <td class="width-33"></td>
+                                                <td class="t-center v-bottom inlr4"></td>
+                                                <td class="width-33"></td>
+                                            </tr>
+                                            <tr id="greenTable">
+                                                <td class="t-right v-middle inlr5"></td>
+                                                <td class="inlr6"></td>
+                                                <td class="t-left v-middle inlr7"></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="v-top t-center inlr8"></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td id=southHand>&#9824; Q 9 6 3
+                                        <br>
+                                        <span class="color-red">&#9829;</span> A 8 5
+                                        <br>
+                                        <span class="color-red">&#9830;</span> 5 4 3
+                                        <br>&#9827; K 3 2
+                                        <br>
+                                    </td>
+                                    <td class="width-33 t-center v-middle">
+                                        <div id=mctable>
+                                            <table id=makeableContracts class="mc">
+                                                <tr>
+                                                    <td></td>
+                                                    <td>&#9827;</td>
+                                                    <td><span class="color-red">&#9830;</span></td>
+                                                    <td><span class="color-red">&#9829;</span></td>
+                                                    <td>&#9824;</td>
+                                                    <td>NT</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>N</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>S</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>E</td>
+                                                    <td>-</td>
+                                                    <td>2</td>
+                                                    <td>2</td>
+                                                    <td>1</td>
+                                                    <td>1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>W</td>
+                                                    <td>-</td>
+                                                    <td>2</td>
+                                                    <td>2</td>
+                                                    <td>1</td>
+                                                    <td>1</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </table>
+                <table class=results id="results-t">
+                    <tr class="inlr9">
+                        <td class="t-left">
+                            <button type="button" id=bsession class=sessionMenuButton>Ergebnisanalyse</button>
+                            <button type="button" class=btn-circle id=bsessionHelp onclick="window.open('bsolhelp.htm?ver=2');">?</button>
+                        </td>
+                        <td class="t-center">
+                            <button type="button" id="prev"         class=menuButton>&lt;</button>
+                            <button type="button" id="gotoBoard"    class=menuButton>Gehe zu</button>
+                            <button type="button" id="next"         class=menuButton>></button>
+                            <button type="button" id="showBoards"   class=menuButton>Boards</button>
+                            <button type="button" id=newBoard       class=menuButton>Neu...</button>
+                            <button type="button" id=deleteBoard    class=menuButton>Löschen</button>
+                            <button type="button" id=saveLIN        class=menuButton>Als LIN speichern</button>
+                            <button type="button" id=saveBoards     class=menuButton>Speichern</button>
+                            <button type="button" id=editHand       class=menuButton>Bearbeiten</button>
+                            <button type="button" id=clearHand      class=menuButton>Leeren</button>
+                            <button type="button" id=backPlay       class=menuButton>&lt;</button>
+                            <button type="button" id=play           class=menuButton>Spielen</button>
+                            <button type="button" id=forwardPlay    class=menuButton>&gt;</button>
+                            <button type="button" id=options        class=menuButton>Optionen</button>
+                            <button type="button" id=help           class=menuButton>Hilfe</button>
+                        </td>
+                        <td class="t-right">
+                            <button type="button" id="branking" class=menuButton>Ranking</button>
+                            <button type="button" class=menuButton id=bscorecard>Scorecard</button>
+                            <button type="button" class=menuButton id=btraveller>Traveller</button>
+                            <button type="button" id="computeMakeable" class=menuButton>Analyse</button>
+                            <button type="button" id="tools" class=menuButton>Mehr..</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id=allBoards>
+	<div id=scrollDiv>
+		<table id=travellers>
+			<tr>
+                <td class="t-center">
+                    <span class="font-16">Scroll through boards and tap on a board number to make it the active board</span>
+                </td>
+			</tr>
+		</table>
+	</div>
+	<div id="allBoards-d">
+		<table id="allBoards-t">
+			<tr class="h-20">
+                <td class="t-center">
+                    <span class="font-bold">Scroll through boards and tap on a board number to make it the active board</span>
+                </td>
+			<td class="t-right v-middle">
+				<div id=progressBox><div id=progress></div></div>
+				<div class="f-right"><button type="button" id=analyseAll class=menuButton>Alles analysieren</button></div>
+			</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div id="progressDiv">
+	<table id="progressDiv-t">
+		<tr class="h-20">
+			<td class="t-center">
+				<div id=progressBarBox>
+                    <div id=progressBar></div>
+                </div>
+                <div class="f-right"></div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="popup_box">
+</div>
+
+<div id=spinner>
+	<img src="pics/spinner.gif" alt="loading">
+</div>
+
+<div id=largeSpinner>
+	<img src="pics/largeSpin.gif" alt="loading">
+</div>
+
+<div id="commandHelp">
+</div>
+
+<div id="playHelp">
+</div>
+
+<div id="editHelp">
+</div>
+
+<div id="playMatchContractHelp">
+</div>
+
+<div id="resultReasons">
+</div>
+
+<div id="settingsHelp">
+</div>
+
+<div id="krHelpText">
+</div>
+
+<div id="generalHelp">
+</div>
+
+<div id="settings">
+	<table>
+        <tr>
+            <th><span id="settingsT" class="font-bold font-16">Einstellungen:</span></th>
+        </tr>
+        <tr>
+            <td class="b0p10">
+            <div id="runremote">
+                    <label id=mkuseremoteLabel><input id="mkuseremote" type="checkbox" name="mkuseremote" value="1">Double Dummy auf dem Server berechnen (steht nicht zur Verfügung)</label><br> 
+            </div>
+            <input id="mkauto1" type="checkbox" name="autoOptions" value="1" checked >
+            <label id="mkautolab1" for="mkauto1" >Alle Boards automatisch analysieren</label>
+            </td>
+        </tr>
+        <tr>
+            <td><button type="button" id=settingsHide>Schließen</button><button type="button" id=showSettingsHelp>Hilfe</button></td>
+        </tr>
+	</table>
+</div>
+
+<div id="optionsBox">
+	<table class=options>
+        <tr class="inlr10">
+            <td class="b0p10">&nbsp;&nbsp;&nbsp;&nbsp;<span id="nsshow_playable">N/S: Anzeige für spielbare Karten:</span>
+                <p>
+                    <br>
+                    <input id="nsrad1" type="radio" name="NSOptions" value="1" checked ><label id="nslab1" for="nsrad1" >Zahlen und Farben</label>
+                    <br>
+                    <input id="nsrad2" type="radio" name="NSOptions" value="2" ><label id="nslab2" for="nsrad2" >Nur Farben</label>
+                    <br>
+                    <input id="nsrad3" type="radio" name="NSOptions" value="3" ><label id="nslab3" for="nsrad3" >Weder Farben noch Zahlen</label>
+                    <br>
+                </p>
+            </td>
+            <td class="b0p10">&nbsp;&nbsp;&nbsp;&nbsp;<span id="ewshow_playable">O/W: Anzeige für spielbare Karten:</span>
+                <p>
+                    <br>
+                    <input id="ewrad1" type="radio" name="EWOptions" value="1" checked ><label id="ewlab1" for="ewrad1" >Zahlen und Farben</label>
+                    <br>
+                    <input id="ewrad2" type="radio" name="EWOptions" value="2" ><label id="ewlab2" for="ewrad2" >Nur Farben</label>
+                    <br>
+                    <input id="ewrad3" type="radio" name="EWOptions" value="3" ><label id="ewlab3" for="ewrad3" >Weder Farben noch Zahlen</label>
+                    <br>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>&nbsp;&nbsp;<span id="table_makeable">Tabelle der machbaren Kontrakte:</span>
+                <p>
+                    <br>
+                    <input id="mkrad1" type="radio" name="mkOptions" value="1" checked >
+                    <label id="mklab1" for="mkrad1" >Zeige machbare Kontrakte</label>
+                    <br>
+                    <input id="mkrad2" type="radio" name="mkOptions" value="2" >
+                    <label id="mklab2" for="mkrad2" >Zeige Stichzahl</label>
+                    <br>
+                </p>
+            </td>
+            <td>
+                <label id="shorts">Kürzel für die Figuren:</label>
+                 <select title="Select honour card set" id=honourCardSet>
+                    <option value="JQKA">JQKA</option>
+                    <option value="BDKA">BDKA</option>
+                    <option value="VDRA">VDRA</option>
+                    <option value="BVHA">BVHA</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <table class="inlr11">
+        <tr>
+            <td class="t-left">
+                <br>
+                <button type="button" id="optionsClose">Schließen</button>&nbsp;&nbsp;<button type="button" id="optionsSave">Als Standard speichern</button>
+                <span id="optionsSaveFeedback">Auswahl gespeichert</span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="toolsSubMenu">
+	<h2 id="toolsChoose">Wähle aus:</h2>
+	<button type="button" id=analyseAllBoards><span class="font-bold">Alle Boards analysieren</span></button><br>
+	<button type="button" id=showPlayerAcc><span class="font-bold">Matrix zur Spielgenauigkeit</span></button>
+	<button type="button" id=showSettings><span class="font-bold">Einstellungen...</span></button>
+	<button type="button" id=showReleaseHistory><span class="font-bold">Versionshinweise...</span></button>
+	<br><br>
+	<button type="button" id="toolsSubMenuClose" ><span  class="font-bold">Schließen</span></button>
+</div>
+
+<div id=rcheckdiv>
+  <input type="checkbox" id="rankcheck" value="checkbox"><label id="rankcheck1" for=rankcheck class="font-bold">Tabellen nach Paarnummer sortieren</label>
+</div>
+
+<div id=ranking>
+	<table  id="rankingNS"  class=ranking>
+        <thead class="t-center">
+            <tr>
+                <th id="ranking1">Pos</th>
+                <th id="ranking2">Paar</th>
+                <th id="ranking3">N/S Spielernamen</th>
+                <th colspan="2">%</th>
+                <th id="rankingDD">Dbl Dummy</th>
+            </tr>
+        </thead>
+	</table>
+</div>
+
+<div id=scores>
+	<div class="f-l-c">
+		<table  id="scoring" class=ranking>
+            <thead class="t-center">
+                <tr>
+                    <th id=scPlayerNames colspan=13>Namen</th>
+                </tr>
+                <tr>
+                    <th id="scoring1">Bd</th>
+                    <th id="scoring2">Vs</th>
+                    <th id="scoring3">Gebot</th>
+                    <th id="scoring4">von</th>
+                    <th id="scoring5">Ausspiel</th>
+                    <th id="scoring6" colspan="2">Stiche</th>
+                    <th id="scoring7" colspan="3">DD Stiche(ETF)</th>
+                    <th id="scoring8" colspan="3">Prozent</th>
+                </tr>
+            </thead>
+		</table>
+	</div>
+	<div class="inlr12">
+		<div id="player_direction">
+			<div id=first_player_name>Setze Sitzposition für </div>
+            <div id=optNEdiv><label><input id="pdiroptNE" type="radio" name="pdirgroup" value="radio" checked onclick="setupScorecard();">N&amp;O</label></div>
+            <div id=optNWdiv><label><input id="pdiroptNW" type="radio" name="pdirgroup" value="radio" onclick="setupScorecard();">N&amp;W</label></div>
+            <div id=optSEdiv><label><input id="pdiroptSE" type="radio" name="pdirgroup" value="radio" onclick="setupScorecard();">S&amp;O</label></div>
+		</div>
+		<div class="f-l-c">
+			<table  id="scoring_summary" class=ranking>
+				<tr>
+                    <th id="scoring_summary1" colspan="2">Summary</th>
+                </tr>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div id="checkListDiv">
+	<div class="f-left">
+		<table id="checkList" class=ranking>
+			<tr>
+                <th>Bd</th>
+                <th>NS</th>
+                <th>OW</th>
+                <th>Gebot</th>
+                <th>von</th>
+                <th>Ausspiel</th>
+                <th>Stiche</th>
+                <th>Kommentar</th>
+			</tr>
+		</table>
+	</div>
+	<div id="checkTravellerDiv">
+		<div class="f-left">
+			<table id="checkTraveller" class=ranking>
+				<tr>
+                    <th>NS</th>
+                    <th>OW</th>
+                    <th>Gebot</th>
+                    <th>von</th>
+                    <th>Ausspiel</th>
+                    <th>Stiche</th>
+				</tr>
+			</table>
+		</div>
+		<div id="checkBoard">
+		</div>
+	</div>
+</div>
+
+<div id="comparison">
+	<div id=compSubHeading></div>
+	<br>
+	<div id=percentValue></div>
+	<div id="ourPercentage">
+        <div id="pbar"></div>
+	</div>
+	<br>
+	<div id="comparisonText"></div>
+	<br>
+	<div class="inlr13">
+	  <input type="checkbox" id="cfcheck" value="checkbox" checked><label for=cfcheck class="font-bold">Zeige Tabelle der Kontrakthäufigkeiten</label>
+	</div>
+	<table id=travandhand>
+		<tr>
+            <td colspan=2>
+                <table id="contractTable">
+                    <tr>
+                        <td id="contractTable1">Kontrakt</td>
+                        <td id="contractTable2">Alleinspieler</td>
+                        <td id="contractTable3">Frequenz</td>
+                        <td id="contractTable4">Durchschnitt %</td>
+                    </tr>
+                </table>
+                <br>
+            </td>
+        </tr>
+		<tr>
+            <td class="v-top">
+                <table id="travellerTable" class=ranking>
+                    <tr>
+                        <th id="travellerTable1"  colspan=2>Paare</th>
+                        <th id="travellerTable2"  colspan=3>Kontrakt</th>
+                        <th id="travellerTable3"  colspan=2>Zu erfüllen</th>
+                        <th id="travellerTable4"  colspan=3>Double Dummy</th>
+                        <th id="travellerTable5" >Anschrift</th>
+                        <th id="travellerTable6"  colspan=3>Prozent</th>
+                    </tr>
+                    <tr>
+                        <th id="travellerTable7" >NS</th>
+                        <th id="travellerTable8" >OW</th>
+                        
+                        <th id="travellerTable9" >Kontr</th>
+                        <th id="travellerTable10" >von</th>
+                        <th id="travellerTable11" >Aussp</th>
+                        
+                        <th id="travellerTable12" >Stiche</th>
+                        <th id="travellerTable13" >Über</th>
+                        
+                        <th id="travellerTable14" >Ziel</th>
+                        <th id="travellerTable15" colspan="2">Erfüllt</th>
+                        
+                        <th id="travellerTable16" >(NS)</th>
+                        
+                        <th id="travellerTable17" >NS</th>
+                        <th></th>
+                        <th id="travellerTable18" >OW</th>
+                    </tr>
+                </table>
+            </td>
+		    <td class="v-top">
+                <table class="inlr14">
+                    <tr>
+                        <td>
+                            <table id=minihand>
+                                <tr>
+                                    <td class="width-33" id=miniDlr></td>
+                                    <td id=miniNorth class="width-33"></td>
+                                    <td class="width-33"></td>
+                                </tr>
+                                <tr>
+                                    <td id=miniWest></td>
+                                    <td></td>
+                                    <td id=miniEast></td>
+                                </tr>
+                                <tr>
+                                    <td class="width-33">
+                                        <table id=miniPoints class=pointsTable>
+                                            <tr>
+                                                <td class="width-33"></td>
+                                                <td class="width-33 v-bottom t-center"></td>
+                                                <td class="width-33"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="t-right v-middle"></td>
+                                                <td></td>
+                                                <td class="t-left v-middle"></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="v-top t-center"></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td id=miniSouth></td>
+                                    <td class="width-33"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="t-center">
+                            <table id=miniMakeableContracts class="mc_small">
+                                <tr>
+                                    <td></td>
+                                    <td>&#9827;</td>
+                                    <td><span class="color-red">&#9830;</span></td>
+                                    <td><span class="color-red">&#9829;</span></td>
+                                    <td>&#9824;</td>
+                                    <td>NT</td>
+                                </tr>
+                                <tr>
+                                    <td>N</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>S</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>E</td>
+                                    <td>-</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>W</td>
+                                    <td>-</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                            </table>
+                            </td>
+                        </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<fieldset id="explanation">
+    <legend>Erläuterung zum Board</legend>
+    Sofern vorhanden, werden hier Erläuterungen zum jeweiligen Board angezeigt.
+
+
+</fieldset>
+<pre id="output"></pre>
+</body>
+</html>

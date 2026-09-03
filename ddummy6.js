@@ -10787,10 +10787,13 @@ function generatePBN(all)
 				g_hands.boards[i].Claimed = trickstaken;
 
 				tmp = g_hands.boards[i].Vulnerable;
+				var decl = g_hands.boards[i].Declarer;
 
-				if (tmp.indexOf(g_hands.boards[i].Declarer) !=-1){
+				if (tmp=="All"){
 					vulnerable = true;
-				} else if (tmp=="All"){
+				} else if ((tmp=="NS")&&((decl=="N")||(decl=="S"))){
+					vulnerable = true;
+				} else if ((tmp=="EW")&&((decl=="E")||(decl=="W"))){
 					vulnerable = true;
 				} else {
 					vulnerable = false;

@@ -23,7 +23,7 @@ function setupPlayMatchContractHelp()
 			help = help + "<button id=hide_playMatchContractHelp style=\"cursor:pointer;\">Schließen</button>";
 			break;
 		default:
-			var help = "<div style=\"float:left;word-wrap:break-word;overflow:scroll;max-height:300px;\><span style=\"font-size:16px;\">";
+			var help = "<div style=\"float:left;word-wrap:break-word;overflow:scroll;max-height:300px;\"><span style=\"font-size:16px;\">";
 			help = help + "A yellow highlighted bid in the bidding box indicates an associated alert. Hover the cursor over the highlighted bid, ";
 			help = help + "or click on it, in order to see the explanation.<br><br>";
 			help = help + "Tap the play button located below the bidding table to see how the bid contract was played.<br><br>";

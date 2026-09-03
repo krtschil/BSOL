@@ -4965,11 +4965,25 @@ function dddloadfunc(data,statusText,jqXHR,context)
 			{
 				if (tmp.sess.status==201)	// No lock file, session never existed or timed out
 				{
-					displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Keine aktive Session (abgelaufen?)</span>");
+					switch(language)
+					{
+						case "de":
+							displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Keine aktive Session (abgelaufen?)</span>");
+							break;
+						default:
+							displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">No active session (expired?)</span>");
+					}
 				}
 				else if (tmp.sess.status==207)
 				{
-					displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Kann nicht zurückgehen, es wurde noch keine Karte gespielt</span>");
+					switch(language)
+					{
+						case "de":
+							displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Kann nicht zurückgehen, es wurde noch keine Karte gespielt</span>");
+							break;
+						default:
+							displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Cannot go back, no card has been played yet</span>");
+					}
 				}
 				else if (tmp.sess.status==208)	// hand finished, all tricks now played
 				{
@@ -4977,10 +4991,26 @@ function dddloadfunc(data,statusText,jqXHR,context)
 				}
 				else if (tmp.sess.status==209)
 				{
-					displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Invalid card in recorded play sequence</span>");
+					switch(language)
+					{
+						case "de":
+							displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Ungültige Karte in der aufgezeichneten Abspielfolge</span>");
+							break;
+						default:
+							displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">Invalid card in recorded play sequence</span>");
+					}
 				}
 				else if (tmp.sess.status!=202) // Not a 'lock file' busy message
-					alert("Fehler " + tmp.sess.status + "," + tmp.sess.errno + " - " + tmp.sess.errmsg);
+				{
+					switch(language)
+					{
+						case "de":
+							alert("Fehler " + tmp.sess.status + "," + tmp.sess.errno + " - " + tmp.sess.errmsg);
+							break;
+						default:
+							alert("Error " + tmp.sess.status + "," + tmp.sess.errno + " - " + tmp.sess.errmsg);
+					}
+				}
 			}
 		}
 	}
@@ -12219,7 +12249,14 @@ function loadHands_1(data,statusText,jqXHR,context)
 		{
 			hideSpinner();
 			document.getElementById("bdy").style.display="none";
-			alert("Board " + board.board + " gibt es nicht");
+			switch(language)
+			{
+				case "de":
+					alert("Board " + board.board + " gibt es nicht");
+					break;
+				default:
+					alert("Board " + board.board + " does not exist");
+			}
 		}
 
 		hideSpinner();

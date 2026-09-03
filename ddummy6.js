@@ -6,7 +6,7 @@
 ***********************************************************************************/
 
 var clipBoardData;
-var g_version = "Version: 2.1 (2026-08-21)";
+var g_version = "Version: 2.1 (2026-09-03)";
 var language = "de";  				// Sets the default language
 var g_logging = false;
 var g_credits =	"";

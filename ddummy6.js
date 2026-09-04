@@ -11121,6 +11121,83 @@ function stripComments(fileData)
 	return outData;
 }
 
+function evaluateTrickWinner(chronoTrick, trumpSuit)
+{
+		// chronoTrick: 4 card tokens (e.g. "CA") in the actual order they were played, leader first.
+		// trumpSuit: "C","D","H","S", or "N" for no-trump.
+		// Returns the 0..3 offset (from the leader) of the winning card.
+	var rankOrder = "23456789TJQKA";
+
+	function isTrumpCard(card) { return (trumpSuit!=="N") && (card.charAt(0)===trumpSuit); }
+	function rank(card) { return rankOrder.indexOf(card.charAt(1)); }
+
+	var winIdx = 0;
+
+	for (var i=1;i<4;i++)
+	{
+		var cur = chronoTrick[i];
+		var win = chronoTrick[winIdx];
+
+		if (isTrumpCard(cur) && !isTrumpCard(win))
+			winIdx = i;	// trump always beats a non-trump card
+		else if (isTrumpCard(cur)===isTrumpCard(win))
+		{
+				// Both trump, or both not: only relevant if following the same suit as the current winner
+			if ((cur.charAt(0)===win.charAt(0)) && (rank(cur)>rank(win)))
+				winIdx = i;
+		}
+			// else: cur is a non-trump card of a different suit than the current winner - can never win
+	}
+
+	return winIdx;
+}
+
+function reorderPlaySequence(rawTokens,firstLeader,contract)
+{
+		// PBN "Export Format" [Play] data uses fixed table-position columns: column k of every
+		// trick-row always represents the same seat (the rotation starting at firstLeader), NOT
+		// "whoever leads this particular trick". "-" marks a position not (yet) played in an
+		// unfinished last trick. The rest of this application (replay, calculateTricks, etc.)
+		// expects the cards in true chronological play order (actual leader first, per trick),
+		// so this re-derives that order by tracking who actually wins - and therefore leads - each trick.
+	var clockwise = "NESW";
+
+	if ((clockwise.indexOf(firstLeader)===-1) || !validContract(contract))
+		return rawTokens;	// Not enough information to reorder safely - return unchanged.
+
+	var trumpSuit = contract.charAt(1);	// "N" for NT contracts ("3NT" etc.), else C/D/H/S
+	var startPos = clockwise.indexOf(firstLeader);
+	var slotIdentities = [0,1,2,3].map(function(k){ return clockwise.charAt((startPos+k)%4); });
+
+	var result = [];
+	var currentLeader = firstLeader;
+
+	for (var t=0; t*4<rawTokens.length; t++)
+	{
+		var trickTokens = rawTokens.slice(t*4,t*4+4);
+		var leaderSlotIdx = slotIdentities.indexOf(currentLeader);
+
+		var chronoTrick = [];
+		for (var k=0;k<4;k++)
+		{
+			var tok = trickTokens[(leaderSlotIdx+k)%4];
+			if ((tok!==undefined) && (tok!=="-")) chronoTrick.push(tok);
+		}
+
+		result = result.concat(chronoTrick);
+
+		if (chronoTrick.length===4)
+		{
+			var winOffset = evaluateTrickWinner(chronoTrick,trumpSuit);
+			currentLeader = clockwise.charAt((clockwise.indexOf(currentLeader)+winOffset)%4);
+		}
+		else
+			break;	// Incomplete trick - nothing more to reorder.
+	}
+
+	return result;
+}
+
 function pbnToJson(fileData)
 {
 		// Make sure there is a defined "trim" function (needed for IE8 and earlier)
@@ -11249,6 +11326,7 @@ function pbnToJson(fileData)
 			auction = auction.replace(/  /g, ' ');
 			auction = auction.trim();
 		}
+		var playLeader = getLine(data,"[Play ",true);	// Who leads to the first trick (peek only, doesn't consume "data")
 		var play = getLineFull(data,"[Play ");
 		if (play != ""){
 			play = play.replace(/\t/g, ' ');
@@ -11391,6 +11469,7 @@ function pbnToJson(fileData)
 
 				if (play != ""){
 					play = play.split(" ");
+					play = reorderPlaySequence(play,playLeader,contract);	// [KK] Re-derive true chronological play order from PBN's fixed-column layout
 					outStr = outStr + "\"Played\":[";
 					for (var j=0;j<play.length;j++){
 						outStr = outStr + "\"" + play[j] + "\"";

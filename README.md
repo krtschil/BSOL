@@ -25,7 +25,8 @@ To allow text (help text and display text) to appear in other languages the foll
 Inline Styles have been removed and added to the respective style sheet
 
 ## HTML
-HTML has been corrected to comply with W3C standards.
+- HTML has been corrected to comply with W3C standards.
+- Frontpage renamed to `index.html`
 
 ## Functionality
 ### Layout and buttons

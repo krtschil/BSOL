@@ -65,7 +65,7 @@ The text may contain HTML markup for styling purposes.
 Two additional URL parameters have been implemented. For a full list of parameters see [list of URL parameters](URL-Parameters.html)
 
 - `lang`:  sets the language for displayed text including help text. Language is a two-character code, e.g. `lang=de`.
-- `nav`:   turns on/off the navigation buttons. `nav=0` hides the navigation buttons.
+- `nav`:   turns on/off the navigation buttons, e.g. `nav=0` hides the navigation buttons.
 
 ### Double Dummy Solver
 Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein and implemented as a WebAssembly module.

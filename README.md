@@ -62,7 +62,7 @@ The text may contain HTML markup for styling purposes.
 
 ### URL parameters
 
-Two additional URL parameters have been implemented. For a full list of parameters see [URL Parameter](https://github.com/krtschil/BSOL/blob/main/URL-Parameters.html)
+Two additional URL parameters have been implemented. For a full list of parameters see [list of URL parameters](URL-Parameters.html)
 
 - `lang`:  sets the language for displayed text including help text. Language is a two-character code, e.g. `lang=de`.
 - `nav`:   turns on/off the navigation buttons. `nav=0` hides the navigation buttons.

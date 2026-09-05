@@ -73,4 +73,7 @@ The analysis runs completely in the browser (no server component necessary).
 
 The provided version is based on the DDS3 project (https://github.com/dds-bridge/dds) currently using the released version 3.1.
 
-The sources for the WebAssembly module can be downloaded from here: https://github.com/krtschil/bsol-wasm/releases
+The sources for the WebAssembly module can be downloaded from here: https://github.com/krtschil/bsol-wasm/releases.
+
+## AI support
+Claude/Sonnet 5 helped in analyzing and fixing code when necessary.

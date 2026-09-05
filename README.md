@@ -57,6 +57,16 @@ The `[Result ` section of a .pbn file can optionally contain plain text enclosed
 If present the text contained within is displayed at the bottom of the respective board in a highlighted box.
 The text may contain HTML markup for styling purposes.
 
+-   When present in a `.pbn` file Play, Auction, Playerlist, Contract and Score have been added to the display similar
+    to the handling of respective content in `.lin` files.
+
+### URL parameters
+
+Two additional URL parameters have been implemented. For a full list of parameters see [URL Parameter](https://github.com/krtschil/BSOL/blob/main/URL-Parameters.html)
+
+- `lang`:  sets the language for displayed text including help text. Language is a two-character code, e.g. `lang=de`.
+- `nav`:   turns on/off the navigation buttons. `nav=0` hides the navigation buttons.
+
 ### Double Dummy Solver
 Boards are analyzed using the double dummy solver authored by Bo Haglund / Sören Hein and implemented as a WebAssembly module.
 The analysis runs completely in the browser (no server component necessary).

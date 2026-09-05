@@ -1,0 +1,146 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.116
+%Created: Fri Jan  9 20:09:21 2026 +0100
+%BCOptions Center GutterH GutterV PageHeader STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 4
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 4
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",16,700,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 200,200
+%HRTitleDate 0
+%HRTitleEvent ""
+%HRTitleSetID ""
+%HRTitleSetIDPrefix ""
+%HRTitleSite ""
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 300,300,300,300
+%PaperSize 1,2159,2794,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 1
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+%Translate "N-S" "NS"
+%Translate "E-W" "OW"
+%Translate "Lead" "Ausspiel"
+%Translate "% Deals" "Teiler %"
+%Translate "% Vul" "% in Gefahr"
+%Translate "North" "Nord"
+%Translate "East" "Ost"
+%Translate "South" "S&uuml;d"
+%Translate "None" "Keiner"
+%Translate "Both" "Alle"
+%Translate "J" "B"
+%Translate "Q" "D"
+%Translate "vs" "gg."
+%Translate "NT" "SA"
+%Translate "Pass" "Passe"
+%Translate "Dbl" "X"
+%Translate "Rdbl" "XX"
+%Translate "All pass" "Alle passen"
+%Translate "by" "von"
+%Translate "Trick" "Stich"
+%Translate "2nd" "2."
+%Translate "3rd" "3."
+%Translate "4th" "4."
+%Translate "Made %" "% erf&uuml;llt"
+%Translate "Down %" "% Faller"
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "9"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:QT987.K5.A6.AK95 K54.A9432.T875.3 6.QT87.KQ9.Q8764 AJ32.J6.J432.JT2"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3N"]
+[Result ""]
+{Nord reizt einen billigen Zweif&auml;rber. S&uuml;d hat Maximum und Treffs dazu, damit kann er
+Er&ouml;ffner einladen. Nord hat Halt in den Restfarben und kann bequem 3 SA ansagen.}
+[BCFlags "1f"]
+[Auction "N"]
+1S Pass 1NT Pass
+2C Pass 3C Pass
+3NT AP
+[Play "W"]
+D2
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "10"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:KJT762.K.J52.A43 Q53.A4.K863.J982 A8.QJT9532.T9.T6 94.876.AQ74.KQ75"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2S"]
+[Result ""]
+{Ost sollte sich davor h&uuml;ten, in der ersten Reizrunde die Coeurs ins Rennen zu
+ werfen, weder mit 2 Coeur noch mit 3 Coeur (zu wenige Punkte).}
+[BCFlags "1f"]
+[Auction "W"]
+1S Pass 1NT Pass
+2S AP
+[Play "N"]
+D6
+
+[Event "Freundschaftsturnier 2026"]
+[Site "?"]
+[Date "2026.05.30"]
+[Board "1"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:2.J8.KJT8432.Q93 Q8543.T92..KT742 AKT6.A73.AQ975.6 J97.KQ654.6.AJ85"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Contract\5L;Declarer\1;Result\3R;Score_NS\5R;PairId_NS\6R;PairId_EW\6R;MP_NS\3R;MP_EW\3R;"]
+4NT  S 11  460     1   101 22  2
+5D   N 12  420    16   115 13 11
+4D   N 12  170    15   113  1 23
+4Dx  N 12  710    14   111 24  0
+3D   S 12  170    13   109  1 23
+5D   S 12  420    12   107 13 11
+5D   S 11  400    11   105  4 20
+5D   N 12  420    10   103 13 11
+5D   N 12  420     9   116 13 11
+5D   N 12  420     8   114 13 11
+5D   S 12  420     7   112 13 11
+5D   S 12  420   110     6 13 11
+5D   S 12  420   108     5 13 11

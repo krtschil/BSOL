@@ -32,7 +32,6 @@ Inline Styles have been removed and added to the respective style sheet
 ### Layout and buttons
 The frontpage has been changed such that navigational buttons are visible at all times.
 
-A URL parameter has been introduced to turn off the navigational buttons.
 
 ### Loading of hands
 Hands can be entered and analyzed in various ways:

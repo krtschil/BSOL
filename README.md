@@ -42,7 +42,7 @@ Hands can be entered and analyzed in various ways:
 - Using the respective button on the frontpage to retrieve data from the clipboard (requires user consent to read from the clipboard)
 - Manual input of single hands by using the respective button on the frontpage
 - Loading a remote file via an URL parameter (e.g. `?file=https://example.com/tournament.pbn)`). 
-The remote server has to allow loading data via HTTP header `Header set Access-Control-Allow-Origin *` or specifically `Header set Access-Control-Allow-Origin "https://thedomain.com"`.
+The remote server has to allow loading data via HTTP header `Header set Access-Control-Allow-Origin *` or more specific `Header set Access-Control-Allow-Origin "https://thedomain.com"`.
 - Board data can be provided completely with URL paramters
 - For an overview of all available URL parameters see the file `URL-Parameters.html`
 

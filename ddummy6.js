@@ -11270,7 +11270,7 @@ function pbnToJson(fileData)
 		resultComment = resultComment.replaceAll("}","");
 		notes = getLineNotes(data,"[Note ",true);
 		scoreTableH = getLine(data,"[ScoreTable",true);
-		if (scoreTableH !=null) scoreTableH = scoreTableH.replaceAll(/\\[A-Z0-9]*;/g," ");
+		if (scoreTableH !=null) scoreTableH = scoreTableH.replaceAll(/\\[A-Z0-9]*;?/g," ");
 
 		scoreTable = getLineFull(data,"[ScoreTable",true);
 		scoreTable = scoreTable.replaceAll(/PASS/g,"PAXX");

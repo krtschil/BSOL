@@ -745,13 +745,7 @@ function startup(){
 
   function createEmptyBoard()
   {
-        g_worker = null;
-        g_hands = null;
-        g_initialised = false;
-        g_loaded = false;
-        g_worker = new Worker("calldds.js");
-        g_worker.addEventListener("message",listenerMain);
-        g_file=1;
+		startup();
   		var result = new Object();
 		var board = new Object();
 		board.board = "1";

@@ -49,7 +49,8 @@ document.addEventListener('paste', (event) => {
 // Call an empty pbn file to allow manual input of a hand
 const Blank = document.getElementById("blankInput");
 Blank.addEventListener('click', function() {
-	window.location.href = "?file=blank.pbn&lang=" + language;
+	createEmptyBoard();
+	//window.location.href = "?file=blank.pbn&lang=" + language;
 });
 
 // Read the clipboard

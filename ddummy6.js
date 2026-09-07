@@ -162,6 +162,79 @@ function displayError(element,message)
 	$("#popup_box").delay(100).fadeIn(200).delay(5000).fadeOut(100);
 }
 
+function sanitizeExplanation(html)
+{
+	var allowedTags = new Set([
+		"A", "B", "BR", "CODE", "EM", "I", "LI", "OL", "P", "PRE",
+		"SMALL", "SPAN", "STRONG", "SUB", "SUP", "U", "UL"
+	]);
+	var allowedAttributes = new Set(["class", "title"]);
+	var dangerousTags = new Set(["IFRAME", "OBJECT", "SCRIPT", "STYLE", "SVG"]);
+	var parser = new DOMParser();
+	var source = parser.parseFromString(html, "text/html");
+	var fragment = document.createDocumentFragment();
+
+	function copyNode(node, parent)
+	{
+		if (node.nodeType === Node.TEXT_NODE)
+		{
+			parent.appendChild(document.createTextNode(node.nodeValue));
+			return;
+		}
+
+		if (node.nodeType !== Node.ELEMENT_NODE)
+			return;
+
+		if (dangerousTags.has(node.tagName))
+			return;
+
+		if (!allowedTags.has(node.tagName))
+		{
+			for (var child of node.childNodes)
+				copyNode(child, parent);
+			return;
+		}
+
+		var element = document.createElement(node.tagName.toLowerCase());
+
+		for (var attribute of node.attributes)
+		{
+			var name = attribute.name.toLowerCase();
+
+			if (allowedAttributes.has(name))
+				element.setAttribute(name, attribute.value);
+			else if (node.tagName === "A" && name === "href")
+			{
+				try
+				{
+					var url = new URL(attribute.value, document.baseURI);
+
+					if (url.protocol === "http:" || url.protocol === "https:")
+					{
+						element.setAttribute("href", url.href);
+						element.setAttribute("rel", "noopener noreferrer");
+						element.setAttribute("target", "_blank");
+					}
+				}
+				catch (error)
+				{
+					// Ignore malformed or unsafe links.
+				}
+			}
+		}
+
+		parent.appendChild(element);
+
+		for (var child of node.childNodes)
+			copyNode(child, element);
+	}
+
+	for (var child of source.body.childNodes)
+		copyNode(child, fragment);
+
+	return fragment;
+}
+
 function setRequestTimeout(override=false)
 {
 	if ((g_timeoutID=="")&&(override))	// Only put timeout if requests are being made to remote server, or we are in a card play sequence
@@ -1899,18 +1972,21 @@ function updateUpperLeftQuadrant(boardIndex)
 		exp = exp.replaceAll("}","");
 		exp = exp.replaceAll("{","");
 
+		var explanation = document.getElementById("explanation");
+		var legend = document.createElement("legend");
+		legend.id = "explanation-legend";
+
 		switch (language)
 		{
 			case "de":
-				exp = "<legend id='explanation-legend'>Erläuterung zum Board</legend>" + exp;
+				legend.textContent = "Erläuterung zum Board";
 				break;
 			default:
-				exp = "<legend id='explanation-legend'>Explanation</legend>" + exp;
+				legend.textContent = "Explanation";
 		}
 
-		//exp = "<legend id='explanation-legend'>Erläuterung zum Board</legend>" + exp;
-		document.getElementById("explanation").innerHTML = exp;
-		document.getElementById("explanation").style.display = "block";
+		explanation.replaceChildren(legend, sanitizeExplanation(exp));
+		explanation.style.display = "block";
 	} else {
 		document.getElementById("explanation").style.display = "none";
 	}

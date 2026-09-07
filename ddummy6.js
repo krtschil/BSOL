@@ -13428,7 +13428,7 @@ function buildpage2()
 	if ((typeof g_hands.Title)!="undefined")
 		g_title = g_hands.Title;
 
-	document.getElementById("titleText").innerHTML = g_title;
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
 
 	setupCommandHelp();
 	setupPlayHelp();

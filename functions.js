@@ -448,7 +448,10 @@ function startup(){
 					if (pvalue!="")
 					{
 						b.file = pvalue;
-						document.getElementById("filename").innerHTML="<br>(" + pvalue +")";
+						let fn = document.getElementById("filename");
+						pvalue = "<br>(" + pvalue +")";
+						fn.replaceChildren(sanitizeExplanation(pvalue));
+						//document.getElementById("filename").innerHTML="<br>(" + pvalue +")";
 					}
 				}
 				else if (pname=="xml")
@@ -765,7 +768,10 @@ function startup(){
 			{
 				readText(infile);
 				evt.target.value = null;
-				document.getElementById("filename").innerHTML="<br>(" + infile.name +")";
+				let fn = document.getElementById("filename");
+				let tmp = "<br>(" + infile.name +")";
+				fn.replaceChildren(sanitizeExplanation(tmp));
+				//document.getElementById("filename").innerHTML="<br>(" + infile.name +")";
 			}
 			else
 			{

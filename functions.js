@@ -118,37 +118,6 @@ function startup(){
 		extractParas();
 }
 
- function getParaName(parameters,i)
-  {
-	var temp = parameters[i].split("=");
-
-	var pname = decodeURIComponent(temp[0]);
-
-	return pname;
-  }
-
-  function getPara(parameters,i)
-  {
-	var temp = parameters[i].split("=");
-
-	var pname = decodeURIComponent(temp[0]);
-	var l = decodeURIComponent(temp[1]);
-
-	if (l.length>=2)
-	{
-		if (l.charAt(0)=="\"")
-		{
-		  l = l.substring(1, l.length);
-		}
-		if (l.charAt(l.length-1)=="\"")
-		{
-		  l = l.substring(0, l.length - 1);
-		}
-	}
-
-	return l;
-  }
-
   function identifyHonourCardSet(str)
 	{
 		if ((str != "") && (typeof str != "undefined"))
@@ -194,76 +163,48 @@ function startup(){
 
   function extractParas()
   {
-    var validDealers = "NSEW";
-    var i;
-	var p = location.search;
+    const validDealers = "NSEW";
+	const allowedParameters = new Set([
+		"board", "dealer", "vul", "north", "east", "south", "west",
+		"contract", "declarer", "title", "dd", "analyse", "optimumscore",
+		"leadcard", "lin", "event", "eventid", "club", "pair_number",
+		"direction", "compare", "file", "xml", "sessid", "msec",
+		"display", "analysis", "debug", "jsonlin", "lang", "nav"
+	]);
+	const parameters = [];
+	const searchParams = new URLSearchParams(window.location.search);
 
-	if (p.length==0)
+	for (const [name, value] of searchParams) {
+		const parameterName = name.toLowerCase();
+
+		if (allowedParameters.has(parameterName)) {
+			parameters.push([parameterName, value]);
+		}
+	}
+
+	if (parameters.length === 0)
 	{
 		return false;	// No parameters
 	}
-	else
+
+	if (parameters.length === 1 && parameters[0][0] === "lang")
 	{
-		p = location.search.substring(1).split("&");
+		language = parameters[0][1];
+		changeLanguage(language);
+		return false;
+	}
 
-		// [KK] Check for allowed parameter names and remove illegal parameters
+	const b = {};
+	b.boards = [];
 
-		var checkP = [];
-		var checkPj=0;
-		var listOfParams = [
-			"board","dealer","vul","north","east","south","west",
-			"contract","declarer","title","dd","analyse","optimumscore",
-			"leadcard","lin","event","eventid","club","pair_number",
-			"direction","compare","file","xml","sessid","msec",
-			"display","analysis","debug","jsonlin","lang","nav"];
+	let board = {};
+	const deal = [];
+	let ddPresent = false;
+	let jsonlin = "";
 
-		for (i=0;i<p.length;i++)
-		{
-			parameter = getParaName(p,i).toLowerCase();
-			parameterValue = encodeURIComponent(getPara(p,i));
-			for (let allowed in listOfParams)
-			{
-				let help = listOfParams[allowed];
-				if (help == parameter)
-				{
-					checkP[checkPj] = parameter + "=" + parameterValue;
-					checkPj++;
-				}
-			}
-		}
-		//console.log(p);
-		p = checkP;
-		//console.log(p);
-
-		//-----------
-
-		if ((p.length == 1) && (getParaName(p,0).toLowerCase() == "lang"))
-		{
-			pname = getParaName(p,0).toLowerCase();
-			pvalue = getPara(p,0);
-			if (pname.toLowerCase() == "lang")
-			{
-				language = pvalue;
-				changeLanguage(language);
-			}
-			return false;
-		}
-		else
-		{
-			var b = new Object();
-			b.boards = new Array();
-
-			var board = new Object();
-			var deal = new Array();
-			var ddPresent = false;
-			var pname;
-			var pvalue;
-			var jsonlin = "";
-
-			for (i=0;i<p.length;i++)
-			{
-				pname = getParaName(p,i).toLowerCase();
-				pvalue = getPara(p,i);
+	for (const [pname, rawValue] of parameters)
+	{
+		let pvalue = rawValue;
 
 				if (pname=="board")
 				{
@@ -581,7 +522,7 @@ function startup(){
 					}
 				}*/
 				else return false;
-			}
+	}
 
 			if (jsonlin=="")
 			{
@@ -618,8 +559,6 @@ function startup(){
 
 				if (validateBoard(board)==0) return "";
 			}
-		}
-
 		if ((typeof b.display != "undefined") && ((typeof b.lin) == "undefined" && (typeof b.xml) == "undefined"))
 		{
 			console.log("Display parameter found without traveller. Parameter removed");
@@ -628,7 +567,6 @@ function startup(){
 
 		return b;
 	}
-  }
 
   function validateContract(pvalue)
   {

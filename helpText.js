@@ -294,8 +294,8 @@ function setupGeneralHelp()
             help += "indem sie Merkmale wie die Blattverteilung und die Lage der Figuren berücksichtigen, anstatt einfach die Punkte der Figuren zu addieren.  ";
             help += "Es handelt sich dabei natürlich um eine isolierte Bewertung, bei der nicht berücksichtigt wird, ob das Blatt des Partners passt oder nicht.<br><br>";
             help += "Es gibt eine Reihe von leicht unterschiedlichen Varianten des KR-Algorithmus, aber die von Bridge Solver Online verwendete Version entspricht der ";
-            help += " <a href='http://www.rpbridge.net/8j19.htm' target='_blank'> von Richard Pavlicek's Website</a>, die alle Schritte der Berechnung beschreibt.<br><br>";
-            help += "RP's eigene Version der Berechnung finden Sie hier <a href='http://www.rpbridge.net/cgi-bin/xhe1.pl' target='_blank'>hier</a>."
+            help += " <a href='https://www.rpbridge.net/8j19.htm' target='_blank'> von Richard Pavlicek's Website</a>, die alle Schritte der Berechnung beschreibt.<br><br>";
+            help += "RP's eigene Version der Berechnung finden Sie hier <a href='https://www.rpbridge.net/cgi-bin/xhe1.pl' target='_blank'>hier</a>."
             help = help + "</div>";
             help = help + "<br><br><button id=hide_krHelpText style=\"cursor:pointer;\">Schließen</button>";
             break;
@@ -306,8 +306,8 @@ function setupGeneralHelp()
             help += "such as the hand distribution and location of the honour cards, rather than simply adding up high card points. ";
             help += "It is of course an evaluation in isolation which does not take into account the fit, or lack thereof, with partner's hand<br><br>";
             help += "There are a number of slightly different variants of the KR algorithm but the version used by Bridge Solver Online matches ";
-            help += "the <a href='http://www.rpbridge.net/8j19.htm' target='_blank'> one described on Richard Pavlicek's website</a>, which details all the steps used in the calculation.<br><br>";
-            help += "RP's own version of the calculator can be found <a href='http://www.rpbridge.net/cgi-bin/xhe1.pl' target='_blank'>here</a>."
+            help += "the <a href='https://www.rpbridge.net/8j19.htm' target='_blank'> one described on Richard Pavlicek's website</a>, which details all the steps used in the calculation.<br><br>";
+            help += "RP's own version of the calculator can be found <a href='https://www.rpbridge.net/cgi-bin/xhe1.pl' target='_blank'>here</a>."
             help = help + "</div>";
             help = help + "<br><br><button id=hide_krHelpText style=\"cursor:pointer;\">Close</button>";
     }

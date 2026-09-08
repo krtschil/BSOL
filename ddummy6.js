@@ -3935,7 +3935,7 @@ function finishBackgroundOperation()
 	else
 		g_title = "&nbsp;";
 
-	document.getElementById("titleText").innerHTML = g_title;
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
 }
 
 function resetAnalyseAllBoards()
@@ -9216,14 +9216,15 @@ function showRanking()
 	if ((g_eventType=="Teams")&&!sessInfo.singleWinner)
 		str = str + "<br><span style=\"font-size;12px;color:#ff4444;\">Calculated cross imp ranking for individual pairs (assumes NS and EW pairs do not switch direction during the event)</span>";
 
-	document.getElementById("titleText").innerHTML = str;
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(str)); //innerHTML = str;
 	$("#ranking").show();
 	$("#rcheckdiv").show();
 }
 
 function hideRanking()
 {
-	document.getElementById("titleText").innerHTML = g_title;
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
+	
 	$("#ranking").hide();
 	$("#rcheckdiv").hide();
 }

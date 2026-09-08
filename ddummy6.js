@@ -283,7 +283,7 @@ function redrawMCTable(large)
 	var cardSymbols = ["<img alt=\"Spade\" style=\"height:" + symbolHeight + "\" src=\"pics/spade.gif\">","<img alt=\"Heart\"style=\"height:" + symbolHeight + "\" src=\"pics/heart.gif\">","<img alt=\"Diamond\" style=\"height:" + symbolHeight + "\" src=\"pics/diamond.gif\">","<img alt=\"Club\" style=\"height:" + symbolHeight + "\" src=\"pics/club.gif\">"];
 	var cells = rows[0].cells;
 
-	cells[0].innerHTML = "";
+	cells[0].textContent = "";
 	switch(language)
 	{
 		case "de":
@@ -1431,13 +1431,13 @@ function quitHandEntryMode()
 		switch(language)
 		{
 			case "de":
-				document.getElementById("editHand").innerHTML = "Bearbeiten";
+				document.getElementById("editHand").textContent = "Bearbeiten";
 				break;
 			default:
-				document.getElementById("editHand").innerHTML = "Edit";
+				document.getElementById("editHand").textContent = "Edit";
 		}
 
-		document.getElementById("board").rows[0].cells[2].innerHTML = "";
+		document.getElementById("board").rows[0].cells[2].textContent = "";
 	}
 }
 
@@ -1470,10 +1470,10 @@ function exitHandEntryMode()
 		switch(language)
 		{
 			case "de":
-				document.getElementById("editHand").innerHTML = "Bearbeiten";
+				document.getElementById("editHand").textContent = "Bearbeiten";
 				break;
 			default:
-				document.getElementById("editHand").innerHTML = "Edit";
+				document.getElementById("editHand").textContent = "Edit";
 		}
 
 		var ptsctl = document.getElementById("ptsctl");
@@ -1910,7 +1910,7 @@ function updateUpperLeftQuadrant(boardIndex)
 	btable = document.getElementById("board");
 
 	var ocell = btable.rows[0].cells[0];
-	ocell.innerHTML = "";
+	ocell.textContent = "";
 
 	var names = "";
 	var namesFound = true;
@@ -2482,7 +2482,7 @@ function setupTraveller(index,active)
 								cell.onmouseover = cell.onclick = function(){showBidAlert(this)};
 								cell.onmouseout = function(){
 									var popup = document.getElementById("popup_box");
-									popup.innerHTML = "";
+									popup.textContent = "";
 									popup.style.display="none";
 									$("#popup_box").finish();
 								}
@@ -2588,10 +2588,10 @@ function setupTraveller(index,active)
 		var vul = g_hands.boards[tindex].Vulnerable;
 		var boardDealer = dealer[g_hands.boards[tindex].Dealer];
 
-		document.getElementById("nvul").innerHTML = "";
-		document.getElementById("wvul").innerHTML = "";
-		document.getElementById("evul").innerHTML = "";
-		document.getElementById("svul").innerHTML = "";
+		document.getElementById("nvul").textContent = "";
+		document.getElementById("wvul").textContent = "";
+		document.getElementById("evul").textContent = "";
+		document.getElementById("svul").textContent = "";
 
 		setDealerChar(boardDealer,vul);
 
@@ -2819,10 +2819,10 @@ function edit()
 		switch(language)
 		{
 			case "de":
-				document.getElementById("editHand").innerHTML = "Fertig";
+				document.getElementById("editHand").textContent = "Fertig";
 				break;
 			default:
-				document.getElementById("editHand").innerHTML = "Done";
+				document.getElementById("editHand").textContent = "Done";
 		}
 
 	}
@@ -3209,10 +3209,10 @@ function displayDealer(dealer,vul)
 {
         dealer = dealer.charAt(0);
 
-		document.getElementById("nvul").innerHTML = "";
-		document.getElementById("wvul").innerHTML = "";
-		document.getElementById("evul").innerHTML = "";
-		document.getElementById("svul").innerHTML = "";
+		document.getElementById("nvul").textContent = "";
+		document.getElementById("wvul").textContent = "";
+		document.getElementById("evul").textContent = "";
+		document.getElementById("svul").textContent = "";
 
 		if (dealer=="N")
 			setDealerChar("North",vul);
@@ -3250,10 +3250,10 @@ function processHandEntry()
 
 	var points = document.getElementById("points");
 
-	points.rows[0].cells[1].innerHTML = "";
-	points.rows[1].cells[0].innerHTML = "";
-	points.rows[1].cells[2].innerHTML = "";
-	points.rows[2].cells[1].innerHTML = "";
+	points.rows[0].cells[1].textContent = "";
+	points.rows[1].cells[0].textContent = "";
+	points.rows[1].cells[2].textContent = "";
+	points.rows[2].cells[1].textContent = "";
 
 	var dealer = new Array(4);
 	dealer['N'] = "North";
@@ -3266,10 +3266,10 @@ function processHandEntry()
 	var vul = g_inputBoard.Vulnerable;
 	var boardDealer = dealer[g_inputBoard.Dealer];
 
-	document.getElementById("nvul").innerHTML = "";
-	document.getElementById("wvul").innerHTML = "";
-	document.getElementById("evul").innerHTML = "";
-	document.getElementById("svul").innerHTML = "";
+	document.getElementById("nvul").textContent = "";
+	document.getElementById("wvul").textContent = "";
+	document.getElementById("evul").textContent = "";
+	document.getElementById("svul").textContent = "";
 
 	var dealerChar = "&#9679";
 
@@ -3848,7 +3848,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 
 		g_worker.postMessage(msg);
 
-		document.getElementById("play").innerHTML = "Stop";
+		document.getElementById("play").textContent = "Stop";
 	}
 	else
 	{
@@ -6111,9 +6111,9 @@ function computeTravellerStatistics(pdirection)
 			if (g_scoring!="IMP")
 			{
 				if (pdirection==1)
-					ctable.rows[0].cells[3].innerHTML = "Min/Max NS Prozente";
+					ctable.rows[0].cells[3].textContent = "Min/Max NS Prozente";
 				else
-					ctable.rows[0].cells[3].innerHTML = "Min/Max OW Prozente";
+					ctable.rows[0].cells[3].textContent = "Min/Max OW Prozente";
 			}
 			else
 			{
@@ -6122,18 +6122,18 @@ function computeTravellerStatistics(pdirection)
 				if (g_eventType=="Teams") tailEnd = "Cross Imps";
 
 				if (pdirection==1)
-					ctable.rows[0].cells[3].innerHTML = "Min/Max NS " + tailEnd;
+					ctable.rows[0].cells[3].textContent = "Min/Max NS " + tailEnd;
 				else
-					ctable.rows[0].cells[3].innerHTML = "Min/Max OW " + tailEnd;
+					ctable.rows[0].cells[3].textContent = "Min/Max OW " + tailEnd;
 			}
 			break;
 		default:
 				if (g_scoring!="IMP")
 			{
 				if (pdirection==1)
-					ctable.rows[0].cells[3].innerHTML = "Min/Max NS Percentage";
+					ctable.rows[0].cells[3].textContent = "Min/Max NS Percentage";
 				else
-					ctable.rows[0].cells[3].innerHTML = "Min/Max EW Percentage";
+					ctable.rows[0].cells[3].textContent = "Min/Max EW Percentage";
 			}
 			else
 			{
@@ -6142,9 +6142,9 @@ function computeTravellerStatistics(pdirection)
 				if (g_eventType=="Teams") tailEnd = "Cross Imps";
 
 				if (pdirection==1)
-					ctable.rows[0].cells[3].innerHTML = "Min/Max NS " + tailEnd;
+					ctable.rows[0].cells[3].textContent = "Min/Max NS " + tailEnd;
 				else
-					ctable.rows[0].cells[3].innerHTML = "Min/Max EW " + tailEnd;
+					ctable.rows[0].cells[3].textContent = "Min/Max EW " + tailEnd;
 			}
 	}
 	for (i=0;i<result.length;i++)
@@ -6931,9 +6931,9 @@ function displayTraveller(pdirection)
 	if (g_scoring=="IMP")
 	{
 		if (g_eventType!="Teams")
-			rows[0].cells[5].innerHTML = "Punkte";
+			rows[0].cells[5].textContent = "Punkte";
 		else
-			rows[0].cells[5].innerHTML = "Cross Imps";
+			rows[0].cells[5].textContent = "Cross Imps";
 	}
 
 	if (pdirection==2)
@@ -7046,7 +7046,7 @@ function displayTraveller(pdirection)
 			row.cells[0].onclick = row.cells[0].onmouseover = function(){showNames(this,1);};
 			row.cells[0].onmouseout = function(){
 					var popup = document.getElementById("popup_box");
-					popup.innerHTML = "";
+					popup.textContent = "";
 					popup.style.display="none";
 					$("#popup_box").finish();
 				}
@@ -7060,7 +7060,7 @@ function displayTraveller(pdirection)
 			row.cells[1].onclick = row.cells[1].onmouseover = function(){showNames(this,2);};
 			row.cells[1].onmouseout = function(){
 					var popup = document.getElementById("popup_box");
-					popup.innerHTML = "";
+					popup.textContent = "";
 					popup.style.display="none";
 					$("#popup_box").finish();
 				}
@@ -7077,9 +7077,9 @@ function displayTraveller(pdirection)
 			else
 			{
 				if (passed(tline))
-					row.cells[2].innerHTML = "Passed";
+					row.cells[2].textContent = "Passed";
 				else
-					row.cells[2].innerHTML = "N/A";
+					row.cells[2].textContent = "N/A";
 			}
 
 			if (i!=0)
@@ -7295,10 +7295,10 @@ function displayTraveller(pdirection)
 				switch(language)
 				{
 					case "de":
-						row.cells[11].innerHTML = "--- Optimaler Kontrakt ---";
+						row.cells[11].textContent = "--- Optimaler Kontrakt ---";
 						break;
 					default:
-						row.cells[11].innerHTML = "--- Optimum Contract ---";
+						row.cells[11].textContent = "--- Optimum Contract ---";
 				}
 				row.deleteCell(13);
 				row.deleteCell(12);
@@ -7951,7 +7951,7 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 			srow.cells[1].innerHTML = parseFloat(Math.round((100*sumOfPercent)/playedInRole) / 100).toFixed(0) + "%";
 		}
 		else
-			srow.cells[1].innerHTML = "N/A";
+			srow.cells[1].textContent = "N/A";
 	}
 	else
 	{
@@ -7965,10 +7965,10 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 			if (crossImpBoards!=0)
 				srow.cells[1].innerHTML = parseFloat(Math.round((100*sumOfCrossImps)/crossImpBoards) / 100).toFixed(2);
 			else
-				srow.cells[1].innerHTML = "";
+				srow.cells[1].textContent = "";
 		}
 		else
-			srow.cells[1].innerHTML = "N/A";
+			srow.cells[1].textContent = "N/A";
 	}
 
 	srow = addSummaryRow(stable,"% of Boards with ETF >=0 :");
@@ -7980,7 +7980,7 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 	}
 	else
 	{
-		srow.cells[1].innerHTML = "No Data";
+		srow.cells[1].textContent = "No Data";
 	}
 
 	srow = addSummaryRow(stable,"Avg ETF:");
@@ -7992,7 +7992,7 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 	}
 	else
 	{
-		srow.cells[1].innerHTML = "No Data";
+		srow.cells[1].textContent = "No Data";
 	}
 }
 
@@ -8315,7 +8315,7 @@ function setupResultReasons(ctx,result)
 	else
 		declName = playerInfo.player2;
 
-	document.getElementById("resultReasons").innerHTML = "";
+	document.getElementById("resultReasons").textContent = "";
 
 	for (i=0;i<tlines.length;i++)
 	{
@@ -8749,7 +8749,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 
 								row.cells[1].onmouseout = function(){
 										var popup = document.getElementById("popup_box");
-										popup.innerHTML = "";
+										popup.textContent = "";
 										popup.style.display="none";
 										$("#popup_box").finish();
 									}
@@ -8861,7 +8861,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 										if (overtricks!=0)
 											row.cells[5+g_ofs].innerHTML = overtricks;
 										else
-											row.cells[5+g_ofs].innerHTML = "=";
+											row.cells[5+g_ofs].textContent = "=";
 
 										row.cells[4+g_ofs].style.textAlign = "right";
 
@@ -8942,7 +8942,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 											{
 												setBars(row.cells,etfRange,7+g_ofs,2*etfRange,"#FF0000","#00FF00",40);
 												row.cells[6+g_ofs].colSpan = 2;
-												row.cells[6+g_ofs].innerHTML = "No Data";
+												row.cells[6+g_ofs].textContent = "No Data";
 												row.cells[6+g_ofs].style.borderLeft = "1px solid #cccccc";
 												row.deleteCell(7+g_ofs);
 											}
@@ -8952,7 +8952,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 											setBars(row.cells,etfRange,7+g_ofs,2*etfRange,"#FF0000","#00FF00",40);
 											row.cells[6+g_ofs].colSpan = 2;
 											row.cells[6+g_ofs].style.borderLeft = "1px solid #cccccc";
-											row.cells[6+g_ofs].innerHTML = "No Data";
+											row.cells[6+g_ofs].textContent = "No Data";
 											row.deleteCell(7+g_ofs);
 										}
 									}
@@ -8960,9 +8960,9 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 								else
 								{
 									if (passed(tline))
-										row.cells[2].innerHTML = "Passed";
+										row.cells[2].textContent = "Passed";
 									else
-										row.cells[2].innerHTML = "N/A";
+										row.cells[2].textContent = "N/A";
 
 									row.cells[7+g_ofs].style.backgroundColor = "white";
 									row.cells[8+g_ofs].style.backgroundColor = "white";
@@ -9146,12 +9146,12 @@ function setupScorecard(keepScrollSetting)
 	switch(language)
 	{
 		case "de":
-			if (g_scoring=="IMP") rows[1].cells[6+g_ofs].innerHTML = "Punkte";
-			if (g_eventType=="Teams") rows[1].cells[6+g_ofs].innerHTML = "Cross Imps";
+			if (g_scoring=="IMP") rows[1].cells[6+g_ofs].textContent = "Punkte";
+			if (g_eventType=="Teams") rows[1].cells[6+g_ofs].textContent = "Cross Imps";
 			break;
 		default:
-			if (g_scoring=="IMP") rows[1].cells[6+g_ofs].innerHTML = "Points";
-			if (g_eventType=="Teams") rows[1].cells[6+g_ofs].innerHTML = "Cross Imps";
+			if (g_scoring=="IMP") rows[1].cells[6+g_ofs].textContent = "Points";
+			if (g_eventType=="Teams") rows[1].cells[6+g_ofs].textContent = "Cross Imps";
 	}
 
 	var boards = g_travellers.event.board;
@@ -9262,13 +9262,13 @@ function setupRanking(keepScrollSetting)
 	switch(language)
 	{
 		case "de":
-			table.rows[0].cells[2].innerHTML = "Spieler";	// Change column heading that was in event.htm
+			table.rows[0].cells[2].textContent = "Spieler";	// Change column heading that was in event.htm
 			break;
 		default:
-			table.rows[0].cells[2].innerHTML = "Players";
+			table.rows[0].cells[2].textContent = "Players";
 	}
 
-	if (g_eventType=="Teams") table.rows[0].cells[1].innerHTML = "Team";
+	if (g_eventType=="Teams") table.rows[0].cells[1].textContent = "Team";
 
 	while (rows.length>1) table.deleteRow(-1);
 
@@ -9283,7 +9283,7 @@ function setupRanking(keepScrollSetting)
 		rows[0].cells[3].outerHTML = "<th>Total XImps</th>";
 		rows[0].cells[4].outerHTML = "<th>Boards</th>";
 		cellOffset = 2;	// Allow for extra column which has been inserted.
-		rows[0].cells[3 + cellOffset].innerHTML = "XImps/Board";
+		rows[0].cells[3 + cellOffset].textContent = "XImps/Board";
 	}
 
 	if ((winners!="1")&&(g_eventType!="Teams"))
@@ -9293,7 +9293,7 @@ function setupRanking(keepScrollSetting)
 		var row = table.rows[table.rows.length-1];
 		var cell = document.createElement("th");
 		row.appendChild(cell);
-		row.cells[0].innerHTML = "North/South";
+		row.cells[0].textContent = "North/South";
 		row.cells[0].colSpan = colcount;
 	}
 
@@ -9309,7 +9309,7 @@ function setupRanking(keepScrollSetting)
 		var cell = document.createElement("th");
 		row.appendChild(cell);
 		cell.colSpan = colcount;
-		cell.innerHTML = "East/West";
+		cell.textContent = "East/West";
 
 		setupRankingTable(table,"EW",rankInfo,winners);
 	}
@@ -9404,10 +9404,10 @@ function setupRankingTable(table,dir,rankInfo,winners)
 		switch(language)
 		{
 			case "de":
-				rows[0].cells[3].innerHTML = "Punkte";
+				rows[0].cells[3].textContent = "Punkte";
 				break;
 			default:
-				rows[0].cells[3].innerHTML = "Points";
+				rows[0].cells[3].textContent = "Points";
 		}
 
 		for (i=0;i<g_travellers.event.participants.pair.length;i++)
@@ -9436,8 +9436,8 @@ function setupRankingTable(table,dir,rankInfo,winners)
 
 	if (g_eventType=="Teams")
 	{
-		rows[0].cells[3].innerHTML = "Total XImps";
-		rows[0].cells[4].innerHTML = "Bds";
+		rows[0].cells[3].textContent = "Total XImps";
+		rows[0].cells[4].textContent = "Bds";
 		cellOffset = 2;	// Allow for extra column which has been inserted.
 	}
 
@@ -9964,7 +9964,7 @@ function loadTraveller_2(data,statusText,jqXHR)
 		var str = "The currently selected pair (" + player1 + " & " + player2 + ") did not play this board.";
 		str = str + " Colour coding of table below is from point of view of NS pairs."
 		document.getElementById("compSubHeading").innerHTML = str;
-		document.getElementById("percentValue").innerHTML = "";
+		document.getElementById("percentValue").textContent = "";
 		$("#ourPercentage").hide();
 		$("#comparisonText").hide();
 	}
@@ -12908,7 +12908,7 @@ function checkAllContracts()
 		}
 
 
-		row.cells[7].innerHTML = reason;
+		row.cells[7].textContent = reason;
 	}
 }
 

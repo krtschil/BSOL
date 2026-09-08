@@ -166,9 +166,9 @@ function sanitizeExplanation(html)
 {
 	var allowedTags = new Set([
 		"A", "B", "BR", "CODE", "EM", "I", "LI", "OL", "P", "PRE",
-		"SMALL", "SPAN", "STRONG", "SUB", "SUP", "U", "UL"
+		"SMALL", "SPAN", "STRONG", "SUB", "SUP", "U", "UL", "DIV"
 	]);
-	var allowedAttributes = new Set(["class", "title"]);
+	var allowedAttributes = new Set(["class", "title", "id", "style"]);
 	var dangerousTags = new Set(["IFRAME", "OBJECT", "SCRIPT", "STYLE", "SVG"]);
 	var parser = new DOMParser();
 	var source = parser.parseFromString(html, "text/html");
@@ -1947,7 +1947,8 @@ function updateUpperLeftQuadrant(boardIndex)
 		namstr = namstr + "E: " + eastName + "<br>W: " + westName + "</span><br>";
 
 		ocell.style.verticalAlign = "top";
-		ocell.innerHTML = namstr + "</div>";
+		namstr += "</div>";
+		ocell.replaceChildren(sanitizeExplanation(namstr)); //innerHTML = namstr + "</div>";
 	}
 	else
 	{
@@ -1999,9 +2000,9 @@ function updateUpperLeftQuadrant(boardIndex)
 		if (typeof g_hands.boards[boardIndex].ScoreTableH != "undefined")
 		{
 			var stH = g_hands.boards[boardIndex].ScoreTableH;
-			document.getElementById("output").innerHTML = stH + st;
+			document.getElementById("output").replaceChildren(sanitizeExplanation(stH+st)); //innerHTML = stH + st;
 		} else {
-			document.getElementById("output").innerHTML = "Kon AS St  Score  NS    EW  MP mp " + st;
+			document.getElementById("output").replaceChildren(sanitizeExplanation("Kon AS St  Score  NS    EW  MP mp " + st)); //innerHTML = "Kon AS St  Score  NS    EW  MP mp " + st;
 		}
 		document.getElementById("output").style.display = "block";
 	} else {
@@ -2691,7 +2692,7 @@ function setupTraveller(index,active)
 /*		if ((typeof g_hands.Title)!="undefined")
 			g_title = g_hands.Title;*/
 
-		document.getElementById("titleText").innerHTML = g_title;
+		document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
 
 		$("#mainTitle").show();
 
@@ -3897,7 +3898,7 @@ function showEmptyProgressBar(text)
 	document.getElementById("editHand").setAttribute("disabled","");
 
 	g_title = "<div id=outerProgress style='float:left;width:800px;height:15px;'><div id=progress style='float:left;width:0px;height:15px;background-color:#88ff88;text-align:left;color:blue;'>" + text + "</div></div>";
-	document.getElementById("titleText").innerHTML = g_title;
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
 	document.getElementById("outerProgress").width = "800px";
 	document.getElementById("progress").width = "0px";
 }

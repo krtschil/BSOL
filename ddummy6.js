@@ -968,19 +968,23 @@ function displayHands()
 {
 	var north = document.getElementById("northHand");
 	var handstr = createHandString(g_hands.boards[g_lastBindex],0);
-	north.innerHTML = handstr.text;
+	let clean = DOMPurify.sanitize(handstr.text);
+	north.replaceChildren(clean); //innerHTML = handstr.text;
 
 	var east = document.getElementById("eastHand");
 	handstr = createHandString(g_hands.boards[g_lastBindex],1);
-	east.innerHTML = handstr.text;
+	clean = DOMPurify.sanitize(handstr.text);
+	east.replaceChildren(clean); //innerHTML = handstr.text;
 
 	var south = document.getElementById("southHand");
 	handstr = createHandString(g_hands.boards[g_lastBindex],2);
-	south.innerHTML = handstr.text;
+	clean = DOMPurify.sanitize(handstr.text);
+	south.replaceChildren(clean); //innerHTML = handstr.text;
 
 	var west = document.getElementById("westHand");
 	handstr = createHandString(g_hands.boards[g_lastBindex],3);
-	west.innerHTML = handstr.text;
+	clean = DOMPurify.sanitize(handstr.text);
+	west.replaceChildren(clean); //innerHTML = handstr.text;
 }
 
 function processPosition(hcards,para)
@@ -1178,12 +1182,12 @@ function processPosition(hcards,para)
 			case "de":
 				if ((g_showPlay!=0)&&(g_showOriginalContract==false))
 					original = "<br><span style=\"font-size:12px;font-weight:normal;\">(ursprünglich gespielter Kontrakt: " + g_hands.boards[g_lastBindex].Contract + ")</span>";
-				document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Kontrakt: " + substituteSuitSymbol(g_session_contract) + " von " + g_session_declarer + original + "<br><br>" + "NS Stiche: " + hcards.tricksNS + "<br>OW Stiche: " + hcards.tricksEW + "</span>" + finished;
+					document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Kontrakt: " + substituteSuitSymbol(g_session_contract) + " von " + g_session_declarer + original + "<br><br>" + "NS Stiche: " + hcards.tricksNS + "<br>OW Stiche: " + hcards.tricksEW + "</span>" + finished;
 				break;
 			default:
 				if ((g_showPlay!=0)&&(g_showOriginalContract==false))
 					original = "<br><span style=\"font-size:12px;font-weight:normal;\">(originally played in " + g_hands.boards[g_lastBindex].Contract + ")</span>";
-				document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Contract: " + substituteSuitSymbol(g_session_contract) + " by " + g_session_declarer + original + "<br><br>" + "NS Tricks: " + hcards.tricksNS + "<br>EW Tricks: " + hcards.tricksEW + "</span>" + finished;
+					document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Contract: " + substituteSuitSymbol(g_session_contract) + " by " + g_session_declarer + original + "<br><br>" + "NS Tricks: " + hcards.tricksNS + "<br>EW Tricks: " + hcards.tricksEW + "</span>" + finished;
 		}
 	}
 
@@ -1400,7 +1404,7 @@ function exitHandEntryMode()
 		if (ptsctl!==null)
 			ptsctl.style.display = "inline";
 
-		document.getElementById("currentPosition").innerHTML = g_credits;
+		document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
 		showCredits();
 	}
 }
@@ -1414,13 +1418,13 @@ function showCredits()
 	if ((typeof g_hands.lin)=="undefined")
 	{
 		if ((g_file==="") && document.getElementById("currentPosition").innerHTML == ""  ) {
-			document.getElementById("currentPosition").innerHTML = g_credits;
+			document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
 		}
 
 		else if (g_file!==1)
 		{
 			if ((!g_file.toUpperCase().endsWith('LIN')) && document.getElementById("currentPosition").innerHTML =="" ) {
-				document.getElementById("currentPosition").innerHTML = g_credits;
+				document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
 			}
 		}
 	}
@@ -1595,7 +1599,7 @@ function showBidding()
 	var vul = g_hands.boards[g_lastBindex].Vulnerable;
 	var red = "#FF0000";
 	var green ="#00FF00";
-	var dirs = "WNES";
+	const dirs = "WNES";
 	var i,row;
 	var headerDiv = document.createElement("div");
 	var headerTable = document.createElement("table");
@@ -1699,7 +1703,8 @@ function showBidding()
 		{
 			bd = bd.replace("S","&#9824;");
 		}
-		row.cells[i].innerHTML = bd;
+		const clean = DOMPurify.sanitize(bd, { RETURN_DOM_FRAGMENT: true });
+		row.cells[i].replaceChildren(clean); //innerHTML = bd;
 		row.cells[i].style.fontSize = g_bidFontSize;
 		i++;
 
@@ -1868,7 +1873,8 @@ function updateUpperLeftQuadrant(boardIndex)
 		ocell.style.verticalAlign = "top";
 		namstr += "</div>";
 		//ocell.replaceChildren(sanitizeExplanation(namstr)); //innerHTML = namstr + "</div>";
-		ocell.innerHTML = DOMPurify.sanitize(namstr);
+		const clean = DOMPurify.sanitize(namstr, { RETURN_DOM_FRAGMENT: true });
+		ocell.replaceChildren(clean); //innerHTML = DOMPurify.sanitize(namstr);
 	}
 	else
 	{
@@ -2215,7 +2221,7 @@ function exitCardPlay()
 {
 	resetTimeout();
 	terminateSession();
-	document.getElementById("play").innerHTML = g_playButtonText;
+	document.getElementById("play").innerHTML = DOMPurify.sanitize(g_playButtonText);
 	setupTraveller(g_lastBindex,true);
 	enterPlayMode();
 	document.getElementById("mctable").className = "";
@@ -2390,7 +2396,9 @@ function setupTraveller(index,active)
 						bidding = showBidding();
 					}
 
-					document.getElementById("currentPosition").innerHTML = bidding + pbutton;
+					const clean = DOMPurify.sanitize(bidding + pbutton, { RETURN_DOM_FRAGMENT: true });
+
+					document.getElementById("currentPosition").replaceChildren(clean); //innerHTML = bidding + pbutton;
 
 					if (document.getElementById("accbutton")!=null)
 						if (document.getElementById("accbutton").style.display=="none") document.getElementById("prevrow").style.marginLeft = "35px";
@@ -2438,7 +2446,7 @@ function setupTraveller(index,active)
 		}
 		else
 		{
-			document.getElementById("currentPosition").innerHTML = g_credits;
+			document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
 		}
 	}
 
@@ -4825,22 +4833,6 @@ function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,
 	}
 	str += "</div></div>";
 
-//		str += "<br>Elapsed time: " + tmp.sess.deltaElapsed + "<br><br>";
-
-/*		var optCount = 0;
-	var subOptCount = 0;
-
-	for (var i=0;i<tmp.sess.optimumCount.length;i++)
-	{
-		if (tmp.sess.cardDirection[i]==0)
-		{
-			optCount += tmp.sess.optimumCount[i];
-			subOptCount += tmp.sess.subOptimumCount[i];
-		}
-	}
-
-	str += " ,optimumCardRatio: " + optCount/(optCount+subOptCount);*/
-
 	if (dest==0)
 		acc.innerHTML = "<span style=\"font-size:16px;color:blue;\">" + str + "</span>";
 	else
@@ -5406,7 +5398,8 @@ function doPopupNoTimeout(pelement,htmltext,posx,posy)
 	popup.style.left = Number(posx) + "px";
 	popup.style.padding = "10px";
 	popup.style.backgroundColor = "#FFFFDD";
-	popup.innerHTML = htmltext;
+	const clean = DOMPurify.sanitize(htmltext, { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //innerHTML = htmltext;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").show();
@@ -6118,7 +6111,7 @@ function computeTravellerStatistics(pdirection)
 		}
 
 		var cells = crow.cells;
-		let tmp = curobj.contract;
+		var tmp = curobj.contract;
 		tmp = tmp.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
 		tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
 		cells[0].replaceChildren(tmp);
@@ -6603,7 +6596,8 @@ function showBidAlert(pthis){
 	popup.style.padding = "2px";
 	popup.style.backgroundColor = "yellow";
 	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
-	popup.innerHTML = "<span style='font-weight:bold;'>" + msg + "</span>";
+	const clean = DOMPurify.sanitize("<span style='font-weight:bold;'>" + msg + "</span>", { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //.innerHTML = "<span style='font-weight:bold;'>" + msg + "</span>";
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
@@ -6629,7 +6623,8 @@ function showNames(pthis,dir){
 	popup.style.padding = "0px";
 	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
 	popup.style.left = getPosition(pthis).x  + "px";
-	popup.innerHTML = text;
+	const clean = DOMPurify.sanitize(text, { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //innerHTML = text;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);

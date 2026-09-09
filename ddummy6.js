@@ -145,7 +145,8 @@ function displayErrorAbsPosition(message,x,y)
 	var popup = document.getElementById("popup_box");
 	popup.style.top = y + "px";
 	popup.style.left = x  + "px";
-	popup.innerHTML = message;
+	const clean = DOMPurify.sanitize(message, { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //innerHTML = message;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(2000).fadeOut(100);
@@ -156,8 +157,8 @@ function displayError(element,message)
 	var popup = document.getElementById("popup_box");
 	popup.style.top = ((getPosition(element).y) - 20) + "px";
 	popup.style.left = getPosition(element).x  + "px";
-	message = DOMPurify.sanitize(message, { RETURN_DOM_FRAGMENT: true });
-	popup.replaceChildren(message);
+	const clean = DOMPurify.sanitize(message, { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //innerHTML = message;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(5000).fadeOut(100);
@@ -817,8 +818,7 @@ function doPopupAt(text,px,py)
 	var popup = document.getElementById("popup_box");
 	popup.style.top = py + "px";
 	popup.style.left = px  + "px";
-	text = DOMPurify.sanitize(text);
-	popup.replaceChildren(text); //innerHTML = text;
+	popup.innerHTML = text;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);  // Display for 4 seconds
@@ -968,23 +968,19 @@ function displayHands()
 {
 	var north = document.getElementById("northHand");
 	var handstr = createHandString(g_hands.boards[g_lastBindex],0);
-	let clean = DOMPurify.sanitize(handstr.text);
-	north.replaceChildren(clean); //innerHTML = handstr.text;
+	north.innerHTML = handstr.text;
 
 	var east = document.getElementById("eastHand");
 	handstr = createHandString(g_hands.boards[g_lastBindex],1);
-	clean = DOMPurify.sanitize(handstr.text);
-	east.replaceChildren(clean); //innerHTML = handstr.text;
+	east.innerHTML = handstr.text;
 
 	var south = document.getElementById("southHand");
 	handstr = createHandString(g_hands.boards[g_lastBindex],2);
-	clean = DOMPurify.sanitize(handstr.text);
-	south.replaceChildren(clean); //innerHTML = handstr.text;
+	south.innerHTML = handstr.text;
 
 	var west = document.getElementById("westHand");
 	handstr = createHandString(g_hands.boards[g_lastBindex],3);
-	clean = DOMPurify.sanitize(handstr.text);
-	west.replaceChildren(clean); //innerHTML = handstr.text;
+	west.innerHTML = handstr.text;
 }
 
 function processPosition(hcards,para)
@@ -1182,12 +1178,12 @@ function processPosition(hcards,para)
 			case "de":
 				if ((g_showPlay!=0)&&(g_showOriginalContract==false))
 					original = "<br><span style=\"font-size:12px;font-weight:normal;\">(ursprünglich gespielter Kontrakt: " + g_hands.boards[g_lastBindex].Contract + ")</span>";
-					document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Kontrakt: " + substituteSuitSymbol(g_session_contract) + " von " + g_session_declarer + original + "<br><br>" + "NS Stiche: " + hcards.tricksNS + "<br>OW Stiche: " + hcards.tricksEW + "</span>" + finished;
+				document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Kontrakt: " + substituteSuitSymbol(g_session_contract) + " von " + g_session_declarer + original + "<br><br>" + "NS Stiche: " + hcards.tricksNS + "<br>OW Stiche: " + hcards.tricksEW + "</span>" + finished;
 				break;
 			default:
 				if ((g_showPlay!=0)&&(g_showOriginalContract==false))
 					original = "<br><span style=\"font-size:12px;font-weight:normal;\">(originally played in " + g_hands.boards[g_lastBindex].Contract + ")</span>";
-					document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Contract: " + substituteSuitSymbol(g_session_contract) + " by " + g_session_declarer + original + "<br><br>" + "NS Tricks: " + hcards.tricksNS + "<br>EW Tricks: " + hcards.tricksEW + "</span>" + finished;
+				document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Contract: " + substituteSuitSymbol(g_session_contract) + " by " + g_session_declarer + original + "<br><br>" + "NS Tricks: " + hcards.tricksNS + "<br>EW Tricks: " + hcards.tricksEW + "</span>" + finished;
 		}
 	}
 
@@ -1404,7 +1400,7 @@ function exitHandEntryMode()
 		if (ptsctl!==null)
 			ptsctl.style.display = "inline";
 
-		document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
+		document.getElementById("currentPosition").innerHTML = g_credits;
 		showCredits();
 	}
 }
@@ -1418,13 +1414,13 @@ function showCredits()
 	if ((typeof g_hands.lin)=="undefined")
 	{
 		if ((g_file==="") && document.getElementById("currentPosition").innerHTML == ""  ) {
-			document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
+			document.getElementById("currentPosition").innerHTML = g_credits;
 		}
 
 		else if (g_file!==1)
 		{
 			if ((!g_file.toUpperCase().endsWith('LIN')) && document.getElementById("currentPosition").innerHTML =="" ) {
-				document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
+				document.getElementById("currentPosition").innerHTML = g_credits;
 			}
 		}
 	}
@@ -1599,7 +1595,7 @@ function showBidding()
 	var vul = g_hands.boards[g_lastBindex].Vulnerable;
 	var red = "#FF0000";
 	var green ="#00FF00";
-	const dirs = "WNES";
+	var dirs = "WNES";
 	var i,row;
 	var headerDiv = document.createElement("div");
 	var headerTable = document.createElement("table");
@@ -1703,8 +1699,7 @@ function showBidding()
 		{
 			bd = bd.replace("S","&#9824;");
 		}
-		const clean = DOMPurify.sanitize(bd, { RETURN_DOM_FRAGMENT: true });
-		row.cells[i].replaceChildren(clean); //innerHTML = bd;
+		row.cells[i].innerHTML = bd;
 		row.cells[i].style.fontSize = g_bidFontSize;
 		i++;
 
@@ -1873,8 +1868,7 @@ function updateUpperLeftQuadrant(boardIndex)
 		ocell.style.verticalAlign = "top";
 		namstr += "</div>";
 		//ocell.replaceChildren(sanitizeExplanation(namstr)); //innerHTML = namstr + "</div>";
-		const clean = DOMPurify.sanitize(namstr, { RETURN_DOM_FRAGMENT: true });
-		ocell.replaceChildren(clean); //innerHTML = DOMPurify.sanitize(namstr);
+		ocell.innerHTML = DOMPurify.sanitize(namstr);
 	}
 	else
 	{
@@ -2221,7 +2215,7 @@ function exitCardPlay()
 {
 	resetTimeout();
 	terminateSession();
-	document.getElementById("play").innerHTML = DOMPurify.sanitize(g_playButtonText);
+	document.getElementById("play").innerHTML = g_playButtonText;
 	setupTraveller(g_lastBindex,true);
 	enterPlayMode();
 	document.getElementById("mctable").className = "";
@@ -2396,9 +2390,7 @@ function setupTraveller(index,active)
 						bidding = showBidding();
 					}
 
-					const clean = DOMPurify.sanitize(bidding + pbutton, { RETURN_DOM_FRAGMENT: true });
-
-					document.getElementById("currentPosition").replaceChildren(clean); //innerHTML = bidding + pbutton;
+					document.getElementById("currentPosition").innerHTML = bidding + pbutton;
 
 					if (document.getElementById("accbutton")!=null)
 						if (document.getElementById("accbutton").style.display=="none") document.getElementById("prevrow").style.marginLeft = "35px";
@@ -2446,7 +2438,7 @@ function setupTraveller(index,active)
 		}
 		else
 		{
-			document.getElementById("currentPosition").innerHTML = DOMPurify.sanitize(g_credits);
+			document.getElementById("currentPosition").innerHTML = g_credits;
 		}
 	}
 
@@ -4833,6 +4825,22 @@ function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,
 	}
 	str += "</div></div>";
 
+//		str += "<br>Elapsed time: " + tmp.sess.deltaElapsed + "<br><br>";
+
+/*		var optCount = 0;
+	var subOptCount = 0;
+
+	for (var i=0;i<tmp.sess.optimumCount.length;i++)
+	{
+		if (tmp.sess.cardDirection[i]==0)
+		{
+			optCount += tmp.sess.optimumCount[i];
+			subOptCount += tmp.sess.subOptimumCount[i];
+		}
+	}
+
+	str += " ,optimumCardRatio: " + optCount/(optCount+subOptCount);*/
+
 	if (dest==0)
 		acc.innerHTML = "<span style=\"font-size:16px;color:blue;\">" + str + "</span>";
 	else
@@ -5398,8 +5406,7 @@ function doPopupNoTimeout(pelement,htmltext,posx,posy)
 	popup.style.left = Number(posx) + "px";
 	popup.style.padding = "10px";
 	popup.style.backgroundColor = "#FFFFDD";
-	const clean = DOMPurify.sanitize(htmltext, { RETURN_DOM_FRAGMENT: true });
-	popup.replaceChildren(clean); //innerHTML = htmltext;
+	popup.innerHTML = htmltext;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").show();
@@ -6111,15 +6118,11 @@ function computeTravellerStatistics(pdirection)
 		}
 
 		var cells = crow.cells;
-		var tmp = curobj.contract;
-		tmp = tmp.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
-		tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
-		cells[0].replaceChildren(tmp);
-		//cells[0].innerHTML = curobj.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
-		cells[1].innerHTML = DOMPurify.sanitize(curobj.played_by);
-		cells[2].innerHTML = DOMPurify.sanitize(curobj.tcount);
+		cells[0].innerHTML = curobj.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+		cells[1].innerHTML = curobj.played_by;
+		cells[2].innerHTML = curobj.tcount;
 
-		cells[3].innerHTML = DOMPurify.sanitize(drawBar(curobj.tcount,traveller.length,150,15,false));
+		cells[3].innerHTML = drawBar(curobj.tcount,traveller.length,150,15,false);
 
 		if (g_scoring!="IMP")
 		{
@@ -6597,7 +6600,7 @@ function showBidAlert(pthis){
 	popup.style.backgroundColor = "yellow";
 	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
 	const clean = DOMPurify.sanitize("<span style='font-weight:bold;'>" + msg + "</span>", { RETURN_DOM_FRAGMENT: true });
-	popup.replaceChildren(clean); //.innerHTML = "<span style='font-weight:bold;'>" + msg + "</span>";
+	popup.replaceChildren(clean); //innerHTML = "<span style='font-weight:bold;'>" + msg + "</span>";
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
@@ -7005,10 +7008,7 @@ function displayTraveller(pdirection)
 
 			if (validContract(tline.contract))
 			{
-				let tmp = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
-				tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
-				row.cells[2].replaceChildren(tmp);
-				//row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+				row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
 			}
 			else
 			{
@@ -7029,12 +7029,9 @@ function displayTraveller(pdirection)
 
 			if (validContract(tline.contract))
 			{
-				row.cells[3].innerHTML = DOMPurify.sanitize(tline.played_by);
-				let tmp = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
-				tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
-				row.cells[4].replaceChildren(tmp);
-				//row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
-				row.cells[5].innerHTML = DOMPurify.sanitize(tline.tricks);
+				row.cells[3].innerHTML = tline.played_by;
+				row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
+				row.cells[5].innerHTML = tline.tricks;
 				row.cells[5].style.textAlign="right";
 
 				var overtricks = tline.tricks - (6 + (Number(tline.contract.charAt(0))));
@@ -7044,7 +7041,7 @@ function displayTraveller(pdirection)
 				if (overtricks==0) overtstr = "=";
 				else if (overtricks>0) overtstr = "+" + overtricks;
 
-				row.cells[6].innerHTML = DOMPurify.sanitize(overtstr);
+				row.cells[6].innerHTML = overtstr;
 				row.cells[6].style.textAlign="right";
 
 				var colorplus  = green;

@@ -156,7 +156,8 @@ function displayError(element,message)
 	var popup = document.getElementById("popup_box");
 	popup.style.top = ((getPosition(element).y) - 20) + "px";
 	popup.style.left = getPosition(element).x  + "px";
-	popup.innerHTML = message;
+	message = DOMPurify.sanitize(message, { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(message);
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(5000).fadeOut(100);
@@ -816,7 +817,8 @@ function doPopupAt(text,px,py)
 	var popup = document.getElementById("popup_box");
 	popup.style.top = py + "px";
 	popup.style.left = px  + "px";
-	popup.innerHTML = text;
+	text = DOMPurify.sanitize(text);
+	popup.replaceChildren(text); //innerHTML = text;
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);  // Display for 4 seconds
@@ -5673,7 +5675,10 @@ function getInfoForSimilarContracts(lineIndex,direction)
 		default:
 			var str = "This suit/declarer combination was played at " + result.totalThisSuitAndDeclarer + " of " + result.totalPairs + " other tables (" + playedByPercent + "%).";
 	}
-	document.getElementById("comparisonText").innerHTML = document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>";
+	
+	const clean = DOMPurify.sanitize(document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>", { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("comparisonText").replaceChildren(clean);
+	//document.getElementById("comparisonText").innerHTML = document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>";
 
 	return result;
 }
@@ -6113,11 +6118,15 @@ function computeTravellerStatistics(pdirection)
 		}
 
 		var cells = crow.cells;
-		cells[0].innerHTML = curobj.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
-		cells[1].innerHTML = curobj.played_by;
-		cells[2].innerHTML = curobj.tcount;
+		let tmp = curobj.contract;
+		tmp = tmp.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+		tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
+		cells[0].replaceChildren(tmp);
+		//cells[0].innerHTML = curobj.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+		cells[1].innerHTML = DOMPurify.sanitize(curobj.played_by);
+		cells[2].innerHTML = DOMPurify.sanitize(curobj.tcount);
 
-		cells[3].innerHTML = drawBar(curobj.tcount,traveller.length,150,15,false);
+		cells[3].innerHTML = DOMPurify.sanitize(drawBar(curobj.tcount,traveller.length,150,15,false));
 
 		if (g_scoring!="IMP")
 		{
@@ -7001,7 +7010,10 @@ function displayTraveller(pdirection)
 
 			if (validContract(tline.contract))
 			{
-				row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+				let tmp = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+				tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
+				row.cells[2].replaceChildren(tmp);
+				//row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
 			}
 			else
 			{
@@ -7022,9 +7034,12 @@ function displayTraveller(pdirection)
 
 			if (validContract(tline.contract))
 			{
-				row.cells[3].innerHTML = tline.played_by;
-				row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
-				row.cells[5].innerHTML = tline.tricks;
+				row.cells[3].innerHTML = DOMPurify.sanitize(tline.played_by);
+				let tmp = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
+				tmp = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
+				row.cells[4].replaceChildren(tmp);
+				//row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
+				row.cells[5].innerHTML = DOMPurify.sanitize(tline.tricks);
 				row.cells[5].style.textAlign="right";
 
 				var overtricks = tline.tricks - (6 + (Number(tline.contract.charAt(0))));
@@ -7034,7 +7049,7 @@ function displayTraveller(pdirection)
 				if (overtricks==0) overtstr = "=";
 				else if (overtricks>0) overtstr = "+" + overtricks;
 
-				row.cells[6].innerHTML = overtstr;
+				row.cells[6].innerHTML = DOMPurify.sanitize(overtstr);
 				row.cells[6].style.textAlign="right";
 
 				var colorplus  = green;

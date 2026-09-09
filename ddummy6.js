@@ -8541,7 +8541,7 @@ function showNewFeaturesNotice()
 				case "de":
 					var txt = "<ul><li>Bei den Optionen gibt es eine Auswahlbox, um die Kürzel für Figuren auswählen zu können (JQKA,BDKA,VDRA,or BVHA), Standard ist JQKA</li><br>";
 					txt += "</ul>";
-					txt += "Detaillierte Informationen finden Sie in den  <a href=releaseNotes.htm target=_blank>Release Notes.</a>";
+					txt += "Detaillierte Informationen finden Sie in den  <a href=releaseNotes.htm target=_blank>Versionshinweisen.</a>";
 					break;
 				default:
 					var txt = "<ul><li>The High Card Points display at the bottom left of the board diagram now has the option to display the result of a Kaplan-Rubens hand evaluation. Click on the ? character in the points display box for further explanation.</li>";
@@ -8549,8 +8549,6 @@ function showNewFeaturesNotice()
 					txt += "See the <a href=releaseNotes.htm target=_blank>release notes</a> for a full history of recent changes.";
 			}
 			
-
-
 			if (!shown)
 			{
 				localStorage.setItem('newFeatureShown','4');

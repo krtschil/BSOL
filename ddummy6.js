@@ -87,8 +87,8 @@ var g_scoreToImps = [[0,10,0],[20,40,1],[50,80,2],[90,120,3],[130,160,4],
 					[430,490,10],[500,590,11],[600,740,12],[750,890,13],[900,1090,14],
 					[1100,1290,15],[1300,1490,16],[1500,1740,17],[1750,1990,18],[2000,2240,19],
 					[2250,2490,20],[2500,2990,21],[3000,3490,22],[3500,3990,23],[4000,32767,24]];
-var g_checkContracts = new Array();
-var g_scorecardContext = new Array();	// Array of context objects for current scorecard, indexed by board number
+var g_checkContracts = [];
+var g_scorecardContext = [];	// Array of context objects for current scorecard, indexed by board number
 var g_uniquePairNumbers = "";		// Set to true or false for Teams events from within function checkForUniquePairNumbers
 var g_showAllControls = true;
 var g_isMobi = false;				// True if a mobile device
@@ -101,12 +101,12 @@ var g_scoreFontSize = 0;			// Font size for score in lin file
 var g_vulBarLength = 0;				// Height or width of vulnerability bar
 
 var g_worker;						// Worker for Play It Again
-var g_mworkers = new Array();		// Workers for makeable contract calculation
+var g_mworkers = [];		// Workers for makeable contract calculation
 var g_nextmworker = 0;
 var g_workerInitCount = 0;
 var g_db = null;					// Database handle for indexedDB
 
-var g_bgObj = new Object();
+var g_bgObj = {};
 var g_completionCount = 0;			// Count of background accuracy requests completed
 var g_completionTarget = 0;			// Used for background player accuracy requests
 
@@ -118,8 +118,8 @@ var g_initial_data = "";
 var g_initial_options = "";
 var g_newFeatureNoticeShown = 0;	// Set to 1 if has been shown already during this session
 var g_initialised = false;			// Set true in buildpage1
-var g_playerAcc = new Array();		// Holds player accuracy counts for event, indexed by player name
-var g_accTrans = new Object();		// Holds list of acc transactions outstanding for each player
+var g_playerAcc = [];		// Holds player accuracy counts for event, indexed by player name
+var g_accTrans = {};		// Holds list of acc transactions outstanding for each player
 
 var cacheTimeout = 300000;			// Limit in milliseconds on how long PBN and json are kept in Local Storage
 
@@ -597,7 +597,7 @@ function createMiniHandString(hand,index)
 		text = "<span style=\"font-size:12px;font-weight:normal;\">" + text + "</span>";
 	}
 
-	var record = new Object();
+	var record = {};
 
 	var textstr = text;
     var ruler = document.getElementById("ruler");
@@ -817,7 +817,7 @@ function createHandString(hand,index)
 
 	krpoints = krCalc(hand);
 
-	var record = new Object();
+	var record = {};
 
 	var textstr = text;
     var ruler = document.getElementById("ruler");
@@ -1277,7 +1277,7 @@ function calldds(str)
 	var deal = board.Deal;
 	var dealstr = "W:" + deal[3] + "x" + deal[0] + "x" + deal[1] + "x" + deal[2];
 
-	var msg = new Object();
+	var msg = {};
 	msg.request = str;
 
 	if (str!=="q")
@@ -1290,7 +1290,7 @@ function calldds(str)
 	msg.requesttoken = g_session;
 	msg.sockref = g_session;
 
-	var context = new Object();
+	var context = {};
 	context.request = msg.request;
 
 	if (str!=="q")
@@ -1854,7 +1854,7 @@ function lottPair(direction)
 		}
 	}
 
-	var result = new Object();
+	var result = {};
 	result.tricks = tricks;
 	result.trumpCount = max;
 	result.suit = suit;
@@ -3033,7 +3033,7 @@ function newBoard(boardnum)
 	var dealerPattern = "NESW";
 	var vulnerabilityPattern = ["None", "NS", "EW", "All", "NS", "EW", "All", "None","EW", "All", "None", "NS", "All", "None", "NS", "EW"];
     var currentBoardName = g_hands.boards[g_lastBindex].board;
-    var board = new Object();
+    var board = {};
     var curTindex = g_lastBindex;
     var idx = 1;
 
@@ -3043,7 +3043,7 @@ function newBoard(boardnum)
 	board.Vulnerable = vulnerabilityPattern[(idx-1) % 16];
 	board.board = boardnum.toString();
 	board.DoubleDummyTricks = "********************";
-	board.Deal = new Array();
+	board.Deal = [];
 
     clearMakeableOnInputBoard();
 
@@ -3063,7 +3063,7 @@ function newBoard(boardnum)
 	    {
 	        if (Number(cbd.board)>bnum)
 	        {
-	            var tmp = new Array();
+	            var tmp = [];
 	            var j;
 
 	            for (j=0;j<i;j++)
@@ -3074,7 +3074,7 @@ function newBoard(boardnum)
                 for (j=i;j<g_hands.boards.length;j++)
                     tmp[j+1] = g_hands.boards[j];
 
-                g_hands.boards = new Array();
+                g_hands.boards = [];
 
                 for (j=0;j<tmp.length;j++)
                     g_hands.boards[j] = tmp[j];
@@ -3092,7 +3092,7 @@ function newBoard(boardnum)
 function deleteBoard()
 {
     var i;
-    var tmp = new Array();
+    var tmp = [];
 
     if (g_hands.boards.length==1) return;
 
@@ -3104,7 +3104,7 @@ function deleteBoard()
     for (i=g_lastBindex+1;i<g_hands.boards.length;i++)
         tmp[i-1] = g_hands.boards[i];
 
-    g_hands.boards = new Array();
+    g_hands.boards = [];
 
     for (i=0;i<tmp.length;i++)
         g_hands.boards[i] = tmp[i];
@@ -3525,7 +3525,7 @@ function accCalcPossible()
 function processAccs(name=null)
 {
 	for (var key in g_accTrans)
-		g_accTrans[key].transList = new Object();
+		g_accTrans[key].transList = {};
 
 	var requestCount = 0;
 	switch(language)
@@ -3667,14 +3667,14 @@ function makeAccRequest(board,bdindex,tindex)
 	var leaderChars = "ewsn";	// Declarer is one place to the right of leader
 	var leader = leaderChars.charAt(declCHARS.indexOf(board.Declarer));
 
-	var msg = new Object();
+	var msg = {};
 	msg.request = "a";
 	msg.cards = playedCards;
 	msg.trumps = board.Contract.charAt(1);
 	msg.leader = leader;
 	msg.pbn = dealstr;
 
-	var context = new Object();
+	var context = {};
 	context.key = makeAccKey(board);
 	context.declarer = board.Declarer;
 	context.tid = g_bgTrans++;
@@ -3698,7 +3698,7 @@ function makeAccRequest(board,bdindex,tindex)
 
 function makeAccKey(board)
 {
-	var key = new Object();
+	var key = {};
 
 	key.names = board.PlayerNames;
 	key.deal = board.Deal;
@@ -3731,7 +3731,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 		names = g_hands.boards[g_lastBindex].PlayerNames;
 	else
 	{
-		names = new Array();
+		names = [];
 		names[0] = "S";
 		names[1] = "W";
 		names[2] = "N";
@@ -3834,7 +3834,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	{
 		var dealstr = "W:" + dealstr;
 
-		var msg = new Object();
+		var msg = {};
 		msg.request = "g";
 		msg.pbn = dealstr;
 		msg.trumps = g_trumps;
@@ -3842,7 +3842,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 		msg.requesttoken = g_session;
 		msg.sockref = g_session;
 
-		var context = new Object();
+		var context = {};
 		context.request = msg.request;
 		context.para = "new";
 		msg.context = context;
@@ -3853,14 +3853,14 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	}
 	else
 	{
-		var msg = new Object();
+		var msg = {};
 		msg.request = "a";
 		msg.cards = playedCards;
 		msg.trumps = suitChar;
 		msg.leader = leader;
 		msg.pbn = dealstr;
 
-		var context = new Object();
+		var context = {};
 		context.key =  makeAccKey(g_hands.boards[g_lastBindex]);
 		context.declarer = declarer;
 		context.names = names;
@@ -3963,7 +3963,7 @@ function cacheMakeable(pindex,data)
 		var dealstr = "W:" + deal[3] + "x" + deal[0] + "x" + deal[1] + "x" + deal[2];
 		var vul = board.Vulnerable;
 		var key = makeDealKey(dealstr,vul,getRequestedLeads(pindex));
-		var ddata = new Object();
+		var ddata = {};
 		ddata.deal = key;
 		ddata.time = Date.now();
 		ddata.dd = JSON.parse(data);
@@ -4158,7 +4158,7 @@ function tricksConceded(data)
 	var tricksConceded = data.tricksConceded;
 	var cardDirection = data.cardDirection;
 
-	var errCount = new Array();
+	var errCount = [];
 
 	for (var i=0;i<4;i++)
 		errCount[i] = 0;
@@ -4243,7 +4243,7 @@ function confirmShowAcc()
 
 function showPlayerAccMatrix()
 {
-	g_playerAcc = new Array();
+	g_playerAcc = [];
 
 	for (var i=0;i<g_hands.boards.length;i++)
 	{
@@ -4355,7 +4355,7 @@ function showPlayerAccMatrix()
 
 	html += "</tr>";
 
-	var totals = new Object();
+	var totals = {};
 
 	for (var i=0;i<g_hands.boards.length;i++)
 	{
@@ -4485,7 +4485,7 @@ function updatePlayerAccCounts(name,role,count,board,lindata)
 
 	if (pobj==null)
 	{
-		pobj = new Object();
+		pobj = {};
 		pobj.name = name;
 		pobj.declErrCount = 0;
 		pobj.declCount = 0;
@@ -4493,7 +4493,7 @@ function updatePlayerAccCounts(name,role,count,board,lindata)
 		pobj.leadCount = 0;
 		pobj.leadPartnerErrCount = 0;
 		pobj.leadPartnerCount = 0;
-		pobj.boards = new Object();
+		pobj.boards = {};
 
 		g_playerAcc.push(pobj);
 	}
@@ -4514,7 +4514,7 @@ function updatePlayerAccCounts(name,role,count,board,lindata)
 		pobj.leadPartnerErrCount += count;
 	}
 
-	var rec = new Object();
+	var rec = {};
 	rec.errCount = count;
 	rec.lindata = lindata;
 	pobj.boards[board.board] = rec;
@@ -4807,7 +4807,7 @@ function storeAcc(data,context)
 		const transaction = g_db.transaction(["accCache"], "readwrite");
 		const objectStore = transaction.objectStore("accCache");
 
-		var data = new Object();
+		var data = {};
 		data.key = makeAccKey(board);
 		data.acc = board.acc;
 		data.time = Date.now();
@@ -5376,12 +5376,12 @@ function calculateMakeableContracts(pfunc,pleadstr,bindex)
 
 		dealstr = "W:" + dealstr;
 
-		var context = new Object();
+		var context = {};
 		context.para = "makeable";
 		context.bindex = bindex;
 		context.request = "m";
 
-		var msg = new Object();
+		var msg = {};
 		msg.request = "m";
 		msg.dealstr = dealstr;
 		msg.leadstr = pleadstr;
@@ -5705,7 +5705,7 @@ function getInfoForSimilarContracts(lineIndex,direction)
 	var declarer = curLine.played_by;
 	var level = Number(curLine.contract.charAt(0));
 
-	var result = new Object();
+	var result = {};
 	result.totalPairs = traveller.length;
 	result.totalThisSuitAndDeclarer = 0;
 	result.moreTricks = 0;
@@ -5752,7 +5752,7 @@ function getInfoForSimilarContracts(lineIndex,direction)
 
 function getContractType(contract)
 {
-	var result = new Object();
+	var result = {};
 	result.ctype = 0;	// assume part score
 	result.str = "a part score";
 	var minor = "CD";
@@ -5891,7 +5891,7 @@ function getHighestScoringMakeableContractForDirection(bindex,direction,vulnerab
 	var dir = "NS";
 	var score;
 	var topscore = 0;
-	var result = new Object();
+	var result = {};
 	var contract = "";
 	var declarer = "";
 	var i,j;
@@ -5993,7 +5993,7 @@ function drawBar(value,vmax,width,height,gradColor)
 function computeTravellerStatistics(pdirection)
 {
 	var i,j;
-	var result = new Array();
+	var result = [];
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
 
 	var traveller = g_currentTraveller.traveller_line;
@@ -6056,7 +6056,7 @@ function computeTravellerStatistics(pdirection)
 
 			if (!found)
 			{
-				var newobj = new Object();
+				var newobj = {};
 				newobj.contract = contract;
 				newobj.played_by = tline.played_by;
 				newobj.tcount = 1;
@@ -6236,7 +6236,7 @@ function computeTravellerStatistics(pdirection)
 function checkHigherScoringPairs(traveller,prow,direction)
 {
 	var i,j;
-	var result = new Object();
+	var result = {};
 	var dirs = "NSEW";
 	var suits = "CDHSN";
 	result.playedSameSuit = 0;
@@ -6255,11 +6255,11 @@ function checkHigherScoringPairs(traveller,prow,direction)
 	result.declarer = 0;
 	result.bidLowerLevel = 0;
 	result.contractType = 0;
-	result.matrix = new Array();
+	result.matrix = [];
 
 	for (i=0;i<4;i++)
 	{
-		result.matrix[i] = new Array();
+		result.matrix[i] = [];
 
 		for (j=0;j<5;j++)
 			result.matrix[i][j] = 0;
@@ -6981,7 +6981,7 @@ function displayTraveller(pdirection)
 
 			var ctricks = getMakeableTricksForContract(g_lastBindex,contract,optdir.charAt(0));
 
-			var line = new Object();
+			var line = {};
 			line.ns_pair_number = "";
 			line.ew_pair_number = "";
 			line.contract = contract;
@@ -7336,7 +7336,7 @@ function displayTraveller(pdirection)
 
 function compareScores(tlines,ourscore,pdirection)
 {
-	var res = new Object();
+	var res = {};
 	res.adjusted = 0;
 	res.lower = 0;
 	res.higher = 0;
@@ -7403,7 +7403,7 @@ function checkForUniquePairNumbers()
 		var singleWinner = true;	// By default assume pair numbers are unique
 
 			// Check whether pair numbers are unique
-		var checkKeys = new Array();
+		var checkKeys = [];
 
 		for (i=0;i<pairs.length;i++)
 			if (typeof checkKeys[pairs[i].pair_number] === 'undefined')
@@ -7435,7 +7435,7 @@ function getSessionInfo()
 	if (g_sessInfo!=null) return g_sessInfo;
 
 		// Return number of NS pairs, number of EW pairs, and single winner indicator (in which case all pairs are designated NS)
-	var sessInfo = new Object();
+	var sessInfo = {};
 	var i;
 	var singleWinner = false;
 
@@ -7619,9 +7619,9 @@ function getRankingInfo()
 
 	var pairs = g_travellers.event.participants.pair;
 
-	var rankNS = new Array();
-	var rankEW = new Array();
-	var rankCombined = new Array();		// Used for Teams event re-scored as Cross Imps
+	var rankNS = [];
+	var rankEW = [];
+	var rankCombined = [];		// Used for Teams event re-scored as Cross Imps
 
 	var i,j;
 	var maxPlayed = 0;	// Max boards played by any pair.
@@ -7632,7 +7632,7 @@ function getRankingInfo()
 
 		if ((pair!="")&&(pair!=null))
 		{
-			var data = new Object();
+			var data = {};
 
 			data.plusMpts =0;
 			data.minusMpts = 0;
@@ -7660,7 +7660,7 @@ function getRankingInfo()
 			else
 				data.direction = 2;
 
-			data.dd = new Object();
+			data.dd = {};
 
 			if ((pairs[i].direction=="N")||sessInfo.singleWinner)
 				rankNS[rankNS.length] = data;
@@ -7782,7 +7782,7 @@ function getRankingInfo()
 			}
 	}
 
-	var rankInfo = new Object();
+	var rankInfo = {};
 	rankInfo.sessInfo = sessInfo;
 	rankInfo.rankNS = rankNS;
 	rankInfo.rankEW = rankEW;
@@ -7812,7 +7812,7 @@ function getPlayerInfo(pair,direction)
 {
 		// Gets player information for the current pair from the travellers record, using the information
 		// passed to ddummy.htm in the pair_number and direction fields.
-	var info = new Object();
+	var info = {};
 	var pair_found = false;
 	var pairs = g_travellers.event.participants.pair;
 	var player1 = "";
@@ -7999,7 +7999,7 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 
 function getPlayerAndRole(info,tline)
 {
-	var prole = new Object();
+	var prole = {};
 	var found = false;
 	var tdirection = 1;		// assume played North/South
 	var declarer_pair = false;
@@ -8062,7 +8062,7 @@ function getPlayerAndRole(info,tline)
 		}
 	}
 
-	prole = new Object();
+	prole = {};
 	prole.found = found;
 	prole.tdirection = tdirection;
 	prole.declarer_pair = declarer_pair;
@@ -8258,7 +8258,7 @@ function setupResultReasons(ctx,result)
 	var contractStr = ["Teilkontrakt","Vollspiel","Großschlemm","Kleinschlemm"];
 	var i,j;
 	var count = 0;
-	var aveScores = new Array();
+	var aveScores = [];
 
 	var acount = 0;
 	var adir = "";
@@ -8326,7 +8326,7 @@ function setupResultReasons(ctx,result)
 		{
 			if (adir=="")
 			{
-				aObj = new Object();
+				aObj = {};
 				aObj.higherScoreCount = 0;
 				aObj.moreTricks = 0;
 				aObj.count = 1;
@@ -8363,7 +8363,7 @@ function setupResultReasons(ctx,result)
 					aveScores[acount] = aObj;
 					acount++;
 
-					aObj = new Object();
+					aObj = {};
 					aObj.moreTricks = 0;
 					aObj.higherScoreCount = 0;
 					aObj.count = 1;
@@ -8585,9 +8585,9 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 	var etfAchievedCombined = 0;
 	var oppDir;
 	var oppInfo;
-	var ctx = new Object();
+	var ctx = {};
 
-	g_scorecardContext = new Array();
+	g_scorecardContext = [];
 
 	var rows = table.rows;
 	var srows = stable.rows;
@@ -8617,7 +8617,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 
 		for (j=0;j<boards.length;j++)
 		{
-			ctx = new Object();
+			ctx = {};
 			var board = boards[j];
 			var tlines = board.traveller_line;
 
@@ -10027,7 +10027,7 @@ function getTlineForPair(boardIndex,info)
 		// Return traveller line containing data for this pair playing this board. Also returns direction in which
 		// the pair were sitting when playing the board. Returns null if the pair didn't play this board.
 	var k;
-	var result = new Object();
+	var result = {};
 
 	var tindex = getTravIndex(boardIndex);
 
@@ -10067,12 +10067,12 @@ function ddComparisonAll()
 	var rankInfo = getRankingInfo();
 	var singleWinner = rankInfo.sessInfo.singleWinner;
 
-	var ddNS = new Array();
-	var ddEW = new Array();
+	var ddNS = [];
+	var ddEW = [];
 
 	for (i=0;i<rankInfo.rankNS.length;i++)
 	{
-		var data = new Object();
+		var data = {};
 		data.pair = rankInfo.rankNS[i].pair;
 		data.ddUnderH = 0;
 		data.ddOverH = 0;
@@ -10083,7 +10083,7 @@ function ddComparisonAll()
 
 	for (i=0;i<rankInfo.rankEW.length;i++)
 	{
-		var data = new Object();
+		var data = {};
 		data.pair = rankInfo.rankEW[i].pair;
 		data.ddUnderH = 0;
 		data.ddOverH = 0;
@@ -10232,7 +10232,7 @@ function checkContract(bindex,trindex)
 {
 	var decl="NESW";
 	var suits = "NSHDC";
-	var result = new Object();
+	var result = {};
 	result.valid = true;
 	result.leadDeclError = false;
 	result.possibleWrongPolarity = false;
@@ -10346,7 +10346,7 @@ function getRequestedLeads(bindex)
 
 	if (traveller==null) return "";
 
-	var leadsRequired = new Array();
+	var leadsRequired = [];
 
 	for (i=0;i<20;i++) leadsRequired[i] = 0;
 
@@ -10462,7 +10462,7 @@ function setDefaultContracts()
 		if (bindex==null)		// No board for this traveller
 		{
 			var newindex = g_hands.boards.length;
-			g_hands.boards[newindex] = new Object();
+			g_hands.boards[newindex] = {};
 			g_hands.boards[newindex].board = "" + g_travellers.event.board[i].board_no;
 		}
 	}
@@ -10493,7 +10493,7 @@ function setDefaultContracts()
 						g_hands.boards[j].Declarer = tline.played_by;
 						g_hands.boards[j].Contract = tline.contract;
 
-						var played = new Array();
+						var played = [];
 
 						var lead = leadCard(tline.lead).replace("10","T");
 
@@ -10506,7 +10506,7 @@ function setDefaultContracts()
 
 						played[0] = lead;
 						g_hands.boards[j].Played = played;	// Opening Lead for current pair
-						g_hands.boards[j].Bids = new Array();
+						g_hands.boards[j].Bids = [];
 					}
 
 					found = true;
@@ -11694,8 +11694,8 @@ function dlmToJson(data)
 	var dealerPattern = "NESW";
 	var vulnerabilityPattern = ["None","NS","EW","All","NS","EW","All","None","EW","All","None","NS","All","None","NS","EW"];
 	var cards = "AKQJT98765432";
-	var hands = new Array();
-	var quadrant = new Array();
+	var hands = [];
+	var quadrant = [];
 
 		// Make sure there is a defined "trim" function (needed for IE8 and earlier)
 	if(typeof String.prototype.trim !== 'function') {
@@ -11821,12 +11821,12 @@ function convertHand(cards,hand)
 	var suits = "SHDC";
 	var values = "23456789TJQKA";
 	var suitIndex = 0;
-	var currentHand = new Array();
+	var currentHand = [];
 	var i,j;
 
 	for (i=0;i<4;i++)
 	{
-		currentHand[i] = new Array();
+		currentHand[i] = [];
 
 		for (j=0;j<13;j++)
 			currentHand[i][j] = 0;
@@ -11895,7 +11895,7 @@ function writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,clai
 	var direction = "NESW";
 	var i;
 	var namOffset = 0;
-	var names = new Array();
+	var names = [];
 
 	if ((boardStr.indexOf(".Closed")!=-1)&&(pnames_g.length==8)) namOffset = 4;
 
@@ -11920,8 +11920,8 @@ function writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,clai
 			if (pname.indexOf("~~")==0) pname = pname + " (Robot)";
 			outStr += "\"" + pname + "\"";
 
-			var entry = new Object();
-			entry.transList = new Object();
+			var entry = {};
+			entry.transList = {};
 			g_accTrans[pname] = entry;
 		}
 
@@ -12038,9 +12038,9 @@ function linToJson(str)
 	}
 
 	var dealerSelect = ["S","W","N","E"];
-	var bids = new Array();
-	var played = new Array();
-	var playerNames = new Array();
+	var bids = [];
+	var played = [];
+	var playerNames = [];
 	var boardDealt = false;
 	var outStr = "";
 	var i,j;
@@ -12074,7 +12074,7 @@ function linToJson(str)
 		var east = "";
 		var claimed = "";
 		var score = "";
-		var pnames = new Array();
+		var pnames = [];
 		var count = 0;
 		var explanation = "";
 
@@ -12095,10 +12095,10 @@ function linToJson(str)
 					count++;
 
 					outStr += writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,claimed,pnames,playerNames,score,explanation);
-					pnames = new Array();
+					pnames = [];
 
-					bids = new Array();
-					played = new Array();
+					bids = [];
+					played = [];
 					vul="";
 					dealer="";
 					deal="";
@@ -12122,9 +12122,9 @@ function linToJson(str)
 					count++;
 
 					outStr += writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,claimed,pnames,playerNames,score,explanation);
-					pnames = new Array();
-					bids = new Array();
-					played = new Array();
+					pnames = [];
+					bids = [];
+					played = [];
 					vul="";
 					dealer="";
 					deal="";
@@ -12190,11 +12190,11 @@ function linToJson(str)
 					deal = para.substring(1);
 
 					var hands  = deal.split(",");
-					var cards = new Array();
+					var cards = [];
 
 					for (j=0;j<4;j++)
 					{
-						cards[j] = new Array();
+						cards[j] = [];
 
 						for (k=0;k<13;k++)
 							cards[j][k]=0;
@@ -12256,7 +12256,7 @@ function linToJson(str)
 			count++;
 
 			outStr += writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,claimed,pnames,playerNames,score,explanation);
-			pnames = new Array();
+			pnames = [];
 		}
 
 		outStr += "]";
@@ -12375,12 +12375,12 @@ function loadHands_1(data,statusText,jqXHR,context)
     var saved_boards = g_hands.boards;
 
 	var i;
-	var board = new Object();
+	var board = {};
 
 	if (typeof g_hands.boards!=="undefined")
 		board = g_hands.boards[g_lastBindex].board;
 	else
-		saved_boards = new Object();
+		saved_boards = {};
 
 	g_hands.boards = hands.boards;
 
@@ -13032,7 +13032,7 @@ function listener(event,workerType)
 						// generate benchmarking request
 					var dealstr = "W:.AKQT954.KJ64.72xAKJ8.82.A8.KJT64x97652.76.Q92.AQ8xQT43.J3.T753.953";
 
-					var msg = new Object();
+					var msg = {};
 					msg.request = "g";
 					msg.pbn = dealstr;
 					msg.trumps = "H";
@@ -13040,7 +13040,7 @@ function listener(event,workerType)
 					msg.requesttoken = 1;
 					msg.sockref = 1;
 
-					var context = new Object();
+					var context = {};
 					context.request = msg.request;
 					context.para = "benchmark";
 					msg.context = context;
@@ -13142,7 +13142,7 @@ function stopBackgroundWorkers()
 		g_mworkers[i].terminate();
 	}
 
-	g_mworkers = new Array();
+	g_mworkers = [];
 
 	g_workerInitCount = 0;
 	g_nextmworker = 0;

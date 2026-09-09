@@ -31,7 +31,7 @@ function getNodeValueByName(node,name)
 
 function convertXML(data)
 {
-	var bdindices = new Array();
+	var bdindices = [];
 	var i,j;
 	var tximps = false; // true if cross imp fields present for teams events
 	var parser = new DOMParser();
@@ -40,8 +40,8 @@ function convertXML(data)
 	
 	var txt = getNodeValue(evNode);
 	
-	var json = new Object();
-	json.event = new Object();
+	var json = {};
+	json.event = {};
 	
 	json.event.event_type = getAttribute(evNode,"EVENT_TYPE");
 	
@@ -90,9 +90,9 @@ function convertXML(data)
 	else
 		json.event.winner_type = Number(json.event.winner_type);
 	
-	var participants = new Object();
+	var participants = {};
 	json.event.participants = participants;
-	var pair = new Array();
+	var pair = [];
 	participants.pair = pair;
 	
 	var participants = evNode.getElementsByTagName("PARTICIPANTS")[0];
@@ -101,7 +101,7 @@ function convertXML(data)
 	for (i=0;i<pnodes.length;i++)
 	{
 		var cpnode = pnodes[i];
-		var cpair = new Object();
+		var cpair = {};
 		
 		if (json.event.winner_type==1)
 			cpair.direction = "N";
@@ -123,10 +123,10 @@ function convertXML(data)
 		cpair.total_score = getNodeValueByName(cpnode,"TOTAL_SCORE"); // ****?????
 		
 		var playerNodes = cpnode.getElementsByTagName("PLAYER_NAME");
-		var players = new Array();
-		players[0] = new Object();
+		var players = [];
+		players[0] = {};
 		players[0].player_name = getNodeValue(playerNodes[0]);
-		players[1] = new Object();
+		players[1] = {};
 		players[1].player_name = getNodeValue(playerNodes[1]);
 		cpair.player = players;
 		pair.push(cpair);
@@ -134,7 +134,7 @@ function convertXML(data)
 	
 	var boardNodes = evNode.getElementsByTagName("BOARD");
 	
-	var board = new Array();
+	var board = [];
 	json.event.board = board;
 	
 	for (i=0;i<boardNodes.length;i++)
@@ -151,10 +151,10 @@ function convertXML(data)
 		}
 		else
 		{
-			cboard = new Object();
+			cboard = {};
 			cboard.board_no = boardno;
 			bdindices[boardno] = cboard;
-			tlines = new Array();
+			tlines = [];
 			cboard.traveller_line = tlines;
 			board.push(cboard);
 		}
@@ -164,7 +164,7 @@ function convertXML(data)
 		for (j=0;j<nodeTlines.length;j++)
 		{
 			var cnTline = nodeTlines[j];
-			var tline = new Object();
+			var tline = {};
 			
 			tline.lead = getNodeValueByName(cnTline,"LEAD");	// Should reverse this 
 			tline.contract = getNodeValueByName(cnTline,"CONTRACT");

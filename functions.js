@@ -79,8 +79,8 @@ function startup(){
 							[430,490,10],[500,590,11],[600,740,12],[750,890,13],[900,1090,14],
 							[1100,1290,15],[1300,1490,16],[1500,1740,17],[1750,1990,18],[2000,2240,19],
 							[2250,2490,20],[2500,2990,21],[3000,3490,22],[3500,3990,23],[4000,32767,24]];
-		g_checkContracts = new Array();
-		g_scorecardContext = new Array();	// Array of context objects for current scorecard, indexed by board number
+		g_checkContracts = [];
+		g_scorecardContext = [];	// Array of context objects for current scorecard, indexed by board number
 		g_uniquePairNumbers = "";		// Set to true or false for Teams events from within function checkForUniquePairNumbers
 		g_showAllControls = true;
 		g_isMobi = false;				// True if a mobile device
@@ -93,12 +93,12 @@ function startup(){
 		g_vulBarLength = 0;				// Height or width of vulnerability bar
 
 		g_worker;						// Worker for Play It Again
-		g_mworkers = new Array();		// Workers for makeable contract calculation
+		g_mworkers = [];		// Workers for makeable contract calculation
 		g_nextmworker = 0;
 		g_workerInitCount = 0;
 		g_db = null;					// Database handle for indexedDB
 
-		g_bgObj = new Object();
+		g_bgObj = {};
 		g_completionCount = 0;			// Count of background accuracy requests completed
 		g_completionTarget = 0;			// Used for background player accuracy requests
 
@@ -110,8 +110,8 @@ function startup(){
 		g_initial_options = "";
 		g_newFeatureNoticeShown = 0;	// Set to 1 if has been shown already during this session
 		g_initialised = false;			// Set true in buildpage1
-		g_playerAcc = new Array();		// Holds player accuracy counts for event, indexed by player name
-		g_accTrans = new Object();		// Holds list of acc transactions outstanding for each player
+		g_playerAcc = [];		// Holds player accuracy counts for event, indexed by player name
+		g_accTrans = {};		// Holds list of acc transactions outstanding for each player
 
 		cacheTimeout = 300000;			// Limit in milliseconds on how long PBN and json are kept in Local Storage
 		//processRequest();
@@ -413,10 +413,10 @@ function startup(){
 						pvalue = pvalue.toUpperCase();
 						var pvalue2 = "";
 						pvalue2 = pvalue.charAt(1).concat(pvalue.charAt(0));
-						var played = new Array();
+						var played = [];
 						played[0] = pvalue2;
 						board.Played = played;
-						board.Bids = new Array();
+						board.Bids = [];
 					}
 				}
 				else if (pname=="lin")
@@ -687,14 +687,14 @@ function startup(){
   function createEmptyBoard()
   {
 		startup();
-  		var result = new Object();
-		var board = new Object();
+  		var result = {};
+		var board = {};
 		board.board = "1";
 		board.Vulnerable = "None";
 		board.Dealer = "N";
 		board.Deal = ["...","...","...","..."];
 		board.DoubleDummyTricks = "********************";
-		result.boards = new Array();
+		result.boards = [];
 		result.boards.push(board);
 
 // 		document.getElementById("form1").style.display = "none";
@@ -707,7 +707,7 @@ function startup(){
       reader.addEventListener(
           "load",
           (e) => {
-                var result = new Object();
+                var result = {};
                 result.handstr = e.target.result;
 
                 var filename = file.name.toUpperCase();
@@ -1331,7 +1331,7 @@ function processClipboardData(text)
 {
 	var clipBoardData = text;  // + "\n";  // To make sure boards are recognized
 
-	var result = new Object();
+	var result = {};
 	result.handstr = clipBoardData;
 	result.board=1;
 

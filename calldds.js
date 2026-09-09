@@ -1,10 +1,10 @@
 // JavaScript Document
-		var playedCards = new Array();
-		var history = new Array();
+		var playedCards = [];
+		var history = [];
 		
-		var log = new Object();
+		var log = {};
 		log.remainCards;
-		log.currentTrickCards = new Array();
+		log.currentTrickCards = [];
 		log.trumps = "";
 		log.leader = "";
 		log.player = "";
@@ -18,7 +18,7 @@
 		var playDir = "nesw";
 		var cardStr = "23456789TJQKA";
 		var suitStr = "SHDC";
-		var players = new Array();
+		var players = [];
 
 var Module = {
 	onAbort: function() {
@@ -46,7 +46,7 @@ var Module = {
 					var sockref = "" + event.data.sockref;
 					
 					var r1=res(dealstr,null,request,null,vulstr,null,leadstr,null,sockref,null);
-					msg = new Object();
+					msg = {};
 					r1 = JSON.parse(r1);
 					r1.sess.pbn = dealstr;
 					r1.sess.leadstr = event.data.leadstr;
@@ -56,7 +56,7 @@ var Module = {
 				else if (request=="b")
 				{
 					var vul = convertVulStr(event.data.vulstr);
-					var scores = new Array();
+					var scores = [];
 					
 					var starttime = Date.now();
 					
@@ -69,7 +69,7 @@ var Module = {
 					
 					var elapsed = (Date.now()-starttime)/1000;
 					
-					msg = new Object();
+					msg = {};
 					msg.result = r1;
 					var tmp = JSON.parse(msg.result);				
 					tmp.sess.trumps = event.data.trumps;
@@ -94,7 +94,7 @@ var Module = {
 					var names = event.data.names;
 				
 					var r1=res(dealstr,log.trumps,request,log.leader,null,cards,null,null,null,null);
-					msg = new Object();
+					msg = {};
 					msg.result = r1;
 					msg.context = event.data.context;
 				}
@@ -111,13 +111,13 @@ var Module = {
 					}
 					else
 					{
-						var r1 = new Object();
-						r1.sess = new Object()
+						var r1 = {};
+						r1.sess = {}
 						r1.sess.status = 207;
 						r1.sess.sockref = event.data.sockref;
-						var msg = new Object();
+						var msg = {};
 						msg.result = JSON.stringify(r1);
-						var context = new Object();
+						var context = {};
 						context.request = "u";
 						msg.context = context;
 					}
@@ -131,13 +131,13 @@ var Module = {
 					
 					if (request=="g")
 					{
-						history = new Array();
-						log = new Object();
+						history = [];
+						log = {};
 						log.trumps = event.data.trumps.toUpperCase();
 						log.leader = event.data.leader;
 						dealstr = event.data.pbn;
 						log.remainCards = dealstr;
-						log.currentTrickCards = new Array();
+						log.currentTrickCards = [];
 						log.tricksNS = 0;
 						log.tricksEW = 0;
 						log.trick = 0;
@@ -170,14 +170,14 @@ var Module = {
 							r1 = JSON.parse(r1);
 							dealstr = r1.sess.pbn;
 							log.remainCards = r1.sess.pbn;
-							log.currentTrickCards = new Array();
+							log.currentTrickCards = [];
 							log.trickCard = 0;
 							request = "g";
 						}
 					}
 				
 					r1=res(dealstr,log.trumps,request,log.leader,null,null,null,null,null,null);
-					msg = new Object();
+					msg = {};
 					msg.result = r1;
 					var tmp = JSON.parse(msg.result);
 					
@@ -198,7 +198,7 @@ var Module = {
 						tmp.sess.status = 208;
 						tmp.sess.errno = 0;
 						tmp.sess.remaining = convertPBN(log.remainCards);
-						var cards = new Array();
+						var cards = [];
 						tmp.sess.cards = cards;
 						tmp.sess.currentTrick = log.currentTrickCards;
 						tmp.sess.sockref = event.data.sockref;
@@ -259,7 +259,7 @@ function getBestScore(msg)
 function convertPBN(pbn)
 {
 	var cardStr = "23456789TJQKA";
-	var res = new Array();
+	var res = [];
 	
 	pbn = pbn.substring(2);	// Eliminate W:
 	pbn = pbn.split(" ");	// Gives an array of the four hands, West first
@@ -269,13 +269,13 @@ function convertPBN(pbn)
 		var j=i+1;	// Start with North hand first
 		if (j>3) j=0;
 		
-		var suits = new Array();
+		var suits = [];
 		var hand = pbn[j];
 		hand = hand.split(".");	// Split into suits
 		
 		for (var k=0;k<4;k++)
 		{
-			var values = new Array();
+			var values = [];
 			var str = hand[k];
 			
 			for (m=0;m<str.length;m++)

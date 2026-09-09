@@ -76,4 +76,4 @@ The provided version is based on the DDS3 project (https://github.com/dds-bridge
 The sources for the WebAssembly module can be downloaded from here: https://github.com/krtschil/bsol-wasm/releases.
 
 ## AI support
-Claude/Sonnet 5 helped in analyzing and fixing code when necessary.
+Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

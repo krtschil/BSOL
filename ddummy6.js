@@ -1948,7 +1948,8 @@ function updateUpperLeftQuadrant(boardIndex)
 
 		ocell.style.verticalAlign = "top";
 		namstr += "</div>";
-		ocell.replaceChildren(sanitizeExplanation(namstr)); //innerHTML = namstr + "</div>";
+		//ocell.replaceChildren(sanitizeExplanation(namstr)); //innerHTML = namstr + "</div>";
+		ocell.innerHTML = DOMPurify.sanitize(namstr);
 	}
 	else
 	{
@@ -1986,7 +1987,8 @@ function updateUpperLeftQuadrant(boardIndex)
 				legend.textContent = "Explanation";
 		}
 
-		explanation.replaceChildren(legend, sanitizeExplanation(exp));
+		const clean = DOMPurify.sanitize(exp, { RETURN_DOM_FRAGMENT: true });
+		explanation.replaceChildren(legend,clean);
 		explanation.style.display = "block";
 	} else {
 		document.getElementById("explanation").style.display = "none";
@@ -2000,9 +2002,13 @@ function updateUpperLeftQuadrant(boardIndex)
 		if (typeof g_hands.boards[boardIndex].ScoreTableH != "undefined")
 		{
 			var stH = g_hands.boards[boardIndex].ScoreTableH;
-			document.getElementById("output").replaceChildren(sanitizeExplanation(stH+st)); //innerHTML = stH + st;
+			const clean = DOMPurify.sanitize(stH+st, { RETURN_DOM_FRAGMENT: true });
+			//document.getElementById("output").replaceChildren(sanitizeExplanation(stH+st)); //innerHTML = stH + st;
+			document.getElementById("output").replaceChildren(clean);
 		} else {
-			document.getElementById("output").replaceChildren(sanitizeExplanation("Kon AS St  Score  NS    EW  MP mp " + st)); //innerHTML = "Kon AS St  Score  NS    EW  MP mp " + st;
+			//document.getElementById("output").replaceChildren(sanitizeExplanation("Kon AS St  Score  NS    EW  MP mp " + st)); //innerHTML = "Kon AS St  Score  NS    EW  MP mp " + st;
+			const clean = DOMPurify.sanitize("Kon AS St  Score  NS    EW  MP mp " + st, { RETURN_DOM_FRAGMENT: true });
+			document.getElementById("output").replaceChildren(clean);
 		}
 		document.getElementById("output").style.display = "block";
 	} else {
@@ -2692,7 +2698,9 @@ function setupTraveller(index,active)
 /*		if ((typeof g_hands.Title)!="undefined")
 			g_title = g_hands.Title;*/
 
-		document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
+
+		const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+		document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
 
 		$("#mainTitle").show();
 
@@ -3898,7 +3906,9 @@ function showEmptyProgressBar(text)
 	document.getElementById("editHand").setAttribute("disabled","");
 
 	g_title = "<div id=outerProgress style='float:left;width:800px;height:15px;'><div id=progress style='float:left;width:0px;height:15px;background-color:#88ff88;text-align:left;color:blue;'>" + text + "</div></div>";
-	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
+	
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
 	document.getElementById("outerProgress").width = "800px";
 	document.getElementById("progress").width = "0px";
 }
@@ -3935,7 +3945,8 @@ function finishBackgroundOperation()
 	else
 		g_title = "&nbsp;";
 
-	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
 }
 
 function resetAnalyseAllBoards()
@@ -9232,14 +9243,16 @@ function showRanking()
 	if ((g_eventType=="Teams")&&!sessInfo.singleWinner)
 		str = str + "<br><span style=\"font-size;12px;color:#ff4444;\">Calculated cross imp ranking for individual pairs (assumes NS and EW pairs do not switch direction during the event)</span>";
 
-	document.getElementById("titleText").replaceChildren(sanitizeExplanation(str)); //innerHTML = str;
+	const clean = DOMPurify.sanitize(str, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(clean)); //innerHTML = str;
 	$("#ranking").show();
 	$("#rcheckdiv").show();
 }
 
 function hideRanking()
 {
-	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(sanitizeExplanation(clean)); //innerHTML = g_title;
 	
 	$("#ranking").hide();
 	$("#rcheckdiv").hide();
@@ -13446,7 +13459,8 @@ function buildpage2()
 	if ((typeof g_hands.Title)!="undefined")
 		g_title = g_hands.Title;
 
-	document.getElementById("titleText").replaceChildren(sanitizeExplanation(g_title)); //innerHTML = g_title;
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
 
 	setupCommandHelp();
 	setupPlayHelp();

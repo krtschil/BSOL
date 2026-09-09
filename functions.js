@@ -450,7 +450,8 @@ function startup(){
 						b.file = pvalue;
 						let fn = document.getElementById("filename");
 						pvalue = "<br>(" + pvalue +")";
-						fn.replaceChildren(sanitizeExplanation(pvalue));
+						const clean = DOMPurify.sanitize(pvalue, { RETURN_DOM_FRAGMENT: true });
+						fn.replaceChildren(clean);
 						//document.getElementById("filename").innerHTML="<br>(" + pvalue +")";
 					}
 				}
@@ -557,7 +558,13 @@ function startup(){
 			}
 			else
 			{
-				board = JSON.parse(jsonlin);
+				//board = JSON.parse(jsonlin);
+				try {
+					board = JSON.parse(jsonlin);
+				} catch (error) {
+					console.error("Invalid jsonlin parameter", error);
+					return "";
+				}
 				b.boards[0] = board;
 
 				if (validateBoard(board)==0) return "";
@@ -770,7 +777,8 @@ function startup(){
 				evt.target.value = null;
 				let fn = document.getElementById("filename");
 				let tmp = "<br>(" + infile.name +")";
-				fn.replaceChildren(sanitizeExplanation(tmp));
+				const clean = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
+				fn.replaceChildren(clean);
 				//document.getElementById("filename").innerHTML="<br>(" + infile.name +")";
 			}
 			else

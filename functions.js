@@ -423,7 +423,7 @@ function startup(){
 				{
 					b.lin = pvalue;
 				}
-				else if ((pname=="eventid")|(pname=="event"))
+				else if ((pname=="eventid")||(pname=="event"))
 				{
 					b.event = pvalue;
 				}
@@ -579,7 +579,7 @@ function startup(){
 
 	var level = pvalue.charAt(0);
 
-	if ((level<"1")|(level>"7")) return false;
+	if ((level<"1")||(level>"7")) return false;
 	if (suits.indexOf(pvalue.charAt(1))==-1) return false;
 
 	return true;
@@ -764,7 +764,7 @@ function startup(){
 		{
 			var infile = files[0];
 			//alert(infile.name);
-			if (infile.name.toUpperCase().endsWith(".PBN")|infile.name.toUpperCase().endsWith(".LIN")|infile.name.toUpperCase().endsWith(".DLM"))
+			if (infile.name.toUpperCase().endsWith(".PBN")||infile.name.toUpperCase().endsWith(".LIN")||infile.name.toUpperCase().endsWith(".DLM"))
 			{
 				readText(infile);
 				evt.target.value = null;
@@ -965,11 +965,11 @@ function krCalc(suits)
 		if ((suit.length>=2)&&(suit.length<=6))
 		{
 			if (suit.includes("T"))
-				if ((suit.includes("J"))|(higherHonourCount(suit,"J")>=2))
+				if ((suit.includes("J"))||(higherHonourCount(suit,"J")>=2))
 					krpoints += 0.5;	// Rule 6
 
 			if (suit.includes("9"))
-				if (suit.includes("8")|suit.includes("T")|(higherHonourCount(suit,"T")==2))
+				if (suit.includes("8")||suit.includes("T")||(higherHonourCount(suit,"T")==2))
 					krpoints += 0.5; //Rule 7
 		}
 
@@ -981,7 +981,7 @@ function krCalc(suits)
 		}
 
 		if (suit.length>=7)
-			if ((!suit.includes("Q"))|(!suit.includes("J")))
+			if ((!suit.includes("Q"))||(!suit.includes("J")))
 				krpoints += 1;	// Rule 9
 
 		if (suit.length>=8)
@@ -1007,7 +1007,7 @@ function krCalc(suits)
 
 		if ((suit.length>=3)&&(suit.includes("Q")))
 		{
-			if ((suit.includes("A"))|(suit.includes("K")))
+			if ((suit.includes("A"))||(suit.includes("K")))
 				krpoints += 1;	// Rule 16
 
 			if ((!suit.includes("A"))&&(!suit.includes("K")))
@@ -1016,7 +1016,7 @@ function krCalc(suits)
 
 		if ((suit.length==2)&&(suit.includes("Q")))
 		{
-			if ((suit.includes("A"))|(suit.includes("K")))
+			if ((suit.includes("A"))||(suit.includes("K")))
 				krpoints += 0.5;	// Rule 18
 			else
 				krpoints += 0.25;	// Rule 19

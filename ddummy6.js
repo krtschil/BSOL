@@ -585,7 +585,7 @@ function createMiniHandString(hand,index)
 				cardindex = Number(card) - 2;
 			}
 
-			if ((g_handEntryMode==0)|(g_playableCards[i][cardindex]==-1))
+			if ((g_handEntryMode==0)||(g_playableCards[i][cardindex]==-1))
 				points = points + incPoints;
 
 			text = text + convertHonourCards(cardstr);
@@ -671,7 +671,7 @@ function createHandString(hand,index)
 	var cardFontSize =  Math.round(0.9*g_textBratio*g_sectionHeight/4) + "px";
 	var subFontSize =  Math.round(0.45*(g_textBratio*g_sectionHeight/4)) + "px";
 
-	if ((index==0)|(index==2))	// North/South Hand
+	if ((index==0)||(index==2))	// North/South Hand
 	{
 		showSubscript = document.getElementById("nsrad1").checked;
 		showColorCode = !document.getElementById("nsrad3").checked;
@@ -759,7 +759,7 @@ function createHandString(hand,index)
 
 			cardstr = convertHonourCards(cardstr);
 
-			if ((g_handEntryMode==0)|(g_playableCards[i][cardindex]==-1))
+			if ((g_handEntryMode==0)||(g_playableCards[i][cardindex]==-1))
 				points = points + incPoints;
 
 			var score = g_playableCards[i][cardindex];
@@ -806,7 +806,7 @@ function createHandString(hand,index)
 			else if (g_inactiveCards[i][cardindex]!=0)
 				text = text + "<button style=\"margin:0px;border:0px;background-color:#EEEEEE;color:#CCCCCC;font-size:" + cardFontSize + ";font-weight:bold;height:" + buttHeight + ";padding:1px;vertical-align:text-top\"><span  style='text-align:center;line-height:1em;'>" + cardstr + "</span></button> ";
 			else
-				if ((g_handEntryMode==0)|(g_inputDir!=index))
+				if ((g_handEntryMode==0)||(g_inputDir!=index))
 					text = text + "<button class=blankButton style=\"height:" + buttHeight + ";font-size:" + cardFontSize + ";font-weight:bold;\"><span  style='text-align:center;line-height:1em;'>" + cardstr + "</span></button> ";
 				else
 					text = text + "<button id=\"button" + id + "\" onclick=\"deselectCard(this);\" style=\"margin:0px;cursor:pointer;background-color:#FFFFFF;height:" + buttHeight + ";min-width:30px;font-size:" + cardFontSize + ";font-weight:bold;padding:1px;vertical-align:text-top\"><span style='text-align:center;line-height:1em;'>" + cardstr + "<sub style=\"font-size:12px;font-style:italic;vertical-align:-5%;\">&#10004;</sub></span></button>";
@@ -1195,7 +1195,7 @@ function processPosition(hcards,para)
 			var suits = data.values;
 			var currentTricks;
 
-			if ((g_currentPlayer==0)|(g_currentPlayer==2))	// North/South
+			if ((g_currentPlayer==0)||(g_currentPlayer==2))	// North/South
 				currentTricks = hcards.tricksNS;
 			else
 				currentTricks = hcards.tricksEW;
@@ -1218,7 +1218,7 @@ function processPosition(hcards,para)
 
 		if ((hcards.trick==0)&&(hcards.trickCard==0))
 		{
-			if ((g_session_contract.charAt(0)=="-")|(g_session_contract.charAt(0)=="*"))
+			if ((g_session_contract.charAt(0)=="-")||(g_session_contract.charAt(0)=="*"))
 			{
 				var maxTricksDeclarer = g_partialHandTotalTricks - g_hiscore;
 				var minusTricks;
@@ -1697,7 +1697,7 @@ function showBidding()
 		var color;
 		if (vul=="All") color = red;
 		else if (vul=="None") color = green;
-		else if ((i==0)|(i==2))
+		else if ((i==0)||(i==2))
 		{
 			if (vul=="EW") color = red; else color = green;
 		}
@@ -1843,7 +1843,7 @@ function lottPair(direction)
 			t2 = getMakeableTricksForContract(g_lastBindex,"1"+suitChars.charAt(suit),"W");
 		}
 
-		if ((t1!=-1)|(t2!=-1))
+		if ((t1!=-1)||(t2!=-1))
 		{
 			tricks = t1;
 			if (t2>t1) tricks = t2;
@@ -2114,13 +2114,13 @@ function calculateTricks(bindex)
 						}
 					}
 
-					if ((trickdir==0)|(trickdir==2))
+					if ((trickdir==0)||(trickdir==2))
 						nstricks++;
 					else
 						ewtricks++;
 				}
 
-				if ((curBoard.Declarer=="N")|(curBoard.Declarer=="S"))
+				if ((curBoard.Declarer=="N")||(curBoard.Declarer=="S"))
 					tricks = nstricks;
 				else
 					tricks = ewtricks;
@@ -2327,7 +2327,7 @@ function setupTraveller(index,active)
 
 //		if ((typeof g_hands.lin)=="undefined")
 		{
-			if ((((g_test==1))&&(g_file==''))|(g_xml!=""))
+			if ((((g_test==1))&&(g_file==''))||(g_xml!=""))
 			{
 				show("bsession");
 				show("bsessionHelp");
@@ -2698,7 +2698,7 @@ function setupTraveller(index,active)
 
 		if ((typeof g_hands.display)=="undefined")
 		{
-			if ((g_hands.boards[g_lastBindex].DoubleDummyTricks == "********************")|(g_hands.boards[g_lastBindex].DoubleDummyTricks == "--------------------"))
+			if ((g_hands.boards[g_lastBindex].DoubleDummyTricks == "********************")||(g_hands.boards[g_lastBindex].DoubleDummyTricks == "--------------------"))
 			{
 				if (checkBoardValid(g_lastBindex))
 				{
@@ -2718,9 +2718,9 @@ function setDealerChar(dir,vul)
 
 		if (vul=="All")
 			dealerChar = dealerCharWhite;
-		else if ((vul=="NS")&&((dir=="North")|(dir=="South")))
+		else if ((vul=="NS")&&((dir=="North")||(dir=="South")))
 			dealerChar = dealerCharWhite;
-		else if ((vul=="EW")&&((dir=="East")|(dir=="West")))
+		else if ((vul=="EW")&&((dir=="East")||(dir=="West")))
 			dealerChar = dealerCharWhite;
 
 		if (dir=="North")
@@ -2755,7 +2755,7 @@ function edit()
 		log("button=edit");
 		g_edited = 0;
 
-		if ((g_hands.boards[g_lastBindex].board.toString().indexOf(".edited")==-1)&&((g_test==1)|(g_xml!="")))
+		if ((g_hands.boards[g_lastBindex].board.toString().indexOf(".edited")==-1)&&((g_test==1)||(g_xml!="")))
 		{
 			var board = JSON.parse(JSON.stringify(g_hands.boards[g_lastBindex]));
 			var bname = g_hands.boards[g_lastBindex].board.toString().replace(".Open","").replace(".Closed","") + ".edited";
@@ -2960,7 +2960,7 @@ function initHandEntry()
 	{
 		for (j=12;j>=0;j--)
 		{
-			if ((g_playableCards[i][j] != -1)|(g_cardQuadrant[i][j]==g_inputDir))
+			if ((g_playableCards[i][j] != -1)||(g_cardQuadrant[i][j]==g_inputDir))
 				cards = cards + cardStr[j];
 		}
 
@@ -3292,7 +3292,7 @@ function processHandEntry()
 
 	redrawMCTable(true);
 
-	if ((g_test==1)|(g_xml!=""))	// Show only Set Vulnerability if travellers are available - can't save the board so no point showing Dealer
+	if ((g_test==1)||(g_xml!=""))	// Show only Set Vulnerability if travellers are available - can't save the board so no point showing Dealer
 		{
 			switch(language) {
 				case "de":
@@ -3401,7 +3401,7 @@ function hideMenuItems()
 function showMainMenuItems()
 {
 //	if ((typeof g_hands.lin)=="undefined")
-	if ((g_hands.boards.length>1)|(g_test==1)|(g_xml!=""))
+	if ((g_hands.boards.length>1)||(g_test==1)||(g_xml!=""))
 	{
 		show("prev");
 		show("gotoBoard");
@@ -4429,7 +4429,7 @@ function showPlayerAccMatrix()
 				}
 			}
 
-			if ((typeof g_playerAcc[i].boards[bdnum]=="undefined")|!found)	// If didn't play this board (or this instance of this board)
+			if ((typeof g_playerAcc[i].boards[bdnum]=="undefined")||!found)	// If didn't play this board (or this instance of this board)
 			{
 				html += "<td style=\"border:1px solid grey;background-color:white;\"></td>";
 			}
@@ -5201,7 +5201,7 @@ function enterPlayMode()
 
 				g_showOriginalContract = false;
 
-				if ((g_defaultContract==0)|(indx!=g_defaultContractIndex))
+				if ((g_defaultContract==0)||(indx!=g_defaultContractIndex))
 				{
 					g_showPlay = 0;
 					playContract(declCHARS.charAt(declarer),suitChar,contract);
@@ -5277,7 +5277,7 @@ function checkBoardValid(bindex)
 
 	var deal = g_hands.boards[bindex].Deal;
 
-	if ((deal[0].length!=16)|(deal[1].length!=16)|(deal[2].length!=16)|(deal[3].length!=16))	// Note string length includes embedded dots between the four suits.
+	if ((deal[0].length!=16)||(deal[1].length!=16)||(deal[2].length!=16)||(deal[3].length!=16))	// Note string length includes embedded dots between the four suits.
 	{
 		return false;
 	}
@@ -5686,7 +5686,7 @@ function getRowFromTraveller(pair,direction)
 	{
 		var line = tlines[i];
 
-		if ((((direction==1)|singleWinner)&&(line.ns_pair_number==pair))|(((direction==2)|singleWinner)&&(line.ew_pair_number==pair)))
+		if ((((direction==1)||singleWinner)&&(line.ns_pair_number==pair))||(((direction==2)||singleWinner)&&(line.ew_pair_number==pair)))
 		{
 //			alert("getRowFromTraveller: pair/direction/row: " + pair + "/" + direction + "/" + i + " " + JSON.stringify(line));
 			return i;
@@ -5778,7 +5778,7 @@ function getContractType(contract)
 				return result;
 			}
 
-			if (((level==5)&&(minor.indexOf(suit)!=-1))|((level>=4)&&(major.indexOf(suit)!=-1))|((level>=3)&&(nt==suit)))
+			if (((level==5)&&(minor.indexOf(suit)!=-1))||((level>=4)&&(major.indexOf(suit)!=-1))||((level>=3)&&(nt==suit)))
 			{
 				result.ctype = 1;
 				result.str = "Vollspiel";
@@ -5800,7 +5800,7 @@ function getContractType(contract)
 				return result;
 			}
 
-			if (((level==5)&&(minor.indexOf(suit)!=-1))|((level>=4)&&(major.indexOf(suit)!=-1))|((level>=3)&&(nt==suit)))
+			if (((level==5)&&(minor.indexOf(suit)!=-1))||((level>=4)&&(major.indexOf(suit)!=-1))||((level>=3)&&(nt==suit)))
 			{
 				result.ctype = 1;
 				result.str = "game";
@@ -5836,7 +5836,7 @@ function calcScoreForMakeable(suit,tricks,vulnerable)
 
 	score = score + level*perTrick;
 
-	if ((nt&&level>=3)|((!minor)&&level>=4)|(minor&&(level>=5)))
+	if ((nt&&level>=3)||((!minor)&&level>=4)||(minor&&(level>=5)))
 	{
 		if (vulnerable)
 			score = score + 450;
@@ -5880,7 +5880,7 @@ function getMakeableTricksForContract(index,contract,declarer)
 
 	var value = trickChars.indexOf(cvector.charAt((5*decl) + suit).toUpperCase());
 
-	if ((value=="-")|(value=="*")) return -1;
+	if ((value=="-")||(value=="*")) return -1;
 
 	return Number(value);
 }
@@ -6351,7 +6351,7 @@ function checkHigherScoringPairs(traveller,prow,direction)
 								if (curTricks>=(curLevel+6)) result.bidAndMadeGrandSlam++;
 							}
 						}
-						else if ((curContract.indexOf("x")!=-1)|(curContract.indexOf("*")!=-1))
+						else if ((curContract.indexOf("x")!=-1)||(curContract.indexOf("*")!=-1))
 						{
 							result.wereDoubled++;
 
@@ -6555,7 +6555,7 @@ function scoreContainsAdjustment(tline)
 	if (tline.ns_score == null) tline.ns_score = "";
 	if (tline.ew_score == null) tline.ew_score = "";
 
-	if ((tline.ns_score.toString().indexOf("%")!=-1)|(tline.ew_score.toString().indexOf("%")!=-1)|(tline.score.toString().indexOf("A")!=-1))
+	if ((tline.ns_score.toString().indexOf("%")!=-1)||(tline.ew_score.toString().indexOf("%")!=-1)||(tline.score.toString().indexOf("A")!=-1))
 		return true;
 	else
 		return false;
@@ -6602,7 +6602,7 @@ function calculateMaxImps()
 				var nspts = Number(tline.ns_match_points);
 				var ewpts = Number(tline.ew_match_points);
 
-				if ((nspts<0)|(ewpts<0)) g_scoring = "IMP";
+				if ((nspts<0)||(ewpts<0)) g_scoring = "IMP";
 
 				if (g_eventType!="Teams")
 				{
@@ -6746,7 +6746,7 @@ function comparePairNumbers(a,b)
 		else return -1;
 	}
 
-	if ((a.indexOf("-")!=-1)|(b.indexOf("-")!=-1))	// Hyphenated pair number for team-player1-player2
+	if ((a.indexOf("-")!=-1)||(b.indexOf("-")!=-1))	// Hyphenated pair number for team-player1-player2
 	{
 		a = a.split("-");
 		b = b.split("-");
@@ -6757,7 +6757,7 @@ function comparePairNumbers(a,b)
 
 		for (i=0;i<a.length;i++)
 		{
-			if (Number.isNaN(a[i])|Number.isNaN(b[i])) return 0;
+			if (Number.isNaN(a[i])||Number.isNaN(b[i])) return 0;
 			var result = comparePairNumbers(a[i],b[i]);
 			if (result!=0) return result;
 		}
@@ -6766,7 +6766,7 @@ function comparePairNumbers(a,b)
 	}
 
 		// The pair numbers contain a letter (is it a prefix or a suffix ?)
-	if ((b.charAt(0)>'9')|(a.charAt(0)>'9')) // ACBL Score style (prefix letter)
+	if ((b.charAt(0)>'9')||(a.charAt(0)>'9')) // ACBL Score style (prefix letter)
 	{
 		if (b.charAt(0)<a.charAt(0)) return 1;
 		else if (b.charAt(0)>a.charAt(0)) return -1;
@@ -7112,12 +7112,12 @@ function displayTraveller(pdirection)
 				var colorplus  = green;
 				var colorminus = red;
 
-				if ((sign == 1)&&((tline.played_by=="W")|(tline.played_by=="E")))
+				if ((sign == 1)&&((tline.played_by=="W")||(tline.played_by=="E")))
 				{
 					colorplus = red;
 					colorminus = green;
 				}
-				else if ((sign == -1)&&((tline.played_by=="N")|(tline.played_by=="S")))
+				else if ((sign == -1)&&((tline.played_by=="N")||(tline.played_by=="S")))
 				{
 					colorplus = red;
 					colorminus = green;
@@ -7377,7 +7377,7 @@ function getPairObject(pair,direction,rankNS,rankEW)
 	var sessInfo = getSessionInfo();
 	var i;
 
-	if ((direction==1)|sessInfo.singleWinner)
+	if ((direction==1)||sessInfo.singleWinner)
 	{
 		for (i=0;i<rankNS.length;i++)
 			if (rankNS[i].pair==pair) return rankNS[i];
@@ -7441,7 +7441,7 @@ function getSessionInfo()
 
 	var evtype = g_travellers.event.event_type;
 
-	if ((evtype.toUpperCase()=="TEAMS")|(evtype.toUpperCase()=="SWISS_TEAMS"))
+	if ((evtype.toUpperCase()=="TEAMS")||(evtype.toUpperCase()=="SWISS_TEAMS"))
 		g_eventType = "Teams";
 	else
 		g_eventType = "Paarturnier";
@@ -7662,7 +7662,7 @@ function getRankingInfo()
 
 			data.dd = new Object();
 
-			if ((pairs[i].direction=="N")|sessInfo.singleWinner)
+			if ((pairs[i].direction=="N")||sessInfo.singleWinner)
 				rankNS[rankNS.length] = data;
 			else
 				rankEW[rankEW.length] = data;
@@ -7828,14 +7828,14 @@ function getPlayerInfo(pair,direction)
 
 	for (i=0;i<pairs.length;i++)
 	{
-		if (((pairs[i].direction=="N")&&((direction==1)|singleWinner))&&pair==pairs[i].pair_number)
+		if (((pairs[i].direction=="N")&&((direction==1)||singleWinner))&&pair==pairs[i].pair_number)
 		{
 			pair_found = true;
 			player1 = pairs[i].player[0].player_name;
 			player2 = pairs[i].player[1].player_name;
 			break;
 		}
-		else if (((pairs[i].direction=="E")&&((direction==2)|singleWinner))&&pair==pairs[i].pair_number)
+		else if (((pairs[i].direction=="E")&&((direction==2)||singleWinner))&&pair==pairs[i].pair_number)
 		{
 			pair_found = true;
 			player1 = pairs[i].player[0].player_name;
@@ -8009,53 +8009,53 @@ function getPlayerAndRole(info,tline)
 	var optNW = document.getElementById("pdiroptNW").checked;
 	var optSE = document.getElementById("pdiroptSE").checked;
 
-	if ((info.pair_number==tline.ns_pair_number)&&((info.direction==1)|info.singleWinner))
+	if ((info.pair_number==tline.ns_pair_number)&&((info.direction==1)||info.singleWinner))
 	{
 		found = true;
 		tdirection = 1;	// Played NS
 
 		opp_pair = tline.ew_pair_number;
 
-		if ((tline.played_by=="N")|(tline.played_by=="S"))
+		if ((tline.played_by=="N")||(tline.played_by=="S"))
 		{
 			declarer_pair = true;
 
-			if (((!info.singleWinner)&&(tline.played_by=="N"))|
-				((info.singleWinner)&&optNE&&(tline.played_by=="N"))|
-				((info.singleWinner)&&optNW&&(tline.played_by=="N"))|
+			if (((!info.singleWinner)&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="N"))||
 				((info.singleWinner)&&optSE&&(tline.played_by=="S")))
 			{
 				first = true;
 			}
 		}
-		else if (((!info.singleWinner)&&(tline.played_by=="W"))|
-				((info.singleWinner)&&optNE&&(tline.played_by=="W"))|
-				((info.singleWinner)&&optNW&&(tline.played_by=="W"))|
+		else if (((!info.singleWinner)&&(tline.played_by=="W"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="W"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="W"))||
 				((info.singleWinner)&&optSE&&(tline.played_by=="E")))
 		{
 			first = true;
 		}
 	}
-	else if ((info.pair_number==tline.ew_pair_number)&&((info.direction==2)|info.singleWinner))
+	else if ((info.pair_number==tline.ew_pair_number)&&((info.direction==2)||info.singleWinner))
 	{
 		found = true;
 		tdirection =2 ;	// played EW
 
 		opp_pair = tline.ns_pair_number;
 
-		if ((tline.played_by=="E")|(tline.played_by=="W"))
+		if ((tline.played_by=="E")||(tline.played_by=="W"))
 		{
 			declarer_pair = true;
 
-			if (((!info.singleWinner)&&(tline.played_by=="E"))|
-				((info.singleWinner)&&optNE&&(tline.played_by=="E"))|
-				((info.singleWinner)&&optNW&&(tline.played_by=="W"))|
+			if (((!info.singleWinner)&&(tline.played_by=="E"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="E"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="W"))||
 				((info.singleWinner)&&optSE&&(tline.played_by=="E")))
 				first = true;
 		}
-		else if (((!info.singleWinner)&&(tline.played_by=="N"))|
-				((info.singleWinner)&&(optNE)&&(tline.played_by=="N"))|
-				((info.singleWinner)&&(optNW)&&(tline.played_by=="S"))|
+		else if (((!info.singleWinner)&&(tline.played_by=="N"))||
+				((info.singleWinner)&&(optNE)&&(tline.played_by=="N"))||
+				((info.singleWinner)&&(optNW)&&(tline.played_by=="S"))||
 				((info.singleWinner)&&(optSE)&&(tline.played_by=="N")))
 		{
 			first = true;
@@ -8103,7 +8103,7 @@ function checkInitialDirection(pair)
 
 function played(tline)
 {
-	if ((tline.ns_score=="Bye")|(tline.ew_score=="Bye")) return false;
+	if ((tline.ns_score=="Bye")||(tline.ew_score=="Bye")) return false;
 
 	if (tline.contract!="NP") return true;
 	else if (scoreContainsAdjustment(tline))
@@ -8145,7 +8145,7 @@ function mergeScorecardRows(table,nrows,col)
 	{
 		for (last=first;last<=nrows;last++)
 		{
-			if ((table.rows[1+last].cells[col].innerHTML!=pair)|(last==nrows))
+			if ((table.rows[1+last].cells[col].innerHTML!=pair)||(last==nrows))
 			{
 				if ((table.rows[1+last].cells[col].innerHTML!=pair))
 				{
@@ -8290,17 +8290,17 @@ function setupResultReasons(ctx,result)
 
 	oppsShortNames = oppsInfo.player1.split(" ")[0] + "/" + oppsInfo.player2.split(" ")[0];
 
-	if (((ctx.Vulnerable=="NS")|(ctx.Vulnerable=="All"))&&(ourDir==1))
+	if (((ctx.Vulnerable=="NS")||(ctx.Vulnerable=="All"))&&(ourDir==1))
 		ourVul = true;
-	else if (((ctx.Vulnerable=="EW")|(ctx.Vulnerable=="All"))&&(ourDir==2))
+	else if (((ctx.Vulnerable=="EW")||(ctx.Vulnerable=="All"))&&(ourDir==2))
 		ourVul = true;
 
-	if (((ctx.Vulnerable=="NS")|(ctx.Vulnerable=="All"))&&(oppsDir==1))
+	if (((ctx.Vulnerable=="NS")||(ctx.Vulnerable=="All"))&&(oppsDir==1))
 		oppsVul = true;
-	else if (((ctx.Vulnerable=="EW")|(ctx.Vulnerable=="All"))&&(oppsDir==2))
+	else if (((ctx.Vulnerable=="EW")||(ctx.Vulnerable=="All"))&&(oppsDir==2))
 		oppsVul = true;
 
-	if ((tline.played_by=="N")|(tline.played_by=="S"))
+	if ((tline.played_by=="N")||(tline.played_by=="S"))
 	{
 		declDir = 1;
 		playerInfo = getPlayerInfo(tline.ns_pair_number,1);
@@ -8311,7 +8311,7 @@ function setupResultReasons(ctx,result)
 		playerInfo = getPlayerInfo(tline.ew_pair_number,2);
 	}
 
-	if ((tline.played_by=="N")|(tline.played_by=="E"))
+	if ((tline.played_by=="N")||(tline.played_by=="E"))
 		declName = playerInfo.player1;
 	else
 		declName = playerInfo.player2;
@@ -8536,16 +8536,34 @@ function showNewFeaturesNotice()
 			else
 				shown = false;
 
-			var txt = "<ul><li>Bei den Optionen gibt es eine Auswahlbox, um die Kürzel für Figuren auswählen zu können (JQKA,BDKA,VDRA,or BVHA), Standard ist JQKA</li><br>";
-			txt += "</ul>";
-			txt += "Detaillierte Informationen finden Sie in den  <a href=releaseNotes.htm target=_blank>Release Notes.</a>";
+			switch(language)
+			{
+				case "de":
+					var txt = "<ul><li>Bei den Optionen gibt es eine Auswahlbox, um die Kürzel für Figuren auswählen zu können (JQKA,BDKA,VDRA,or BVHA), Standard ist JQKA</li><br>";
+					txt += "</ul>";
+					txt += "Detaillierte Informationen finden Sie in den  <a href=releaseNotes.htm target=_blank>Release Notes.</a>";
+					break;
+				default:
+					var txt = "<ul><li>The High Card Points display at the bottom left of the board diagram now has the option to display the result of a Kaplan-Rubens hand evaluation. Click on the ? character in the points display box for further explanation.</li>";
+					txt += "</ul>";
+					txt += "See the <a href=releaseNotes.htm target=_blank>release notes</a> for a full history of recent changes.";
+			}
+			
 
 
 			if (!shown)
 			{
 				localStorage.setItem('newFeatureShown','4');
-				var str = "<div style=\"width:500px;\"><span style=\"font-size:24px;\">Neue Funktionen</span><br><span style=\"font-size:15px;\">" + txt + "</span></div>";
-				str += "<br><br><button style=menuButton onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\"><span style=\"font-size:16px;\">Schließen</span></button>";
+				switch(language)
+				{
+					case "de":
+						var str = "<div style=\"width:500px;\"><span style=\"font-size:24px;\">Neue Funktionen</span><br><span style=\"font-size:15px;\">" + txt + "</span></div>";
+						str += "<br><br><button style=menuButton onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\"><span style=\"font-size:16px;\">Schließen</span></button>";
+						break;
+					default:
+						var str = "<div style=\"width:500px;\"><span style=\"font-size:24px;\">New Features</span><br><span style=\"font-size:15px;\">" + txt + "</span></div>";
+						str += "<br><button style=menuButton onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\"><span style=\"font-size:16px;\">Close</span></button>";
+				}
 				doPopupNoTimeout(document.getElementById("boardNumber"),"<span style=\"font-size:16px;color:blue;\">" + str + "</span>",100,50);
 			}
 		}
@@ -8690,9 +8708,9 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 
 						lineCount++;
 
-						if (sortedBoards|(validContract(tline.contract)&&(((n==0)&&declarer_pair&&first)|((n==1)&&declarer_pair&&!first)|((n==2)&&first&&!declarer_pair)|((n==3)&&!first&&!declarer_pair)))|((n==4)&&!validContract(tline.contract)))
+						if (sortedBoards||(validContract(tline.contract)&&(((n==0)&&declarer_pair&&first)||((n==1)&&declarer_pair&&!first)||((n==2)&&first&&!declarer_pair)||((n==3)&&!first&&!declarer_pair)))||((n==4)&&!validContract(tline.contract)))
 						{
-							if (played(tline)|sortedBoards)	// Otherwise board was not actually played
+							if (played(tline)||sortedBoards)	// Otherwise board was not actually played
 							{
 								playedInRole++;
 
@@ -9401,7 +9419,7 @@ function setupRankingTable(table,dir,rankInfo,winners)
 
 	var rows = table.rows;
 
-	if ((g_scoring=="IMP")|(g_scoring=="VP"))	// Change Percentage Column Header
+	if ((g_scoring=="IMP")||(g_scoring=="VP"))	// Change Percentage Column Header
 	{
 		switch(language)
 		{
@@ -9484,7 +9502,7 @@ function setupRankingTable(table,dir,rankInfo,winners)
 
 		if (g_eventType!="Teams")
 		{
-			if (((dir=="NS")&&((info.direction==1)|info.singleWinner))&&pairs[i].pair==info.pair_number)
+			if (((dir=="NS")&&((info.direction==1)||info.singleWinner))&&pairs[i].pair==info.pair_number)
 			{
 				row.cells[2].style.backgroundColor = "pink";
 			}
@@ -10024,13 +10042,13 @@ function getTlineForPair(boardIndex,info)
 		var tline = tlines[k];
 		var x = tline.ns_pair_number;
 
-		if (((info.pair_number==tline.ns_pair_number)&&((info.direction==1)|info.singleWinner)))
+		if (((info.pair_number==tline.ns_pair_number)&&((info.direction==1)||info.singleWinner)))
 		{
 			result.direction = 1;
 			result.tline = tline;
 			return result;
 		}
-		else if (((info.pair_number==tline.ew_pair_number)&&((info.direction==2)|info.singleWinner)))
+		else if (((info.pair_number==tline.ew_pair_number)&&((info.direction==2)||info.singleWinner)))
 		{
 			result.direction = 2;
 			result.tline = tline;
@@ -10118,7 +10136,7 @@ function ddComparisonAll()
 
 							var nsDeclarer = true;
 
-							if ((tline.played_by=="E")|(tline.played_by=="W"))
+							if ((tline.played_by=="E")||(tline.played_by=="W"))
 								nsDeclarer = false;
 
 							var pair = tline.ns_pair_number;
@@ -10276,7 +10294,7 @@ function checkContract(bindex,trindex)
 			var oppTks1 = getMakeableTricksForContract(bindex,line.contract,decl.charAt(oppIndx1));
 			var oppTks2 = getMakeableTricksForContract(bindex,line.contract,decl.charAt(oppIndx2));
 
-			if ((oppTks1>=9)|(oppTks2>=9))
+			if ((oppTks1>=9)||(oppTks2>=9))
 			{
 				result.valid = false;
 				result.possibleSuitDeclError = true;
@@ -10631,10 +10649,10 @@ function needToAnalyse()
 	{
 		if (checkBoardValid(i))
 		{
-			if (((typeof g_hands.boards[i].DoubleDummyTricks)=="undefined")|(g_hands.boards[g_lastBindex].DoubleDummyTricks == "********************")|(g_hands.boards[g_lastBindex].DoubleDummyTricks == "--------------------"))
+			if (((typeof g_hands.boards[i].DoubleDummyTricks)=="undefined")||(g_hands.boards[g_lastBindex].DoubleDummyTricks == "********************")||(g_hands.boards[g_lastBindex].DoubleDummyTricks == "--------------------"))
 				return true;
 
-			if (((typeof g_hands.boards[i].OptimumScore)=="undefined")|(g_hands.boards[i].OptimumScore==""))
+			if (((typeof g_hands.boards[i].OptimumScore)=="undefined")||(g_hands.boards[i].OptimumScore==""))
 				return true;
 
 			if (g_travellers!=null)
@@ -11188,7 +11206,7 @@ function stripComments(fileData)
 			{
 				outData += c;
 
-				if ((c==' ')|(c=='\n'))
+				if ((c==' ')||(c=='\n'))
 					escChar = true;
 				else
 					escChar = false;
@@ -11427,7 +11445,7 @@ function pbnToJson(fileData)
 
 				outStr = outStr + "\"Dealer\":\"" + dealer + "\",";
 
-				if ((vulStr=="Love")|(vulStr=="-")) vulStr = "None";
+				if ((vulStr=="Love")||(vulStr=="-")) vulStr = "None";
 				if (vulStr=="Both") vulStr = "All";
 
 				outStr = outStr + "\"Vulnerable\":\"" + vulStr + "\",";
@@ -11820,7 +11838,7 @@ function convertHand(cards,hand)
 	{
 		var cchar = hand.charAt(i);
 
-		if ((cchar=='S')|(cchar=='H')|(cchar=='D')|(cchar=='C'))
+		if ((cchar=='S')||(cchar=='H')||(cchar=='D')||(cchar=='C'))
 		{
 			suitIndex = suits.indexOf(cchar);
 			if (cchar!='S') str = str + ".";
@@ -12212,7 +12230,7 @@ function linToJson(str)
 			{
 				inHeader = false;
 				para = para.toUpperCase();
-				if ((para=="O")|(para=="0")) vul = "None";
+				if ((para=="O")||(para=="0")) vul = "None";
 				else if (para=="N") vul = "NS";
 				else if (para=="E") vul = "EW";
 				else if (para=="B") vul = "All";
@@ -12328,7 +12346,7 @@ function loadHands_1(data,statusText,jqXHR,context)
 
 	if (g_file!==1)	// If pbn data not supplied as string
 	{
-		if ((g_file=='')|(g_file.toUpperCase().endsWith('PBN')))
+		if ((g_file=='')||(g_file.toUpperCase().endsWith('PBN')))
 			hands = pbnToJson(data);
 		else if (g_file.toUpperCase().endsWith('DLM'))
 			hands = dlmToJson(data);
@@ -12389,7 +12407,7 @@ function loadHands_1(data,statusText,jqXHR,context)
     if ((typeof board.board)!="undefined")
 		index = getTindexByName(g_hands.boards,board.board);
 
-	if ((g_file=='')|(g_xml!="")) // If request is from Bridgewebs, or if xml filename or xml string has been explicitly supplied
+	if ((g_file=='')||(g_xml!="")) // If request is from Bridgewebs, or if xml filename or xml string has been explicitly supplied
 	{
 		g_lastBindex = index;
 		setupTraveller(g_lastBindex,true);
@@ -12838,7 +12856,7 @@ function checkAllContracts()
 					result.possibleSuitDeclError = false;
 				}
 
-				if (result.leadDeclError|result.shortSuit|result.possibleSuitDeclError)
+				if (result.leadDeclError||result.shortSuit||result.possibleSuitDeclError)
 				{
 					result.bindex = i;
 					result.traveller = traveller;

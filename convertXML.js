@@ -45,14 +45,14 @@ function convertXML(data)
 	
 	json.event.event_type = getAttribute(evNode,"EVENT_TYPE");
 	
-	if ((json.event.event_type=="TEAMS")|(json.event.event_type=="TEAMS_OF_FOUR")|(json.event.event_type=="KO"))
+	if ((json.event.event_type=="TEAMS")||(json.event.event_type=="TEAMS_OF_FOUR")||(json.event.event_type=="KO"))
 		json.event.event_type = "Teams";
 	else if (json.event.event_type=="SWISS_TEAMS")
 		json.event.event_type = "Swiss_Teams";
 	else
 		json.event.event_type = "Pairs";
 		
-	if ((json.event.event_type=="Teams")|(json.event.event_type=="Swiss_Teams"))
+	if ((json.event.event_type=="Teams")||(json.event.event_type=="Swiss_Teams"))
 	{
 		var ximpnodes = evNode.getElementsByTagName("NS_CROSS_IMP_POINTS");
 		
@@ -69,7 +69,7 @@ function convertXML(data)
 		json.event.board_scoring_method = "MatchPoints";
 		json.event.match_scoring_method = "MatchPoints";
 	}
-	else if ((board_scoring_method=="IMPS")|(board_scoring_method=="CROSS_IMPS")|(board_scoring_method=="BUTLER_IMPS"))
+	else if ((board_scoring_method=="IMPS")||(board_scoring_method=="CROSS_IMPS")||(board_scoring_method=="BUTLER_IMPS"))
 	{
 		json.event.board_scoring_method = "IMP";
 	}

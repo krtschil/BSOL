@@ -16,3 +16,13 @@ function setHands(hands) {
     g_hands = hands;
     appState.hands = hands;
 }
+
+function setHandEntryMode(enabled) {
+    g_handEntryMode = enabled ? 1 : 0;
+    appState.handEntryMode = enabled;
+}
+
+function setCurrentTraveller(traveller) {
+    g_currentTraveller = traveller;
+    appState.currentTraveller = traveller;
+}

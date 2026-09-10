@@ -6,7 +6,7 @@ function startup(){
 		g_handRecordsFilename;
 		g_hands;
 		g_scoring = 0;					// Set to "IMP" for IMPs scoring.
-		setLastBoardIndex(0);
+		g_lastBindex = 0;
 		g_currentDir;
 		g_currentPair;
 		g_inactiveCards;

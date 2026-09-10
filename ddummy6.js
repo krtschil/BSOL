@@ -1338,7 +1338,7 @@ function quitHandEntryMode()
 		var quadrant = ["northHand","eastHand","southHand","westHand"];
 
 		deselectCurrentDir(g_currentDir);
-		g_handEntryMode = 0;
+		setHandEntryMode(false);
 		setupTraveller(g_lastBindex,true);
 		enterPlayMode();
 		$("#scoreandtraveller").show();
@@ -1363,7 +1363,7 @@ function exitHandEntryMode()
 		var quadrant = ["northHand","eastHand","southHand","westHand"];
 
 		deselectCurrentDir(g_currentDir);
-		g_handEntryMode = 0;
+		setHandEntryMode(false);
 		delete g_inputBoard.Bids;
 		delete g_inputBoard.Played;
 		delete g_inputBoard.Contract;
@@ -2798,7 +2798,7 @@ function setupHandEntryBoard()
 {
 	var i,j,k;
 	var quadrant = ["northHand","eastHand","southHand","westHand"];
-	g_handEntryMode = 1;
+	setHandEntryMode(true);
 	g_inputDir = 0;
 	var cards = "";
 

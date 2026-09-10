@@ -12,7 +12,6 @@ Code has been split into several files:
 - Inline javascript moved into the separate files
 - Upgraded jQuery to `jquery-4.0.0.min.js`
 - Main functionalities remain in `ddummy6.js`
-- Added [DOMPurify](https://github.com/cure53/dompurify) functionality to sanitize strings for `.innerHTML` usage
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:

@@ -964,23 +964,18 @@ function updateParResults(data,pindex)
 	if (pindex==g_lastBindex) updateUpperLeftQuadrant(pindex);
 }
 
-function displayHands()
-{
-	var north = document.getElementById("northHand");
-	var handstr = createHandString(g_hands.boards[g_lastBindex],0);
-	north.innerHTML = handstr.text;
+function displayHands() {
+    const board = appState.hands.boards[appState.lastBoardIndex];
 
-	var east = document.getElementById("eastHand");
-	handstr = createHandString(g_hands.boards[g_lastBindex],1);
-	east.innerHTML = handstr.text;
+    const north = document.getElementById("northHand");
+    const east = document.getElementById("eastHand");
+    const south = document.getElementById("southHand");
+    const west = document.getElementById("westHand");
 
-	var south = document.getElementById("southHand");
-	handstr = createHandString(g_hands.boards[g_lastBindex],2);
-	south.innerHTML = handstr.text;
-
-	var west = document.getElementById("westHand");
-	handstr = createHandString(g_hands.boards[g_lastBindex],3);
-	west.innerHTML = handstr.text;
+    north.innerHTML = createHandString(board, 0).text;
+    east.innerHTML = createHandString(board, 1).text;
+    south.innerHTML = createHandString(board, 2).text;
+    west.innerHTML = createHandString(board, 3).text;
 }
 
 function processPosition(hcards,para)
@@ -2237,7 +2232,7 @@ function setupTraveller(index,active)
 
 	if (index!=g_lastBindex) boardChanged = true;
 
-	g_lastBindex = index;
+	setLastBoardIndex(index);
 
 	$("#board").show();
 	$("#scorecard").show();
@@ -2450,7 +2445,7 @@ function setupTraveller(index,active)
 
 	if (g_session!=0) callddd("q");  // Terminate any double dummy playing g_session that is in progress.
 	g_session = 0;
-	g_lastBindex = index;
+	setLastBoardIndex(index);
 
 	clearCardData();
 
@@ -3036,7 +3031,10 @@ function deleteBoard()
     for (i=0;i<tmp.length;i++)
         g_hands.boards[i] = tmp[i];
 
-    if (g_lastBindex>g_hands.boards.length-1) g_lastBindex = 0;
+    if (g_lastBindex>g_hands.boards.length-1) 
+		{
+			setLastBoardIndex(0);
+		}
 
     quitHandEntryMode();
 }
@@ -5518,7 +5516,7 @@ function showTravellerKeypad()
 	for (i=0;i<g_hands.boards.length;i++)
 	{
 		var board = g_hands.boards[i].board.toString();
-		htmltext = htmltext + "<button onclick=\"$('#popup_box').hide();log('button=gototraveller');g_lastBindex = getTindexByName(g_hands.boards,'" + board + "');showComparison();\" style=\"width:50px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + makeBoardNameString(board) + "</button>";
+		htmltext = htmltext + "<button onclick=\"$('#popup_box').hide();log('button=gototraveller');setLastBoardIndex(getTindexByName(g_hands.boards,'" + board + "'));showComparison();\" style=\"width:50px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + makeBoardNameString(board) + "</button>";
 
 		if ((i%10)==9) htmltext = htmltext + "<br>";
 	}
@@ -8418,7 +8416,7 @@ function setupResultReasons(ctx,result)
 
 	var saveBindex = g_lastBindex;
 
-	g_lastBindex = getTindexByName(g_hands.boards,String(board));
+	setLastBoardIndex(getTindexByName(g_hands.boards,String(board)));
 
 	drawMiniHand();
 	$("#minihand").hide();
@@ -8434,7 +8432,7 @@ function setupResultReasons(ctx,result)
 
 	document.getElementById("popupMakeable").appendChild(cp);
 
-	g_lastBindex = saveBindex;
+	setLastBoardIndex(saveBindex);
 
 	drawMiniHand();	// Draw the original board in case user clicks on the Board button.
 }
@@ -8666,7 +8664,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 								}
 
 								row.cells[0].innerHTML = board.board_no;
-								row.cells[0].onclick = function(){log("operation=selectBoardFromScorecard");g_lastBindex = getTindexByName(g_hands.boards,this.innerHTML);showComparison();};
+								row.cells[0].onclick = function(){log("operation=selectBoardFromScorecard");setLastBoardIndex(getTindexByName(g_hands.boards,this.innerHTML));showComparison();};
 								row.cells[0].className = "myLink";
 
 								ctx.board = board.board_no;
@@ -12344,7 +12342,8 @@ function loadHands_1(data,statusText,jqXHR,context)
 
 	if ((g_file=='')||(g_xml!="")) // If request is from Bridgewebs, or if xml filename or xml string has been explicitly supplied
 	{
-		g_lastBindex = index;
+		setLastBoardIndex(index);
+
 		setupTraveller(g_lastBindex,true);
 		getTraveller(this);
 	}
@@ -12824,7 +12823,7 @@ function checkAllContracts()
 
 		row.insertCell(-1);
 		row.cells[0].innerHTML = g_hands.boards[data.bindex].board;
-		row.cells[0].onclick = function(){g_lastBindex = getTindexByName(g_hands.boards,this.innerHTML);showCheckTraveller();};
+		row.cells[0].onclick = function(){setLastBoardIndex(getTindexByName(g_hands.boards,this.innerHTML));showCheckTraveller();};
 		row.cells[0].style.textAlign="right";
 		row.cells[0].className = "myLink";
 		row.insertCell(-1);
@@ -13100,6 +13099,8 @@ function createMainWorker()
          * */
       g_worker = null;
       g_hands = null;
+	  appState.hands = null; /* mig */
+
       g_initialised = false;
       g_loaded = false;
       console.log("creating main worker thread again");
@@ -13340,6 +13341,7 @@ function buildPage1(data,options)
 	}
 
 	g_hands = data;
+	appState.hands = g_hands; /* mig */
 
 //	g_hands.boards = pbnToJson(g_handstr);
 
@@ -13405,7 +13407,7 @@ function buildpage2()
 
 		if (g_hands.boards.length==1)
 		{
-			g_lastBindex = 0;
+			setLastBoardIndex(0);
 			var board = g_hands.boards[g_lastBindex];
 			var count = 0;
 

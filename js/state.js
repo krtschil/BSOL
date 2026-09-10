@@ -4,10 +4,10 @@ window.appState = {
     lastBoardIndex: 0,
     session: 0,
     currentTraveller: null,
-    handEntryMode: false,
-    inputDirection: 0,
-    currentBoard: null,
-    currentPlayer: null,
-    currentContract: null,
-    currentDeclarer: null
+    handEntryMode: false
 };
+
+function setLastBoardIndex(index) {
+    g_lastBindex = index;
+    appState.lastBoardIndex = index;
+}

@@ -11,3 +11,8 @@ function setLastBoardIndex(index) {
     g_lastBindex = index;
     appState.lastBoardIndex = index;
 }
+
+function setHands(hands) {
+    g_hands = hands;
+    appState.hands = hands;
+}

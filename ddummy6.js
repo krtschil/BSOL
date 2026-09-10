@@ -13098,8 +13098,7 @@ function createMainWorker()
          * Initializing necessary to allow files to be uploaded again (initially a second upload failed)
          * */
       g_worker = null;
-      g_hands = null;
-	  appState.hands = null; /* mig */
+      setHands(null);
 
       g_initialised = false;
       g_loaded = false;
@@ -13340,8 +13339,7 @@ function buildPage1(data,options)
 		}
 	}
 
-	g_hands = data;
-	appState.hands = g_hands; /* mig */
+	setHands(data);
 
 //	g_hands.boards = pbnToJson(g_handstr);
 

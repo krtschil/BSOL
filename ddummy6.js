@@ -2799,7 +2799,7 @@ function setupHandEntryBoard()
 	var i,j,k;
 	var quadrant = ["northHand","eastHand","southHand","westHand"];
 	setHandEntryMode(true);
-	g_inputDir = 0;
+	setInputDirection(0);
 	var cards = "";
 
 	g_inputBoard = g_hands.boards[g_lastBindex];
@@ -2867,7 +2867,7 @@ function deselectCurrentDir(index)
 
 		g_inputBoard.Deal[g_inputDir] = cards2;
 
-		g_inputDir = -1;
+		setInputDirection(-1);
 	}
 }
 
@@ -5176,7 +5176,7 @@ function selectQuadrant(index)
 		if (index!=g_inputDir)
 		{
 			deselectCurrentDir(index);
-			g_inputDir = index;
+			setInputDirection(index);
 			initHandEntry();
 			processHandEntry();
 		}

@@ -2,9 +2,9 @@ window.appState = {
     language: "de",
     hands: null,
     lastBoardIndex: 0,
-    session: 0,
     currentTraveller: null,
-    handEntryMode: false
+    handEntryMode: false,
+    inputDirection: 0
 };
 
 function setLastBoardIndex(index) {
@@ -20,6 +20,11 @@ function setHands(hands) {
 function setHandEntryMode(enabled) {
     g_handEntryMode = enabled ? 1 : 0;
     appState.handEntryMode = enabled;
+}
+
+function setInputDirection(direction) {
+    g_inputDir = direction;
+    appState.inputDirection = direction;
 }
 
 function setCurrentTraveller(traveller) {

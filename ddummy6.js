@@ -1019,7 +1019,7 @@ function processPosition(hcards,para)
 
 				// Check if cards played match what is stored in the hand record up to this point
 			if (g_currentPlayIndex==0)
-				g_lastMatchedPlayIndex = -1;
+				setLastMatchedPlayIndex(-1);
 			else
 			{
 				if ((typeof g_hands.boards[g_lastBindex].Played)!="undefined")
@@ -1028,7 +1028,7 @@ function processPosition(hcards,para)
 
 					if (g_lastMatchedPlayIndex >= (g_currentPlayIndex-2))
 					{
-						g_lastMatchedPlayIndex = g_currentPlayIndex - 2;
+						setLastMatchedPlayIndex(g_currentPlayIndex - 2);
 					}
 
 					if (g_lastMatchedPlayIndex == (g_currentPlayIndex - 2))	// see if card just played is still part of sequence played in match

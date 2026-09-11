@@ -291,3 +291,85 @@ function calcPercentage(tline,sign)
 	percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
 	return Number(percent);
 }
+
+function substituteSuitSymbol(contract)
+{
+		// Adjust the contract string depending on the number of tricks actually made, e.g. 11 tricks in 3NT becomes 3NT+2
+		// Also inserts suit symbols in place of letters in the contract and specifies a monospaced font for displaying the contract.
+	var symbolHeight = Math.floor((g_sectionHeight)/8) + "px";
+	var cardSymbols = ["<img alt=\"Spade\" style=\"height:" + symbolHeight + "\" src=\"pics/spade.gif\">","<img alt=\"Heart\" style=\"height:" + symbolHeight + "\" src=\"pics/heart.gif\">","<img alt=\"Diamond\" style=\"height:" + symbolHeight + "\" src=\"pics/diamond.gif\">","<img alt=\"Club\" style=\"height:" + symbolHeight + "\" src=\"pics/club.gif\">"];
+	var suit = contract.charAt(1);
+
+	if (suit=="S")
+		suit = 0;
+	else if (suit=="H")
+		suit = 1;
+	else if (suit=="D")
+		suit = 2;
+	else if (suit=="C")
+		suit = 3;
+	else
+		suit = -1;
+
+	if (suit!=-1)
+	{
+		if (contract.length>2)
+			return contract.charAt(0) + "<span style=\"font-size:17px;\">" + cardSymbols[suit] + "</span>" + contract.substring(2);
+		else
+			return contract.charAt(0) + "<span style=\"font-size:17px;\">" + cardSymbols[suit] + "</span>";
+	}
+	else
+		return contract;
+}
+
+function calcScoreForMakeable(suit,tricks,vulnerable)
+{
+		// N.B This calculates basic score for a non-doubled contract.
+	var suits = "CDHSN";
+	var score = 0;
+	var minor = false;
+	var nt = false;
+
+	var level = Number(tricks)-6;
+
+	if (suits.indexOf(suit)==4)
+		nt = true;
+	else if (suits.indexOf(suit)<2)
+		minor = true;
+
+	score = 50;	// Basic score for making contract
+
+	if (nt) score = score + 10;
+
+	var perTrick = 20;
+
+	if (!minor) perTrick = 30;
+
+	score = score + level*perTrick;
+
+	if ((nt&&level>=3)||((!minor)&&level>=4)||(minor&&(level>=5)))
+	{
+		if (vulnerable)
+			score = score + 450;
+		else
+			score = score + 250;
+
+		if (level==6)
+		{
+			if (vulnerable)
+				score = score + 750;
+			else
+				score = score + 500;
+		}
+		else if (level==7)
+		{
+			if (vulnerable)
+				score = score + 1500;
+			else
+				score = score + 1000;
+		}
+	}
+
+	return score;
+}
+

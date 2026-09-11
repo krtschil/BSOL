@@ -493,3 +493,51 @@ function showEmptyProgressBar(text)
 	document.getElementById("progress").width = "0px";
 }
 
+function showBidAlert(pthis){
+		// Show the explanation of the bid
+	var id = Number(pthis.id.substring(6));
+	var bids = g_hands.boards[g_lastBindex].Bids;
+	var msg = bids[id];
+	msg = msg.split("|");
+
+	if (msg.length>1)
+		msg = msg[1];
+
+	var popup = document.getElementById("popup_box");
+	popup.style.padding = "2px";
+	popup.style.backgroundColor = "yellow";
+	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
+	const clean = DOMPurify.sanitize("<span style='font-weight:bold;'>" + msg + "</span>", { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //innerHTML = "<span style='font-weight:bold;'>" + msg + "</span>";
+	$("#popup_box").finish();
+	popup.style.display="none";
+	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
+	popup.style.left = (getPosition(pthis).x -  $(popup).width())  + "px";
+}
+
+function showNames(pthis,dir){
+		// Show popup with player names
+	if (pthis.innerHTML == "") return;
+	var pair = pthis.innerHTML;
+	var info = getPlayerInfo(pair,dir);
+	var pairs;
+	var dirLabel = "N/S";
+
+	if (dir==2) dirLabel = "O/W";
+
+	if (info.singleWinner)
+		dirLabel = "Pair";
+
+	var text ="&nbsp;" + info.player1 + " & " + info.player2 + "  " + dirLabel + " " + pair + "&nbsp;";
+
+	var popup = document.getElementById("popup_box");
+	popup.style.padding = "0px";
+	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
+	popup.style.left = getPosition(pthis).x  + "px";
+	const clean = DOMPurify.sanitize(text, { RETURN_DOM_FRAGMENT: true });
+	popup.replaceChildren(clean); //innerHTML = text;
+	$("#popup_box").finish();
+	popup.style.display="none";
+	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
+}
+

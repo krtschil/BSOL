@@ -178,3 +178,116 @@ function comparePairNumbers(a,b)
 		else return 0;
 	}
 }
+
+function makeColor(value)
+{
+	var r = 64 + Math.round((1-value)*192);
+	var g = 64 + Math.round(value*192);
+	var diff = g-r;
+
+	if (diff<0) diff = -diff;
+
+	r = Math.round(r+(192-diff)*r/192);
+	g = Math.round(g+(192-diff)*g/192);
+
+	var color = "rgb(" + r + "," + g + ",0)";
+	return color;
+}
+
+function convertAdjustmentToCrossImps(tline,dir)
+{
+	var nssc1 = tline.score;
+	var ewsc1 = tline.score;
+
+	if (nssc1.toString().charAt(0)=="A")
+	{
+		nssc1 = nssc1.toString().substring(1,3);
+		ewsc1 = ewsc1.toString().substring(3,5);
+	}
+	else
+	{
+		nssc1 = tline.ns_score.toString().replace("%","");
+		ewsc1 = ewsc1.ew_score.toString().replace("%","");
+	}
+
+	var pc = nssc1;
+
+	if (dir==2) pc = ewsc1;
+
+	var percent = Number(pc);
+	percent = (percent - 50)/10;
+	return 2*percent;
+}
+
+function isValidCrossImps(tline)
+{
+	var valid = true;
+
+	if ((typeof tline.ns_cross_imp_points)!=="undefined")
+		if (tline.ns_cross_imp_points==="") valid = false;
+
+	return valid;
+}
+
+function scoreContainsAdjustment(tline)
+{
+
+	if (tline.ns_score == null) tline.ns_score = "";
+	if (tline.ew_score == null) tline.ew_score = "";
+
+	if ((tline.ns_score.toString().indexOf("%")!=-1)||(tline.ew_score.toString().indexOf("%")!=-1)||(tline.score.toString().indexOf("A")!=-1))
+		return true;
+	else
+		return false;
+}
+
+function convertScoreToImps(score1,score2)
+{
+	var diff = Number(score1) - Number(score2);
+
+	var absdiff = diff;
+	if (absdiff<0) absdiff = -diff;
+
+	var i;
+
+	for (i=0;i<g_scoreToImps.length;i++)
+	{
+		var range = g_scoreToImps[i];
+
+		if ((absdiff>=Number(range[0]))&&(absdiff<=Number(range[1])))
+		{
+			if (diff>=0) return Number(range[2]);
+			else return -Number(range[2]);
+		}
+	}
+
+	return null;
+}
+
+function returnPoints(tline,sign)
+{
+	var nspts = Number(tline.ns_match_points);
+	var ewpts = Number(tline.ew_match_points);
+
+	if (g_eventType=="Teams")
+	{
+		nspts = Number(tline.crossImpsNS);
+		ewpts = Number(tline.crossImpsEW);
+	}
+
+	if (sign==-1) return ewpts;
+	else return nspts;
+}
+
+function calcPercentage(tline,sign)
+{
+	var nspts = Number(tline.ns_match_points);
+	var ewpts = Number(tline.ew_match_points);
+
+	var percent = 100*(nspts/(nspts + ewpts));
+
+	if (sign==-1) percent = 100 - percent;
+
+	percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
+	return Number(percent);
+}

@@ -1015,7 +1015,7 @@ function processPosition(hcards,para)
 	{
 		if (g_showPlay!=0)
 		{
-			g_currentPlayIndex = hcards.trick*4 + hcards.trickCard;
+			setCurrentPlayIndex(hcards.trick*4 + hcards.trickCard);
 
 				// Check if cards played match what is stored in the hand record up to this point
 			if (g_currentPlayIndex==0)

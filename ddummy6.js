@@ -5860,6 +5860,492 @@ function showNewFeaturesNotice()
 	} catch (err) {};
 }
 
+function makeScoreClickFunction(tline)
+{
+	return function(){var row=this.parentNode;var bd=row.cells[0].innerHTML;log('button=acc2');getCachedAcc(tline);};
+}
+
+function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards)
+{
+	var j,n;
+	var playedInRoleCombined = 0;
+	var sumOfPercentCombined = 0;
+	var sumOfCrossImpsCombined = 0;
+	var crossImpBoardsCombined = 0;
+	var etfTotalCombined = 0;
+	var etfBoardsCombined = 0;
+	var etfAchievedCombined = 0;
+	var oppDir;
+	var oppInfo;
+	var ctx = {};
+
+	g_scorecardContext = [];
+
+	var rows = table.rows;
+	var srows = stable.rows;
+	while (rows.length>2) table.deleteRow(-1);
+
+	var upperLimit;
+
+	var mPlayer1 = info.player1.trim().split(" ");
+	if (mPlayer1.length>1) mPlayer1 = mPlayer1[0] + " " + mPlayer1[1].charAt(0); else mPlayer1 = mPlayer1[0];
+
+	var mPlayer2 = info.player2.trim().split(" ");
+	if (mPlayer2.length>1) mPlayer2 = mPlayer2[0] + " " + mPlayer2[1].charAt(0); else mPlayer2 = mPlayer2[0];
+
+	if (sortedBoards) upperLimit =1; else upperLimit = 5;
+
+	for (n=0;n<upperLimit;n++)
+	{
+		var lineCount=0;
+		var playedInRole = 0;
+		var sumOfPercent = 0;
+		var sumOfCrossImps = 0;
+		var crossImpBoards = 0;	// Note this number can be fewer than "playedInRole" (some may not count for cross imps in Teams events)
+		var etfTotal = 0;
+		var etfBoards = 0;
+		var etfAchieved = 0;
+		var lastOppPair = -1;
+
+		for (j=0;j<boards.length;j++)
+		{
+			ctx = {};
+			var board = boards[j];
+			var tlines = board.traveller_line;
+
+			sortTravellerLines(tlines,1);
+
+			ctx.tlines = tlines;
+
+			var i,prole,found,tdirection,dirChars,declarer_pair,first;
+
+			var opp_pair;
+
+			for (i=0;i<tlines.length;i++)
+			{
+				var tline = tlines[i];
+
+				if (info.pair_found)
+				{
+					prole = getPlayerAndRole(info,tline);
+					found = prole.found;
+					tdirection = prole.tdirection;
+					declarer_pair = prole.declarer_pair;
+					first = prole.first;
+					opp_pair = prole.opp_pair;
+
+					if (sessInfo.singleWinner)
+					{
+						if (tdirection==1) dirChars = " (EW)"; else dirChars = " (NS)"; // Playing direction of opponents
+					}
+					else
+						dirChars = "";
+
+					if (found)
+					{
+						ctx.row = i;
+						ctx.direction = tdirection;
+
+						if ((lineCount==0)&&!sortedBoards)
+						{
+							table.insertRow(-1);
+							var row = table.rows[table.rows.length-1];
+							row.insertCell(-1);
+							row.cells[0].colSpan = 13;
+							row.cells[0].style.backgroundColor = "#FFFF88";
+							row.cells[0].style.borderRight = "1px solid #cccccc";
+
+							stable.insertRow(-1);
+							var srow = stable.rows[stable.rows.length-1];
+							srow.insertCell(-1);
+							srow.cells[0].colSpan = 2;
+							srow.cells[0].style.backgroundColor = "#FFFF88";
+							srow.cells[0].style.borderRight = "1px solid black";
+							srow.cells[0].style.textAlign = "center";
+
+							var str;
+
+							switch(language)
+							{
+								case "de":
+									if (n==0)
+										str = "Alleinspieler - " + mPlayer1;
+									else if (n==1)
+										str = "Alleinspieler - " + mPlayer2;
+									else if (n==2)
+										str = "Gegenspiel - " + mPlayer1 + " spielt aus";
+									else if (n==3)
+										str = "Gegenspiel - " + mPlayer2 + " spielt aus";
+									else
+										str = "Durchgepasst oder kein Kontrakt vorhanden";
+									break;
+								default:
+									if (n==0)
+										str = "Declarer - " + mPlayer1;
+									else if (n==1)
+										str = "Declarer - " + mPlayer2;
+									else if (n==2)
+										str = "Defending - " + mPlayer1 + " on lead";
+									else if (n==3)
+										str = "Defending - " + mPlayer2 + " on lead";
+									else
+										str = "Passed, or no contract available";
+							}
+
+							row.cells[0].innerHTML = "<span style=\"font-weight:600;\">" + str + "</span>";
+							srow.cells[0].innerHTML = "<span style=\"font-weight:bold;\">" + str + "</span>";
+						}
+
+						lineCount++;
+
+						if (sortedBoards||(validContract(tline.contract)&&(((n==0)&&declarer_pair&&first)||((n==1)&&declarer_pair&&!first)||((n==2)&&first&&!declarer_pair)||((n==3)&&!first&&!declarer_pair)))||((n==4)&&!validContract(tline.contract)))
+						{
+							if (played(tline)||sortedBoards)	// Otherwise board was not actually played
+							{
+								playedInRole++;
+
+								table.insertRow(-1);
+								var row = table.rows[table.rows.length-1];
+
+								if (sortedBoards)
+									if (opp_pair!=lastOppPair)
+									{
+										row.style.borderTop = "1px solid #cccccc";
+									}
+
+								lastOppPair = opp_pair;
+
+								var k;
+
+								for (k=0;k<12+g_ofs;k++)
+								{
+									row.insertCell(-1);
+								}
+
+								row.cells[0].innerHTML = board.board_no;
+								row.cells[0].onclick = function(){log("operation=selectBoardFromScorecard");setLastBoardIndex(getTindexByName(g_hands.boards,this.innerHTML));showComparison();};
+								row.cells[0].className = "myLink";
+
+								ctx.board = board.board_no;
+								g_scorecardContext[board.board_no] = ctx;
+
+								if (g_currentTraveller!=null)
+									if (board.board_no==g_currentTraveller.board_no)
+										row.cells[0].style.backgroundColor = "pink";
+
+								if (g_hands.direction==1) oppDir = 2; else oppDir = 1;
+
+								oppInfo = getPlayerInfo(opp_pair,oppDir);
+
+								var p1 = oppInfo.player1.trim().split(" ");
+								var p2 = oppInfo.player2.trim().split(" ");
+
+								if (sortedBoards)
+									row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1[0] + " & " + p2[0] + ")";
+								else
+								{
+									row.cells[1].innerHTML = opp_pair;
+									row.cells[1].className = "myLink";
+
+									if (tdirection==2)
+										row.cells[1].onclick = row.cells[1].onmouseover = function(){showNames(this,1);};
+									else
+										row.cells[1].onclick = row.cells[1].onmouseover = function(){showNames(this,2);};
+								}
+
+								row.cells[1].style.borderRight = "1px solid black";
+								row.cells[1].style.textAlign = "middle";
+
+								row.cells[1].onmouseout = function(){
+										var popup = document.getElementById("popup_box");
+										popup.textContent = "";
+										popup.style.display="none";
+										$("#popup_box").finish();
+									}
+
+								if (validContract(tline.contract))
+								{
+									var contractLevel = Number(tline.contract.charAt(0));
+									var overtricks = tline.tricks - (contractLevel + 6);
+								}
+
+								var value;
+
+								var nspts = Number(tline.ns_match_points);
+								var ewpts = Number(tline.ew_match_points);
+
+								if (g_scoring!="IMP")
+									value = 100*(nspts/(nspts + ewpts));
+								else
+								{
+									if (g_eventType!="Teams")
+										value = 50*(1 + nspts/g_maxImps);
+									else
+									{
+										if (tdirection==1)	// Played NS
+											value = 50*(1 + (Number(tline.crossImpsNS))/g_maxImps);
+										else
+											value = 50*(1 + (Number(tline.crossImpsEW))/g_maxImps);
+									}
+								}
+
+								if ((tdirection==2)&&(g_eventType!="Teams")) value = 100 - value;
+
+								sumOfPercent = sumOfPercent + value;
+
+								if (g_scoring!="IMP")
+								{
+									value = parseFloat(Math.round(value * 100) / 100).toFixed(0);
+									row.cells[9+g_ofs].innerHTML = value + "%";
+								}
+								else
+								{
+									var showResultBars = true;
+
+									if (g_eventType!="Teams")
+									{
+										if (tdirection==1)
+										{
+											row.cells[9+g_ofs].innerHTML = nspts;
+											sumOfCrossImps += nspts;	// Add to this total for summary section in case cross imp or aggregate scoring used
+											crossImpBoards++;
+										}
+										else
+										{
+											row.cells[9+g_ofs].innerHTML = ewpts;	// Add to this total for summary section in case cross imp or aggregate scoring used
+											sumOfCrossImps += ewpts;
+											crossImpBoards++;
+										}
+									}
+									else
+									{
+										if (tdirection==1)
+										{
+											row.cells[9+g_ofs].innerHTML = tline.crossImpsNS;
+											sumOfCrossImps += Number(tline.crossImpsNS);
+
+											if (tline.crossImpsNS!=="")
+												crossImpBoards++;
+										}
+										else
+										{
+											row.cells[9+g_ofs].innerHTML = tline.crossImpsEW;
+											sumOfCrossImps += Number(tline.crossImpsEW);
+
+											if (tline.crossImpsEW!=="")
+												crossImpBoards++;
+										}
+									}
+								}
+
+								row.cells[9+g_ofs].style.textAlign = "right";
+
+								try {
+									if ((typeof tline.board)!="undefined")
+									{
+										row.cells[9+g_ofs].onclick = function(){var row=this.parentNode;var bd=row.cells[0].innerHTML;log('button=acc2');showPlayAnalysis(bd);};
+										row.cells[9+g_ofs].className = "myLink";
+									}
+								} catch (err) {};
+
+								row.cells[2].style.textAlign = "right";
+
+								var width = (100*value)/100;
+
+								setBars(row.cells,100-width,10+g_ofs,100,"#FF0000","#00FF00",50);
+
+								if (validContract(tline.contract))
+								{
+									row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+									row.cells[3].innerHTML = tline.played_by;
+
+									row.cells[2].style.textAlign = "left";
+
+										//************* change to deal with non-contract (e.g. Passed Out, or Not Played)
+									if (tline.tricks!="")
+									{
+										var overtricks = (tline.tricks - (6 + (Number(tline.contract.charAt(0)))));
+										if (overtricks>=0) overtricks = "+" + overtricks;
+
+										if (overtricks!=0)
+											row.cells[5+g_ofs].innerHTML = overtricks;
+										else
+											row.cells[5+g_ofs].textContent = "=";
+
+										row.cells[4+g_ofs].style.textAlign = "right";
+
+										var backColor = "white";
+
+										row.cells[4+g_ofs].innerHTML = tline.tricks;
+//										row.cells[4+g_ofs].style.backgroundColor = backColor;
+
+										row.cells[5+g_ofs].style.textAlign = "right";
+										row.cells[5+g_ofs].style.borderRight = "1px solid black";
+									}
+
+									if (g_ofs==1)
+									{
+										setLeadForScorecardRow(j,row,tline,declarer_pair);
+//										row.cells[4].className = "myLink";
+										row.cells[4].style.textAlign = "right";
+//										row.cells[4].onclick = function(){var row=this.parentNode;var contract=row.cells[2].innerHTML;var declarer=row.cells[3].innerHTML;var idx = getLeadsIdx(contract,declarer);alert(JSON.stringify(g_hands.boards[getTindexByName(g_hands.boards,row.cells[0].innerHTML)].openingLeads[idx]))};
+									}
+
+									var hindex = getBoardIndex(j);
+
+									if (hindex!=null)
+									{
+										if ((typeof g_hands.boards[hindex].DoubleDummyTricks)!="undefined")
+										{
+											var ntricks2 = getMakeableTricksForContract(hindex,g_hands.boards[hindex].Contract,g_hands.boards[hindex].Declarer);
+											var ETFMode = document.getElementById("ETFMode");
+
+											if (ETFMode!=null)
+											{
+												if (document.getElementById("ETFMode").selectedIndex==1)
+												{
+													var ltricks = getMakeableTricksForLead(hindex,tline);
+
+													if ((declarer_pair)&&(ltricks!=null))
+														if (ltricks!=ntricks2)
+															ntricks2 = ltricks;
+												}
+											}
+
+											backColor = "white";
+
+											if (ntricks2>=0)
+											{
+												var relDD = tline.tricks - ntricks2;
+
+												if (declarer_pair)
+												{
+													if (relDD>0) backColor = "#00FF00";
+													else if (relDD<0) backColor = "#FF0000";
+												}
+												else
+												{
+													relDD = -relDD;
+													if (relDD>0) backColor = "#FF0000";
+													else if (relDD<0) backColor = "#00FF00";
+												}
+
+												if (relDD==0) backColor = "#88FF88";	// Light Green
+
+												etfTotal += relDD;
+												etfBoards++;	// Number of boards for which ETF available.
+
+												if (relDD>=0) etfAchieved++;
+
+												var ddStr = relDD.toString();
+
+												if (relDD==0) ddStr = "=";
+												else if (relDD>0) ddStr = "+" + relDD;
+
+												row.cells[6+g_ofs].innerHTML = ddStr;
+												row.cells[6+g_ofs].style.textAlign = "right";
+												row.cells[6+g_ofs].style.borderLeft = "1px solid #cccccc";
+												setBars(row.cells,etfRange-Number(relDD),7+g_ofs,2*etfRange,"#FF0000","#00FF00",40);
+											}
+											else
+											{
+												setBars(row.cells,etfRange,7+g_ofs,2*etfRange,"#FF0000","#00FF00",40);
+												row.cells[6+g_ofs].colSpan = 2;
+												row.cells[6+g_ofs].textContent = "No Data";
+												row.cells[6+g_ofs].style.borderLeft = "1px solid #cccccc";
+												row.deleteCell(7+g_ofs);
+											}
+										}
+										else
+										{
+											setBars(row.cells,etfRange,7+g_ofs,2*etfRange,"#FF0000","#00FF00",40);
+											row.cells[6+g_ofs].colSpan = 2;
+											row.cells[6+g_ofs].style.borderLeft = "1px solid #cccccc";
+											row.cells[6+g_ofs].textContent = "No Data";
+											row.deleteCell(7+g_ofs);
+										}
+									}
+								}
+								else
+								{
+									if (passed(tline))
+										row.cells[2].textContent = "Passed";
+									else
+										row.cells[2].textContent = "N/A";
+
+									row.cells[7+g_ofs].style.backgroundColor = "white";
+									row.cells[8+g_ofs].style.backgroundColor = "white";
+									row.cells[7+g_ofs].style.borderLeft = "1px solid #CCCCCC";
+									row.cells[8+g_ofs].style.borderLeft = "1px solid #CCCCCC";
+								}
+
+								row.cells[8+g_ofs].style.borderRight = "1px solid black";
+
+								var ourscore = tline.score;
+								var comment = "";
+							}
+
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		playedInRoleCombined += playedInRole;
+		sumOfPercentCombined += sumOfPercent;
+		sumOfCrossImpsCombined += sumOfCrossImps;
+		crossImpBoardsCombined += crossImpBoards;
+		etfAchievedCombined += etfAchieved;
+		etfBoardsCombined += etfBoards;
+		etfTotalCombined += etfTotal;
+
+		if (!sortedBoards) addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,crossImpBoards,etfAchieved,etfBoards,etfTotal);
+	}
+
+	if (!sortedBoards)
+	{
+		stable.insertRow(-1);
+		srow = stable.rows[stable.rows.length-1];
+		srow.insertCell(-1);
+		srow.cells[0].colSpan = 2;
+		srow.cells[0].style.backgroundColor = "#FFFF88";
+		srow.cells[0].style.borderRight = "1px solid black";
+		srow.cells[0].style.textAlign = "center";
+
+		switch(language)
+		{
+			case "de":
+				str = "<span style=\"font-weight:600;\">" + "Gesamtergebnis:" + "</span>";
+				break;
+			default:
+				str = "<span style=\"font-weight:600;\">" + "Overall Result:" + "</span>";
+		}
+		srow.cells[0].innerHTML = str;
+
+		addSummarySection(stable,playedInRoleCombined,sumOfPercentCombined,sumOfCrossImpsCombined,crossImpBoardsCombined,etfAchievedCombined,etfBoardsCombined,etfTotalCombined);
+	}
+
+	if (sortedBoards) mergeScorecardRows(table,table.rows.length-2,1);
+
+	table.insertRow(-1);
+	row = table.rows[table.rows.length-1];
+	row.insertCell(-1);
+	row.cells[0].colSpan=12+g_ofs;
+	row.cells[0].style.whiteSpace = "normal";
+	row.cells[0].style.borderTop = "1px solid black";
+	row.cells[0].style.borderRight = "1px solid #cccccc";
+	switch(language)
+	{
+		case "de":
+			row.cells[0].innerHTML = "<div style=\"max-width:400px;float:left;text-align:left;\"><span style=\"font-size:10px;font-style:italic;\">ETF ist die Zahl der vom aktuellen Paar erzielten Stiche, als Allein- oder Gegenspieler, relativ zur Double Dummy Analyse für einen bestimmten Kontrakt. Angepasstes ETF wird relativ zur Double Dummy Analyse berechnet, bezogen auf das aktuelle Ausspiel der Gegenspieler in einem Kontrakt.</span></div>";
+			break;
+		default:
+			row.cells[0].innerHTML = "<div style=\"max-width:400px;float:left;text-align:left;\"><span style=\"font-size:10px;font-style:italic;\">ETF is the number of tricks made by the current pair, as declarer or defenders, relative to the double dummy target for a particular contract. Adjusted ETF is calculated relative to a revised double dummy target that depends on the actual lead made by the defenders of a contract.</span></div>";
+	}
+
+}
+
 function setupScorecard(keepScrollSetting)
 {
 	g_sessionMode = "scorecard";
@@ -6028,30 +6514,7 @@ function setupScorecard(keepScrollSetting)
 	$("#checkListDiv").hide();
 }
 
-function showRanking()
-{
-	var str = g_title;
 
-	var sessInfo = getSessionInfo();
-
-		// If all pair numbers are recorded as NS pairs, then pair numbers are unique, so we can tell which direction they played
-	if ((g_eventType=="Teams")&&!sessInfo.singleWinner)
-		str = str + "<br><span style=\"font-size;12px;color:#ff4444;\">Calculated cross imp ranking for individual pairs (assumes NS and EW pairs do not switch direction during the event)</span>";
-
-	const clean = DOMPurify.sanitize(str, { RETURN_DOM_FRAGMENT: true });
-	document.getElementById("titleText").replaceChildren(clean); //innerHTML = str;
-	$("#ranking").show();
-	$("#rcheckdiv").show();
-}
-
-function hideRanking()
-{
-	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
-	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
-	
-	$("#ranking").hide();
-	$("#rcheckdiv").hide();
-}
 
 function setupRanking(keepScrollSetting)
 {
@@ -6145,287 +6608,7 @@ function setupRanking(keepScrollSetting)
 	$("#checkListDiv").hide();
 }
 
-function changeCurrentPair(pair,direction)
-{
-	getRankingInfo();
 
-	var data = getPairObject(g_hands.pair_number,g_hands.direction,g_rankInfo.rankNS,g_rankInfo.rankEW);
-
-	if (data!=null)
-	{
-			// find which radio button is checked, out of the direction buttons
-		var button = document.getElementById("pdiroptNW");
-		if (button.checked)
-			data.dirChoice = button;
-		else
-		{
-			button = document.getElementById("pdiroptNE");
-			if (button.checked) data.dirChoice = button;
-			else
-			{
-				data.dirChoice = document.getElementById("pdiroptSE");
-			}
-		}
-	}
-
-	g_hands.pair_number = pair;
-	g_hands.direction = direction;
-
-	data = getPairObject(g_hands.pair_number,g_hands.direction,g_rankInfo.rankNS,g_rankInfo.rankEW);
-
-		// Possibly direction is incorrect, so reverse it. If caller consistently supplies wrong direction, but same pair number range is used
-		// NS and EW, then this cannot be detected.
-	if (data==null)
-	{
-		if (g_hands.direction==1) g_hands.direction = 2;
-		else g_hands.direction = 1;
-
-		data = getPairObject(g_hands.pair_number,g_hands.direction,g_rankInfo.rankNS,g_rankInfo.rankEW);
-	}
-
-	if (g_currentTraveller!=null)
-	{
-		g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
-		if (g_currow==-1) g_currow = 0;
-	}
-
-	if ((typeof data.dirChoice)!="undefined")
-	{
-		data.dirChoice.checked = true;
-	}
-}
-
-function setClickFunctionForNames(cell,pair,direction)
-{
-	cell.onclick = function(){log("operation=selectScorecardForNamedPair");changeCurrentPair(pair,direction);setDefaultContracts();setupScorecard();};
-}
-
-function setupRankingTable(table,dir,rankInfo,winners)
-{
-	var i,j;
-	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
-	var rangeMax = -32767;
-	var rangeMin = 32767;
-
-	if (g_eventType!="Teams")
-	{
-		if (dir=="NS")
-		{
-			pairs = rankInfo.rankNS;
-		}
-		else
-		{
-			pairs = rankInfo.rankEW;
-		}
-	}
-	else
-	{
-		pairs = rankInfo.rankCombined;
-	}
-
-	var rows = table.rows;
-
-	if ((g_scoring=="IMP")||(g_scoring=="VP"))	// Change Percentage Column Header
-	{
-		switch(language)
-		{
-			case "de":
-				rows[0].cells[3].textContent = "Punkte";
-				break;
-			default:
-				rows[0].cells[3].textContent = "Points";
-		}
-
-		for (i=0;i<g_travellers.event.participants.pair.length;i++)
-		{
-			var tvalue;
-
-			if (g_eventType!="Teams")
-				tvalue = g_travellers.event.participants.pair[i].total_score;
-			else
-				tvalue = g_travellers.event.participants.pair[i].crossImpsPerBoard;
-
-			if (tvalue!="")
-			{
-				tvalue =Number(tvalue);
-
-				if (!Number.isNaN(tvalue))
-				{
-					if (tvalue<rangeMin) rangeMin = tvalue;
-					if (tvalue>rangeMax) rangeMax = tvalue;
-				}
-			}
-		}
-	}
-
-	var cellOffset = 0;
-
-	if (g_eventType=="Teams")
-	{
-		rows[0].cells[3].textContent = "Total XImps";
-		rows[0].cells[4].textContent = "Bds";
-		cellOffset = 2;	// Allow for extra column which has been inserted.
-	}
-
-	var shaded = 0;
-
-	for (i=0;i<pairs.length;i++)
-	{
-		if (pairs[i].boardsPlayed==0) continue;
-
-		table.insertRow(-1);
-		var row = table.rows[table.rows.length-1];
-
-		if (shaded!=0)
-		{
-			row.className = "results_tr_grey";
-			shaded = 0;
-		}
-		else
-		{
-			shaded = 1;
-		}
-
-		for (j=0;j<6+cellOffset;j++)
-		{
-			row.insertCell(-1);
-		}
-
-		if (g_eventType!="Teams")
-			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].position;
-		else
-		{
-			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].crossImpsPosition;
-		}
-
-		row.cells[0].style.textAlign = "right";
-
-		row.cells[1].innerHTML = pairs[i].pair;
-
-		var direction = 1;
-
-		if (dir=="EW") direction = 2;
-
-		if (g_eventType!="Teams")
-		{
-			if (((dir=="NS")&&((info.direction==1)||info.singleWinner))&&pairs[i].pair==info.pair_number)
-			{
-				row.cells[2].style.backgroundColor = "pink";
-			}
-
-			if (((dir=="EW")&&(info.direction==2))&&pairs[i].pair==info.pair_number)
-			{
-				row.cells[2].style.backgroundColor = "pink";
-			}
-		}
-		else
-		{
-			if ((pairs[i].pair==info.pair_number)&&(pairs[i].direction==g_hands.direction))
-				row.cells[2].style.backgroundColor = "pink";
-		}
-
-		var pairInfo = getPlayerInfo(pairs[i].pair,pairs[i].direction);
-
-		setClickFunctionForNames(row.cells[2],pairs[i].pair,pairs[i].direction);
-		row.cells[2].innerHTML = pairInfo.player1 + " & " + pairInfo.player2;
-		row.cells[2].style.textAlign="left";
-		row.cells[2].className = "myLink";
-
-		if (g_eventType!="Teams")
-		{
-			if (g_validPercentageFields)
-				row.cells[3+cellOffset].innerHTML = pairs[i].percentage;
-			else
-				row.cells[3+cellOffset].innerHTML = Number(pairs[i].total_score).toFixed(2);
-		}
-		else
-		{
-			row.cells[3].innerHTML = (Number(pairs[i].totalCrossImps)).toFixed(2);
-			row.cells[3].style.textAlign = "right";
-			row.cells[4].innerHTML = pairs[i].crossImpsBoardsPlayed;
-			row.cells[4].style.textAlign = "right";
-			row.cells[4].style.borderRight = "1px solid black";
-			row.cells[3+cellOffset].innerHTML = (Number(pairs[i].crossImpsPerBoard)).toFixed(2);
-		}
-
-		var backColor = "#6666FF";
-
-		if ((g_validPercentageFields)&&(g_eventType!="Teams"))	// Sometimes percentage field is erroneously non-blank for Teams
-		{
-			var width = (100*pairs[i].percent.toFixed(0))/100;
-			width = width + "px";
-			var pbar = "<div style=\"float:left;align:left;width:100px;min-width;100px;max-width:100px;height:16px;border:none;background-color:white;\">";
-			pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\">";
-			pbar = pbar + "</div></div>";
-
-			row.cells[4+cellOffset].style.minWidth = "100px";
-			row.cells[4+cellOffset].innerHTML = pbar;
-			row.cells[4+cellOffset].style.backgroundColor = "white";
-		}
-		else
-		{
-			var width;
-
-			if (g_eventType=="Teams")
-				width = ((100*(pairs[i].crossImpsPerBoard - rangeMin))/(rangeMax - rangeMin)).toFixed(0);
-			else
-				width = (100*(pairs[i].total_score - rangeMin).toFixed(0))/(rangeMax - rangeMin);
-
-			if (width<1) width = 1;	// Fudge factor so that we always see a minimal bar (otherwise bar chart looks as though entry is missing)
-
-			width = width + "px";
-			var pbar = "<div style=\"float:left;align:left;width:100px;min-width;100px;max-width:100px;height:16px;border:none;background-color:white;\">";
-			pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\">";
-			pbar = pbar + "</div></div>";
-
-			row.cells[4+cellOffset].style.minWidth = "100px";
-			row.cells[4+cellOffset].innerHTML = pbar;
-			row.cells[4+cellOffset].style.backgroundColor = "white";
-
-		}
-
-		var nboards = pairs[i].boardsPlayed;
-		var pbar = "<div style=\"float:left;align:left;width:141px;min-width;141px;max-width:141px;height:16px;border:none;background-color:white;\">";
-
-		var dd = pairs[i].dd;
-
-		var backColor = "#00CC00";	// Green
-		var width = (140*dd.ddOverH)/(nboards);
-		width = width + "px";
-		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
-
-
-		var backColor = "#88FF88";	// Light Green
-		var width = (140*dd.ddEqualsH)/(nboards);
-		width = width + "px";
-		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
-
-		var backColor = "#FF0000";	// Red
-		var width = (140*dd.ddUnderH)/(nboards);
-		width = width + "px";
-		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
-
-		var backColor = "#ccccff";	// Light Blue
-		var width = (140*dd.ddUnknown)/(nboards);
-		width = width + "px";
-		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
-
-		pbar = pbar + "</div>";
-
-		row.cells[5+cellOffset].style.minWidth = "100px";
-		row.cells[5+cellOffset].innerHTML = pbar;
-		row.cells[5+cellOffset].style.backgroundColor = "white";
-
-/*		row.insertCell(-1);
-
-		var str="";
-
-		str += getPlayerAcc(pairInfo.player1) + "/";
-		str += getPlayerAcc(pairInfo.player2);
-
-		row.cells[row.cells.length-1].innerHTML = str;*/
-	}
-}
 
 // Array Remove - By John Resig (MIT Licensed)
 Array.prototype.remove = function(from, to) {

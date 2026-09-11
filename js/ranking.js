@@ -551,3 +551,312 @@ function getTlineForPair(boardIndex,info)
 
 	return null;
 }
+
+function showRanking()
+{
+	var str = g_title;
+
+	var sessInfo = getSessionInfo();
+
+		// If all pair numbers are recorded as NS pairs, then pair numbers are unique, so we can tell which direction they played
+	if ((g_eventType=="Teams")&&!sessInfo.singleWinner)
+		str = str + "<br><span style=\"font-size;12px;color:#ff4444;\">Calculated cross imp ranking for individual pairs (assumes NS and EW pairs do not switch direction during the event)</span>";
+
+	const clean = DOMPurify.sanitize(str, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = str;
+	$("#ranking").show();
+	$("#rcheckdiv").show();
+}
+
+function hideRanking()
+{
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
+	
+	$("#ranking").hide();
+	$("#rcheckdiv").hide();
+}
+
+function changeCurrentPair(pair,direction)
+{
+	getRankingInfo();
+
+	var data = getPairObject(g_hands.pair_number,g_hands.direction,g_rankInfo.rankNS,g_rankInfo.rankEW);
+
+	if (data!=null)
+	{
+			// find which radio button is checked, out of the direction buttons
+		var button = document.getElementById("pdiroptNW");
+		if (button.checked)
+			data.dirChoice = button;
+		else
+		{
+			button = document.getElementById("pdiroptNE");
+			if (button.checked) data.dirChoice = button;
+			else
+			{
+				data.dirChoice = document.getElementById("pdiroptSE");
+			}
+		}
+	}
+
+	g_hands.pair_number = pair;
+	g_hands.direction = direction;
+
+	data = getPairObject(g_hands.pair_number,g_hands.direction,g_rankInfo.rankNS,g_rankInfo.rankEW);
+
+		// Possibly direction is incorrect, so reverse it. If caller consistently supplies wrong direction, but same pair number range is used
+		// NS and EW, then this cannot be detected.
+	if (data==null)
+	{
+		if (g_hands.direction==1) g_hands.direction = 2;
+		else g_hands.direction = 1;
+
+		data = getPairObject(g_hands.pair_number,g_hands.direction,g_rankInfo.rankNS,g_rankInfo.rankEW);
+	}
+
+	if (g_currentTraveller!=null)
+	{
+		g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
+		if (g_currow==-1) g_currow = 0;
+	}
+
+	if ((typeof data.dirChoice)!="undefined")
+	{
+		data.dirChoice.checked = true;
+	}
+}
+
+function setClickFunctionForNames(cell,pair,direction)
+{
+	cell.onclick = function(){log("operation=selectScorecardForNamedPair");changeCurrentPair(pair,direction);setDefaultContracts();setupScorecard();};
+}
+
+function setupRankingTable(table,dir,rankInfo,winners)
+{
+	var i,j;
+	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
+	var rangeMax = -32767;
+	var rangeMin = 32767;
+
+	if (g_eventType!="Teams")
+	{
+		if (dir=="NS")
+		{
+			pairs = rankInfo.rankNS;
+		}
+		else
+		{
+			pairs = rankInfo.rankEW;
+		}
+	}
+	else
+	{
+		pairs = rankInfo.rankCombined;
+	}
+
+	var rows = table.rows;
+
+	if ((g_scoring=="IMP")||(g_scoring=="VP"))	// Change Percentage Column Header
+	{
+		switch(language)
+		{
+			case "de":
+				rows[0].cells[3].textContent = "Punkte";
+				break;
+			default:
+				rows[0].cells[3].textContent = "Points";
+		}
+
+		for (i=0;i<g_travellers.event.participants.pair.length;i++)
+		{
+			var tvalue;
+
+			if (g_eventType!="Teams")
+				tvalue = g_travellers.event.participants.pair[i].total_score;
+			else
+				tvalue = g_travellers.event.participants.pair[i].crossImpsPerBoard;
+
+			if (tvalue!="")
+			{
+				tvalue =Number(tvalue);
+
+				if (!Number.isNaN(tvalue))
+				{
+					if (tvalue<rangeMin) rangeMin = tvalue;
+					if (tvalue>rangeMax) rangeMax = tvalue;
+				}
+			}
+		}
+	}
+
+	var cellOffset = 0;
+
+	if (g_eventType=="Teams")
+	{
+		rows[0].cells[3].textContent = "Total XImps";
+		rows[0].cells[4].textContent = "Bds";
+		cellOffset = 2;	// Allow for extra column which has been inserted.
+	}
+
+	var shaded = 0;
+
+	for (i=0;i<pairs.length;i++)
+	{
+		if (pairs[i].boardsPlayed==0) continue;
+
+		table.insertRow(-1);
+		var row = table.rows[table.rows.length-1];
+
+		if (shaded!=0)
+		{
+			row.className = "results_tr_grey";
+			shaded = 0;
+		}
+		else
+		{
+			shaded = 1;
+		}
+
+		for (j=0;j<6+cellOffset;j++)
+		{
+			row.insertCell(-1);
+		}
+
+		if (g_eventType!="Teams")
+			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].position;
+		else
+		{
+			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].crossImpsPosition;
+		}
+
+		row.cells[0].style.textAlign = "right";
+
+		row.cells[1].innerHTML = pairs[i].pair;
+
+		var direction = 1;
+
+		if (dir=="EW") direction = 2;
+
+		if (g_eventType!="Teams")
+		{
+			if (((dir=="NS")&&((info.direction==1)||info.singleWinner))&&pairs[i].pair==info.pair_number)
+			{
+				row.cells[2].style.backgroundColor = "pink";
+			}
+
+			if (((dir=="EW")&&(info.direction==2))&&pairs[i].pair==info.pair_number)
+			{
+				row.cells[2].style.backgroundColor = "pink";
+			}
+		}
+		else
+		{
+			if ((pairs[i].pair==info.pair_number)&&(pairs[i].direction==g_hands.direction))
+				row.cells[2].style.backgroundColor = "pink";
+		}
+
+		var pairInfo = getPlayerInfo(pairs[i].pair,pairs[i].direction);
+
+		setClickFunctionForNames(row.cells[2],pairs[i].pair,pairs[i].direction);
+		row.cells[2].innerHTML = pairInfo.player1 + " & " + pairInfo.player2;
+		row.cells[2].style.textAlign="left";
+		row.cells[2].className = "myLink";
+
+		if (g_eventType!="Teams")
+		{
+			if (g_validPercentageFields)
+				row.cells[3+cellOffset].innerHTML = pairs[i].percentage;
+			else
+				row.cells[3+cellOffset].innerHTML = Number(pairs[i].total_score).toFixed(2);
+		}
+		else
+		{
+			row.cells[3].innerHTML = (Number(pairs[i].totalCrossImps)).toFixed(2);
+			row.cells[3].style.textAlign = "right";
+			row.cells[4].innerHTML = pairs[i].crossImpsBoardsPlayed;
+			row.cells[4].style.textAlign = "right";
+			row.cells[4].style.borderRight = "1px solid black";
+			row.cells[3+cellOffset].innerHTML = (Number(pairs[i].crossImpsPerBoard)).toFixed(2);
+		}
+
+		var backColor = "#6666FF";
+
+		if ((g_validPercentageFields)&&(g_eventType!="Teams"))	// Sometimes percentage field is erroneously non-blank for Teams
+		{
+			var width = (100*pairs[i].percent.toFixed(0))/100;
+			width = width + "px";
+			var pbar = "<div style=\"float:left;align:left;width:100px;min-width;100px;max-width:100px;height:16px;border:none;background-color:white;\">";
+			pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\">";
+			pbar = pbar + "</div></div>";
+
+			row.cells[4+cellOffset].style.minWidth = "100px";
+			row.cells[4+cellOffset].innerHTML = pbar;
+			row.cells[4+cellOffset].style.backgroundColor = "white";
+		}
+		else
+		{
+			var width;
+
+			if (g_eventType=="Teams")
+				width = ((100*(pairs[i].crossImpsPerBoard - rangeMin))/(rangeMax - rangeMin)).toFixed(0);
+			else
+				width = (100*(pairs[i].total_score - rangeMin).toFixed(0))/(rangeMax - rangeMin);
+
+			if (width<1) width = 1;	// Fudge factor so that we always see a minimal bar (otherwise bar chart looks as though entry is missing)
+
+			width = width + "px";
+			var pbar = "<div style=\"float:left;align:left;width:100px;min-width;100px;max-width:100px;height:16px;border:none;background-color:white;\">";
+			pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\">";
+			pbar = pbar + "</div></div>";
+
+			row.cells[4+cellOffset].style.minWidth = "100px";
+			row.cells[4+cellOffset].innerHTML = pbar;
+			row.cells[4+cellOffset].style.backgroundColor = "white";
+
+		}
+
+		var nboards = pairs[i].boardsPlayed;
+		var pbar = "<div style=\"float:left;align:left;width:141px;min-width;141px;max-width:141px;height:16px;border:none;background-color:white;\">";
+
+		var dd = pairs[i].dd;
+
+		var backColor = "#00CC00";	// Green
+		var width = (140*dd.ddOverH)/(nboards);
+		width = width + "px";
+		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
+
+
+		var backColor = "#88FF88";	// Light Green
+		var width = (140*dd.ddEqualsH)/(nboards);
+		width = width + "px";
+		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
+
+		var backColor = "#FF0000";	// Red
+		var width = (140*dd.ddUnderH)/(nboards);
+		width = width + "px";
+		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
+
+		var backColor = "#ccccff";	// Light Blue
+		var width = (140*dd.ddUnknown)/(nboards);
+		width = width + "px";
+		pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\"></div>";
+
+		pbar = pbar + "</div>";
+
+		row.cells[5+cellOffset].style.minWidth = "100px";
+		row.cells[5+cellOffset].innerHTML = pbar;
+		row.cells[5+cellOffset].style.backgroundColor = "white";
+
+/*		row.insertCell(-1);
+
+		var str="";
+
+		str += getPlayerAcc(pairInfo.player1) + "/";
+		str += getPlayerAcc(pairInfo.player2);
+
+		row.cells[row.cells.length-1].innerHTML = str;*/
+	}
+}
+
+

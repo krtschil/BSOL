@@ -79,3 +79,29 @@ function getTindex(boards,traveller)
 
 	return -1;
 }
+
+function getTravellerForBoard(bindex)
+{
+	var i;
+	var traveller = null;
+
+	for (i=0;i<g_travellers.event.board.length;i++)
+	{
+		if (g_travellers.event.board[i].board_no==g_hands.boards[bindex].board)
+		{
+			if (g_travellers.event.board[i].traveller_line.length!=0)
+			{
+				return g_travellers.event.board[i];
+				break;
+			}
+		}
+	}
+
+	return null;
+}
+
+function setCurrentTraveller()
+{
+	g_currentTraveller = getTravellerForBoard(g_lastBindex);
+	return g_currentTraveller;
+}

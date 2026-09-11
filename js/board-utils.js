@@ -256,3 +256,42 @@ function deleteBoard()
 
     quitHandEntryMode();
 }
+
+function showDeleteConfirmation()
+{
+    var htmltext;
+    var boardNam = g_hands.boards[g_lastBindex].board;
+
+	switch(language)
+	{
+		case "de":
+			if (g_hands.boards.length==1)
+			{
+				htmltext = "<span style=\"font-weight:bold;\">Kann das einzige Board nicht löschen</span><br><br>";
+				htmltext = htmltext + "<button onclick=\"document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">OK</button>";
+			}
+			else
+			{
+				htmltext = "<span style=\"font-weight:bold;\">Board  " + boardNam +" löschen?</span><br><br>";
+				htmltext = htmltext + "<button onclick=\"log('button=deleteBoard');deleteBoard();edit();document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">Ja</button>";
+				htmltext = htmltext + "<button onclick=\"document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">Nein</button>";
+			}
+			break;
+		default:
+			if (g_hands.boards.length==1)
+			{
+				htmltext = "<span style=\"font-weight:bold;\">Can't delete only board</span><br><br>";
+				htmltext = htmltext + "<button onclick=\"document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">OK</button>";
+			}
+			else
+			{
+				htmltext = "<span style=\"font-weight:bold;\">Delete Board  " + boardNam +" ?</span><br><br>";
+				htmltext = htmltext + "<button onclick=\"log('button=deleteBoard');deleteBoard();edit();document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">Yes</button>";
+				htmltext = htmltext + "<button onclick=\"document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">No</button>";
+			}
+	}
+
+	var buttLoc = getPosition(document.getElementById("deleteBoard"));
+	doPopupNoTimeout(document.getElementById("deleteBoard"),htmltext,buttLoc.x - 20,buttLoc.y - 100);
+}
+

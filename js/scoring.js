@@ -505,3 +505,20 @@ function getLeadsIdx(contract,declarer)
 
 	return idx;
 }
+
+function played(tline)
+{
+	if ((tline.ns_score=="Bye")||(tline.ew_score=="Bye")) return false;
+
+	if (tline.contract!="NP") return true;
+	else if (scoreContainsAdjustment(tline))
+		return true;
+	else
+		return false;
+}
+
+function passed(tline)
+{
+	if (tline.contract=="Passed") return true;
+	else return false;
+}

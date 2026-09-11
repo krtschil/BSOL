@@ -22,3 +22,15 @@ function accCalcPossibleForBoard(board)
 
 	return false;
 }
+
+function makeAccKey(board)
+{
+	var key = {};
+
+	key.names = board.PlayerNames;
+	key.deal = board.Deal;
+	key.trumps = board.Contract.charAt(1);
+	key.cards = board.Played;
+
+	return JSON.stringify(key);
+}

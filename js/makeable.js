@@ -451,3 +451,39 @@ function lott()
 		return "N/A";
 }
 
+function getRequestedLeads(bindex)
+{
+	var i;
+
+	if (g_travellers==null) return "";	// No travellers, only hands records for this event.
+
+	var traveller = getTravellerForBoard(bindex);
+
+	if (traveller==null) return "";
+
+	var leadsRequired = [];
+
+	for (i=0;i<20;i++) leadsRequired[i] = 0;
+
+	var lines = traveller.traveller_line;
+
+			// Build up request string for required opening lead information for this traveller.
+	for (i=0;i<lines.length;i++)
+	{
+		if (validContract(lines[i].contract))
+		{
+			var idx = getLeadsIdx(lines[i].contract,lines[i].played_by);
+			leadsRequired[idx] = 1;
+
+			if (lines[i].lead!="") g_travellersHaveLeads = true;
+		}
+	}
+
+	var leadstr = "";
+
+	for (i=0;i<20;i++) leadstr = leadstr + leadsRequired[i];
+
+	if (leadstr.indexOf("1")!=-1) return leadstr;
+	else return "";
+}
+

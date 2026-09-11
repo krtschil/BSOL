@@ -161,3 +161,106 @@ function drawBar(value,vmax,width,height,gradColor)
 
 	return str;
 }
+
+function mergeScorecardRows(table,nrows,col)
+{
+		// Merge column cells in adjacent rows of scorecard when pair number and names are shared, and
+		// apply alternate shading to groups of rows.
+	var pair = table.rows[1].cells[col].innerHTML;
+	var first = 0;
+	var last = 0;
+	var alt = 0;
+	var shaded = 1;
+
+	while (first<nrows)
+	{
+		for (last=first;last<=nrows;last++)
+		{
+			if ((table.rows[1+last].cells[col].innerHTML!=pair)||(last==nrows))
+			{
+				if ((table.rows[1+last].cells[col].innerHTML!=pair))
+				{
+					last--;
+				}
+
+				if  ((1 + last - first)>0)
+				{
+					table.rows[1+first].cells[col].rowSpan = 1 + last - first;
+				}
+
+				if (shaded!=0)
+				{
+					table.rows[1+first].className = "results_tr_grey";
+				}
+
+				for (j=first+1;j<=last;j++)
+				{
+					table.rows[1+j].deleteCell(col);
+
+					if (shaded!=0)
+						table.rows[1+j].className = "results_tr_grey";
+				}
+
+				if (shaded == 0)
+					shaded = 1;
+				else
+					shaded = 0;
+
+				first = last + 1;
+
+				if (first<nrows)
+				{
+					pair = table.rows[1+first].cells[col].innerHTML;
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+function setLeadForScorecardRow(bnum,row,tline,declarer)
+{
+	var j;
+	var colorPlus = "#ffff00";
+
+	row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
+
+	if (g_openingLeadsPresent&&((typeof g_hands.boards[bnum].DoubleDummyTricks)!=null)&&((typeof g_hands.boards[bnum].openingLeads)!="undefined"))
+	{
+		var relDDLead = "";
+
+		if (tline.lead!="")
+		{
+			var idx = getLeadsIdx(tline.contract,tline.played_by);
+			var leads = g_hands.boards[bnum].openingLeads[idx];
+
+			var ltricks;
+
+			var validLeadCard = false;
+
+			for (j=0;j<leads.length;j++)
+			{
+				var cl = leads[j];
+
+				if (cl[0].replace("T","10")==leadCard(tline.lead))
+				{
+					validLeadCard = true;
+					var score = Number(cl[1]);
+
+					if ((13-score)!=getMakeableTricksForContract(bnum,tline.contract,tline.played_by))
+					{
+						if (declarer)
+							row.cells[4].style.backgroundColor = "#00ff00";
+						else
+							row.cells[4].style.backgroundColor = "#ff0000";
+
+						break;
+					}
+				}
+			}
+
+			//if (!validLeadCard) row.cells[4].style.backgroundColor = "#888888";
+		}
+	}
+}

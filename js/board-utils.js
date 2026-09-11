@@ -33,3 +33,17 @@ function getTravIndex(boardindex)
 
 	return null;
 }
+
+function checkBoardValid(bindex)
+{
+	if ((typeof g_hands.boards[bindex].Deal)=="undefined") return false;
+
+	var deal = g_hands.boards[bindex].Deal;
+
+	if ((deal[0].length!=16)||(deal[1].length!=16)||(deal[2].length!=16)||(deal[3].length!=16))	// Note string length includes embedded dots between the four suits.
+	{
+		return false;
+	}
+
+	return true;
+}

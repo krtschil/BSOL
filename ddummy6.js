@@ -1219,19 +1219,6 @@ function getFullMakeableJson(context)
 {
 }
 
-function showEmptyProgressBar(text)
-{
-	$("#toolsSubMenu").hide();
-	document.getElementById("saveBoards").setAttribute("disabled","");
-	document.getElementById("editHand").setAttribute("disabled","");
-
-	g_title = "<div id=outerProgress style='float:left;width:800px;height:15px;'><div id=progress style='float:left;width:0px;height:15px;background-color:#88ff88;text-align:left;color:blue;'>" + text + "</div></div>";
-	
-	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
-	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
-	document.getElementById("outerProgress").width = "800px";
-	document.getElementById("progress").width = "0px";
-}
 
 function updatePlayerAccCountsFromBoard(board,lindata)
 {
@@ -1593,28 +1580,6 @@ function returnAccValue(acc,index)
 {
 	var index = (index + 2) % 4;
 	return acc[index];
-}
-
-function getCachedAcc(tline)
-{
-	var board = tline.board;
-	var declarer = board.Declarer;
-	var direction = "NESW";
-	var names = board.PlayerNames;
-
-	var acc = tline.board.acc;
-
-	var declIndex = direction.indexOf(declarer.toUpperCase());
-	var declName = returnName(names,declIndex);
-	var declErrCount = returnAccValue(acc,declIndex);
-	var leadIndex = (declIndex + 1) % 4;
-	var leadName = returnName(names,leadIndex);
-	var leadErrCount = returnAccValue(acc,leadIndex);
-	var leadPartnerIndex = (leadIndex + 2) % 4;
-	var leadPartnerName = returnName(names,leadPartnerIndex);
-	var partnerErrCount = returnAccValue(acc,leadPartnerIndex);
-
-	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,0,1);
 }
 
 function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,dest)

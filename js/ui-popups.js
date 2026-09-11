@@ -478,3 +478,18 @@ function showMainMenuItems()
 	show("computeMakeable");
 	show("tools");
 }
+
+function showEmptyProgressBar(text)
+{
+	$("#toolsSubMenu").hide();
+	document.getElementById("saveBoards").setAttribute("disabled","");
+	document.getElementById("editHand").setAttribute("disabled","");
+
+	g_title = "<div id=outerProgress style='float:left;width:800px;height:15px;'><div id=progress style='float:left;width:0px;height:15px;background-color:#88ff88;text-align:left;color:blue;'>" + text + "</div></div>";
+	
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
+	document.getElementById("outerProgress").width = "800px";
+	document.getElementById("progress").width = "0px";
+}
+

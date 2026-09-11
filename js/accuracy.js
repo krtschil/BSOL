@@ -411,3 +411,25 @@ function storeAcc(data,context)
 	g_completionCount++;
 	document.getElementById("progress").style.width = ((800*g_completionCount)/g_completionTarget).toFixed(0) + "px";
 }
+
+function getCachedAcc(tline)
+{
+	var board = tline.board;
+	var declarer = board.Declarer;
+	var direction = "NESW";
+	var names = board.PlayerNames;
+
+	var acc = tline.board.acc;
+
+	var declIndex = direction.indexOf(declarer.toUpperCase());
+	var declName = returnName(names,declIndex);
+	var declErrCount = returnAccValue(acc,declIndex);
+	var leadIndex = (declIndex + 1) % 4;
+	var leadName = returnName(names,leadIndex);
+	var leadErrCount = returnAccValue(acc,leadIndex);
+	var leadPartnerIndex = (leadIndex + 2) % 4;
+	var leadPartnerName = returnName(names,leadPartnerIndex);
+	var partnerErrCount = returnAccValue(acc,leadPartnerIndex);
+
+	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,0,1);
+}

@@ -239,3 +239,211 @@ function exitCardPlay()
 	enterPlayMode();
 	document.getElementById("mctable").className = "";
 }
+
+function processPosition(hcards,para)
+{
+		// Updates the card display while in 'play' mode from the json data received back from the web server after a card is played.
+		// hcards is a javascript object built from the json string received from the server.
+	var savehcards = hcards;
+
+	if (hcards.errno<0)
+	{
+		alert(savehcards);
+		alert(hcards.errmsg);
+	}
+
+	var finished="";
+
+	if (hcards.errno==0)
+	{
+		setCurrentPlayer(hcards.player);
+		if (g_currentPlayer=="north") setCurrentPlayer(0);
+		else if (g_currentPlayer=="east") setCurrentPlayer(1);
+		else if (g_currentPlayer=="south") setCurrentPlayer(2);
+		else if (g_currentPlayer=="west") setCurrentPlayer(3);
+	}
+
+	for (i=0;i<4;i++)
+	{
+		for (j=0;j<13;j++)
+		{
+			g_playableCards[i][j] = -1;
+			g_inactiveCards[i][j] = 1;	// set all cards inactive, then set cards remaining active.
+			g_currentTrickCards[i][j] = 0;
+		}
+	}
+
+	if (hcards.errno==0)
+	{
+		if (g_showPlay!=0)
+		{
+			setCurrentPlayIndex(hcards.trick*4 + hcards.trickCard);
+
+				// Check if cards played match what is stored in the hand record up to this point
+			if (g_currentPlayIndex==0)
+				setLastMatchedPlayIndex(-1);
+			else
+			{
+				if ((typeof g_hands.boards[g_lastBindex].Played)!="undefined")
+				{
+					var played = g_hands.boards[g_lastBindex].Played;
+
+					if (g_lastMatchedPlayIndex >= (g_currentPlayIndex-2))
+					{
+						setLastMatchedPlayIndex(g_currentPlayIndex - 2);
+					}
+
+					if (g_lastMatchedPlayIndex == (g_currentPlayIndex - 2))	// see if card just played is still part of sequence played in match
+					{
+						if ((g_currentPlayIndex-1)<=(played.length-1))
+						{
+							var lastSuit = hcards.lastSuit;
+							var lastCard = hcards.lastCard;
+
+							var playedInMatch = played[g_currentPlayIndex-1];
+							var suitChars = "SHDC";
+							var matchSuit = Number(suitChars.indexOf(playedInMatch.toUpperCase().charAt(0)));
+
+							var cardChars = "23456789TJQKA";
+							var matchCard = cardChars.indexOf(playedInMatch.charAt(1));
+
+							if ((lastSuit==matchSuit)&&(lastCard==matchCard))
+							{
+								g_lastMatchedPlayIndex++;
+
+								if ((typeof g_hands.boards[g_lastBindex].Claimed)!="undefined")
+								{
+									if ((g_lastMatchedPlayIndex==played.length-1)&&(played.length<52))
+										switch(language)
+										{
+											case "de":
+												if (g_hands.boards[g_lastBindex].Claimed!="")
+													finished = "<br><span style=\"color:red;font-weight:bold;font-size:16px;\">" + g_hands.boards[g_lastBindex].Claimed + " Stiche beansprucht</span>";
+												else
+													finished = "<br><span style=\"color:red;font-weight:bold;font-size:16px;\">Keine weiteren Karten gespielt</span>";
+												break;
+											default:
+												if (g_hands.boards[g_lastBindex].Claimed!="")
+													finished = "<br><span style=\"color:red;font-weight:bold;font-size:16px;\">" + g_hands.boards[g_lastBindex].Claimed + " Tricks Claimed</span>";
+												else
+													finished = "<br><span style=\"color:red;font-weight:bold;font-size:16px;\">No More Cards Played</span>";
+										}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		var currentTrick = hcards.currentTrick;
+
+		for (i=0;i<currentTrick.length;i++)
+		{
+			g_currentTrickCards[currentTrick[i][0]][currentTrick[i][1]] = 1;
+		}
+
+		var remaining = hcards.remaining;
+
+		for (i=0;i<4;i++)
+		{
+			var playerCardsRemaining = remaining[i];
+
+			for (j=0;j<4;j++)
+			{
+				var suitRemaining = playerCardsRemaining[j];
+
+				for (k=0;k<suitRemaining.length;k++)
+				{
+					g_inactiveCards[j][suitRemaining[k]] = 0;
+				}
+			}
+		}
+
+		var cards = hcards.cards;
+
+		g_hiscore = 0;
+
+		for (i=0;i<cards.length;i++)
+		{
+			var data = cards[i];
+			var score = data.score;
+			var suits = data.values;
+			var currentTricks;
+
+			if ((g_currentPlayer==0)||(g_currentPlayer==2))	// North/South
+				currentTricks = hcards.tricksNS;
+			else
+				currentTricks = hcards.tricksEW;
+
+				// Add current tricks to tricks remaining to give total that can be made on this hand given current position
+			score = score + currentTricks;
+
+			if (score>g_hiscore) g_hiscore = score;
+
+			for (j=0;j<4;j++)
+			{
+				var values = suits[j];
+
+				for (k=0;k<values.length;k++)
+				{
+					g_playableCards[j][values[k]] = score;
+				}
+			}
+		}
+
+		if ((hcards.trick==0)&&(hcards.trickCard==0))
+		{
+			if ((g_session_contract.charAt(0)=="-")||(g_session_contract.charAt(0)=="*"))
+			{
+				var maxTricksDeclarer = g_partialHandTotalTricks - g_hiscore;
+				var minusTricks;
+
+				if (g_partialHand==0)
+				{
+					if (maxTricksDeclarer<7)
+					{
+						minusTricks = 7 - maxTricksDeclarer;
+						g_session_contract = "1" + g_session_contract.substring(1) + "-" + minusTricks;
+					}
+					else
+					{
+						var contractTricks = maxTricksDeclarer - 6;
+						g_session_contract = contractTricks + g_session_contract.substring(1);
+					}
+				}
+				else	// For partial hands just show the suit, not the level of contract
+				{
+					g_session_contract = g_session_contract.substring(1);
+				}
+			}
+		}
+
+		switch(language)
+		{
+			case "de":
+				if ((hcards.tricksNS+hcards.tricksEW)==g_partialHandTotalTricks) finished = "<br><span style=\"color:red;font-weight:bold;font-size:16px;\">Beendet</span>";
+				break;
+			default:
+				if ((hcards.tricksNS+hcards.tricksEW)==g_partialHandTotalTricks) finished = "<br><span style=\"color:red;font-weight:bold;font-size:16px;\">Finished</span>";
+		}
+
+		var original = "";
+
+		switch(language)
+		{
+			case "de":
+				if ((g_showPlay!=0)&&(g_showOriginalContract==false))
+					original = "<br><span style=\"font-size:12px;font-weight:normal;\">(ursprünglich gespielter Kontrakt: " + g_hands.boards[g_lastBindex].Contract + ")</span>";
+				document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Kontrakt: " + substituteSuitSymbol(g_session_contract) + " von " + g_session_declarer + original + "<br><br>" + "NS Stiche: " + hcards.tricksNS + "<br>OW Stiche: " + hcards.tricksEW + "</span>" + finished;
+				break;
+			default:
+				if ((g_showPlay!=0)&&(g_showOriginalContract==false))
+					original = "<br><span style=\"font-size:12px;font-weight:normal;\">(originally played in " + g_hands.boards[g_lastBindex].Contract + ")</span>";
+				document.getElementById("currentPosition").innerHTML = "<span style=\"font-weight:bold;font-size:16px;\">Contract: " + substituteSuitSymbol(g_session_contract) + " by " + g_session_declarer + original + "<br><br>" + "NS Tricks: " + hcards.tricksNS + "<br>EW Tricks: " + hcards.tricksEW + "</span>" + finished;
+		}
+	}
+
+	displayHands();
+}
+

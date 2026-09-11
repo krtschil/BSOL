@@ -2113,16 +2113,6 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	}
 }
 
-
-
-function constructFilename()
-{
-	if ((typeof g_hands.evid)=="undefined")
-		return g_hands.event + "_" + g_hands.club;
-	else
-		return g_hands.evid;
-}
-
 function getFullMakeableJson(context)
 {
 }

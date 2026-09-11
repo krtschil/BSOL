@@ -6465,63 +6465,6 @@ function displayTraveller(pdirection)
 }
 
 
-
-function getPlayerInfo(pair,direction)
-{
-		// Gets player information for the current pair from the travellers record, using the information
-		// passed to ddummy.htm in the pair_number and direction fields.
-	var info = {};
-	var pair_found = false;
-	var pairs = g_travellers.event.participants.pair;
-	var player1 = "";
-	var player2 = "";
-	var singleWinner = true;
-
-	var i;
-
-		// First check whether it;s a single winner movement (in which case pair numbers are unique but a particular
-		// pair may sometimes be NS and sometimes EW
-	var sessInfo = getSessionInfo();
-	singleWinner = sessInfo.singleWinner;
-
-	for (i=0;i<pairs.length;i++)
-	{
-		if (((pairs[i].direction=="N")&&((direction==1)||singleWinner))&&pair==pairs[i].pair_number)
-		{
-			pair_found = true;
-			player1 = pairs[i].player[0].player_name;
-			player2 = pairs[i].player[1].player_name;
-			break;
-		}
-		else if (((pairs[i].direction=="E")&&((direction==2)||singleWinner))&&pair==pairs[i].pair_number)
-		{
-			pair_found = true;
-			player1 = pairs[i].player[0].player_name;
-			player2 = pairs[i].player[1].player_name;
-			break;
-		}
-	}
-
-	if (pair_found)
-	{
-		if (player1==null) player1 = "noname noname";
-		if (player2==null) player2 = "noname noname";
-		info.player1 = player1;
-		info.player2 = player2;
-		info.pair_found = true;
-		info.pair_number = pair;
-		info.pair_index = i;	// Index to entry for this pair in g_travellers.event.participants.pair;
-		info.direction = direction;	// Only relevant here if not single winner movement.
-		info.singleWinner = singleWinner;
-	}
-	else
-		info.pair_found = false;	// error
-
-	return info;
-}
-
-
-
 function getPlayerAndRole(info,tline)
 {
 	var prole = {};

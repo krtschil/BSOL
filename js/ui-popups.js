@@ -353,3 +353,70 @@ function showTravellerKeypad()
 	hideAllPopups();
 	doPopupNoTimeout(document.getElementById("gotoBoard"),htmltext,100,50);
 }
+
+function initSettings()
+{
+	if (localStorageSupported())
+	{
+		if (document.getElementById("mkauto1").checked)
+		{
+			res = localStorage.getItem("mkauto1");
+
+			if (res!==null)
+			{
+				document.getElementById("mkauto1").checked = (res==="true");
+			}
+			else
+			{
+				document.getElementById("mkauto1").checked = true;
+			}
+		}
+
+		document.getElementById("mkauto1").onclick = document.getElementById("mkautolab1").onclick = function(){localStorage.setItem("mkauto1",document.getElementById("mkauto1").checked);};
+
+		var krck = document.getElementById("krcalc");
+
+		if (krck!==null)
+		{
+			res = localStorage.getItem("krcalc");
+
+			if (res!==null)
+			{
+				if (res=="true")
+					krck.checked  = true;
+				else
+					krck.checked = false;
+			}
+		}
+	}
+}
+
+function setOptions(optionsStr)
+{
+		//*** This function is only called at startup, from buildPage1
+	try {
+		if (optionsStr!==null)
+		{
+			var options = JSON.parse(optionsStr);
+			document.getElementById("nsrad1").checked = options.options.ns[0]==="true";
+			document.getElementById("nsrad2").checked = options.options.ns[1]==="true";
+			document.getElementById("nsrad3").checked = options.options.ns[2]==="true";
+			document.getElementById("ewrad1").checked = options.options.ew[0]==="true";
+			document.getElementById("ewrad2").checked = options.options.ew[1]==="true";
+			document.getElementById("ewrad3").checked = options.options.ew[2]==="true";
+			document.getElementById("mkrad1").checked = options.options.mk[0]==="true";
+			document.getElementById("mkrad2").checked = options.options.mk[1]==="true";
+		}
+
+		var sel = document.getElementById("honourCardSet");
+
+		if (sel!=null)
+		{
+			if (localStorageSupported())
+			{
+				var value = localStorage.getItem("honourCardSet");
+				if (value!=null) sel.value = value;
+			}
+		}
+	} catch (err) {alert(err);};
+}

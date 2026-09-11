@@ -2802,7 +2802,7 @@ function setupHandEntryBoard()
 	setInputDirection(0);
 	var cards = "";
 
-	g_inputBoard = g_hands.boards[g_lastBindex];
+	setInputBoard(g_hands.boards[g_lastBindex]);
 	g_cardQuadrant = new Array(4);
 
 	var table = document.getElementById("board");

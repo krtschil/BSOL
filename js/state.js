@@ -4,7 +4,8 @@ window.appState = {
     lastBoardIndex: 0,
     currentTraveller: null,
     handEntryMode: false,
-    inputDirection: 0
+    inputDirection: 0,
+    inputBoard: null
 };
 
 function setLastBoardIndex(index) {
@@ -25,6 +26,11 @@ function setHandEntryMode(enabled) {
 function setInputDirection(direction) {
     g_inputDir = direction;
     appState.inputDirection = direction;
+}
+
+function setInputBoard(board) {
+    g_inputBoard = board;
+    window.appState.inputBoard = board;
 }
 
 function setCurrentTraveller(traveller) {

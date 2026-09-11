@@ -36,8 +36,8 @@ function startup(){
 		g_boardNumberFontSize;
 		g_fontRatio = 1.0;
 		g_textBratio = 0.9;				// Text font size as fraction of button height
-		g_handEntryMode = 0;
-		g_inputDir = 0;					// 0,1,2,3 = N,E,S,W
+		setHandEntryMode(0);
+		setInputDirection(0);					// 0,1,2,3 = N,E,S,W
 		g_inputBoard;
 		g_cardQuadrant;
 		g_stopPropagation = 0;

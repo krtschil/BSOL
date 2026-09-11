@@ -156,3 +156,203 @@ function completedAnalyseAllBoards()
 	restartBackgroundWorkers();
 	resetAnalyseAllBoards();
 }
+
+function cacheMakeable(pindex,data)
+{
+	var limit = 500;
+	var delMax = limit/10;
+
+	if (g_db==null) return;
+
+	try {
+		var board = g_hands.boards[pindex];
+		var deal = board.Deal;
+		var dealstr = "W:" + deal[3] + "x" + deal[0] + "x" + deal[1] + "x" + deal[2];
+		var vul = board.Vulnerable;
+		var key = makeDealKey(dealstr,vul,getRequestedLeads(pindex));
+		var ddata = {};
+		ddata.deal = key;
+		ddata.time = Date.now();
+		ddata.dd = JSON.parse(data);
+		const transaction = g_db.transaction(["ddCache"], "readwrite");
+		const objectStore = transaction.objectStore("ddCache");
+		objectStore.put(ddata);
+
+		const myIndex = objectStore.index("time");
+		const countRequest = myIndex.count();
+		countRequest.onsuccess = function(){
+			if (countRequest.result>500)
+			{
+				var delCount = countRequest.result - 100;
+
+					// delete oldest 10 items
+				const myIndex = objectStore.index("time");
+
+				myIndex.openCursor().onsuccess = function(){
+					const cursor = event.target.result;
+					if (cursor) {
+					  if (delCount>0)
+					  {
+						  delCount = delCount-1;
+						  const key = cursor.value.deal;
+						  objectStore.delete(key);
+						  cursor.continue();
+					  }
+					} else {
+					  console.log("Oldest records purged from ddCache in indexedDB");
+					}
+				};
+  			}
+		};
+	} catch (e) {};
+}
+
+function dddLoadMakeable(data,statusText,jqXHR,bindex)
+{
+	var vul = ["None","All","NS","EW"];
+	var leader = "nesw";
+	resetTimeout();
+
+	var tmp = data;
+	tmp = JSON.parse(tmp);
+
+	if (this.hasOwnProperty("pbn"))	// It's from a remote request, fill in the missing fields from context
+	{
+		tmp.sess.pbn = this.pbn;
+		tmp.vul = convertVulStr(this.vul);
+	}
+
+	for (var i=0;i<g_hands.boards.length;i++)
+	{
+		var board = g_hands.boards[i];
+		var deal = board.Deal;
+		var dealstr = "W:" + deal[3] + "x" + deal[0] + "x" + deal[1] + "x" + deal[2];
+
+		var found = false;
+
+		if (!tmp.sess.hasOwnProperty("pbn"))	// It's a cached value from old version that doesn't have the pbn field (when cached entries time out this clause will no longer be necessary)
+		{
+			if (g_hands.boards[i].hasOwnProperty("tag")&&(tmp.sess.sockref==g_hands.boards[i].tag))
+				found = true;
+		}
+		else if (g_hands.boards[i].hasOwnProperty("tag")&&(tmp.sess.sockref==g_hands.boards[i].tag)&&(vul[tmp.vul]==board.Vulnerable)&&(dealstr==tmp.sess.pbn))
+		{
+			found = true;
+		}
+
+		if (found)
+		{
+			board.DoubleDummyTricks = tmp.sess.ddtricks;
+			updateParResults(tmp,i);
+
+			if ((typeof tmp.openingLeads)!="undefined")
+			{
+				g_openingLeadsPresent = true;
+				board.openingLeads = tmp.openingLeads;
+			}
+
+// 			cacheMakeable(i,data); // **KK**
+
+			if (i==g_lastBindex) redrawMCTable(true);
+
+			if (g_allBoards==1)
+			{
+				g_hands.boards[i].tag = -1;
+
+					// Count requests outstanding
+				var mccount = makeableContractRequestsOutstanding();
+
+				document.getElementById("progress").style.width = ((800*(g_hands.boards.length-mccount))/g_hands.boards.length).toFixed(0) + "px";
+
+				if (mccount==0)
+				{
+					g_allBoards = 0;
+					hideSpinner();
+
+					if (!g_playItAgain)
+					{
+						if (g_sessionMode=="ranking") setupRanking(true);
+						else if (g_sessionMode=="scorecard") setupScorecard(true);
+						else if (g_sessionMode=="traveller") showComparison();
+						else if (g_sessionMode=="check") checkAllContracts();
+					}
+
+					if (g_openingLeadsPresent)
+					{
+						var table = document.getElementById("scoring");
+						var rows = table.rows;
+
+						switch(language)
+						{
+							case "de":
+								rows[1].cells[5+g_ofs].innerHTML = "<select id='ETFMode' name='ETFMode' style='background-color:yellow;'><option value=0>DD Stiche (ETF)</option><option value=1>Angepasstes ETF</option></select>";
+								document.getElementById("rankingDD").innerHTML = "<select id='rankETFMode' name='rankETFMode' style='background-color:yellow;'><option value=0>Double Dummy</option><option value=1>Ausspiel-Angepasstes DD</option></select>";
+								break;
+							default:
+								rows[1].cells[5+g_ofs].innerHTML = "<select id='ETFMode' name='ETFMode' style='background-color:yellow;'><option value=0>DD Tricks(ETF)</option><option value=1>Adjusted ETF</option></select>";
+								document.getElementById("rankingDD").innerHTML = "<select id='rankETFMode' name='rankETFMode' style='background-color:yellow;'><option value=0>Double Dummy</option><option value=1>Lead-Adjusted DD</option></select>";
+						}
+						document.getElementById("ETFMode").onchange = function(){document.getElementById("rankETFMode").value=this.selectedIndex;log("operation=ETFMode:"+this.selectedIndex);setupScorecard(true);};
+						document.getElementById("rankETFMode").onchange = function(){document.getElementById("ETFMode").value=this.selectedIndex;log("operation=rankETFMode:"+this.selectedIndex);setupRanking();};
+					}
+
+					redrawMCTable(true);
+					updateUpperLeftQuadrant(g_lastBindex);
+
+					g_fullInfo = true;
+					g_backgroundFetchCompleted = true;
+
+					completedAnalyseAllBoards();
+				}
+			}
+			else
+			{
+				hideSpinner();
+			}
+		}
+	}
+}
+
+function getDDTricks(msg)
+{
+	delete msg.pfunc;	// Can't pass cloned object containing function
+
+	if (g_mworkers.length>0)
+	{
+		g_mworkers[g_nextmworker].postMessage(msg);
+
+		g_nextmworker++;
+		if (g_nextmworker>=g_mworkers.length) g_nextmworker = 0;
+	}
+	else	// Background workers not currently running
+	{
+		g_worker.postMessage(msg);
+	}
+}
+
+function getIndexedDDTricks(msg)
+{
+	if (g_db==null)
+		getDDTricks(msg);
+	else
+	{
+		const transaction = g_db.transaction(["ddCache"], "readwrite");
+		const objectStore = transaction.objectStore("ddCache");
+		var req = objectStore.get(makeDealKey(msg.dealstr,msg.vulstr,msg.leadstr));
+
+		req.onsuccess = function(event){
+			if (typeof event.target.result!=="undefined")
+			{
+				var dataObj = event.target.result;
+				dataObj.dd.sess.sockref = this.sockref;
+				var data = JSON.stringify(dataObj.dd);
+				dddLoadMakeable(data,"","",this.context.bindex);
+			}
+			else	// get it remotely or calculate locally
+			{
+				getDDTricks(this);
+			}
+		}.bind(msg);
+	}
+}
+

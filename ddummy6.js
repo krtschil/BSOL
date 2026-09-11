@@ -10983,79 +10983,7 @@ function dlmToJson(data)
 	return outStr;
 }
 
-function convertHand(cards,hand)
-{
-	var str = "";
-	var suits = "SHDC";
-	var values = "23456789TJQKA";
-	var suitIndex = 0;
-	var currentHand = [];
-	var i,j;
 
-	for (i=0;i<4;i++)
-	{
-		currentHand[i] = [];
-
-		for (j=0;j<13;j++)
-			currentHand[i][j] = 0;
-	}
-
-	for (i=0;i<hand.length;i++)
-	{
-		var cchar = hand.charAt(i);
-
-		if ((cchar=='S')||(cchar=='H')||(cchar=='D')||(cchar=='C'))
-		{
-			suitIndex = suits.indexOf(cchar);
-			if (cchar!='S') str = str + ".";
-		}
-		else
-		{
-			currentHand[suitIndex][values.indexOf(cchar)] = 1;
-			cards[suitIndex][values.indexOf(cchar)] = 1;
-		}
-	}
-
-	str = "";
-
-	for (i=0;i<4;i++)
-	{
-		for (j=12;j>=0;j--)
-		{
-			if (currentHand[i][j]!=0)
-				str = str + values.charAt(j);
-		}
-
-		if (i!=3)
-			str = str + ".";
-	}
-
-	return str;
-}
-
-function inferHand(cards)
-{
-	var suits = "SHDC";
-	var values = "23456789TJQKA";
-	var suitIndex = 0;
-	var hand = "";
-	var i,j;
-
-	for (i=0;i<4;i++)
-	{
-		hand = hand + suits.charAt(i);
-
-		for (j=0;j<13;j++)
-		{
-			if (cards[i][j]==0)
-			{
-				hand = hand + values.charAt(j);
-			}
-		}
-	}
-
-	return convertHand(cards,hand);
-}
 
 function writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,claimed,pnames,pnames_g,score,explanation)
 {

@@ -5298,59 +5298,6 @@ function getInfoForSimilarContracts(lineIndex,direction)
 	return result;
 }
 
-
-
-function drawBoxedBar(value,vmax,width,height,bcolor,leftBorder)
-{
-	var rbd = "";
-	var wth = width + "px";
-	var hgt = height + "px";
-	var dwth = 0;
-
-	if (vmax>0)
-		dwth = Math.round((width*value)/vmax);
-	else if (leftBorder)
-	{
-		dwth = 0;
-	}
-
-	var baseWidth = dwth;
-
-	dwth = dwth + "px";
-
-	var lbd = "none";
-
-	if (leftBorder) lbd = "1px solid grey";
-
-	var str = "";
-
-//	if (Math.round(baseWidth)>0)
-	{
-		str = "<div style=\"display:inline-block;background-color:" + bcolor + ";height:" + hgt + ";min-height:" + hgt + ";border-left:" + lbd + ";border-top:1px solid grey;border-bottom:1px solid grey;border-right:1px solid grey;width:" + dwth + ";min-width:" + dwth + ";max-width:" + dwth + ";\">";
-		str = str + "</div>";
-	}
-
-	return str;
-}
-
-function drawBar(value,vmax,width,height,gradColor)
-{
-	var wth = width + "px";
-	var hgt = height + "px";
-	var dwth = Math.round((width*value)/vmax) + "px";
-
-	var color = "blue";
-
-	if (gradColor)
-		color = makeColor(value/vmax);
-
-	var str = "<div style=\"border:1px solid black;min-height:" + hgt + ";height:" + hgt + ";max-height:" + hgt + ";width:" + wth + ";min-width:" + wth + ";max-width:" + wth + ";\">";
-	str = str + "<div style=\"background-color:" + color + ";height:100%;min-height:100%;border:none;width:" + dwth + ";min-width:" + dwth + ";max-width:" + dwth + ";\">";
-	str = str + "</div></div>";
-
-	return str;
-}
-
 function computeTravellerStatistics(pdirection)
 {
 	var i,j;
@@ -6540,34 +6487,7 @@ function getPlayerAndRole(info,tline)
 	return prole;
 }
 
-function checkInitialDirection(pair)
-{
-	var i;
-	var pairs = g_travellers.event.participants.pair;
-	var found = false;
 
-	for (i=0;i<pairs.length;i++)
-	{
-		if (pairs[i].direction=="E") // the data distinguishes between pairs who started NS and EW
-		{
-			found = true;
-			break;
-		}
-	}
-
-	if (found)
-	{
-		for (i=0;i<pairs.length;i++)
-		{
-			if (pair==pairs[i].pair_number)
-			{
-				return pairs[i].direction;
-			}
-		}
-	}
-
-	return null;
-}
 
 function setButtonColor()
 {
@@ -8448,40 +8368,7 @@ function loadTraveller_2(data,statusText,jqXHR)
 	$("#abuttons").show();
 }
 
-function getTlineForPair(boardIndex,info)
-{
-		// Return traveller line containing data for this pair playing this board. Also returns direction in which
-		// the pair were sitting when playing the board. Returns null if the pair didn't play this board.
-	var k;
-	var result = {};
 
-	var tindex = getTravIndex(boardIndex);
-
-	if (tindex==null) return null;
-
-	var tlines = g_travellers.event.board[tindex].traveller_line;
-
-	for (k=0;k<tlines.length;k++)
-	{
-		var tline = tlines[k];
-		var x = tline.ns_pair_number;
-
-		if (((info.pair_number==tline.ns_pair_number)&&((info.direction==1)||info.singleWinner)))
-		{
-			result.direction = 1;
-			result.tline = tline;
-			return result;
-		}
-		else if (((info.pair_number==tline.ew_pair_number)&&((info.direction==2)||info.singleWinner)))
-		{
-			result.direction = 2;
-			result.tline = tline;
-			return result;
-		}
-	}
-
-	return null;
-}
 
 function getDirectionForTline(tline,info)
 {

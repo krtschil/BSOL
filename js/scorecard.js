@@ -110,3 +110,54 @@ function drawHighLowSame(res)
 	var result = result + divstart+dlwidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.lower+" Paare erzielten einen niedrigeren Score"+"</div></div>";
 	return result;
 }
+
+function drawBoxedBar(value,vmax,width,height,bcolor,leftBorder)
+{
+	var rbd = "";
+	var wth = width + "px";
+	var hgt = height + "px";
+	var dwth = 0;
+
+	if (vmax>0)
+		dwth = Math.round((width*value)/vmax);
+	else if (leftBorder)
+	{
+		dwth = 0;
+	}
+
+	var baseWidth = dwth;
+
+	dwth = dwth + "px";
+
+	var lbd = "none";
+
+	if (leftBorder) lbd = "1px solid grey";
+
+	var str = "";
+
+//	if (Math.round(baseWidth)>0)
+	{
+		str = "<div style=\"display:inline-block;background-color:" + bcolor + ";height:" + hgt + ";min-height:" + hgt + ";border-left:" + lbd + ";border-top:1px solid grey;border-bottom:1px solid grey;border-right:1px solid grey;width:" + dwth + ";min-width:" + dwth + ";max-width:" + dwth + ";\">";
+		str = str + "</div>";
+	}
+
+	return str;
+}
+
+function drawBar(value,vmax,width,height,gradColor)
+{
+	var wth = width + "px";
+	var hgt = height + "px";
+	var dwth = Math.round((width*value)/vmax) + "px";
+
+	var color = "blue";
+
+	if (gradColor)
+		color = makeColor(value/vmax);
+
+	var str = "<div style=\"border:1px solid black;min-height:" + hgt + ";height:" + hgt + ";max-height:" + hgt + ";width:" + wth + ";min-width:" + wth + ";max-width:" + wth + ";\">";
+	str = str + "<div style=\"background-color:" + color + ";height:100%;min-height:100%;border:none;width:" + dwth + ";min-width:" + dwth + ";max-width:" + dwth + ";\">";
+	str = str + "</div></div>";
+
+	return str;
+}

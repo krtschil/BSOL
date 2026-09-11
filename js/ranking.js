@@ -487,3 +487,67 @@ function getPlayerInfo(pair,direction)
 
 	return info;
 }
+
+function checkInitialDirection(pair)
+{
+	var i;
+	var pairs = g_travellers.event.participants.pair;
+	var found = false;
+
+	for (i=0;i<pairs.length;i++)
+	{
+		if (pairs[i].direction=="E") // the data distinguishes between pairs who started NS and EW
+		{
+			found = true;
+			break;
+		}
+	}
+
+	if (found)
+	{
+		for (i=0;i<pairs.length;i++)
+		{
+			if (pair==pairs[i].pair_number)
+			{
+				return pairs[i].direction;
+			}
+		}
+	}
+
+	return null;
+}
+
+function getTlineForPair(boardIndex,info)
+{
+		// Return traveller line containing data for this pair playing this board. Also returns direction in which
+		// the pair were sitting when playing the board. Returns null if the pair didn't play this board.
+	var k;
+	var result = {};
+
+	var tindex = getTravIndex(boardIndex);
+
+	if (tindex==null) return null;
+
+	var tlines = g_travellers.event.board[tindex].traveller_line;
+
+	for (k=0;k<tlines.length;k++)
+	{
+		var tline = tlines[k];
+		var x = tline.ns_pair_number;
+
+		if (((info.pair_number==tline.ns_pair_number)&&((info.direction==1)||info.singleWinner)))
+		{
+			result.direction = 1;
+			result.tline = tline;
+			return result;
+		}
+		else if (((info.pair_number==tline.ew_pair_number)&&((info.direction==2)||info.singleWinner)))
+		{
+			result.direction = 2;
+			result.tline = tline;
+			return result;
+		}
+	}
+
+	return null;
+}

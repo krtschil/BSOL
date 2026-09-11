@@ -13323,7 +13323,7 @@ function buildPage1(data,options)
 	g_defaultTravellerWidth = document.getElementById("traveller").style.width;
 	g_inactiveCards = new Array(4);
 	g_playableCards = new Array(4);
-	g_currentTrickCards = new Array(4);
+	setCurrentTrickCards(new Array(4));
 
 	for (i=0;i<4;i++)
 	{

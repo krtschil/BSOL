@@ -8,7 +8,8 @@ window.appState = {
     inputBoard: null,
     session: 0,
     mode: 0,
-    currentPlayer: null
+    currentPlayer: null,
+    currentTrickCards: null
 };
 
 function setLastBoardIndex(index) {
@@ -49,6 +50,11 @@ function setMode(mode) {
 function setCurrentPlayer(player) {
     g_currentPlayer = player;
     window.appState.currentPlayer = player;
+}
+
+function setCurrentTrickCards(cards) {
+    g_currentTrickCards = cards;
+    window.appState.currentTrickCards = cards;
 }
 
 function setCurrentTraveller(traveller) {

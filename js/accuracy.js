@@ -577,3 +577,228 @@ function load2(data,statusText,	jqXHR)
 	doPopupNoTimeout(document.getElementById("boardNumber"),htmltext,250,50);
 }
 
+function showPlayerAccMatrix()
+{
+	g_playerAcc = [];
+
+	for (var i=0;i<g_hands.boards.length;i++)
+	{
+		if (g_travellers!==null)
+		{
+			var traveller = getTravellerForBoard(i);
+
+			if (traveller!==null)
+			{
+				for (var j=0;j<traveller.traveller_line.length;j++)
+				{
+					var tline = traveller.traveller_line[j];
+					updatePlayerAccCountsFromBoard(tline.board,tline.lindata);
+				}
+			}
+		}
+		else
+		{
+			updatePlayerAccCountsFromBoard(g_hands.boards[i],"");
+		}
+	}
+
+	for (var i=0;i<g_playerAcc.length;i++)
+	{
+		var pobj = g_playerAcc[i];
+
+		pobj.totalErrCount = pobj.declErrCount + pobj.leadErrCount + pobj.leadPartnerErrCount;
+		pobj.totalCount = pobj.declCount + pobj.leadCount + pobj.leadPartnerCount;
+
+		pobj.ratio = pobj.totalErrCount/pobj.totalCount;
+	}
+
+	g_playerAcc.sort(function(a,b) {
+			if (a.ratio>b.ratio) return 1;
+			else if (a.ratio<b.ratio) return -1;
+			else return 0;
+		});
+
+	var str = "";
+
+	if ((typeof g_hands.club)!=="undefined")
+		str += " - " + g_hands.club;
+
+	if ((typeof g_hands.event)!=="undefined")
+		str += " " + g_hands.event;
+
+		// Make html page
+
+	switch(language)
+	{
+		case "de":
+			var html = '<head></head>';
+			html += '<body><style type=\"text/css\">.myLink {cursor: pointer;font-weight: normal; color: #000099;}\na { font-weight: bold;}\na:link { color: blue; text-decoration:none }\na:visited { color: blue; text-decoration:none }\na:active { color: blue; text-decoration:none }\na:hover { color: red; text-decoration:none }</style>';
+			html += '<h2>Matrix der Spielergenauigkeit' + str + '</h2>';
+			html += '<button onclick="downloadFile(mydoc(),\'text/html\',\'acc.htm\');">Download</button>';
+			html += '<script language=JavaScript>' + downloadFile.toString() + ';function mydoc(){alert("Datei wird in den Downloads-Ordner gespeichert.");return document.body.outerHTML;};</script>';
+			html += '<button class=menuButton style="margin-left:30px;" onclick="document.getElementById(\'accMatrixHelp\').style.display=\'block\';">Hilfe</button>';
+
+			html += '<div id="accMatrixHelp" style="width:600px; margin-top:10px; word-wrap:break-word; padding:10px; display:none; border-style:solid; border-width:thin; border-color:#000000; background-color:#FFFFEE">';
+			html += '<span style="font-size:16px;">';
+			html += "- Die Matrix gibt die Anzahl der Abweichungen vom optimalen Double Dummy Spiel an: für jedes Board und jeden Spieler<br><br>";
+			html += "- Die Durchschnitt-Spalte gibt die durchschnittlichen Anzahl von Abweichungen pro Board für jeden Spieler an.<br><br>";
+			html += "- Zeilen werden nach dem Durchschnittswert sortiert (von niedrig nach hoch).<br><br>";
+			html += "- Die Zellen sind mit Farben codiert - weiß: Board nicht gespielt oder Spieler war Dummy, grün: optimales Spiel, orange: eine Abweichung, rot: zwei oder mehr Abweichungen<br><br>";
+			html += "- Ein Klick auf eine Zelle zeigt das zugehörige Board an<br><br>";
+			html += "- Die Zeile 'Summe pro Board' gibt die Gesamtzahl an Abweichungen vom Double Dummy Spiel für jedes Board (summiert über alle Tische, die das Board gespielt haben). Boards mit höheren Zahlen könnten die schwierigeren sein<br>";
+
+			html += "</span><br>";
+			html += '<button style="cursor:pointer;" onclick="document.getElementById(\'accMatrixHelp\').style.display=\'none\';">Hilfe ausblenden</button>';
+			html += '</div>';
+
+			html += '<table cellpadding=2px style="margin-top:10px;border-spacing:0px;">';
+			html += "<tr style='background-color:#dddddd;'><th>Name</th><th>Durchschnitt</th><th colspan=" + g_hands.boards.length + " style='text-align:center;'>Board Nummer</th><tr>";
+			html += "<tr style='background-color:#dddddd;'><td></td><td></td>";
+			break;
+		default:
+			var html = '<head></head>';
+			html += '<body><style type=\"text/css\">.myLink {cursor: pointer;font-weight: normal; color: #000099;}\na { font-weight: bold;}\na:link { color: blue; text-decoration:none }\na:visited { color: blue; text-decoration:none }\na:active { color: blue; text-decoration:none }\na:hover { color: red; text-decoration:none }</style>';
+			html += '<h2>Player Accuracy Matrix' + str + '</h2>';
+			html += '<button onclick="downloadFile(mydoc(),\'text/html\',\'acc.htm\');">Download</button>';
+			html += '<script language=JavaScript>' + downloadFile.toString() + ';function mydoc(){alert("File will be in the Downloads folder");return document.body.outerHTML;};</script>';
+			html += '<button class=menuButton style="margin-left:30px;" onclick="document.getElementById(\'accMatrixHelp\').style.display=\'block\';">Help</button>';
+
+			html += '<div id="accMatrixHelp" style="width:600px; margin-top:10px; word-wrap:break-word; padding:10px; display:none; border-style:solid; border-width:thin; border-color:#000000; background-color:#FFFFEE">';
+			html += '<span style="font-size:16px;">';
+			html += "- The player accuracy matrix shows the number of deviations from optimal double dummy play, for each board for each player<br><br>";
+			html += "- The Avg column shows the average number of deviations per board for each player.<br><br>";
+			html += "- Rows are sorted by the Avg value (low to high).<br><br>";
+			html += "- The cells are colour coded - white indicates board not played or player role was dummy, green indicates optimal play, orange indicates one deviation, red indicates two or more deviations<br><br>";
+			html += "- Clicking on a cell brings up the board in Bridge Solver Online, with the bidding and play data for the relevant player<br><br>";
+			html += "- The 'Totals Per Board' row shows the total number of deviations from double dummy play for each board (summed over all tables that played the board). Boards with higher totals may be those that are more difficult to play<br>";
+
+			html += "</span><br>";
+			html += '<button style="cursor:pointer;" onclick="document.getElementById(\'accMatrixHelp\').style.display=\'none\';">Hide Help</button>';
+			html += '</div>';
+
+			html += '<table cellpadding=2px style="margin-top:10px;border-spacing:0px;">';
+			html += "<tr style='background-color:#dddddd;'><th>Name</th><th>Avg</th><th colspan=" + g_hands.boards.length + " style='text-align:center;'>Board Number</th><tr>";
+			html += "<tr style='background-color:#dddddd;'><td></td><td></td>";
+	}
+
+	for (var i=0;i<g_hands.boards.length;i++)
+	{
+		var str = "" + g_hands.boards[i].board;
+
+		if (str.length==1) str = "&nbsp;" + str;
+		html += "<td style=\"border-left:1px solid black;border-right:1px solid black;\">" + str + "</td>";
+	}
+
+	html += "</tr>";
+
+	var totals = {};
+
+	for (var i=0;i<g_hands.boards.length;i++)
+	{
+		totals[i] = 0;
+	}
+
+	for (var i=0;i<g_playerAcc.length;i++)
+	{
+//		alert(g_playerAcc[i].name + " " + g_playerAcc[i].ratio);
+		html += "<tr>";
+		html += "<td>" + g_playerAcc[i].name + "</td><td>" + g_playerAcc[i].ratio.toFixed(2) + "</td>";
+
+		for (var j=0;j<g_hands.boards.length;j++)
+		{
+			var board = g_hands.boards[j];
+			var bdnum = board.board;
+
+			var found = false;
+
+			if (typeof g_playerAcc[i].boards[bdnum]!=="undefined")
+			{
+				found = true;
+
+					// Sometimes a file will contain multiple instances of the same board, e.g. a lin file representing a BBO traveller.
+					// Check that the player played this particular board instance (N.B. These files will not contain travellers)
+				if (g_travellers==null)
+				{
+					var names = g_hands.boards[j].PlayerNames;
+
+					if ((typeof names)!=="undefined")
+					{
+						found = false;
+
+						for (var k=0;k<names.length;k++)
+						{
+							if (g_playerAcc[i].name==names[k])
+							{
+								found = true;
+								break;
+							}
+						}
+					}
+				}
+
+				if (found)
+				{
+					var lindata = g_playerAcc[i].boards[bdnum].lindata;
+					var errCount = g_playerAcc[i].boards[bdnum].errCount;
+					var bg = "#88ff88";
+
+					if (errCount==1)
+						bg = "#ffa500";
+					else if (errCount>1)
+						bg = "#ff0000";
+
+					bg = "background-color:" + bg + ";";
+
+					errCount = Number(errCount);
+					if (errCount==0) errCount = "";
+
+					if (!Number.isNaN(errCount)) totals[j] += Number(errCount);
+
+					var url = "";
+
+					if (g_travellers!==null)
+						url = window.location.href + "?lin=" + lindata;
+					else
+						url = window.location.href + "?jsonlin=" + encodeURIComponent(JSON.stringify(g_hands.boards[j]));
+
+					html += "<td class=myLink style=\"border:1px solid grey;text-align:right;" + bg + "\" onclick=window.open(\'" + url + "\')>" + "<span style=\"color:white;font-weight:bold;\">" + errCount + "</span></td>";
+				}
+			}
+
+			if ((typeof g_playerAcc[i].boards[bdnum]=="undefined")||!found)	// If didn't play this board (or this instance of this board)
+			{
+				html += "<td style=\"border:1px solid grey;background-color:white;\"></td>";
+			}
+		}
+
+		html += "</tr>";
+	}
+
+	switch(language)
+	{
+		case "de":
+			html += "<tr style='background-color:#dddddd;'><td colspan=2>Gesamtzahl pro Board</td>";
+			break;
+		default:
+			html += "<tr style='background-color:#dddddd;'><td colspan=2>Totals per board</td>";
+	}
+
+	for (var i=0;i<g_hands.boards.length;i++)
+		html += "<td style=\"text-align:right;border:1px solid grey;\">" + totals[i] + "</td>";
+
+	html += "</tr>";
+
+	html += "</table><body>";
+
+	var myWindow = window.open("", "_blank");
+
+	if (myWindow==null)
+	{
+		confirmShowAcc();
+		return;
+	}
+
+	myWindow.document.write(html);
+	myWindow.document.close();
+}
+

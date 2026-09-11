@@ -1589,45 +1589,6 @@ function storeAccInMemory(context,index,count)
 	return board;
 }
 
-function invoke_buildPage2()
-{
-	if (g_file!='')	// If a pbn or dlm filename was supplied.
-		getHands({callback:buildpage2});
-	else
-		buildpage2();
-}
-
-function openIndexedDB()
-{
-	if ("indexedDB" in window)
-	{
-		console.log("indexedDB functionality is available in this browser");
-		const request = indexedDB.open('cacheData', 1);
-
-		request.onerror = function(event) {
-		  console.log("Database error: " + event.target.errorCode);
-		};
-
-		request.onupgradeneeded = function(event) {
-		  g_db = event.target.result;
-		  const objectStore = g_db.createObjectStore("ddCache", { keyPath: "deal" });
-		  objectStore.createIndex("time", "time", { unique: false });
-		  const objectStore2 = g_db.createObjectStore("accCache", { keyPath: "key" });
-		  objectStore2.createIndex("time", "time", { unique: false });
-		};
-
-		request.onsuccess = function(event) {
-			g_db = event.target.result;
-			invoke_buildPage2();
-		}
-	}
-	else
-	{
-		console.log("indexedDB functionality is NOT available in this browser");
-		invoke_buildPage2();
-	}
-}
-
 function returnAccValue(acc,index)
 {
 	var index = (index + 2) % 4;

@@ -1064,3 +1064,559 @@ function showCurrentBoard()
 		displayErrorAbsPosition("Es gibt kein Handdiagramm für dieses Board",300,200);
 }
 
+function loadTraveller_2(data,statusText,jqXHR)
+{
+	if (data!="") dddLoadMakeable(data,statusText,jqXHR,this.bindex);
+
+	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
+	var player1 = info.player1;
+	var player2 = info.player2;
+
+	var pdirection = 1; // Assume played this board as NS (for singlewinner movement can switch direction
+
+	var pairs = g_travellers.event.participants.pair;
+	var declarer_pair = false;
+
+	var tlines = g_currentTraveller.traveller_line;
+
+	var i;
+
+	var found = false;
+
+	for (i=0;i<tlines.length;i++)
+	{
+		var tline = tlines[i];
+
+		if (played(tline))
+		{
+			if (info.pair_found)
+			{
+				var prole,found,pdirection,declarer_pair,first,opp_pair;
+
+				prole = getPlayerAndRole(info,tline);
+				found = prole.found;
+				pdirection = prole.tdirection;
+				declarer_pair = prole.declarer_pair;
+				first = prole.first;
+				opp_pair = prole.opp_pair;
+
+				if (found)
+				{
+					switch(language)
+					{
+						case "de":
+							if (declarer_pair)
+							{
+								if (first) declarer_name = info.player1;
+								else declarer_name = info.player2;
+							}
+
+							var subHeading = document.getElementById("compSubHeading");
+							var hstr = "";
+
+							hstr = "Board " +  g_currentTraveller.board_no;
+
+							var dirstr = "NS";
+
+							if (pdirection==2) dirstr = "EW";
+
+							if (info.singleWinner)
+								hstr = hstr + ", Vergleich für Paar " + g_hands.pair_number + " auf " + dirstr;
+							else
+								hstr = hstr + ", Vergleich für " + dirstr + " Paar " + g_hands.pair_number;
+
+							hstr = hstr + " (" + player1 + " und " + player2 + ")";
+
+							subHeading.innerHTML = "<span style=\"font-size:12px;\">" + hstr + "</span>";
+
+							g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
+
+							if (g_currow==-1) continue;	// Didn't play on this traveller
+
+							var tline = g_currentTraveller.traveller_line[g_currow];
+
+							var str;
+
+							if (!validContract(g_hands.boards[g_lastBindex].Contract))
+							{
+								if (tline.contract=="Passed")
+									str = "Board wurde durchgepasst.";
+								else if (tline.contract=="NP")
+									str = "Board wurde nicht gespielt.";
+								else
+									str = "Kein Kontrakt vorhanden.";
+							}
+							else
+							{
+								str = "Kontrakt war " + g_hands.boards[g_lastBindex].Contract + " von " + g_hands.boards[g_lastBindex].Declarer + " ";
+
+								if (declarer_pair)
+									str = str + "(" + declarer_name + ")";
+								else
+								{
+									str = str + "(gegen " + player1.split(" ")[0] + " und " + player2.split(" ")[0] + ")";
+								}
+
+								var contractLevel = Number(g_hands.boards[g_lastBindex].Contract.charAt(0));
+								var overtricks = tline.tricks - (contractLevel + 6);
+
+								str = str + " mit " + tline.tricks + " Stichen";
+
+								if (overtricks>0)
+									str = str + " (" + overtricks + " Überstiche)";
+								else if (overtricks<0)
+									str = str + " (" + (-overtricks) + " Faller)";
+							}
+
+							var nspts = Number(tline.ns_match_points);
+							var ewpts = Number(tline.ew_match_points);
+
+							if (g_scoring!="IMP")
+							{
+								var percent = 100*(nspts/(nspts + ewpts));
+
+								if (pdirection==2) percent = 100 - percent;
+
+								percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
+								var pbar = document.getElementById("pbar");
+								var width = Math.round((percent*150)/100);
+								width = width + "px";
+								pbar.style.width = width;
+								pbar.style.minWidth = width;
+								pbar.style.MaxWidth = width;
+								pbar.style.backgroundColor = "#55ff55";	// green
+
+								document.getElementById("percentValue").innerHTML = percent + "%";
+								$("#percentValue").show();
+								$("#ourPercentage").show();
+							}
+							else
+							{
+								$("#percentValue").hide();
+								$("#ourPercentage").hide();
+							}
+
+							if (validContract(g_hands.boards[g_lastBindex].Contract))
+							{
+								if (((typeof g_hands.boards[g_lastBindex].DoubleDummyTricks)!="undefined")&&checkBoardValid(g_lastBindex))
+								{
+									var ntricks2 = getMakeableTricksForContract(g_lastBindex,g_hands.boards[g_lastBindex].Contract,g_hands.boards[g_lastBindex].Declarer);
+
+									if (tline.tricks==ntricks2)
+										str = str + ", die gleiche Zahl wie von der Double Dummy Analyse vorhergesagt."
+									else if (tline.tricks<ntricks2)
+									{
+										var shortfall = ntricks2 - tline.tricks;
+										str = str + ", " + shortfall + " weniger als von der Double Dummy Analyse vorhergesagt.";
+									}
+									else
+									{
+										var excess = tline.tricks - ntricks2;
+										str = str + ", " + excess + " mehr als von der Double Dummy Analyse vorhergesagt.";
+									}
+
+								}
+							}
+
+							var ourscore = tline.score;
+							var res = compareScores(g_travellers.event.board[getTravIndex(g_lastBindex)].traveller_line,ourscore,pdirection);
+
+							if (res.adjusted>0)	// We received a percentage instead of score (don't say anything.
+							{
+							}
+							else if ((res.lower==0)&&(res.higher==0)) str = str + " Das war ein ganz flaches Board.";
+							else if (res.higher==0)
+							{
+								if (res.same==0) str = str + " Das war einsamer Top.";
+								else str = str + " Das war ein geteilter Top mit " + res.same + " anderen Paaren.";
+							}
+							else if (res.lower==0)
+							{
+								if (res.same==0) str = str + " Das war ein einsamer Nuller."
+								else str = str + " Das war ein geteilter Nuller mit " + res.same + " anderen Paaren.";
+							}
+							else
+								str = str + " Es gab " + res.higher + " bessere und " + res.lower + " schlechtere Paare in diesem Board."
+
+							var ns = "NS";
+							var ew = "EW";
+							var str2 = "";
+
+								// Temporarily disable this output.
+		/*
+							if (((pdirection==1)&&(ns.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1))|
+								((pdirection==2)&&(ew.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1)))
+							{
+									// we were declarer
+								// *** need to change this line if used: checkHigherScoringPairs(g_currentTraveller.traveller_line,g_currow,pdirection);
+
+							}*/
+
+							document.getElementById("comparisonText").innerHTML = "<span style=\"font-size:12px;\">" + str + str2 + "</span>";
+
+			//				getInfoForSimilarContracts(g_currow,g_hands.direction);
+							break;
+						default:
+							if (declarer_pair)
+							{
+								if (first) declarer_name = info.player1;
+								else declarer_name = info.player2;
+							}
+
+							var subHeading = document.getElementById("compSubHeading");
+							var hstr = "";
+
+							hstr = "Board " +  g_currentTraveller.board_no;
+
+							var dirstr = "NS";
+
+							if (pdirection==2) dirstr = "EW";
+
+							if (info.singleWinner)
+								hstr = hstr + ", comparison for pair " + g_hands.pair_number + " playing " + dirstr;
+							else
+								hstr = hstr + ", comparison for " + dirstr + " pair " + g_hands.pair_number;
+
+							hstr = hstr + " (" + player1 + " and " + player2 + ")";
+
+							subHeading.innerHTML = "<span style=\"font-size:12px;\">" + hstr + "</span>";
+
+							g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
+
+							if (g_currow==-1) continue;	// Didn't play on this traveller
+
+							var tline = g_currentTraveller.traveller_line[g_currow];
+
+							var str;
+
+							if (!validContract(g_hands.boards[g_lastBindex].Contract))
+							{
+								if (tline.contract=="Passed")
+									str = "Board was passed out.";
+								else if (tline.contract=="NP")
+									str = "Board was not played.";
+								else
+									str = "Contract not available.";
+							}
+							else
+							{
+								str = "Contract was " + g_hands.boards[g_lastBindex].Contract + " by " + g_hands.boards[g_lastBindex].Declarer + " ";
+
+								if (declarer_pair)
+									str = str + "(" + declarer_name + ")";
+								else
+								{
+									str = str + "(defended by " + player1.split(" ")[0] + " and " + player2.split(" ")[0] + ")";
+								}
+
+								var contractLevel = Number(g_hands.boards[g_lastBindex].Contract.charAt(0));
+								var overtricks = tline.tricks - (contractLevel + 6);
+
+								str = str + " making " + tline.tricks + " tricks";
+
+								if (overtricks>0)
+									str = str + " (" + overtricks + " overtricks)";
+								else if (overtricks<0)
+									str = str + " (" + (-overtricks) + " off)";
+							}
+
+							var nspts = Number(tline.ns_match_points);
+							var ewpts = Number(tline.ew_match_points);
+
+							if (g_scoring!="IMP")
+							{
+								var percent = 100*(nspts/(nspts + ewpts));
+
+								if (pdirection==2) percent = 100 - percent;
+
+								percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
+								var pbar = document.getElementById("pbar");
+								var width = Math.round((percent*150)/100);
+								width = width + "px";
+								pbar.style.width = width;
+								pbar.style.minWidth = width;
+								pbar.style.MaxWidth = width;
+								pbar.style.backgroundColor = "#55ff55";	// green
+
+								document.getElementById("percentValue").innerHTML = percent + "%";
+								$("#percentValue").show();
+								$("#ourPercentage").show();
+							}
+							else
+							{
+								$("#percentValue").hide();
+								$("#ourPercentage").hide();
+							}
+
+							if (validContract(g_hands.boards[g_lastBindex].Contract))
+							{
+								if (((typeof g_hands.boards[g_lastBindex].DoubleDummyTricks)!="undefined")&&checkBoardValid(g_lastBindex))
+								{
+									var ntricks2 = getMakeableTricksForContract(g_lastBindex,g_hands.boards[g_lastBindex].Contract,g_hands.boards[g_lastBindex].Declarer);
+
+									if (tline.tricks==ntricks2)
+										str = str + ", the same number predicted by double dummy analysis."
+									else if (tline.tricks<ntricks2)
+									{
+										var shortfall = ntricks2 - tline.tricks;
+										str = str + ", " + shortfall + " fewer than predicted by double dummy analysis.";
+									}
+									else
+									{
+										var excess = tline.tricks - ntricks2;
+										str = str + ", " + excess + " more than predicted by double dummy analysis.";
+									}
+
+								}
+							}
+
+							var ourscore = tline.score;
+							var res = compareScores(g_travellers.event.board[getTravIndex(g_lastBindex)].traveller_line,ourscore,pdirection);
+
+							if (res.adjusted>0)	// We received a percentage instead of score (don't say anything.
+							{
+							}
+							else if ((res.lower==0)&&(res.higher==0)) str = str + " This was a completely flat board.";
+							else if (res.higher==0)
+							{
+								if (res.same==0) str = str + " This was an outright top score.";
+								else str = str + " This was a joint top with " + res.same + " other pairs.";
+							}
+							else if (res.lower==0)
+							{
+								if (res.same==0) str = str + " This was an outright bottom score."
+								else str = str + " This was a joint bottom with " + res.same + " other pairs.";
+							}
+							else
+								str = str + " There were " + res.higher + " higher scoring and " + res.lower + " lower scoring pairs on this board."
+
+							var ns = "NS";
+							var ew = "EW";
+							var str2 = "";
+
+								// Temporarily disable this output.
+		/*
+							if (((pdirection==1)&&(ns.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1))|
+								((pdirection==2)&&(ew.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1)))
+							{
+									// we were declarer
+								// *** need to change this line if used: checkHigherScoringPairs(g_currentTraveller.traveller_line,g_currow,pdirection);
+
+							}*/
+
+							document.getElementById("comparisonText").innerHTML = "<span style=\"font-size:12px;\">" + str + str2 + "</span>";
+
+			//				getInfoForSimilarContracts(g_currow,g_hands.direction);
+
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	if (!found)
+	{
+		var str = "The currently selected pair (" + player1 + " & " + player2 + ") did not play this board.";
+		str = str + " Colour coding of table below is from point of view of NS pairs."
+		document.getElementById("compSubHeading").innerHTML = str;
+		document.getElementById("percentValue").textContent = "";
+		$("#ourPercentage").hide();
+		$("#comparisonText").hide();
+	}
+	else
+	{
+		if (g_scoring!="IMP")
+			$("#ourPercentage").show();
+		else
+			$("#ourPercentage").hide();
+
+		$("#comparisonText").show();
+	}
+
+	displayTraveller(pdirection);
+
+	hideSpinner();
+	hideAllPopups();
+	$("#scoreandtraveller").hide();
+	hideRanking();
+	$("#scores").hide();
+	$("#comparison").show();
+	$("#checkListDiv").hide();
+	$("#abuttons").show();
+}
+
+function loadTraveller_1(data,statusText,jqXHR,context)
+{
+/*	var players = new Array();*/
+
+	hideSpinner();
+	resetTimeout();
+
+/*	if (g_hands.lin!=="")
+	{
+		try {
+			var tmp = JSON.parse(linToJson(g_hands.lin));
+			var bd = tmp.boards[0];
+			if ((typeof bd.PlayerNames)!=="undefined")
+			{
+				for (var i=0;i<4;i++)
+					players[i] = bd.PlayerNames[i];
+			}
+		} catch (e) {};
+	}*/
+
+	if (data!="")
+	{
+		if (g_travellers==null)
+		{
+			if (g_xml!="")
+			{
+				if (g_debug)
+					alert(data);
+
+				data = convertXML(data);	// convert it to json
+
+				if (g_debug)
+					alert(JSON.stringify(data));
+			}
+
+			g_travellers = JSON.parse(data);
+
+			if ((typeof g_travellers.event.participants.pair)!="undefined")
+			{
+				var i;
+
+				var pairs = g_travellers.event.participants.pair;
+
+					// Standardise representation of direction.
+				for (i=0;i<pairs.length;i++)
+				{
+					if (pairs[i].direction=="NS") pairs[i].direction="N";
+					else if (pairs[i].direction=="EW") pairs[i].direction="E";
+				}
+			}
+
+			getSessionInfo();	// Set up details of session.
+
+			if (g_eventType=="Teams")
+			{
+				calculateCrossImps();
+				calculateMaxImps();
+				g_rankInfo = null;
+				getRankingInfo();
+			}
+		}
+
+		var i;
+
+		for (i=0;i<g_travellers.event.participants.pair.length;i++)
+		{
+			var data = g_travellers.event.participants.pair[i];
+		}
+
+		for (var i=0;i<g_travellers.event.board.length;i++)
+		{
+			var tlines = g_travellers.event.board[i].traveller_line;
+
+			for (var j=0;j<tlines.length;j++)
+			{
+				if ((typeof tlines[j].lindata)!="undefined")
+				{
+					if (typeof tlines[j].board=='undefined')	// If fetched from cache it may have been converted already
+					{
+						try {
+							var lind = decodeURIComponent(tlines[j].lindata.replace(/\\'/g,"'"));
+							var tmp = eval("(" + linToJson(lind) + ")");
+							tlines[j].board = tmp.boards[0];
+
+/*							if ((typeof tmp.boards[0].PlayerNames)!=="undefined")
+							{
+								try {
+									if ((players.length>0)&&(players.length==tmp.boards[0].PlayerNames.length))
+									{
+										var found = true;
+
+										for (var k=0;k<players.length;k++)
+											if (players[k]!==tmp.boards[0].PlayerNames[k]) found = false;
+									}
+
+									if (found)
+									{
+										alert("found it: " + j);
+										g_currow = j;
+									}
+								} catch (e) {};
+							}*/
+						} catch (e) {
+							tlines[j].lindata = "";
+						};
+					}
+				}
+			}
+		}
+
+		setDefaultContracts();
+	}
+
+	context.callback(context);
+}
+
+function loadTraveller(data,statusText,jqXHR)
+{
+	try {
+		localStorage.removeItem("bwjson");
+		localStorage.setItem("bwtime","" + Date.now());
+	} catch (e) {clearTravellersLocalStorage();};
+
+	saveEventLocalStorage(data);
+	loadTraveller_1(data,statusText,jqXHR,this);
+}
+
+function travellersNotFound(jqXHR,textStatus,errorThrown)
+{
+		// Travellers not found
+	clearTravellersLocalStorage();
+	hideSpinner();
+	resetTimeout();
+	this.callback();
+}
+
+function getTraveller(context)
+{
+			// Get the traveller data
+		var turl = "";
+		var data = "";
+
+		if (g_test==1)
+			turl = "data/" + g_hands.club + "_" + g_hands.event + ".json";
+		else if ((g_xml!="")&&(g_xml!==1))
+		{
+			turl = g_xml;
+		}
+
+		if (g_travellers==null)
+		{
+			if (g_xml!==1) // xml string not supplied as parameter
+			{
+				if (data=="")
+				{
+					largeSpinner();
+					doRequestHTMLasync(turl,loadTraveller,travellersNotFound,context);
+				}
+				else
+				{
+					loadTraveller_1(data,"","",context);
+				}
+			}
+			else
+			{
+				loadTraveller_1(g_xmlstr,"","",context);
+			}
+		}
+		else
+			loadTraveller_1("","","",context);
+}
+
+
+

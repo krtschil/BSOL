@@ -91,3 +91,93 @@ function hideHelp()
 		g_helpId = "";
 	}
 }
+
+function showSettings()
+{
+	hideAllPopups();
+	document.getElementById("settingsHide").onclick = hideAllPopups;
+	document.getElementById("showSettingsHelp").onclick = function (){showHelp(this,'settingsHelp')};
+	$("#settings").show();
+}
+
+function showOptions(pthis)
+{
+		// Respond to the HELP button
+	var popup = document.getElementById("optionsBox");
+	popup.style.top = 20 + "px";
+	popup.style.left = 100  + "px";
+	document.getElementById("optionsClose").onclick = function()
+		{
+			$("#optionsBox").hide();
+            $("#optionsSaveFeedback").hide();
+		}
+
+	document.getElementById("optionsSave").onclick = function()
+		{
+			var ns1 = document.getElementById("nsrad1").checked;
+			var ns2 = document.getElementById("nsrad2").checked;
+			var ns3 = document.getElementById("nsrad3").checked;
+			var ew1 = document.getElementById("ewrad1").checked;
+			var ew2 = document.getElementById("ewrad2").checked;
+			var ew3 = document.getElementById("ewrad3").checked;
+			var mk1 = document.getElementById("mkrad1").checked;
+			var mk2 = document.getElementById("mkrad2").checked;
+
+			var string = "{\"options\":{\"ns\":[\"" + ns1 + "\",\"" + ns2 + "\",\"" + ns3 + "\"],\"ew\":[\"" + ew1 + "\",\"" + ew2 + "\",\"" + ew3 + "\"],\"mk\":[\"" + mk1 + "\",\"" + mk2 + "\"]}}";
+			setCookie("BSOL_options",string,20*365);
+
+			var sel = document.getElementById("honourCardSet");
+
+			if (sel!=null)
+			{
+				if (localStorageSupported())
+				{
+					localStorage.setItem("honourCardSet",sel.value);
+				}
+			}
+
+			/*if (remoteState!==document.getElementById("mkuseremote").checked)
+				startStopMainWorker();*/
+            $("#optionsSaveFeedback").show();
+		}
+
+	document.getElementById("nsrad1").onclick = document.getElementById("nslab1").onclick = document.getElementById("nsrad1").ontouchstart = document.getElementById("nslab1").ontouchstart = function() {document.getElementById("nsrad1").checked=true;displayHands();};
+	document.getElementById("nsrad2").onclick = document.getElementById("nslab2").onclick = document.getElementById("nsrad2").ontouchstart = document.getElementById("nslab2").ontouchstart = function() {document.getElementById("nsrad2").checked=true;displayHands();};
+	document.getElementById("nsrad3").onclick = document.getElementById("nslab3").onclick = document.getElementById("nsrad3").ontouchstart = document.getElementById("nslab3").ontouchstart = function() {document.getElementById("nsrad3").checked=true;displayHands();};
+	document.getElementById("ewrad1").onclick = document.getElementById("ewlab1").onclick = document.getElementById("ewrad1").ontouchstart = document.getElementById("ewlab1").ontouchstart = function() {document.getElementById("ewrad1").checked=true;displayHands();};
+	document.getElementById("ewrad2").onclick = document.getElementById("ewlab2").onclick = document.getElementById("ewrad2").ontouchstart = document.getElementById("ewlab2").ontouchstart = function() {document.getElementById("ewrad2").checked=true;displayHands();};
+	document.getElementById("ewrad3").onclick = document.getElementById("ewlab3").onclick = document.getElementById("ewrad3").ontouchstart = document.getElementById("ewlab3").ontouchstart = function() {document.getElementById("ewrad3").checked=true;displayHands();};
+	document.getElementById("mkrad1").onclick = document.getElementById("mklab1").onclick = document.getElementById("mkrad1").ontouchstart = document.getElementById("mklab1").ontouchstart = function() {document.getElementById("mkrad1").checked=true;redrawMCTable(true);};
+	document.getElementById("mkrad2").onclick = document.getElementById("mklab2").onclick = document.getElementById("mkrad2").ontouchstart = document.getElementById("mklab2").ontouchstart = function() {document.getElementById("mkrad2").checked=true;redrawMCTable(true);};
+
+	try {
+		document.getElementById("honourCardSet").onchange = displayHands;
+	} catch (e) {};
+
+	$("#optionsBox").show();
+}
+
+function showtoolsSubMenu()
+{
+	$("#toolsSubMenu").show();
+}
+
+function showHelp(pthis,detailedHelp)
+{
+		// Respond to the HELP button
+	if ((g_helpId!="")&&(g_helpId!=detailedHelp))
+	{
+		hideHelp();
+	}
+
+	g_helpId = detailedHelp;
+	var popup = document.getElementById(detailedHelp);
+	popup.style.top = 10 + "px";
+	popup.style.left = 150  + "px";
+	document.getElementById("hide_"+detailedHelp).onclick = function()
+		{
+			$("#"+g_helpId).hide();
+		}
+
+	$("#"+detailedHelp).show();
+}

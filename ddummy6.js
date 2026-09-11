@@ -7597,41 +7597,4 @@ function hide(button)
 	$("#"+button).hide();
 }
 
-function doRequestHTMLasync(fileref,ploadfunc,errorFunc,pcontext)
-{
-	$.ajax({
-	  url:fileref,
-	  data: "",
-	  cache: false,
-	  success: ploadfunc,
-	  error: errorFunc,
-	  dataType: "html",
-	  context:pcontext
-	});
-}
 
-function errorFunc(jqXHR,textStatus,errorThrown)
-{
-		// textStatus should be one of "timeout", "error", "abort", "parsererror".
-		// errorThrown contains HTTP status if the error was an HTTP error.
-	hideSpinner();
-	resetTimeout();
-
-	var errormsg;
-
-	if (textStatus=="error")
-	{
-		if (errorThrown=="")
-			errormsg = "Konnte den Webserver nicht erreichen";
-		else
-			errormsg = "Fehlermeldung des Webservers: " + errorThrown;
-	}
-	else if (textStatus=="timeout")
-		errormsg = "Keine Antwort des Webservers, bitte versuchen Sie es später noch einmal";
-	else
-		errormsg = "Unbekannter Fehler";
-
-	errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:200px;\"><span style=\"font-size:16px;\">" + errormsg + "</span></div>";
-
-	displayError(document.getElementById("boardNumber"),errormsg);
-}

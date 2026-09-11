@@ -34,3 +34,23 @@ function makeAccKey(board)
 
 	return JSON.stringify(key);
 }
+
+function tricksConceded(data)
+{
+		// Note: The direction index is 0,1,2,3 for N,S,E,W
+	var tricksConceded = data.tricksConceded;
+	var cardDirection = data.cardDirection;
+
+	var errCount = [];
+
+	for (var i=0;i<4;i++)
+		errCount[i] = 0;
+
+	for (var i=0;i<tricksConceded.length;i++)
+	{
+		if (tricksConceded[i]!=0)
+			errCount[cardDirection[i]]++;
+	}
+
+	return errCount;
+}

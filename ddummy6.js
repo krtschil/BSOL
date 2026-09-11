@@ -3991,23 +3991,6 @@ function tricksConceded(data)
 	return errCount;
 }
 
-function returnAccCount(acc,direction)
-{
-	direction = (direction + 2) % 4;
-	return acc[direction];
-}
-
-function returnName(names,direction,firstNameOnly=true)
-{
-		// Direction for names array starts with South rather than North
-	var namesDirection = (direction + 2) % 4;
-
-	if (firstNameOnly)
-		return names[namesDirection].split(" ")[0];	// First name only
-	else
-		return names[namesDirection];
-}
-
 function updatePlayerAccCountsFromBoard(board,lindata)
 {
     if (typeof board=="undefined") return;

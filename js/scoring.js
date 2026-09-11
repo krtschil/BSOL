@@ -572,3 +572,20 @@ function comparePositions(a,b)
 	else if (a<b) return -1;
 	else return 0;
 }
+
+function returnAccCount(acc,direction)
+{
+	direction = (direction + 2) % 4;
+	return acc[direction];
+}
+
+function returnName(names,direction,firstNameOnly=true)
+{
+		// Direction for names array starts with South rather than North
+	var namesDirection = (direction + 2) % 4;
+
+	if (firstNameOnly)
+		return names[namesDirection].split(" ")[0];	// First name only
+	else
+		return names[namesDirection];
+}

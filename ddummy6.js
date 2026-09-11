@@ -794,10 +794,7 @@ function doPopupAt(text,px,py)
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);  // Display for 4 seconds
 }
 
-function setCharAt(str,index,chr) {
-    if(index > str.length-1) return str;
-    return str.substring(0,index) + chr + str.substring(index+1);
-}
+
 
 function updateParResults(data,pindex)
 {
@@ -6304,43 +6301,6 @@ function showNames(pthis,dir){
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
-}
-
-function leadCard(lead)
-{
-	// lead card can be supplied as, for example, AS, or SA. This function returns the value of
-	// the lead card field in the AS format.
-	var cards = "23456789TJQKA";
-	var suit = "CHDS";
-	var pvalue = lead.toUpperCase();
-	pvalue = pvalue.replace("10","T");
-
-	var validCard = true;
-
-	if (pvalue.length!=2)
-		return lead;
-	else
-	{
-		var cvalue = pvalue.charAt(0);
-
-		if (cards.indexOf(cvalue)==-1)	// Try reversing it to see if it's the other way around.
-		{
-			var c1 = pvalue.charAt(0);
-			var c2 = pvalue.charAt(1);
-
-			cvalue = c2;
-
-			if (cards.indexOf(cvalue)==-1)	// Not this way either, just return the original
-				return pvalue.replace("T","10");
-
-			pvalue = c2 + c1;
-		}
-
-		if (suit.indexOf(pvalue.charAt(1))==-1)
-			return pvalue.replace("T","10");
-	}
-
-	return pvalue.replace("T","10");
 }
 
 function getMakeableTricksForLead(pindex,tline)

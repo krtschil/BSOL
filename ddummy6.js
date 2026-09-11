@@ -3137,15 +3137,6 @@ function processHandEntry()
 		ptsctl.style.display = "none";
 }
 
-function makeBoardNameString(boardName)
-{
-	boardName = boardName.split(".");
-	var result = boardName[0];
-
-	if (boardName.length>1) result = result + "<br><span style=\"font-size:12px;\">" + boardName[1] + "</span>";
-
-	return result;
-}
 
 function hideMenuItems()
 {

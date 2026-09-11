@@ -1070,6 +1070,13 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	clearCardData();
 	displayHands();
 
+	var board = g_hands.boards[g_lastBindex];
+	var names = board.PlayerNames;
+
+	if (!Array.isArray(names) || names.length < 4) {
+		names = ["S", "W", "N", "E"];
+	}
+	/*
 	if ((typeof g_hands.boards[g_lastBindex])!="undefined")
 		names = g_hands.boards[g_lastBindex].PlayerNames;
 	else
@@ -1079,7 +1086,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 		names[1] = "W";
 		names[2] = "N";
 		names[3] = "E";
-	}
+	}*/
 
 	var context = {"names":names,"declarer":declarer,"dest":dest};
 

@@ -7,7 +7,8 @@ window.appState = {
     inputDirection: 0,
     inputBoard: null,
     session: 0,
-    mode: 0
+    mode: 0,
+    currentPlayer: null
 };
 
 function setLastBoardIndex(index) {
@@ -43,6 +44,11 @@ function setSession(session) {
 function setMode(mode) {
     g_mode = mode;
     window.appState.mode = mode;
+}
+
+function setCurrentPlayer(player) {
+    g_currentPlayer = player;
+    window.appState.currentPlayer = player;
 }
 
 function setCurrentTraveller(traveller) {

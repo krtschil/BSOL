@@ -994,11 +994,11 @@ function processPosition(hcards,para)
 
 	if (hcards.errno==0)
 	{
-		g_currentPlayer = hcards.player;
-		if (g_currentPlayer=="north") g_currentPlayer = 0;
-		else if (g_currentPlayer=="east") g_currentPlayer = 1;
-		else if (g_currentPlayer=="south") g_currentPlayer = 2;
-		else if (g_currentPlayer=="west") g_currentPlayer = 3;
+		setCurrentPlayer(hcards.player);
+		if (g_currentPlayer=="north") setCurrentPlayer(0);
+		else if (g_currentPlayer=="east") setCurrentPlayer(1);
+		else if (g_currentPlayer=="south") setCurrentPlayer(2);
+		else if (g_currentPlayer=="west") setCurrentPlayer(3);
 	}
 
 	for (i=0;i<4;i++)

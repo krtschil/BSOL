@@ -2444,7 +2444,7 @@ function setupTraveller(index,active)
 	document.getElementById("makeableContracts").className = "mc";		// Revert to smaller font for makeable contracts table
 
 	if (g_session!=0) callddd("q");  // Terminate any double dummy playing g_session that is in progress.
-	g_session = 0;
+	setSession(0);
 	setLastBoardIndex(index);
 
 	clearCardData();
@@ -3748,7 +3748,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 
 	var session = new Date().getTime();
 
-	g_session = session;
+	setSession(session);
 
 	spinner(document.getElementById("makeableContracts").rows[1].cells[0]);
 
@@ -4955,7 +4955,7 @@ function dddloadfunc(data,statusText,jqXHR,context)
 		if (ctx.para=="new")	// If it's a new session store the session identifier as the current session
 		{
 			if (tmp.requesttoken==g_session)	// response holds the correct request token, so update the session number to reflect the global session id allocated by the cgi
-				g_session = tmp.sess.sockref;
+				setSession(tmp.sess.sockref);
 			else
 				return;	// this session was cancelled before this response was received.
 		}

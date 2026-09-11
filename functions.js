@@ -18,7 +18,7 @@ function startup(){
 		g_showPlay=0;					//S If showPlay!=0 show played cards for this hand
 		g_hiscore;
 		g_allBoards = 0;				// Set non-zero while running an analysis on all boards in a set.
-		g_session = 0;
+		setSession(0);
 		g_bgTrans = 0;					// Unique transaction id allocated to background transaction (e.g single shot accuracy request)
 		g_edited = 0;   				// Set to 1 when a change has been made (or 2, if only the Dealer has been changed)
 		g_partialHand = 0;				// Non-zero if playing a hand which started with fewer than 52 cards

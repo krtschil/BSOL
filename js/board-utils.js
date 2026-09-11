@@ -150,3 +150,18 @@ function countUnallocated()
 
 	return count;
 }
+
+function clearCardData()
+{
+	var i,j;
+
+	for (i=0;i<4;i++)
+	{
+		for (j=0;j<13;j++)
+		{
+			g_playableCards[i][j] = -1;
+			g_inactiveCards[i][j] = 0;
+			g_currentTrickCards[i][j] = 0;
+		}
+	}
+}

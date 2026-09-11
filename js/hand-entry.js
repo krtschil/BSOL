@@ -331,3 +331,21 @@ function setDealer(dealer)
     g_inputBoard.Dealer = dealer.charAt(0);
     displayDealer(dealer,g_inputBoard.Vulnerable);
 }
+
+function deselectCard(pthis)
+{
+		// When a button is clicked on a playable card this function send the card played to the server which will
+		// then update the current position and return a json string containing it.
+    clearMakeableOnInputBoard();
+	var str = pthis.id.replace("button","");
+	var suit = Number(str.charAt(2));
+	var cd;
+
+	if (str.length==4)
+		cd = Number(str.charAt(3));
+	else
+		cd = Number(str.substring(3));
+
+	g_playableCards[suit][cd] = 1;
+	processHandEntry();
+}

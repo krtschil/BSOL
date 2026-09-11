@@ -6845,44 +6845,6 @@ function displayTraveller(pdirection)
 	drawMiniHand();
 }
 
-function compareScores(tlines,ourscore,pdirection)
-{
-	var res = {};
-	res.adjusted = 0;
-	res.lower = 0;
-	res.higher = 0;
-	res.same = 0;
-	var sign = 1;
-	var i;
-
-	if (ourscore.toString().indexOf("A")!=-1)
-	{
-		res.adjusted++;
-		return res;
-	}
-
-	if (pdirection==2) sign = -1;
-
-	for (i=0;i<tlines.length;i++)
-	{
-		var tline = tlines[i];
-
-		if (played(tline))
-		{
-			var score = tline.score;
-			var diff = sign*(score-ourscore);
-
-			if (diff>0) res.higher++;
-			else if (diff<0) res.lower++;
-			else res.same++;
-		}
-	}
-
-	res.same--;	// Deduct one for our own traveller line.
-
-	return res;
-}
-
 function getPairObject(pair,direction,rankNS,rankEW)
 {
 	var sessInfo = getSessionInfo();
@@ -7053,18 +7015,6 @@ function addRankPositions(data)
 			}
 		}
 	}
-}
-
-function comparePositions(a,b)
-{
-	if (Number.isNaN(a)&&!Number.isNaN(b)) return 1;
-	if (Number.isNaN(b)&&!Number.isNaN(a)) return -1;
-	if (Number.isNaN(a)&&Number.isNaN(b)) return 0;
-	a = Number(a);
-	b = Number(b);
-	if (a>b) return 1;
-	else if (a<b) return -1;
-	else return 0;
 }
 
 function sortRanking(orderByRank)

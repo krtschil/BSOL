@@ -2661,33 +2661,7 @@ function edit()
 	}
 }
 
-function getCardIndex(card)
-{
-	if (card=="A")
-	{
-		return 12;
-	}
-	else if (card=="K")
-	{
-		return 11;
-	}
-	else if (card=="Q")
-	{
-		return 10;
-	}
-	else if (card=="J")
-	{
-		return 9;
-	}
-	else if (card=="T")
-	{
-		return 8;
-	}
-	else
-	{
-		return Number(card) - 2;
-	}
-}
+
 
 function clearMakeableOnInputBoard()
 {
@@ -3834,14 +3808,7 @@ function cacheMakeable(pindex,data)
 	} catch (e) {};
 }
 
-function calcMCTableIndex(suit,leadDirection)
-{
-	var suits = "NSHDC";
-	var dir = "EWSN";
 
-	var index = 5*(dir.indexOf(leadDirection.toUpperCase())) + suits.indexOf(suit.toUpperCase());
-	return index;
-}
 
 function makeableContractRequestsOutstanding()
 {
@@ -5087,22 +5054,7 @@ function checkBoardValid(bindex)
 	return true;
 }
 
-function makeDealKey(dealstr,vul,leadstr)
-{
-	var vulArray = ["None","All","NS","EW"];
-	var idx = 0;
 
-	for (var i=0;i<4;i++)
-	{
-		if (vulArray[i]==vul)
-		{
-			idx = i;
-			break;
-		}
-	}
-
-	return idx + "." + dealstr + "_" + leadstr;
-}
 
 function calculateMakeableContracts(pfunc,pleadstr,bindex)
 {

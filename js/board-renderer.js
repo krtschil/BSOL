@@ -432,3 +432,24 @@ function showBidding()
 
 	return "<div style=\"margin-left:35px;float:left;padding: 0; border:1px solid black; width: 200px;\">" + headerDiv.innerHTML + "</div><div id=biddingContent style=\"margin-left:35px; float:left; clear:both; padding: 0; border:1px solid black; width: 200px; height:" + boxHeight + "; overflow-y: auto;\">" + el.innerHTML + "</div>";
 }
+
+function showCredits()
+{
+	if ((typeof g_hands.boards[g_lastBindex].Played)!="undefined")
+		if (g_hands.boards[g_lastBindex].Played.length>1) return;	// Board contains play data, so show bidding and replay controls instead of credits
+
+		// Check for empty string first because toUpperCase() fails on empty string.
+	if ((typeof g_hands.lin)=="undefined")
+	{
+		if ((g_file==="") && document.getElementById("currentPosition").innerHTML == ""  ) {
+			document.getElementById("currentPosition").innerHTML = g_credits;
+		}
+
+		else if (g_file!==1)
+		{
+			if ((!g_file.toUpperCase().endsWith('LIN')) && document.getElementById("currentPosition").innerHTML =="" ) {
+				document.getElementById("currentPosition").innerHTML = g_credits;
+			}
+		}
+	}
+}

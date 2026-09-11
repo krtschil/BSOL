@@ -420,3 +420,61 @@ function setOptions(optionsStr)
 		}
 	} catch (err) {alert(err);};
 }
+
+function hideMenuItems()
+{
+	hide("prev");
+	hide("showBoards");
+	hide("gotoBoard");
+	if (document.getElementById("saveLIN")!=null) hide("saveLIN");
+	hide("saveBoards");
+	hide("backPlay");
+	hideForwardPlay();
+	hide("play");
+	hide("deleteBoard");
+	hide("newBoard");
+	hide("editHand");
+	hide("clearHand");
+	hide("options");
+	hide("help");
+	hide("computeMakeable");
+	hide("tools");
+	hide("bsession");
+	hide("bsessionHelp");
+	hide("next");
+	hideAllPopups();
+	$('#popup_box').hide();
+	document.getElementById('popup_box').style.display='none';
+}
+
+function showMainMenuItems()
+{
+//	if ((typeof g_hands.lin)=="undefined")
+	if ((g_hands.boards.length>1)||(g_test==1)||(g_xml!=""))
+	{
+		show("prev");
+		show("gotoBoard");
+		show("next");
+
+		if (g_file=='')
+		{
+			show("bsession");
+			show("bsessionHelp");
+		}
+	}
+
+	if ((g_test!=1)&&(g_xml==""))
+	{
+		if ((typeof g_hands.lin)!=="undefined")
+			if (document.getElementById("saveLIN")!=null) show("saveLIN");
+
+		//document.getElementById("saveBoards").innerHTML = "Speichern";	// **** Remove this assignment when html is no longer cached.
+		show("saveBoards");
+	}
+
+	show("play");
+	show("editHand");
+	show("options");
+	show("computeMakeable");
+	show("tools");
+}

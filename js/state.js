@@ -11,7 +11,10 @@ window.appState = {
     currentPlayer: null,
     currentTrickCards: null,
     currentPlayIndex: 0,
-    lastMatchedPlayIndex: 0
+    lastMatchedPlayIndex: 0,
+    showPlay: 0,
+    partialHand: 0,
+    trumps: ""
 };
 
 function setLastBoardIndex(index) {
@@ -67,6 +70,21 @@ function setCurrentPlayIndex(index) {
 function setLastMatchedPlayIndex(index) {
     g_lastMatchedPlayIndex = index;
     window.appState.lastMatchedPlayIndex = index;
+}
+
+function setShowPlay(value) {
+    g_showPlay = value;
+    window.appState.showPlay = value;
+}
+
+function setPartialHand(value) {
+    g_partialHand = value;
+    window.appState.partialHand = value;
+}
+
+function setTrumps(trumps) {
+    g_trumps = trumps;
+    window.appState.trumps = trumps;
 }
 
 function setCurrentTraveller(traveller) {

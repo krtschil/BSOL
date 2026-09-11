@@ -21,7 +21,7 @@ function startup(){
 		setSession(0);
 		g_bgTrans = 0;					// Unique transaction id allocated to background transaction (e.g single shot accuracy request)
 		g_edited = 0;   				// Set to 1 when a change has been made (or 2, if only the Dealer has been changed)
-		g_partialHand = 0;				// Non-zero if playing a hand which started with fewer than 52 cards
+		setPartialHand(0);				// Non-zero if playing a hand which started with fewer than 52 cards
 		g_partialHandTotalTricks;		// Total number of tricks which can be made by declarer and defenders on a partial hand
 		g_session_contract;
 		g_showOriginalContract = false;	// Set true when "Play: <contract>" button is pressed for a hand recorded in a lin file.
@@ -104,7 +104,7 @@ function startup(){
 
 		g_mcSession = 1;				// "Session" number for tagging single board makeable contract requests
 
-		g_trumps = "";					// Trump suit for current board being played
+		setTrumps("");					// Trump suit for current board being played
 		g_leader = "";					// Leader for current board being played
 		g_initial_data = "";
 		g_initial_options = "";

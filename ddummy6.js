@@ -1580,7 +1580,7 @@ function playLinContract(auto=false,dest=0)
 
 	var contractChar = contract.charAt(1);
 
-	if (!auto) g_showPlay = 1;
+	if (!auto) setShowPlay(1);
 
 	playContract(board.Declarer,contract.charAt(1),contract,auto,dest);
 }
@@ -3729,12 +3729,12 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 
 		if ((handlen-3)!=13)	// Subtracting 3 is to allow for the dots between suits.
 		{
-			g_partialHand = 1;
+			setPartialHand(1);
 			g_partialHandTotalTricks = handlen-3;	// Subtract 3 to allow for the dots between suits
 		}
 		else
 		{
-			g_partialHand = 0;
+			setPartialHand(0);
 			g_partialHandTotalTricks = 13;
 		}
 
@@ -3753,7 +3753,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	spinner(document.getElementById("makeableContracts").rows[1].cells[0]);
 
 	g_leader = leader;
-	g_trumps = suitChar;
+	setTrumps(suitChar);
 
 	if (!auto)
 	{
@@ -5131,7 +5131,7 @@ function enterPlayMode()
 
 				if ((g_defaultContract==0)||(indx!=g_defaultContractIndex))
 				{
-					g_showPlay = 0;
+					setShowPlay(0);
 					playContract(declCHARS.charAt(declarer),suitChar,contract);
 				}
 				else

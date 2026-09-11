@@ -349,3 +349,73 @@ function deselectCard(pthis)
 	g_playableCards[suit][cd] = 1;
 	processHandEntry();
 }
+
+function showDealerKeypad()
+{
+	switch(language)
+	{
+		case "de":
+			var htmltext = "<span style=\"font-weight:bold;\">Wähle Teiler ...</span><br>";
+			var dlr = ["Nord","Ost","Süd","West"];
+			break;
+		default:
+			var htmltext = "<span style=\"font-weight:bold;\">Select Dealer...</span><br>";
+			var dlr = ["North","East","South","West"];
+	}
+
+	var i;
+
+	for (i=0;i<4;i++)
+	{
+		htmltext = htmltext + "<button onclick=\"setDealer(\'" + dlr[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">" + dlr[i] + "</button>";
+		htmltext = htmltext + "<br>";
+	}
+
+	switch(language)
+	{
+		case "de":
+			htmltext = htmltext + "<br><button onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Schließen</button>";
+			break;
+		default:
+			htmltext = htmltext + "<br><button onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Close</button>";
+	}
+
+	var buttLoc = getPosition(document.getElementById("setDealer"));
+	doPopupNoTimeout(document.getElementById("setDealer"),htmltext,buttLoc.x - 20,buttLoc.y - 20);
+}
+
+function showVulnerabilityKeypad()
+{
+	switch(language)
+	{
+		case "de":
+			var htmltext = "<span style=\"font-weight:bold;\">Wähle Gefahrenlage ...</span><br>";
+			var vul = ["Keiner","NS","OW","Alle"];
+			break;
+		default:
+			var htmltext = "<span style=\"font-weight:bold;\">Select Vulnerability...</span><br>";
+			var vul = ["None","NS","EW","All"];
+	}
+
+	var i;
+
+	for (i=0;i<4;i++)
+	{
+		htmltext = htmltext + "<button onclick=\"setVulnerability(\'" + vul[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + vul[i] + "</button>";
+		htmltext = htmltext + "<br>";
+	}
+
+	switch(language)
+	{
+		case "de":
+			htmltext = htmltext + "<br><button style=\"cursor:pointer;\" onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Schließen</button>";
+			break;
+		default:
+			htmltext = htmltext + "<br><button style=\"cursor:pointer;\" onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Close</button>";
+	}
+
+
+
+	var buttLoc = getPosition(document.getElementById("setVul"));
+	doPopupNoTimeout(document.getElementById("setVul"),htmltext,buttLoc.x - 20,buttLoc.y - 20);
+}

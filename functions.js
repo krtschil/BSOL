@@ -29,7 +29,7 @@ function startup(){
 		g_defaultTravellerWidth;
 		g_lastAllTravellersPair=-1;
 		g_lastAllTravellersDir="NS";
-		g_mode = 0;						// Set to 1 while in play mode
+		setMode(0);						// Set to 1 while in play mode
 		g_timeout = "";
 		g_sectionHeight; 				// Calculated height for a quadrant of the board display
 			// Following variable relate to hand entry.

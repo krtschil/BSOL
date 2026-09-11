@@ -6,7 +6,8 @@ window.appState = {
     handEntryMode: false,
     inputDirection: 0,
     inputBoard: null,
-    session: 0
+    session: 0,
+    mode: 0
 };
 
 function setLastBoardIndex(index) {
@@ -37,6 +38,11 @@ function setInputBoard(board) {
 function setSession(session) {
     g_session = session;
     window.appState.session = session;
+}
+
+function setMode(mode) {
+    g_mode = mode;
+    window.appState.mode = mode;
 }
 
 function setCurrentTraveller(traveller) {

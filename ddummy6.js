@@ -2228,7 +2228,7 @@ function setupTraveller(index,active)
 //	if (g_currow!=-1) alert("curtrav: " + JSON.stringify(g_currentTraveller.traveller_line[g_currow]));
 //	alert("g_lastBindex: " + g_lastBindex + " pair: " + g_hands.pair_number + " direction: " + g_hands.direction);
 
-	g_mode = 0;	// Cancel play mode if it is active
+	setMode(0);	// Cancel play mode if it is active
 
 	if (index!=g_lastBindex) boardChanged = true;
 
@@ -5086,7 +5086,7 @@ function showForwardPlay()
 
 function enterPlayMode()
 {
-	g_mode = 1;	// indicate page is in play g_mode
+	setMode(1);	// indicate page is in play g_mode
 	show("editHand");
 	hide("backPlay");
 	hideForwardPlay();
@@ -5146,7 +5146,7 @@ function enterPlayMode()
 function stopPlay()
 {
 	terminateSession();	// Terminate current playing session if there is one in progress.
-	g_mode = 0;			// Not in play mode any more
+	setMode(0);			// Not in play mode any more
 
 	var contracts = document.getElementById("makeableContracts");
 	var rows = contracts.rows;

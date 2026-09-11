@@ -109,3 +109,50 @@ function getMakeableTricksForLead(pindex,tline)
 	return ntricks;
 }
 
+function calculateMakeableAllBoards()
+{
+		// This function is only enabled when makeable contracts are calculated locally, not on the server
+	g_allBoards = 1;
+	switch(language)
+	{
+		case "de":
+			showEmptyProgressBar("Analyse der Boards im Hintergrund");
+			break;
+		default:
+			showEmptyProgressBar("Analysing boards in background");
+	}
+	console.log("generating requests for " + g_hands.boards.length + " boards");
+
+	for (var i=0;i<g_hands.boards.length;i++)
+		g_hands.boards[i].tag = -1;
+
+	for (var i=0;i<g_hands.boards.length;i++)
+		calculateMakeableSingleBoard(i);
+}
+
+function finishBackgroundOperation()
+{
+	$("#progressDiv").hide();
+	document.getElementById("saveBoards").removeAttribute("disabled");
+	document.getElementById("editHand").removeAttribute("disabled");
+
+	if ((typeof g_hands.Title)!="undefined")
+		g_title = g_hands.Title;
+	else
+		g_title = "&nbsp;";
+
+	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
+}
+
+function resetAnalyseAllBoards()
+{
+	g_allBoards = 0;
+	finishBackgroundOperation();
+}
+
+function completedAnalyseAllBoards()
+{
+	restartBackgroundWorkers();
+	resetAnalyseAllBoards();
+}

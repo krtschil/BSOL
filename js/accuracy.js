@@ -333,3 +333,81 @@ function makeAccRequest(board,bdindex,tindex)
 	if (g_nextmworker>=g_mworkers.length) g_nextmworker = 0;
 	g_completionTarget++;
 }
+
+function purgeOldEntries()
+{
+	if (g_db==null) return;
+
+	const transaction = g_db.transaction(["accCache"], "readwrite");
+	const objectStore = transaction.objectStore("accCache");
+
+	const myIndex = objectStore.index("time");
+	const countRequest = myIndex.count();
+	countRequest.onsuccess = function(){
+		if (countRequest.result>5000)
+		{
+			var delCount = countRequest.result - 5000;
+
+				// delete oldest items
+			const myIndex = objectStore.index("time");
+
+			myIndex.openCursor().onsuccess = function(){
+				const cursor = event.target.result;
+				if (cursor) {
+				  if (delCount>0)
+				  {
+					  delCount = delCount-1;
+					  const key = cursor.value.key;
+					  objectStore.delete(key);
+					  cursor.continue();
+				  }
+				} else {
+				  console.log("Old entries purged from accCache in indexedDB");
+				}
+			};
+		}
+	};
+}
+
+function storeAcc(data,context)
+{
+	var tmp = data.sess;
+
+	var errCount = tricksConceded(tmp);
+	var names = context.names;
+	var declarer = context.declarer;
+
+	var direction = "NESW";
+	var declIndex = direction.indexOf(declarer.toUpperCase());
+	var declName = returnName(names,declIndex,false);
+	var leadIndex = (declIndex + 1) % 4;
+	var leadName = returnName(names,leadIndex,false);
+
+	var leadErrCount = errCount[leadIndex];
+
+	var leadPartnerIndex = (leadIndex + 2) % 4;
+	var leadPartnerName = returnName(names,leadPartnerIndex,false);
+
+	var partnerErrCount = errCount[leadPartnerIndex];
+
+		// Update the board record (in g_hands.boards, or in traveller if there are any
+	storeAccInMemory(context,declIndex,tmp.declErr);
+	storeAccInMemory(context,leadIndex,leadErrCount);
+	var board = storeAccInMemory(context,leadPartnerIndex,partnerErrCount);
+
+	if (g_db!==null)
+	{
+		const transaction = g_db.transaction(["accCache"], "readwrite");
+		const objectStore = transaction.objectStore("accCache");
+
+		var data = {};
+		data.key = makeAccKey(board);
+		data.acc = board.acc;
+		data.time = Date.now();
+
+		var req = objectStore.put(data);
+	}
+
+	g_completionCount++;
+	document.getElementById("progress").style.width = ((800*g_completionCount)/g_completionTarget).toFixed(0) + "px";
+}

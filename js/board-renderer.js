@@ -453,3 +453,90 @@ function showCredits()
 		}
 	}
 }
+
+function updateParResults(data,pindex)
+{
+	var nsc = convertParContractString(data.contractsNS);
+	var ewc = convertParContractString(data.contractsEW);
+	var nss = data.scoreNS;
+	var ews = data.scoreEW;
+
+	nss = nss.substring(3);
+	ews = ews.substring(3);
+
+	var index = nss.indexOf("-");
+	if (index==-1) nss = "+" + nss;
+
+	index = ews.indexOf("-");
+	if (index==-1) ews = "+" + ews;
+
+	nsc = nsc.substring(3).trim();
+	ewc = ewc.substring(3).trim();
+
+	nsc = nsc.replaceAll(/C$/g,"&#9827;");
+	nsc = nsc.replaceAll(/D$/g,"<span style='color:red'>&#9830;</span>");
+	nsc = nsc.replaceAll(/H$/g,"<span style='color:red'>&#9829;</span>");
+	nsc = nsc.replaceAll(/S$/g,"&#9824;");
+
+	nsc = nsc.replaceAll("C+","&#9827;+");
+	nsc = nsc.replaceAll("D+","<span style='color:red'>&#9830;</span>+");
+	nsc = nsc.replaceAll("H+","<span style='color:red'>&#9829;</span>+");
+	nsc = nsc.replaceAll("S+","&#9824;+");
+
+	nsc = nsc.replaceAll("C-","&#9827;-");
+	nsc = nsc.replaceAll("D-","<span style='color:red'>&#9830;</span>-");
+	nsc = nsc.replaceAll("H-","<span style='color:red'>&#9829;</span>-");
+	nsc = nsc.replaceAll("S-","&#9824;-");
+
+	nsc = nsc.replaceAll("C,","&#9827;,");
+	nsc = nsc.replaceAll("D,","<span style='color:red'>&#9830;</span>,");
+	nsc = nsc.replaceAll("H,","<span style='color:red'>&#9829;</span>,");
+	nsc = nsc.replaceAll("S,","&#9824;,");
+
+	nsc = nsc.replaceAll("Cx","&#9827;x");
+	nsc = nsc.replaceAll("Dx","<span style='color:red'>&#9830;</span>x");
+	nsc = nsc.replaceAll("Hx","<span style='color:red'>&#9829;</span>x");
+	nsc = nsc.replaceAll("Sx","&#9824;x");
+
+
+	ewc = ewc.replaceAll(/C$/g,"&#9827;");
+	ewc = ewc.replaceAll(/D$/g,"<span style='color:red'>&#9830;</span>");
+	ewc = ewc.replaceAll(/H$/g,"<span style='color:red'>&#9829;</span>");
+	ewc = ewc.replaceAll(/S$/g,"&#9824;");
+
+	ewc = ewc.replaceAll("C+","&#9827;+");
+	ewc = ewc.replaceAll("D+","<span style='color:red'>&#9830;</span>+");
+	ewc = ewc.replaceAll("H+","<span style='color:red'>&#9829;</span>+");
+	ewc = ewc.replaceAll("S+","&#9824;+");
+
+	ewc = ewc.replaceAll("C-","&#9827;-");
+	ewc = ewc.replaceAll("D-","<span style='color:red'>&#9830;</span>-");
+	ewc = ewc.replaceAll("H-","<span style='color:red'>&#9829;</span>-");
+	ewc = ewc.replaceAll("S-","&#9824;-");
+
+	ewc = ewc.replaceAll("C,","&#9827;,");
+	ewc = ewc.replaceAll("D,","<span style='color:red'>&#9830;</span>,");
+	ewc = ewc.replaceAll("H,","<span style='color:red'>&#9829;</span>,");
+	ewc = ewc.replaceAll("S,","&#9824;,");
+
+	ewc = ewc.replaceAll("Cx","&#9827;x");
+	ewc = ewc.replaceAll("Dx","<span style='color:red'>&#9830;</span>x");
+	ewc = ewc.replaceAll("Hx","<span style='color:red'>&#9829;</span>x");
+	ewc = ewc.replaceAll("Sx","&#9824;x");
+
+	var optstring;
+
+	if (nsc==ewc)
+	{
+		optstring =  nsc + "; " + nss;
+	}
+	else
+	{
+		optstring =  nsc + "; " + nss + "<br>" + ewc + "; " + ews;
+	}
+
+	g_hands.boards[pindex].OptimumScore = optstring;
+
+	if (pindex==g_lastBindex) updateUpperLeftQuadrant(pindex);
+}
+

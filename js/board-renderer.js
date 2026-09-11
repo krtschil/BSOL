@@ -246,3 +246,67 @@ function redrawMCTable(large)
 		}
 	}
 }
+
+function displayVulnerability(vul,dealer)
+{
+	var vcolor = "#FF0000";
+	var nvcolor = "#00FF00";
+	var nscolor,ewcolor;
+
+	nscolor = ewcolor = nvcolor;
+
+	if (vul=="All")
+		nscolor = ewcolor = vcolor;
+	else if (vul=="NS")
+		nscolor = vcolor;
+	else if (vul=="EW")
+		ewcolor = vcolor;
+
+	document.getElementById("nvul").style.backgroundColor = nscolor;
+	document.getElementById("wvul").style.backgroundColor = ewcolor;
+	document.getElementById("evul").style.backgroundColor = ewcolor;
+	document.getElementById("svul").style.backgroundColor = nscolor;
+	displayDealer(dealer,vul);
+}
+
+function displayDealer(dealer,vul)
+{
+        dealer = dealer.charAt(0);
+
+		document.getElementById("nvul").textContent = "";
+		document.getElementById("wvul").textContent = "";
+		document.getElementById("evul").textContent = "";
+		document.getElementById("svul").textContent = "";
+
+		if (dealer=="N")
+			setDealerChar("North",vul);
+		else if (dealer=="W")
+			setDealerChar("West",vul);
+		else if (dealer=="E")
+			setDealerChar("East",vul);
+		else if (dealer=="S")
+			setDealerChar("South",vul);
+}
+
+function setDealerChar(dir,vul)
+{
+		var dealerCharWhite = "<span id=dealerChar style=\"font-size:" + g_dealerFontSize + "px;color:white;\">&#9679</span>";
+		var dealerCharBlue = "<span id=dealerChar style=\"font-size:" + g_dealerFontSize + "px;color:#0088ff;\">&#9679</span>";
+		var dealerChar = dealerCharBlue;
+
+		if (vul=="All")
+			dealerChar = dealerCharWhite;
+		else if ((vul=="NS")&&((dir=="North")||(dir=="South")))
+			dealerChar = dealerCharWhite;
+		else if ((vul=="EW")&&((dir=="East")||(dir=="West")))
+			dealerChar = dealerCharWhite;
+
+		if (dir=="North")
+			document.getElementById("nvul").innerHTML = dealerChar;
+		else if (dir=="East")
+			document.getElementById("evul").innerHTML = dealerChar;
+		else if (dir=="South")
+			document.getElementById("svul").innerHTML = dealerChar;
+		else if (dir=="West")
+			document.getElementById("wvul").innerHTML = dealerChar;
+}

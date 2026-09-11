@@ -1530,28 +1530,6 @@ function setupTraveller(index,active)
 	}
 }
 
-function setDealerChar(dir,vul)
-{
-		var dealerCharWhite = "<span id=dealerChar style=\"font-size:" + g_dealerFontSize + "px;color:white;\">&#9679</span>";
-		var dealerCharBlue = "<span id=dealerChar style=\"font-size:" + g_dealerFontSize + "px;color:#0088ff;\">&#9679</span>";
-		var dealerChar = dealerCharBlue;
-
-		if (vul=="All")
-			dealerChar = dealerCharWhite;
-		else if ((vul=="NS")&&((dir=="North")||(dir=="South")))
-			dealerChar = dealerCharWhite;
-		else if ((vul=="EW")&&((dir=="East")||(dir=="West")))
-			dealerChar = dealerCharWhite;
-
-		if (dir=="North")
-			document.getElementById("nvul").innerHTML = dealerChar;
-		else if (dir=="East")
-			document.getElementById("evul").innerHTML = dealerChar;
-		else if (dir=="South")
-			document.getElementById("svul").innerHTML = dealerChar;
-		else if (dir=="West")
-			document.getElementById("wvul").innerHTML = dealerChar;
-}
 
 function clear()
 {

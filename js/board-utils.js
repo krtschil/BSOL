@@ -47,3 +47,35 @@ function checkBoardValid(bindex)
 
 	return true;
 }
+
+function getTindexByName(boards,boardName)
+{
+		// Find the index of the hand corresponding to a particular traveller in the boards array
+	var i;
+
+	for (i=0;i<boards.length;i++)
+	{
+		if (boards[i].board.split(".").join("") == boardName.split(".").join(""))
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+function getTindex(boards,traveller)
+{
+		// Find the index of the hand corresponding to a particular traveller in the boards array
+	var i;
+
+	for (i=0;i<boards.length;i++)
+	{
+		if (boards[i].board == (traveller+1))
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}

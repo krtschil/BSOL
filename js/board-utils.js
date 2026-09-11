@@ -105,3 +105,48 @@ function setCurrentTraveller()
 	g_currentTraveller = getTravellerForBoard(g_lastBindex);
 	return g_currentTraveller;
 }
+
+function makeableContractRequestsOutstanding()
+{
+	var mccount = 0;
+
+	for (var j=0;j<g_hands.boards.length;j++)
+	{
+		if (g_hands.boards[j].tag!=null)
+			if (g_hands.boards[j].tag!==-1) mccount++;
+	}
+
+	return mccount;
+}
+
+function countAllocated(index)
+{
+	var i,j;
+	var count = 0;
+
+	for (i=0;i<4;i++)
+	{
+		for (j=0;j<13;j++)
+		{
+			if ((g_cardQuadrant[i][j]==index)&&(g_playableCards[i][j]==-1)) count++;
+		}
+	}
+
+	return count;
+}
+
+function countUnallocated()
+{
+	var i,j;
+	var count = 0;
+
+	for (i=0;i<4;i++)
+	{
+		for (j=0;j<13;j++)
+		{
+			if (g_playableCards[i][j]!=-1) count++;
+		}
+	}
+
+	return count;
+}

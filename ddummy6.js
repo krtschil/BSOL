@@ -13272,8 +13272,8 @@ function buildPage1(data,options)
 
 	if (document.getElementById("aprev")!=null)
 	{
-		document.getElementById("aprev").onclick = function(){log('button=prevTraveller');g_lastBindex=getNextOrPrevBindex(false);showComparison();};
-		document.getElementById("anext").onclick = function(){log('button=nextTraveller');g_lastBindex=getNextOrPrevBindex(true);showComparison();};
+		document.getElementById("aprev").onclick = function(){log('button=prevTraveller');setLastBoardIndex(getNextOrPrevBindex(false));showComparison();};
+		document.getElementById("anext").onclick = function(){log('button=nextTraveller');setLastBoardIndex(getNextOrPrevBindex(true));showComparison();};
 	}
 
 	if (document.getElementById("acheck")!=null)

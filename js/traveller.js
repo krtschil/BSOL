@@ -705,3 +705,143 @@ function displayTraveller(pdirection)
 
 	drawMiniHand();
 }
+
+function initTravRow(dir)
+{
+	if (g_travellers!=null)
+	{
+		g_currentTraveller = getTravellerForBoard(g_lastBindex);
+		changeCurrentPair(g_hands.pair_number,g_hands.direction);
+
+		if (g_currentTraveller.traveller_line.length>1)
+		{
+			if (dir==1)
+			{
+				if (g_currow<g_currentTraveller.traveller_line.length-1)
+					g_currow++;
+				else
+					g_currow = 0;
+			}
+			else
+			{
+				if (g_currentTraveller.traveller_line.length>1)
+				{
+					if (g_currow>0)
+						g_currow--;
+					else
+						g_currow = g_currentTraveller.traveller_line.length-1;
+				}
+			}
+		}
+
+		terminateSession();
+		setupTraveller(g_lastBindex,true);
+		enterPlayMode();
+	}
+}
+
+function initPrevTravRow()
+{
+	initTravRow(0);
+}
+
+function prevTravRow()
+{
+	if (g_currentTraveller!=null)
+	{
+		if (g_currentTraveller.traveller_line.length>1)
+		{
+			if (g_currow>0)
+				g_currow--;
+			else
+				g_currow = g_currentTraveller.traveller_line.length-1;
+		}
+	}
+	else
+	{
+		getHands({callback:initPrevTravRow});
+		return;
+	}
+
+	terminateSession();
+	setupTraveller(g_lastBindex,true);
+	enterPlayMode();
+}
+
+function initNextTravRow()
+{
+	initTravRow(1);
+}
+
+function nextTravRow()
+{
+	if (g_currentTraveller!=null)
+	{
+		if (g_currentTraveller.traveller_line.length>1)
+		{
+			if (g_currow<g_currentTraveller.traveller_line.length-1)
+				g_currow++;
+			else
+				g_currow = 0;
+		}
+	}
+	else
+	{
+		getHands({callback:initNextTravRow});
+		return;
+	}
+
+	terminateSession();
+	setupTraveller(g_lastBindex,true);
+	enterPlayMode();
+}
+
+function gotoTraveller(name)
+{
+	terminateSession();
+	setupTraveller(getTindexByName(g_hands.boards,name),true);
+	enterPlayMode();
+	$("#scoreandtraveller").show();
+	$("#mainTitle").show();
+	$("#allBoards").hide();
+	$("#popup_box").hide();
+}
+
+function gotoPrevTraveller()
+{
+	var bindex = getNextOrPrevBindex(false);
+	gotoTravellerByIndex(bindex);
+}
+
+function gotoNextTraveller()
+{
+	var bindex = getNextOrPrevBindex(true);
+	gotoTravellerByIndex(bindex);
+}
+
+function getNextOrPrevBindex(forward)
+{
+	var tindex = g_lastBindex;
+
+	if (forward)
+		{if (tindex<g_hands.boards.length-1) tindex++; else tindex = 0;}
+	else
+		{if (tindex>0) tindex--; else tindex = g_hands.boards.length-1;}
+
+	return tindex;
+}
+
+function gotoTravellerByIndex(index)
+{
+	var saveHandEntryMode = g_handEntryMode;
+
+	terminateSession();
+	setupTraveller(index,true);
+	enterPlayMode();
+	$("#scoreandtraveller").show();
+	$("#mainTitle").show();
+	$("#allBoards").hide();
+	$("#popup_box").hide();
+
+	if (saveHandEntryMode!=0) edit();
+}

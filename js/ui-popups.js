@@ -181,3 +181,51 @@ function showHelp(pthis,detailedHelp)
 
 	$("#"+detailedHelp).show();
 }
+
+function hideSpinner()
+{
+	$("#spinner").finish();
+	$("largeSpinner").finish();
+	document.getElementById("spinner").style.display="none";
+	document.getElementById("largeSpinner").style.display="none";
+}
+
+function largeSpinner()
+{
+	var spinner = document.getElementById("spinner");
+	var largeSpinner = document.getElementById("largeSpinner");
+	$("#spinner").finish();
+	spinner.style.display="none";
+	$("#largeSpinner").finish();
+	largeSpinner.style.display="none";
+	$("#largeSpinner").fadeIn(1);
+}
+
+function spinnerNoDelay(pthis)
+{
+	var spinner = document.getElementById("spinner");
+	spinner.style.top = ((getPosition(pthis).y) - 20) + "px";
+	spinner.style.left = getPosition(pthis).x  + "px";
+	$("#spinner").finish();
+	spinner.style.display="none";
+	$("#spinner").fadeIn(1);
+}
+
+function spinnerNoDelayAbs(pthis,px,py)
+{
+	var spinner = document.getElementById("spinner");
+	spinner.style.top = py;
+	spinner.style.left = px;
+	$("#spinner").finish();
+	spinner.style.display="none";
+	$("#spinner").fadeIn(1);
+}
+
+function spinner(pthis){
+	var spinner = document.getElementById("spinner");
+	spinner.style.top = ((getPosition(pthis).y) - 20) + "px";
+	spinner.style.left = getPosition(pthis).x  + "px";
+	$("#spinner").finish();
+	spinner.style.display="none";
+	$("#spinner").delay(500).fadeIn(200);
+}

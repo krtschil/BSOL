@@ -310,3 +310,125 @@ function setDealerChar(dir,vul)
 		else if (dir=="West")
 			document.getElementById("wvul").innerHTML = dealerChar;
 }
+
+function showBidding()
+{
+	var vul = g_hands.boards[g_lastBindex].Vulnerable;
+	var red = "#FF0000";
+	var green ="#00FF00";
+	var dirs = "WNES";
+	var i,row;
+	var headerDiv = document.createElement("div");
+	var headerTable = document.createElement("table");
+	headerTable.className = "bidding";
+	headerTable.id = "biddingHeader";
+	headerTable.style.borderBottom="0px";
+	headerDiv.appendChild(headerTable);
+	headerTable.insertRow(-1);
+	var headerRow = headerTable.rows[0];
+
+	for (i=0;i<4;i++)
+	{
+		headerRow.insertCell(-1);
+		var cell = headerRow.cells[i];
+		cell.style.width = "50px";
+		cell.innerHTML = dirs.charAt(i);
+
+		var color;
+		if (vul=="All") color = red;
+		else if (vul=="None") color = green;
+		else if ((i==0)||(i==2))
+		{
+			if (vul=="EW") color = red; else color = green;
+		}
+		else
+		{
+			if (vul=="NS") color = red; else color = green;
+		}
+
+		cell.style.backgroundColor = color;
+		cell.style.fontSize = g_bidFontSize;
+	}
+
+	var el = document.createElement("div");
+	var table = document.createElement("table");
+	table.className = "bidding";
+	table.id = "bidding";
+	el.appendChild(table);
+
+	var bids = g_hands.boards[g_lastBindex].Bids;
+	var dealer = g_hands.boards[g_lastBindex].Dealer;
+	var dealerChars = "WNES";
+	var dealerIndex = dealerChars.indexOf(dealer);
+
+	var j=0;
+	var k;
+
+	i = 0;
+
+	while (j<bids.length)
+	{
+		if (i==0)
+		{
+			table.insertRow(-1);
+			row = table.rows[table.rows.length-1];
+		}
+
+		if (j==0)
+		{
+			for (k=0;k<dealerIndex;k++)
+			{
+				row.insertCell(-1);
+				row.cells[i].style.width="50px";
+				row.cells[i] = "-";
+				i++;
+			}
+		}
+
+		row.insertCell(-1);
+
+		var components = bids[j].split("|");
+		var bd = components[0].toUpperCase();
+		var suffix = "";
+		if (bd.indexOf("!")!=-1) suffix = "!";
+
+		if (bd.charAt(0)=="P") bd = "Pass" + suffix;
+		else if (bd.charAt(0)=="D") bd = "x" + suffix;
+		else if (bd.charAt(0)=="R") bd = "xx" + suffix;
+
+		if (components.length>1)
+		{
+			row.cells[i].style.backgroundColor="yellow";
+			row.cells[i].id = "bidIdx" + j;
+			row.cells[i].style.cursor = "pointer";
+		}
+		else
+		{
+			row.cells[i].style.cursor = "default";
+		}
+
+		if (bd.includes("C"))
+		{
+			bd = bd.replace("C","&#9827;");
+		} else if (bd.includes("D"))
+		{
+			bd = bd.replace("D","<span style='color:red'>&#9830;</span>");
+		} else if (bd.includes("H"))
+		{
+			bd = bd.replace("H","<span style='color:red'>&#9829;</span>");
+		} else if (bd.includes("S"))
+		{
+			bd = bd.replace("S","&#9824;");
+		}
+		row.cells[i].innerHTML = bd;
+		row.cells[i].style.fontSize = g_bidFontSize;
+		i++;
+
+		if (i>3) i =0;
+		j++;
+	}
+
+	var boxHeight = Math.floor(3*g_sectionHeight/5) + "px";
+
+	return "<div style=\"margin-left:35px;float:left;padding: 0; border:1px solid black; width: 200px;\">" + headerDiv.innerHTML + "</div><div id=biddingContent style=\"margin-left:35px; float:left; clear:both; padding: 0; border:1px solid black; width: 200px; height:" + boxHeight + "; overflow-y: auto;\">" + el.innerHTML + "</div>";
+}

@@ -79,3 +79,12 @@ function errorFunc(jqXHR,textStatus,errorThrown)
 
 	displayError(document.getElementById("boardNumber"),errormsg);
 }
+
+function log(pstr)
+{
+	if (g_logging)
+	{
+		var requestStr = "log.htm?" + pstr + "&uniqueTID=" + new Date().getTime();
+		doRequestHTMLasync(requestStr,doNothing,doNothing,{"para":"log"});
+	}
+}

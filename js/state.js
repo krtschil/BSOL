@@ -14,7 +14,8 @@ window.appState = {
     lastMatchedPlayIndex: 0,
     showPlay: 0,
     partialHand: 0,
-    trumps: ""
+    trumps: "",
+    leader: ""
 };
 
 function setLastBoardIndex(index) {
@@ -85,6 +86,11 @@ function setPartialHand(value) {
 function setTrumps(trumps) {
     g_trumps = trumps;
     window.appState.trumps = trumps;
+}
+
+function setLeader(leader) {
+    g_leader = leader;
+    window.appState.leader = leader;
 }
 
 function setCurrentTraveller(traveller) {

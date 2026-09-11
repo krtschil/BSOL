@@ -105,7 +105,7 @@ function startup(){
 		g_mcSession = 1;				// "Session" number for tagging single board makeable contract requests
 
 		setTrumps("");					// Trump suit for current board being played
-		g_leader = "";					// Leader for current board being played
+		setLeader("");					// Leader for current board being played
 		g_initial_data = "";
 		g_initial_options = "";
 		g_newFeatureNoticeShown = 0;	// Set to 1 if has been shown already during this session

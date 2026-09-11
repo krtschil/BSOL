@@ -3752,7 +3752,7 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 
 	spinner(document.getElementById("makeableContracts").rows[1].cells[0]);
 
-	g_leader = leader;
+	setLeader(leader);
 	setTrumps(suitChar);
 
 	if (!auto)

@@ -5388,28 +5388,7 @@ function setOptions(optionsStr)
 	} catch (err) {alert(err);};
 }
 
-function getRowFromTraveller(pair,direction)
-{
-	var i;
-	var info = getSessionInfo();
-	var singleWinner = info.singleWinner;
 
-	var tlines = g_currentTraveller.traveller_line;
-
-
-	for (i=0;i<tlines.length;i++)
-	{
-		var line = tlines[i];
-
-		if ((((direction==1)||singleWinner)&&(line.ns_pair_number==pair))||(((direction==2)||singleWinner)&&(line.ew_pair_number==pair)))
-		{
-//			alert("getRowFromTraveller: pair/direction/row: " + pair + "/" + direction + "/" + i + " " + JSON.stringify(line));
-			return i;
-		}
-	}
-
-	return -1;	// Indicates not found in any traveller
-}
 
 function getInfoForSimilarContracts(lineIndex,direction)
 {
@@ -7574,19 +7553,6 @@ function setLeadForScorecardRow(bnum,row,tline,declarer)
 	}
 }
 
-function drawHighLowSame(res)
-{
-	var dhwidth = (100*res.higher)/(res.higher+res.lower+res.same);
-	var dswidth = (100*res.same)/(res.higher+res.lower+res.same);
-	var dlwidth = (100*res.lower)/(res.higher+res.lower+res.same);
-
-	var divstart = "<div style='clear:both;border:none;min-width:300px;width:300px;'><div style='clear:both;float:left;border:1px solid black;min-width:100px;width:100px;background-color:white;'><div style='clear:both;height:16px;background-color:grey;width:";
-	var divend = "px;'></div></div>";
-	var result =  divstart+dhwidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.higher+" Paare erzielten einen höheren Score"+"</div></div>";
-	var result = result + divstart+dswidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.same+" Paare erzielten denselben Score"+"</div></div>";
-	var result = result + divstart+dlwidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.lower+" Paare erzielten einen niedrigeren Score"+"</div></div>";
-	return result;
-}
 
 function setupResultReasons(ctx,result)
 {

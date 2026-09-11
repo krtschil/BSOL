@@ -1,3 +1,467 @@
+function showTravellerRowButtons()
+{
+	// should return true if g_xml!=="" ?
+	// return (g_showAllControls);
+	return false;
+}
+
+function setupTraveller(index,active)
+{
+	var i,j,k;
+	var table = document.getElementById("traveller");
+	var hcards;
+	var boardChanged = false;
+
+	setMode(0);
+
+	if (index!=g_lastBindex) boardChanged = true;
+
+	setLastBoardIndex(index);
+
+	$("#board").show();
+	$("#scorecard").show();
+	hideMenuItems();
+	showMainMenuItems();
+
+	if (active==true)
+	{
+		show("play");
+		show("computeMakeable");
+		show("tools");
+
+		{
+			if ((((g_test==1))&&(g_file==''))||(g_xml!=""))
+			{
+				show("bsession");
+				show("bsessionHelp");
+			}
+		}
+
+		$("#scorecard").show();
+	}
+	else
+	{
+		hideMenuItems();
+	}
+
+	var rowButtonsVisibility = "visibility:hidden";
+
+	if (showTravellerRowButtons()) rowButtonsVisibility = "";
+
+	var curBoard = g_hands.boards[g_lastBindex];
+
+	if (g_travellers!==null)
+	{
+		var traveller = getTravellerForBoard(g_lastBindex);
+		g_currentTraveller = traveller;
+
+		if (traveller!=null)
+		{
+			if (g_currentTraveller.traveller_line.length>1) rowButtonsVisibility = "";
+
+			if (boardChanged) g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
+
+			if (g_currow!=-1)
+			{
+				var tline = g_currentTraveller.traveller_line[g_currow];
+				curBoard = setHandRecordFromLin(g_lastBindex,tline);
+			}
+			else if (boardChanged)
+			{
+				delete g_hands.boards[g_lastBindex].PlayerNames;
+				g_hands.boards[g_lastBindex].Played = [];
+				g_hands.boards[g_lastBindex].Bids = [];
+			}
+		}
+	}
+
+	if (active==true)
+	{
+		g_defaultContract = 0;
+		if (((typeof curBoard.Contract)!="undefined")&&((typeof curBoard.Declarer)!="undefined"))
+		{
+			if (((typeof curBoard.Played)!="undefined") || ((typeof curBoard.Bids)!="undefined"))
+			{
+				var pbutton = "";
+				var isLin = false;
+
+				if ((g_file!="")&&(g_file!==1))
+				{
+					if (g_file.toUpperCase().endsWith("LIN")) isLin = true;
+				}
+
+				if (((typeof curBoard.Played)!="undefined") && ((curBoard.Played.length>1))) isLin = true;
+
+				if ((typeof curBoard.Bids)!="undefined")
+					if (curBoard.Bids.length>0) isLin = true;
+
+				if (isLin)
+				{
+					if (validContract(curBoard.Contract))
+					{
+						var tricksOffset = calculateTricks(g_lastBindex);
+						var score = curBoard.Score;
+
+						if ((score!="") && (typeof score)!="undefined")
+						{
+							var ewscore = score;
+
+							if (ewscore.indexOf("%")!=-1)
+							{
+								ewscore = ewscore.replace("%","");
+								ewscore = 100.0 - ewscore;
+								ewscore = ewscore.toFixed(2) + "%";
+
+								score = score.replace("%","");
+								score = Number(score).toFixed(2) + "%";
+							}
+							else
+							{
+								var num = score.match(/\d+/);
+								score = num ? Number(num[0]) : null;
+								num = ewscore.match(/\d+/);
+								result = num ? Number(num[0]) : null;
+								ewscore = (-Number(result));
+							}
+
+							score = " NS: " + score + "&nbsp;&nbsp;&nbsp;EW: " + ewscore;
+						}
+
+						if ((((typeof curBoard.Played)!="undefined") && ((curBoard.Played.length>1))) || Number.isNaN(tricksOffset))
+							tricksOffset = "";
+
+						if (typeof score == "undefined")
+							score = "";
+
+						switch(language)
+						{
+							case "de":
+								var bckbutton = "<button id=prevrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"prevTravRow();\"><span id=prevRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\"><</span></button>&nbsp;";
+								var fwdbutton = "&nbsp;<button id=nextrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"nextTravRow();\"><span id=nextRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">><span></button>";
+								var accbutton = "&nbsp;<button id=accbutton class=menuButton style=\"margin-left:2px;min-width:35px;max-width:35px;width:35px;max-height:" + g_urqButtonHeight + ";\" onclick=\"log('button=acc');playLinContract(true,1);\"><span id=accButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">Prä</span></button>";
+								pbutton = "<div style=\"margin-left:2px;margin-top:2px;clear:both;float:left;\">" + bckbutton + "<button id=linPlay class=\"menuButton\" style=\"min-width:130px;max-height:" + g_urqButtonHeight + ";\"><span id=linPlayButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">Kontr: " + curBoard.Contract.replaceAll(/!/g,"").replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;").replaceAll(/NT/g,"SA") + tricksOffset + " von " + curBoard.Declarer.replaceAll(/E/g,"O") + "</span></button>";
+								pbutton = pbutton + accbutton + "<button id=matchContractHelp class=\"menuButton\" style=\"margin-left:2px;min-width:15px;max-width:15px;width:15px;max-height:" + g_urqButtonHeight + ";\"><span id=matchContractHelpButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">?</span></button>" + fwdbutton + "<br><span id=scoreSpan style=\"font-size:" + g_scoreFontSize + ";\">" + score + "</span></div>";
+								break;
+							default:
+								var bckbutton = "<button id=prevrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"prevTravRow();\"><span id=prevRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\"><</span></button>&nbsp;";
+								var fwdbutton = "&nbsp;<button id=nextrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"nextTravRow();\"><span id=nextRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">><span></button>";
+								var accbutton = "&nbsp;<button id=accbutton class=menuButton style=\"margin-left:2px;min-width:35px;max-width:35px;width:35px;max-height:" + g_urqButtonHeight + ";\" onclick=\"log('button=acc');playLinContract(true,1);\"><span id=accButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">Acc</span></button>";
+								pbutton = "<div style=\"margin-left:2px;margin-top:2px;clear:both;float:left;\">" + bckbutton + "<button id=linPlay class=\"menuButton\" style=\"min-width:130px;max-height:" + g_urqButtonHeight + ";\"><span id=linPlayButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">Play: " + curBoard.Contract.replaceAll(/!/g,"").replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;") + tricksOffset + " by " + curBoard.Declarer + "</span></button>";
+								pbutton = pbutton + accbutton + "<button id=matchContractHelp class=\"menuButton\" style=\"margin-left:2px;min-width:15px;max-width:15px;width:15px;max-height:" + g_urqButtonHeight + ";\"><span id=matchContractHelpButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">?</span></button>" + fwdbutton + "<br><span id=scoreSpan style=\"font-size:" + g_scoreFontSize + ";\">" + score + "</span></div>";
+						}
+					}
+
+					var bidding = "";
+
+					if ((typeof curBoard.Bids)!="undefined")
+					{
+						bidding = showBidding();
+					}
+
+					document.getElementById("currentPosition").innerHTML = bidding + pbutton;
+
+					if (document.getElementById("accbutton")!=null)
+						if (document.getElementById("accbutton").style.display=="none") document.getElementById("prevrow").style.marginLeft = "35px";
+
+					if ((typeof curBoard.Bids)!="undefined")
+					{
+						var bids = g_hands.boards[g_lastBindex].Bids;
+
+						for (var j=0;j<bids.length;j++)
+						{
+							var cell = document.getElementById("bidIdx" + j);
+
+							if (cell!=null)
+							{
+								cell.onmouseover = cell.onclick = function(){showBidAlert(this)};
+								cell.onmouseout = function(){
+									var popup = document.getElementById("popup_box");
+									popup.textContent = "";
+									popup.style.display="none";
+									$("#popup_box").finish();
+								}
+							}
+						}
+					}
+
+					if (pbutton!="")
+					{
+						document.getElementById("linPlay").onclick = function(){g_showOriginalContract = true;playLinContract();};
+						document.getElementById("matchContractHelp").onclick = function(){showHelp(this,"playMatchContractHelp");};
+					}
+				}
+			}
+
+			var declStr = "NSEW";
+			var suitStr = "CDHSN";
+
+			if (validContract(curBoard.Contract))
+			{
+				var declIndex = declStr.indexOf(curBoard.Declarer);
+				var suitIndex = suitStr.indexOf(curBoard.Contract.charAt(1));
+
+				g_defaultContract = 1;
+				g_defaultContractIndex = (declIndex * 5) + suitIndex;
+			}
+		}
+		else
+		{
+			document.getElementById("currentPosition").innerHTML = g_credits;
+		}
+	}
+
+	document.getElementById("wvul").style.height = "36px";
+	document.getElementById("northHand").style.height = "";
+	document.getElementById("westHand").style.height = "";
+	document.getElementById("southHand").style.height = "";
+	document.getElementById("makeableContracts").className = "mc";
+
+	if (g_session!=0) callddd("q");
+	setSession(0);
+	setLastBoardIndex(index);
+
+	clearCardData();
+
+	while (table.rows.length>6)
+	{
+		table.deleteRow(-1);
+	}
+
+	var npts,spts,wpts,epts;
+	var tindex = index;
+
+	if (tindex==-1)
+	{
+		hide("play");
+		$("#board").hide();
+	}
+	else
+	{
+		var north = document.getElementById("northHand");
+		var handstr = createHandString(g_hands.boards[tindex],0);
+		north.innerHTML = handstr.text;
+		north.style.backgroundColor = "#EEEEEE";
+		npts = handstr.points;
+
+		var east = document.getElementById("eastHand");
+		handstr = createHandString(g_hands.boards[tindex],1);
+		east.innerHTML = handstr.text;
+		east.style.backgroundColor = "#EEEEEE";
+		epts = handstr.points;
+
+		var south = document.getElementById("southHand");
+		handstr = createHandString(g_hands.boards[tindex],2);
+		south.innerHTML = handstr.text;
+		south.style.backgroundColor = "#EEEEEE";
+		spts = handstr.points;
+
+		var west = document.getElementById("westHand");
+		handstr = createHandString(g_hands.boards[tindex],3);
+		west.innerHTML = handstr.text;
+		west.style.backgroundColor = "#EEEEEE";
+		wpts = handstr.points;
+
+		if (g_handEntryMode)
+			npts = epts = spts = wpts = "";
+
+		var points = document.getElementById("points");
+		points.rows[0].cells[1].innerHTML = npts;
+		points.rows[1].cells[0].innerHTML = wpts;
+		points.rows[1].cells[2].innerHTML = epts;
+		points.rows[2].cells[1].innerHTML = spts;
+
+		var dealer = new Array(4);
+		dealer['N'] = "North";
+		dealer['S'] = "South";
+		dealer['W'] = "West";
+		dealer['E'] = "East";
+
+		document.getElementById("boardNumber").innerHTML = "<span style=\"font-size:" + g_boardNumberFontSize + ";font-weight:normal;\">" + makeBoardNameString(g_hands.boards[g_lastBindex].board) + "</span>";
+
+		var vul = g_hands.boards[tindex].Vulnerable;
+		var boardDealer = dealer[g_hands.boards[tindex].Dealer];
+
+		document.getElementById("nvul").textContent = "";
+		document.getElementById("wvul").textContent = "";
+		document.getElementById("evul").textContent = "";
+		document.getElementById("svul").textContent = "";
+
+		setDealerChar(boardDealer,vul);
+
+		displayVulnerability(vul,boardDealer);
+
+		redrawMCTable(true);
+
+		updateUpperLeftQuadrant(g_lastBindex);
+
+		document.getElementById("play").onclick = function(){
+				if ((document.getElementById("play")).innerHTML == "Stop")
+				{
+					exitCardPlay();
+				}
+				else
+				{
+					if (requestPending()) return;
+
+					terminateSession();
+
+					{
+						var pos = getPosition(this);
+						switch(language)
+						{
+							case "de":
+								doPopupAt("Klicken Sie auf einen Eintrag (einschließlich leerer) in der Tabelle<br> der machbaren Kontrakte, um diesen zu spielen.",pos.x-100,pos.y-100);
+								break;
+							default:
+								doPopupAt("Tap any of the entries (including blank entries)in the makeable<br>contracts table at any time to start playing that contract.",pos.x-100,pos.y-100);
+						}
+
+						document.getElementById("mctable").className = "shadow";
+						setTimeout(function(){document.getElementById("mctable").className = "";},4400);
+					}
+				}
+			};
+
+		document.getElementById("help").onclick = function()
+			{
+				hideAllPopups();
+
+				if (g_session==0)
+					showHelp(this,"commandHelp");
+				else
+					showHelp(this,"playHelp");
+			}
+
+		document.getElementById("options").onclick = function()
+			{
+				hideAllPopups();
+				showOptions(this);
+			}
+
+		document.getElementById("backPlay").onclick = function()
+			{
+				if (requestPending())
+					return;
+				else
+					setRequestTimeout(true);
+
+				hideAllPopups();
+				spinner(this);
+				callddd("u");
+			}
+
+		try {
+			document.getElementById("forwardPlay").onclick = function()
+				{
+					hideAllPopups();
+					playNextCard(this);
+				}
+		} catch (e) {}
+
+		document.getElementById("editHand").onclick = edit;
+	}
+
+	if (active)
+	{
+		var board = g_hands.boards[g_lastBindex];
+
+		const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
+		document.getElementById("titleText").replaceChildren(clean);
+
+		$("#mainTitle").show();
+
+		if ((typeof g_hands.display)=="undefined")
+		{
+			if ((g_hands.boards[g_lastBindex].DoubleDummyTricks == "********************")||(g_hands.boards[g_lastBindex].DoubleDummyTricks == "--------------------"))
+			{
+				if (checkBoardValid(g_lastBindex))
+				{
+					console.log("request issued");
+					calculateMakeableSingleBoard(g_lastBindex);
+				}
+			}
+		}
+	}
+}
+
+function getRowFromTraveller(pair,direction)
+{
+	var i;
+	var info = getSessionInfo();
+	var singleWinner = info.singleWinner;
+
+	var tlines = g_currentTraveller.traveller_line;
+
+	for (i=0;i<tlines.length;i++)
+	{
+		var line = tlines[i];
+
+		if ((((direction==1)||singleWinner)&&(line.ns_pair_number==pair))||(((direction==2)||singleWinner)&&(line.ew_pair_number==pair)))
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+function getInfoForSimilarContracts(lineIndex,direction)
+{
+	var i;
+	var traveller = g_currentTraveller.traveller_line;
+	var curLine = traveller[lineIndex];
+	var suit = curLine.contract.charAt(1);
+	var declarer = curLine.played_by;
+	var level = Number(curLine.contract.charAt(0));
+
+	var result = {};
+	result.totalPairs = traveller.length;
+	result.totalThisSuitAndDeclarer = 0;
+	result.moreTricks = 0;
+	result.sameTricks = 0;
+	result.lessTricks = 0;
+	result.bidPartScore = 0;
+	result.madePartScore = 0;
+	result.bidGameScore = 0;
+	result.madeGameScore = 0;
+	result.bidSmallSlam = 0;
+	result.madeSmallSlam = 0;
+	result.bidGrandSlam = 0;
+	result.madeGrandSlam = 0;
+
+	for (i=0;i<traveller.length;i++)
+	{
+		if (i!=lineIndex)
+		{
+			var t = traveller[i];
+
+			if ((t.contract.charAt(1)==suit)&&(declarer==t.played_by))
+			{
+				result.totalThisSuitAndDeclarer++;
+
+
+			}
+		}
+	}
+
+	var playedByPercent = Math.round((100*(result.totalThisSuitAndDeclarer+1))/(result.totalPairs));
+
+	switch(language)
+	{
+		case "de":
+			var str = "Diese Farbe/Alleinspieler-Kombination wurde an " + result.totalThisSuitAndDeclarer + " von " + result.totalPairs + " anderen Tischen (" + playedByPercent + "%).";
+			break;
+		default:
+			var str = "This suit/declarer combination was played at " + result.totalThisSuitAndDeclarer + " of " + result.totalPairs + " other tables (" + playedByPercent + "%).";
+	}
+	
+	const clean = DOMPurify.sanitize(document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>", { RETURN_DOM_FRAGMENT: true });
+	document.getElementById("comparisonText").replaceChildren(clean);
+	//document.getElementById("comparisonText").innerHTML = document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>";
+
+	return result;
+}
+
 function sortTravellerLines(lines,pdirection)
 {
 	lines.sort(function(a,b) {

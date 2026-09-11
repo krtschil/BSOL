@@ -135,3 +135,114 @@ function updateUpperLeftQuadrant(boardIndex)
 	}
 }
 
+function redrawMCTable(large)
+{
+	var i,j,value;
+	switch(language)
+	{
+		case "de":
+			var labels = "NSOW";
+			break;
+		default:
+			var labels = "NSEW";
+	}
+	var contracts;
+
+	if (large)
+		contracts = document.getElementById("makeableContracts");
+	else
+		contracts = document.getElementById("miniMakeableContracts");
+
+	var rows = contracts.rows;
+	var buttonHeight = Math.round(g_sectionHeight/5);
+	var buttonTextHeight = Math.round((buttonHeight*4.5)/7) + "px";
+
+	if (!large)
+		buttonTextHeight = Math.round((buttonHeight*4)/12) + "px";
+
+	var symbolHeight = "15px";
+
+	if (!large) symbolHeight = "8px";
+
+	var cardSymbols = ["<img alt=\"Spade\" style=\"height:" + symbolHeight + "\" src=\"pics/spade.gif\">","<img alt=\"Heart\"style=\"height:" + symbolHeight + "\" src=\"pics/heart.gif\">","<img alt=\"Diamond\" style=\"height:" + symbolHeight + "\" src=\"pics/diamond.gif\">","<img alt=\"Club\" style=\"height:" + symbolHeight + "\" src=\"pics/club.gif\">"];
+	var cells = rows[0].cells;
+
+	cells[0].textContent = "";
+	switch(language)
+	{
+		case "de":
+			cells[5].innerHTML = "<span style=\"font-size:" + symbolHeight + ";\">SA</span>";
+			break;
+		default:
+			cells[5].innerHTML = "<span style=\"font-size:" + symbolHeight + ";\">NT</span>";
+	}
+	cells[4].innerHTML = cardSymbols[0];
+	cells[3].innerHTML = cardSymbols[1];
+	cells[2].innerHTML = cardSymbols[2];
+	cells[1].innerHTML = cardSymbols[3];
+
+	var cvector = g_hands.boards[g_lastBindex].DoubleDummyTricks;
+	contracts.setAttribute("data-contracts",cvector);
+
+	var showContracts = document.getElementById("mkrad1").checked;
+
+	var suits = "NSHDC";
+	var directions = "NSEW";
+	var defSuit;
+	var defDeclarer;
+
+	if (g_defaultContract!=0)
+	{
+		if (g_hands.boards[g_lastBindex].Contract === undefined)
+		{
+			//console.log("Undefined:: " + (g_hands.boards[g_lastBindex].Contract));
+			defSuit = "NP";
+		}
+		else
+		{
+			//console.log("Contract: " + g_hands.boards[g_lastBindex].Contract);
+			defSuit = suits.indexOf(g_hands.boards[g_lastBindex].Contract.charAt(1));
+
+		}
+		defDeclarer = directions.indexOf(g_hands.boards[g_lastBindex].Declarer);
+		//defSuit = suits.indexOf(g_hands.boards[g_lastBindex].Contract.charAt(1));
+	}
+
+	for (i=0;i<4;i++)
+	{
+		rows[1+i].cells[0].innerHTML = "<span style=\"font-size:" + buttonTextHeight + ";\">" + labels.charAt(i) + "</span>";
+
+		for (j=0;j<5;j++)
+		{
+			value = "*";
+
+			if ((cvector.charAt(j+5*i)!="*")&&(cvector.charAt(j+5*i)!="-"))
+			{
+				value = parseInt(cvector.charAt(j+5*i),16);
+
+				if (showContracts)
+				{
+					if (value<7)
+						value = "-";
+					else
+						value = value - 6;
+				}
+			}
+			else if ((!showContracts)&&(cvector.charAt(j+5*i)=="-"))
+				value = "*";
+			else
+				value = cvector.charAt(j+5*i);
+
+			var bcolor = "";
+
+			if ((g_defaultContract!=0)&&(i==defDeclarer)&&(j==defSuit))
+				bcolor = "background-color:#FFFF00;";
+
+			if (large)
+				rows[1+i].cells[1+4-j].innerHTML = "<button class=menuButton style=\"min-width:0px;width:42px;max-width:42px;max-height:" + buttonHeight + "px;" + bcolor + "\">" + "<span style=\"font-style:normal;font-size:" + buttonTextHeight + ";\">" + value + "</span></button>";
+			else
+				rows[1+i].cells[1+4-j].innerHTML = "<span style=\"font-size:10px;" + bcolor + "\">" + value + "</span>";
+
+		}
+	}
+}

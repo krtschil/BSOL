@@ -433,3 +433,147 @@ function getCachedAcc(tline)
 
 	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,0,1);
 }
+
+function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,dest)
+{
+	var defErrCount = Number(leadErrCount) + Number(partnerErrCount);
+
+	var acc = document.getElementById("accuracy");
+	switch(language)
+	{
+		case "de":
+			var str = "<div style=\"float:left;clear:both;\"><div style=\"float:left;\"><span style=\"font-size:24px;\">Abspielgenauigkeit</span></div><div style=\"float:left;clear:both;margin-top:10px;\"><span style=\"font-size:16px;color:black;\">Anzahl der Abweichungen vom optimalen Double Dummy Abspiel:</span></div>";
+			break;
+		default:
+			var str = "<div style=\"float:left;clear:both;\"><div style=\"float:left;\"><span style=\"font-size:24px;\">Accuracy of Play</span></div><div style=\"float:left;clear:both;margin-top:10px;\"><span style=\"font-size:16px;color:black;\">Number of card play deviations from optimal<br>double dummy play:</span></div>";
+	}
+
+	var str2 = "<div style=\"margin-top:10px;float:left;clear:both;\"><span style=\"font-size:18px;color:blue;\">";
+
+	switch(language)
+	{
+		case "de":
+			if ((declErrCount==0)&&(defErrCount==0))
+				str = str + str2 + "Abspiel des Alleinspielers und der Gegner war optimal</span></div>";
+
+			if (declErrCount>0)
+				str = str + str2 + "Alleinspieler (" + declName + "): " + declErrCount + "</span></div>";
+
+			if (defErrCount>0)
+			{
+				str = str + str2 + "Gegner: " + defErrCount;
+				str += "<br>&nbsp;&nbsp;&nbsp;Ausspieler (" + leadName + "): " + leadErrCount;
+				str += "<br>&nbsp;&nbsp;&nbsp;Partner: (" + leadPartnerName + "): " + partnerErrCount + "</span></div>";
+			}
+			break;
+		default:
+			if ((declErrCount==0)&&(defErrCount==0))
+				str = str + str2 + "Card play was optimal by declarer and defenders</span></div>";
+
+			if (declErrCount>0)
+				str = str + str2 + "Declarer (" + declName + "): " + declErrCount + "</span></div>";
+
+			if (defErrCount>0)
+			{
+				str = str + str2 + "Defenders: " + defErrCount;
+				str += "<br>&nbsp;&nbsp;&nbsp;Lead Defender (" + leadName + "): " + leadErrCount;
+				str += "<br>&nbsp;&nbsp;&nbsp;Partner: (" + leadPartnerName + "): " + partnerErrCount + "</span></div>";
+			}
+	}
+	str += "</div></div>";
+
+//		str += "<br>Elapsed time: " + tmp.sess.deltaElapsed + "<br><br>";
+
+/*		var optCount = 0;
+	var subOptCount = 0;
+
+	for (var i=0;i<tmp.sess.optimumCount.length;i++)
+	{
+		if (tmp.sess.cardDirection[i]==0)
+		{
+			optCount += tmp.sess.optimumCount[i];
+			subOptCount += tmp.sess.subOptimumCount[i];
+		}
+	}
+
+	str += " ,optimumCardRatio: " + optCount/(optCount+subOptCount);*/
+
+	if (dest==0)
+		acc.innerHTML = "<span style=\"font-size:16px;color:blue;\">" + str + "</span>";
+	else
+	{
+		switch(language)
+		{
+			case "de":
+				var htmltext = "Abspielgenauigkeit:<br>Fehler des Alleinspielers: " + declErrCount + "<br>" + "Fehler der Gegner: " + defErrCount + "<br>" + "Verbrauchte Zeit: " + elapsed + " Sekunden";
+				htmltext = "</div><br><button style=\"cursor:pointer;margin-top:15px;\" onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Schließen</button>";
+				doPopupNoTimeout(document.getElementById("boardNumber"),"<span style=\"font-size:16px;color:blue;\">" + str + htmltext + "</span>",250,50);
+				break;
+			default:
+				var htmltext = "Accuracy of Play:<br>Declarer Errors: " + declErrCount + "<br>" + "Defence Errors: " + defErrCount + "<br>" + "Elapsed Time: " + elapsed + " seconds";
+				htmltext = "</div><br><button style=\"cursor:pointer;margin-top:15px;\" onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Close</button>";
+				doPopupNoTimeout(document.getElementById("boardNumber"),"<span style=\"font-size:16px;color:blue;\">" + str + htmltext + "</span>",250,50);
+		}
+	}
+}
+
+function load(data,statusText,jqXHR,ctx)
+{
+	var context = this;
+		// Note: The direction index for Names is 2,3,0,1 for N,E,S,W, but for errCount is 0,1,2,3
+	hideSpinner();
+	resetTimeout();
+	var tmp = data;
+
+	tmp = JSON.parse(tmp);
+	tmp = tmp.sess;
+
+	if (load.arguments.length>3)	// being performed locally, not on server
+		context = ctx;
+
+	var errCount = tricksConceded(tmp);
+
+
+	var names = context.names;
+	var declarer = context.declarer;
+
+	var direction = "NESW";
+	var declIndex = direction.indexOf(declarer.toUpperCase());
+	var declName = returnName(names,declIndex);
+	var declErrCount = tmp.declErr;
+	var leadIndex = (declIndex + 1) % 4;
+	var leadName = returnName(names,leadIndex);
+
+	var leadErrCount = errCount[leadIndex];
+
+	var leadPartnerIndex = (leadIndex + 2) % 4;
+	var leadPartnerName = returnName(names,leadPartnerIndex);
+
+	var partnerErrCount = errCount[leadPartnerIndex];
+	var elapsed = tmp.deltaElapsed;
+
+	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,this.dest);
+}
+
+function load2(data,statusText,	jqXHR)
+{
+	hideSpinner();
+	resetTimeout();
+
+	var tmp = data;
+	tmp = JSON.parse(tmp);
+
+	switch(language)
+	{
+		case "de":
+			var htmltext = "Spielgenauigkeit:<br>Fehler des Alleinspielers: " + tmp.sess.declErr + "<br>" + "Fehler der Gegner: " + tmp.sess.defErr + "<br>" + "Verbrauchte Zeit: " + tmp.sess.deltaElapsed + " Sekunden";
+			htmltext += "</div><br><button style=\"cursor:pointer;\" onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Schließen</button>";
+			break;
+		default:
+			var htmltext = "Accuracy of Play:<br>Declarer Errors: " + tmp.sess.declErr + "<br>" + "Defence Errors: " + tmp.sess.defErr + "<br>" + "Elapsed Time: " + tmp.sess.deltaElapsed + " seconds";
+			htmltext += "</div><br><button style=\"cursor:pointer;\" onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\">Cancel</button>";
+	}
+
+	doPopupNoTimeout(document.getElementById("boardNumber"),htmltext,250,50);
+}
+

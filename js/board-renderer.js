@@ -540,3 +540,52 @@ function updateParResults(data,pindex)
 	if (pindex==g_lastBindex) updateUpperLeftQuadrant(pindex);
 }
 
+function showNewFeaturesNotice()
+{
+	if (!g_newFeatureNoticeShown) g_newFeatureNoticeShown = 1;
+
+	try {
+		if (localStorageSupported())
+		{
+			var alertShown = localStorage.getItem("newFeatureShown");
+			var shown = true;
+
+			if (alertShown==null)
+				shown = false;
+			else if (Number(alertShown)>3)
+				shown = true;
+			else
+				shown = false;
+
+			switch(language)
+			{
+				case "de":
+					var txt = "<ul><li>Bei den Optionen gibt es eine Auswahlbox, um die Kürzel für Figuren auswählen zu können (JQKA,BDKA,VDRA,or BVHA), Standard ist JQKA</li><br>";
+					txt += "</ul>";
+					txt += "Detaillierte Informationen finden Sie in den  <a href=releaseNotes.htm target=_blank>Versionshinweisen.</a>";
+					break;
+				default:
+					var txt = "<ul><li>The High Card Points display at the bottom left of the board diagram now has the option to display the result of a Kaplan-Rubens hand evaluation. Click on the ? character in the points display box for further explanation.</li>";
+					txt += "</ul>";
+					txt += "See the <a href=releaseNotes.htm target=_blank>release notes</a> for a full history of recent changes.";
+			}
+			
+			if (!shown)
+			{
+				localStorage.setItem('newFeatureShown','4');
+				switch(language)
+				{
+					case "de":
+						var str = "<div style=\"width:500px;\"><span style=\"font-size:24px;\">Neue Funktionen</span><br><span style=\"font-size:15px;\">" + txt + "</span></div>";
+						str += "<br><br><button style=menuButton onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\"><span style=\"font-size:16px;\">Schließen</span></button>";
+						break;
+					default:
+						var str = "<div style=\"width:500px;\"><span style=\"font-size:24px;\">New Features</span><br><span style=\"font-size:15px;\">" + txt + "</span></div>";
+						str += "<br><button style=menuButton onclick=\"$(\'#popup_box\').hide();document.getElementById('popup_box').style.display='none';\"><span style=\"font-size:16px;\">Close</span></button>";
+				}
+				doPopupNoTimeout(document.getElementById("boardNumber"),"<span style=\"font-size:16px;color:blue;\">" + str + "</span>",100,50);
+			}
+		}
+	} catch (err) {};
+}
+

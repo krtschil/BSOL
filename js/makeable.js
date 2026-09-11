@@ -364,3 +364,90 @@ function startAnalyseAll()
 
 	g_bgObj.fn = "analyseAll";		// Will be processed by worker event listener function when background workers have initialised
 }
+
+function lottPair(direction)
+{
+	// Law of Total Tricks
+	var suitChars = "SHDC";
+	var tricks;
+	var board = g_hands.boards[g_lastBindex];
+
+	if ((typeof board.Deal)!="undefined")
+	{
+		var h1,h2;
+
+		if (direction==1)
+		{
+			h1 = board.Deal[0].split(".");
+			h2 = board.Deal[2].split(".");
+		}
+		else
+		{
+			h1 = board.Deal[1].split(".");
+			h2 = board.Deal[3].split(".");
+		}
+
+		var max = 0;
+		var suit;
+		var i;
+
+		for (i=0;i<4;i++)
+		{
+			var slen = h1[i].length + h2[i].length;
+
+			if (slen>max)
+			{
+				max = slen;
+				suit = i;
+			}
+		}
+
+		var t1,t2;
+
+		if (direction==1)
+		{
+			t1 = getMakeableTricksForContract(g_lastBindex,"1"+suitChars.charAt(suit),"N");
+			t2 = getMakeableTricksForContract(g_lastBindex,"1"+suitChars.charAt(suit),"S");
+		}
+		else
+		{
+			t1 = getMakeableTricksForContract(g_lastBindex,"1"+suitChars.charAt(suit),"E");
+			t2 = getMakeableTricksForContract(g_lastBindex,"1"+suitChars.charAt(suit),"W");
+		}
+
+		if ((t1!=-1)||(t2!=-1))
+		{
+			tricks = t1;
+			if (t2>t1) tricks = t2;
+		}
+		else
+		{
+			tricks = -1;
+		}
+	}
+
+	var result = {};
+	result.tricks = tricks;
+	result.trumpCount = max;
+	result.suit = suit;
+
+	if (tricks!=-1)
+		return result;
+	else
+		return null;
+}
+
+function lott()
+{
+	var ns = lottPair(1);
+	var ew = lottPair(2);
+
+	if ((ns!=null)&&(ew!=null))
+	{
+		var str = (ns.tricks + ew.tricks) + "-" + (ns.trumpCount + ew.trumpCount) + " = " + (ns.tricks + ew.tricks - ns.trumpCount - ew.trumpCount);
+		return str;
+	}
+	else
+		return "N/A";
+}
+

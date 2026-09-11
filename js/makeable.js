@@ -356,3 +356,11 @@ function getIndexedDDTricks(msg)
 	}
 }
 
+function startAnalyseAll()
+{
+	// Generate background requests to calculate makeable contracts for all boards
+	log('button=analyseAll');
+	restartBackgroundWorkers();
+
+	g_bgObj.fn = "analyseAll";		// Will be processed by worker event listener function when background workers have initialised
+}

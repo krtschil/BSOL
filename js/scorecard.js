@@ -96,3 +96,17 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 		srow.cells[1].textContent = "No Data";
 	}
 }
+
+function drawHighLowSame(res)
+{
+	var dhwidth = (100*res.higher)/(res.higher+res.lower+res.same);
+	var dswidth = (100*res.same)/(res.higher+res.lower+res.same);
+	var dlwidth = (100*res.lower)/(res.higher+res.lower+res.same);
+
+	var divstart = "<div style='clear:both;border:none;min-width:300px;width:300px;'><div style='clear:both;float:left;border:1px solid black;min-width:100px;width:100px;background-color:white;'><div style='clear:both;height:16px;background-color:grey;width:";
+	var divend = "px;'></div></div>";
+	var result =  divstart+dhwidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.higher+" Paare erzielten einen höheren Score"+"</div></div>";
+	var result = result + divstart+dswidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.same+" Paare erzielten denselben Score"+"</div></div>";
+	var result = result + divstart+dlwidth+divend+"<div style='float:left;max-width:190px;'>&nbsp;" + res.lower+" Paare erzielten einen niedrigeren Score"+"</div></div>";
+	return result;
+}

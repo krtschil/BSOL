@@ -845,3 +845,112 @@ function gotoTravellerByIndex(index)
 
 	if (saveHandEntryMode!=0) edit();
 }
+
+function checkContract(bindex,trindex)
+{
+	var decl="NESW";
+	var suits = "NSHDC";
+	var result = {};
+	result.valid = true;
+	result.leadDeclError = false;
+	result.possibleWrongPolarity = false;
+	result.shortSuit = false;
+	result.possibleSuitDeclError = false;
+
+	if (!checkBoardValid(bindex))	// No Hand Record for this board
+		return result;
+
+	if (g_travellers==null) return result;	// No travellers, only hands records for this event.
+
+	var traveller = getTravellerForBoard(bindex);
+
+	if (traveller==null) return result;
+
+	var line = traveller.traveller_line[trindex];
+
+	if (validContract(line.contract))
+	{
+		var dcl = decl.indexOf(line.played_by);
+		var partner = dcl + 2;
+		partner = partner % 4;
+		var leader = dcl + 1;
+		if (leader>3) leader = 0;
+
+		var declSuit = suits.indexOf(line.contract.charAt(1));
+		result.declSuit = declSuit;
+
+		if (declSuit>0)		// i.e. Not a NoTrump contract, so check combined trump suit length
+		{
+			var hand = g_hands.boards[bindex].Deal[dcl];
+			hand = hand.split(".");
+			var tks = hand[declSuit-1].length;
+			var maxSuitLength = tks;
+
+			hand = g_hands.boards[bindex].Deal[partner];
+			hand = hand.split(".");
+
+			if (hand[declSuit-1].length>maxSuitLength)
+				maxSuitLength = hand[declSuit-1].length;
+
+			var tks = tks + hand[declSuit-1].length;
+
+			if ((tks<7)&&(maxSuitLength<5))
+			{
+				result.valid = false;
+				result.shortSuit = true;
+				result.combinedSuitLength = tks;
+			}
+		}
+
+		if (line.tricks>=7)	// They made a contract in this suit, is it likely ?
+		{
+			var oppIndx1 = (dcl+1)%4;
+			var oppIndx2 = (dcl+3)%4;
+
+			var oppTks1 = getMakeableTricksForContract(bindex,line.contract,decl.charAt(oppIndx1));
+			var oppTks2 = getMakeableTricksForContract(bindex,line.contract,decl.charAt(oppIndx2));
+
+			if ((oppTks1>=9)||(oppTks2>=9))
+			{
+				result.valid = false;
+				result.possibleSuitDeclError = true;
+			}
+		}
+
+		if (line.lead!="")	// check lead card is consistent with declarer
+		{
+			var curlead = leadCard(line.lead).replace("10","T");
+
+			var suit = curlead.charAt(1);
+			var card = curlead.charAt(0);
+
+			hand = g_hands.boards[bindex].Deal[leader];
+
+			hand = hand.split(".");
+
+			if (hand[suits.indexOf(suit)-1].indexOf(card)==-1)
+			{
+				var reason = "";
+				var partner = leader + 2;
+				partner = partner % 4;
+				hand = g_hands.boards[bindex].Deal[partner];
+
+				hand = hand.split(".");
+
+				if (hand[suits.indexOf(suit)-1].indexOf(card)!=-1)
+					result.possibleWrongPolarity = true;
+
+				result.valid = false;
+				result.leadDeclError = true;
+				return result;
+			}
+			else
+				return result;
+		}
+		else
+			return result;
+	}
+	else
+		return result;
+}
+

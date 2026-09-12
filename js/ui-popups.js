@@ -466,7 +466,7 @@ function showMainMenuItems()
 		show("gotoBoard");
 		show("next");
 
-		if (g_file=='')
+		if ((g_file=='')||(g_xml!=""))
 		{
 			show("bsession");
 			show("bsessionHelp");

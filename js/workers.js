@@ -7,8 +7,20 @@
 
 function listener(event,workerType)
 {
+	if (event.data && event.data.type=="worker-error")
+	{
+		handleWorkerError(event.data.message,workerType);
+		return;
+	}
+
 	if ((event.data!=="initialised")&&(event.data!=="failed"))
 	{
+		if (!event.data || typeof event.data.context!="object" || !event.data.context)
+		{
+			handleWorkerError("Worker returned an invalid response",workerType);
+			return;
+		}
+
 		var request = event.data.context.request;
 
 		if (request=="m")
@@ -142,6 +154,41 @@ function listener(event,workerType)
 	}
 }
 
+function handleWorkerError(message,workerType)
+{
+	var prefix;
+
+	if (workerType=="background" && g_mworkers.length==0)
+		return;
+	if (workerType=="main" && g_worker==null)
+		return;
+
+	if (language=="de")
+	{
+		prefix = workerType=="main" ? "Die Berechnung des Boards ist fehlgeschlagen" : "Die Hintergrundberechnung ist fehlgeschlagen";
+	}
+	else
+	{
+		prefix = workerType=="main" ? "Board calculation failed" : "Background calculation failed";
+	}
+
+	console.error(prefix + ": " + message);
+	hideSpinner();
+
+	if (workerType=="background")
+		stopBackgroundWorkers();
+	else
+		g_worker = null;
+
+	var text = prefix + ". " + message;
+	var escaped = text.replace(/[&<>"']/g,function(character) {
+		return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[character];
+	});
+
+	if (typeof displayErrorAbsPosition=="function")
+		displayErrorAbsPosition("<div style=\"padding:10px;background-color:#FFEEEE;border:1px solid black;max-width:360px;\"><span style=\"font-size:16px;\">" + escaped + "</span></div>",100,100);
+}
+
 function listenerMain(event)
 {
 	listener(event,"main");
@@ -189,6 +236,9 @@ function createBackgroundWorkers()
 	{
 		var worker = new Worker("js/worker/calldds.js");
 		worker.addEventListener("message",listenerBackground);
+		worker.addEventListener("error",function(event) {
+			handleWorkerError(event.message || "Worker failed to execute", "background");
+		});
 		g_mworkers.push(worker);
 	}
 
@@ -219,6 +269,9 @@ function createMainWorker()
 		console.log("creating main worker thread");
 		g_worker = new Worker("js/worker/calldds.js");
 		g_worker.addEventListener("message",listenerMain);
+		g_worker.addEventListener("error",function(event) {
+			handleWorkerError(event.message || "Worker failed to execute", "main");
+		});
 	} else {
         /* **KK**
          * Initializing necessary to allow files to be uploaded again (initially a second upload failed)
@@ -231,6 +284,9 @@ function createMainWorker()
       console.log("creating main worker thread again");
       g_worker = new Worker("js/worker/calldds.js");
       g_worker.addEventListener("message",listenerMain);
+      g_worker.addEventListener("error",function(event) {
+			handleWorkerError(event.message || "Worker failed to execute", "main");
+		});
     }
 }
 

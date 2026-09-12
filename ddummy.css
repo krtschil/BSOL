@@ -9,6 +9,14 @@ body {
   background-color : #DDFFDD;
   font-family : Verdana, Arial, Helvetica, sans-serif;
   font-size : 14px;
+  line-height:1.4;
+}
+
+button,
+input,
+select,
+textarea {
+  font:inherit;
 }
 
 pre#output
@@ -210,8 +218,8 @@ input[type=radio]:checked + label {
 }
 
 td, div {
-	font-family: Tahoma, Verdana, Arial, sans-serif;
-	font-size: 13px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
 	font-style: normal;
 	color: #000000;
 }
@@ -221,26 +229,28 @@ div.toppadding {
     overflow: auto;
 }
 H1 {
-	font-family: Tahoma, Verdana, Arial, sans-serif;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 24px;
 	font-style: normal;
 	font-weight: bold;
 	color: blue;  
-   line-height: 28px;  
+   line-height: 1.2;
 }
 H2 {
-   font-family: Arial, Helvetica, sans-serif;
-	font-size: 16px;
+   font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 18px;
 	font-style: normal;
 	font-weight: bold;
 	color: black;   
+   line-height: 1.25;
 }
 H3 {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 13px;
+	font-size: 16px;
 	font-style: normal;
 	font-weight: bold;
 	color: black;
+   line-height: 1.3;
 }
 
 .myLink {
@@ -257,9 +267,9 @@ a:hover { color: red; text-decoration:none }
 
 p { margin: 0px; }
 
-table.results H1{text-align:center;font-family:Tahoma, Verdana, Arial, sans-serif;font-weight:bold;font-size:18pt;color:blue;}
-table.results H2 {text-align:center;font-weight:bold; background-color:red;font-family:Arial, Helvetica, sans-serif;line-height: 16pt;color:white}
-table.results {font-size:16pt; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.results H1{text-align:center;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;font-size:18px;color:blue;}
+table.results H2 {text-align:center;font-weight:bold; background-color:red;font-family:Verdana, Arial, Helvetica, sans-serif;line-height: 1.25;color:white}
+table.results {font-size:14px; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.results th {font-size:10pt;border:2px ridge; color:white;font-style : italic;}
 table.results td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:14px; }
 
@@ -267,15 +277,15 @@ table.results td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 
 .results_tr_grey {background-color:#EEEEFF; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
 
-table.ranking {font-size:14pt; border:1px solid black; border-collapse:collapse; border-spacing:0px; padding:2px; color:black; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.ranking {font-size:14px; border:1px solid black; border-collapse:collapse; border-spacing:0px; padding:2px; color:black; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.ranking th {font-size:9pt;border:2px ridge; padding-right:4px; padding-left:4px; color:white;font-style : normal;background-color:#6699FF;}
 table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:12px;}
 
 .traveller_tr_alt {background-color:#EEEEEE; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
 
-table.traveller H1{text-align:center;font-family:Tahoma, Verdana, Arial, sans-serif;font-weight:bold;font-size:18pt;color:blue;}
-table.traveller H2 {text-align:center;font-weight:bold; background-color:red;font-family:Arial, Helvetica, sans-serif;line-height: 16pt;color:white}
-table.traveller {font-size:16pt; border:0px ; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.traveller H1{text-align:center;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;font-size:18px;color:blue;}
+table.traveller H2 {text-align:center;font-weight:bold; background-color:red;font-family:Verdana, Arial, Helvetica, sans-serif;line-height: 1.25;color:white}
+table.traveller {font-size:14px; border:0px ; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.traveller th {font-size:10pt;border:1px solid #aaa;color:white;font-style : italic;}
 table.traveller td {border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px; }
 
@@ -304,7 +314,7 @@ table.pointsTable tr td {border:0px;padding:0px;white-space: nowrap; font-size:1
 table.vul {border-width:0px;padding:0; border-collapse:collapse; font-family:Tahoma, Verdana, Arial, sans-serif;}
 table.vul tr td {border:0px;padding:0px;white-space: nowrap; font-size:8px; font-weight:bold;  background-color:#6699FF; color:white}
 
-table.options {font-size:18pt; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.options {font-size:14px; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.options td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:14px; }
 
 .trav {font-family:Courier New;font-weight:normal;font-size:10pt;}
@@ -315,7 +325,7 @@ table.options td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 table.calendar td {font-family:Verdana, Arial, Helvetica, sans-serif;}
 table.calendar th {font-weight: bold; color: blue;text-align: center;background-color:#7FFFD4; }
 
-.menuButton {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#ffffdd;
+.menuButton {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#ffffdd;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -324,7 +334,7 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;}
 	
-.menuButton:active {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbbb99;
+.menuButton:active {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbbb99;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -342,7 +352,7 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	height:40px; font-size:10pt; border-width:1px; border-color:black; border-spacing:0px;  padding-left:2px;padding-right:2px; background-color:#ffffdd; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;cursor:pointer;}
 
-.sessionMenuButton {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbffbb;
+.sessionMenuButton {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbffbb;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -351,7 +361,7 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;}
 	
-.sessionMenuButton:active {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#448844;
+.sessionMenuButton:active {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#448844;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;

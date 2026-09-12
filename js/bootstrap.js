@@ -11,6 +11,17 @@ function buildPage(data,options)
 //document.body.style['-o-transform'] = 'scale(' + $(window).width()/800 + ')';
 //document.body.style['-webkit-transform'] = 'scale(' + $(window).width()/800 + ')';
 //document.body.style['-moz-transform'] = 'scale(' + $(window).width()/800 + ')';
+	g_file = "";
+	g_handstr = "";
+	g_handstrType = "";
+	g_xml = "";
+	g_xmlstr = "";
+	g_loaded = false;
+	g_travellers = null;
+	g_currentTraveller = null;
+	g_sessInfo = null;
+	g_rankInfo = null;
+
 	g_initial_data = data;
 	g_initial_options = options;
 	largeSpinner();
@@ -74,6 +85,19 @@ function buildPage1(data,options)
 
 	if (idx!=-1)
 		g_test = 1;
+
+	// A new file or clipboard import replaces any traveller source from the
+	// previous session.
+	g_file = "";
+	g_handstr = "";
+	g_handstrType = "";
+	g_xml = "";
+	g_xmlstr = "";
+	g_loaded = false;
+	g_travellers = null;
+	g_currentTraveller = null;
+	g_sessInfo = null;
+	g_rankInfo = null;
 
 	if ((typeof data.file)!="undefined")
 		g_file = data.file;

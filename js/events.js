@@ -9,6 +9,15 @@ btn.addEventListener("click",closetoolsSubMenuClose);
 const ahelp = document.getElementById("ahelp");
 ahelp.addEventListener("click",sessionHelp);
 
+const sessionHelpButton = document.getElementById("bsessionHelp");
+sessionHelpButton.addEventListener("click", () => {
+    window.open("bsolhelp.htm?ver=2");
+});
+
+for (const id of ["pdiroptNE", "pdiroptNW", "pdiroptSE"]) {
+    document.getElementById(id).addEventListener("click", setupScorecard);
+}
+
 window.addEventListener("load",processRequest);
 
 // Open local file

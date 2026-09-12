@@ -4,19 +4,20 @@
 This is a fork of the original Bridge Solver Online authored by John Goacher (https://mirgo2.co.uk/bridgesolver/)
 
 ## Javascript 
-Code has been split into several files:
+The application remains a static browser application, but its code is split into focused files:
 
-- Startup initialization into `js/startup.js`
-- Events into `js/events.js`
-- Help text into `js/help.js`
-- Inline javascript moved into the separate files
-- Upgraded jQuery to `jquery-4.0.0.min.js`
-- Bootstrap and URL parsing are in `js/bootstrap.js`
-- Import and XML conversion are in `js/import.js` and `js/xml.js`
-- Double-dummy worker and WebAssembly files are in `js/worker/`
-- The browser-only XML conversion smoke test is `test/xml-smoke.html`
-- HTML structure is checked with `npm run validate:html`
-- The static `index.html` is assembled from the fragments in `html/` with `npm run build:html`
+- `js/startup.js` initializes the application.
+- `js/bootstrap.js` builds the page and parses URL parameters.
+- `js/events.js` wires the main user-interface events.
+- `js/import.js`, `js/pbn.js`, and `js/xml.js` handle supported input formats.
+- `js/board-renderer.js`, `js/hand-renderer.js`, and `js/play.js` render and play boards.
+- `js/scoring.js`, `js/scorecard.js`, `js/ranking.js`, and `js/traveller.js` handle results.
+- `js/workers.js` manages the main and background DDS workers.
+- `js/worker/` contains the worker wrapper, DDS JavaScript runtime, and `dds.wasm`.
+- `js/ui-popups.js` contains shared popup, dialog, and spinner behavior.
+
+The browser still loads classic global scripts rather than ES modules. Keep the script
+order in `html/head.html` unchanged unless all dependent globals are updated together.
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:
@@ -27,15 +28,31 @@ To allow text (help text and display text) to appear in other languages the foll
 - The default language is initialized in `js/startup.js` (e.g. `language="de"`). Language codes follow the 2-character code (e.g. en, de)
 
 ## Styles
-Inline Styles have been removed and added to the respective style sheet
+The main stylesheet is `ddummy.css`. It contains:
+
+- the responsive layout for the import controls, board, results, dialogs, and tables;
+- the shared Verdana-based application typography and softer Arial typography for the board/play view;
+- the teal application palette, with calmer read-only legends and stronger action-button colors;
+- keyboard focus indicators and reduced-motion support.
 
 ## HTML
-- HTML has been corrected to comply with W3C standards.
-- Frontpage renamed to `index.html`
+- The browser continues to load the generated static `index.html`.
+- Maintain the source fragments in `html/` (`head.html`, `start.html`, `main-view.html`,
+  `overlays.html`, and `footer.html`), not the generated file.
+- Run `npm run build:html` after changing a fragment. The versioned pre-commit hook
+  rebuilds and stages `index.html` automatically.
+- HTML is validated with `npm run validate:html`.
 
 ## Functionality
 ### Layout and buttons
-The frontpage has been changed such that navigational buttons are visible at all times.
+The layout is fluid up to a 1000px content width. Import and navigation controls wrap
+inside their fieldsets when necessary. Wide board and Traveller content scrolls within
+its local container instead of causing page-level overflow. Dialogs and progress
+overlays are constrained to the viewport on narrow screens.
+
+Interactive controls have accessible names, visible keyboard focus, live status updates,
+and reduced-motion behavior. The language switcher, file input, dialogs, board number,
+and current play position expose appropriate labels or ARIA semantics.
 
 
 ### Loading of hands
@@ -79,6 +96,25 @@ The analysis runs completely in the browser (no server component necessary).
 The provided version is based on the DDS3 project (https://github.com/dds-bridge/dds) currently using the released version 3.1.
 
 The sources for the WebAssembly module can be downloaded from here: https://github.com/krtschil/bsol-wasm/releases.
+
+DDS/WASM runtime failures and browser Worker errors are reported through the application
+UI. Main-worker failures and background-analysis failures are handled separately; failed
+background workers are stopped so that an analysis cannot remain silently stuck.
+
+## Development
+
+Install the development dependencies and run the checks:
+
+```sh
+npm ci
+npm test
+npm run build:html
+npm run validate:html
+```
+
+The regression suite is in `test/regression.test.js`. The browser-only XML parser smoke
+test is `test/xml-smoke.html`. CI also checks JavaScript syntax, generated HTML freshness,
+HTML validity, and the XML smoke test.
 
 ## AI support
 Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

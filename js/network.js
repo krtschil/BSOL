@@ -88,3 +88,7 @@ function log(pstr)
 		doRequestHTMLasync(requestStr,doNothing,doNothing,{"para":"log"});
 	}
 }
+
+function doNothing()
+{
+}

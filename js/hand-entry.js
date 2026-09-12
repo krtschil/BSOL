@@ -520,3 +520,22 @@ function edit()
 	}
 }
 
+function selectQuadrant(index)
+{
+	if (g_stopPropagation!=0)
+	{
+		g_stopPropagation = 0;
+		return;
+	}
+
+	if (g_handEntryMode!=0)
+	{
+		if (index!=g_inputDir)
+		{
+			deselectCurrentDir(index);
+			setInputDirection(index);
+			initHandEntry();
+			processHandEntry();
+		}
+	}
+}

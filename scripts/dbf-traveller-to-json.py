@@ -143,7 +143,7 @@ def participant_map(path):
                 "place": "",
                 "total_score": "",
                 "percentage": "",
-                "direction": "N" if row.get("NS") else "E",
+                "direction": "N",
                 "player": [
                     {"player_name": row["NAME1"]},
                     {"player_name": row["NAME2"]},
@@ -158,9 +158,9 @@ def enrich_participants(participants, path):
         if pair not in participants:
             continue
         participants[pair].update({
-            "place": number(row.get("PLATZ")),
-            "total_score": number(row.get("PUNKTE")),
-            "percentage": number(row.get("PROZLANG") or row.get("PROZENT")),
+            "place": str(number(row.get("PLATZ"))),
+            "total_score": str(number(row.get("PUNKTE"))),
+            "percentage": str(number(row.get("PROZLANG") or row.get("PROZENT"))),
         })
 
 
@@ -222,6 +222,10 @@ def convert(pbn_path, play_path, participants_path, results_path):
 
     return {
         "event": {
+            "match_scoring_method": "IMPS",
+            "event_type": "PAIRS",
+            "board_scoring_method": "MATCH_POINTS",
+            "winner_type": 1,
             "participants": {"pair": [
                 participants[pair] for pair in sorted(participants)
             ]},

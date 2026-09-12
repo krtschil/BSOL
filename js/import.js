@@ -707,3 +707,89 @@ function getHands(context)
 		else
 			loadTraveller_1("","","",context);
 }
+
+function processClipboardData(text)
+{
+	var clipBoardData = text;  // + "\n";  // To make sure boards are recognized
+
+	var result = {};
+	result.handstr = clipBoardData;
+	result.board=1;
+
+	// For a [Deal the [Dealer and [Vulnerable entries are also needed. Add default values if missing
+	// This way a single PBN line with a [Deal only is accepted
+	if (result.handstr.includes("[Deal "))
+	{
+		if (!result.handstr.includes("[Vulnerable "))
+			result.handstr = "[Vulnerable \"None\"\n" + result.handstr;
+		if (!result.handstr.includes("[Dealer "))
+			result.handstr = "[Dealer \"N\"\n" + result.handstr;
+	}
+
+	var isPBN = (result.handstr.includes("% PBN ") || ((result.handstr.includes("[Dealer ")) && (result.handstr.includes("[Deal ")) && (result.handstr.includes("[Vulnerable "))));
+	var isLIN = result.handstr.includes("|md|");
+	var isDLM = result.handstr.includes("[Document]");
+
+	if (isPBN)
+	{
+		result.handstrType = "pbn";
+		document.getElementById("filename").innerHTML = language=="de"
+			? "<br>(PBN-Daten aus der Zwischenablage eingefügt)"
+			: "<br>(PBN data pasted from clipboard)";
+	}
+
+	if (isLIN)
+	{
+		result.handstrType = "lin";
+		document.getElementById("filename").innerHTML = language=="de"
+			? "<br>(LIN-Daten aus der Zwischenablage eingefügt)"
+			: "<br>(LIN data pasted from clipboard)";
+	}
+
+	if (isDLM)
+	{
+		result.handstrType = "dlm";
+		document.getElementById("filename").innerHTML = language=="de"
+			? "<br>(DLM-Daten aus der Zwischenablage eingefügt)"
+			: "<br>(DLM data pasted from clipboard)";
+	}
+
+	if (isPBN || isLIN || isDLM)
+	{
+		buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
+	}
+	else
+	{
+		alert(language=="de"
+			? "Keine oder falsche PBN/LIN/DLM-Daten in der Zwischenablage gefunden: \n----------------\n" + clipBoardData
+			: "No or wrong PBN/LIN/DLM data found in clipboard: \n----------------\n" + clipBoardData);
+	}
+}
+
+// Read clipboard when pressing the respective button.
+async function readClipboard()
+{
+	try
+	{
+		const items = await navigator.clipboard.read();
+
+		for (const item of items)
+		{
+			if ((item.types.includes("text/plain")) && (item.types.length == 1))
+			{
+				const blob = await item.getType("text/plain");
+				processClipboardData((await blob.text()) + "\n");
+			}
+			else
+			{
+				alert(language=="de"
+					? "Die Zwischenablage enthält keine PBN/LIN/DLM-Daten"
+					: "Clipboard does not contain PBN/LIN/DLM data");
+			}
+		}
+	}
+	catch (err)
+	{
+		console.error("Failed to read clipboard: ", err);
+	}
+}

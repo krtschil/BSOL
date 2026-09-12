@@ -40,6 +40,93 @@ function convertToJQKA(str,lang)
 	return str;
 }
 
+function validateContract(pvalue)
+{
+	var suits = "NSHDC";
+
+	if (pvalue.length>5) return false;
+
+	var level = pvalue.charAt(0);
+
+	if ((level<"1")||(level>"7")) return false;
+	if (suits.indexOf(pvalue.charAt(1))==-1) return false;
+
+	return true;
+}
+
+function checkDeal(board,polarity)
+{
+	var p = ["North","East","South","West"];
+	var dir = p[polarity];
+	var str = board.Deal[polarity].replace(/[23456789TAJQK]/g,"");
+	var str2 = str.replace(/\./g,"");
+
+	switch(language)
+	{
+		case "de":
+			if (str2.length!=str.length-3) {alert(dir + " Hand enthält nicht genau 3 Trennzeichen für die Farben");return 0;}
+			if (str2.length!=0) {alert(dir + " Hand enthält ungültige Zeichen");return 0;}
+			break;
+		default:
+			if (str2.length!=str.length-3) {alert(dir + " Hand does not contain exactly 3 suit separators");return 0;}
+			if (str2.length!=0) {alert(dir + " Hand contains invalid characters");return 0;}
+	}
+	return 1;
+}
+
+function checkForDuplicates(board)
+{
+	var cvalues = "23456789TJQKA";
+	var cards = Array.from({length:4}, () => Array(13).fill(0));
+
+	for (var i=0;i<4;i++)
+	{
+		var hand = board.Deal[i].split(".");
+
+		for (var j=0;j<4;j++)
+		{
+			for (var k=0;k<hand[j].length;k++)
+			{
+				var cardIndex = cvalues.indexOf(hand[j][k]);
+
+				if (cards[j][cardIndex]!=0)
+				{
+					alert(language=="de"
+						? "Ungültige Teilung - doppelte Karte gefunden"
+						: "Invalid Deal - duplicate card detected");
+					return 0;
+				}
+				cards[j][cardIndex]++;
+			}
+		}
+	}
+
+	return 1;
+}
+
+function validateBoard(board)
+{
+	var required = language=="de"
+		? ["Boardnummer nicht angegeben","Teiler nicht angegeben","Gefahrenlage nicht angegeben","Nordhand nicht angegeben","Osthand nicht angegeben","Südhand nicht angegeben","Westhand nicht angegeben"]
+		: ["Board Number not specified","Dealer not specified","Vulnerability not specified","North hand not specified","East hand not specified","South hand not specified","West hand not specified"];
+	var fields = ["board","Dealer","Vulnerable","Deal.0","Deal.1","Deal.2","Deal.3"];
+
+	for (var i=0;i<fields.length;i++)
+	{
+		var value = fields[i].split(".").reduce((object,key) => object?.[key], board);
+		if (typeof value=="undefined")
+		{
+			alert(required[i]);
+			return 0;
+		}
+	}
+
+	for (var polarity=0;polarity<4;polarity++)
+		if (checkDeal(board,polarity)==0) return 0;
+
+	return checkForDuplicates(board);
+}
+
 function getPBNSegment(data)
 {
 		// Return information for one board from the PBN data and also remove these lines from the original array

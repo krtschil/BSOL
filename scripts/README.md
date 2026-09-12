@@ -26,6 +26,21 @@ The input files are:
 - `--results-dbf`: final ranking, points and percentages
 - `--output`: generated BSOL Traveller JSON
 
+Before running the script, edit `INPUT_DIRECTORIES` near the top of the Python
+file. Each input type can point to a different directory:
+
+```python
+INPUT_DIRECTORIES = {
+    "pbn": Path("/data/turnier/pbn"),
+    "play_dbf": Path("/data/turnier/play"),
+    "participants_dbf": Path("/data/turnier/participants"),
+    "results_dbf": Path("/data/turnier/results"),
+}
+```
+
+The directory is prepended to the corresponding filename option. The output path
+is not changed.
+
 The converter uses only the Python standard library. It maps German suit and
 direction codes, converts German card ranks (`D`/`B`) to BSOL's `Q`/`J`, joins
 play rows with the PBN score tables to obtain declarers and tricks, and adds

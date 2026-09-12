@@ -16,6 +16,14 @@ from pathlib import Path
 SUITS = {"P": "S", "C": "H", "K": "D", "T": "C", "SA": "NT"}
 DECLARER = {"O": "E"}
 
+# Set these directories to the locations of the original export files.
+INPUT_DIRECTORIES = {
+    "pbn": Path("~/Downloads").expanduser(),
+    "play_dbf": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
+    "participants_dbf": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
+    "results_dbf": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
+}
+
 
 def read_dbf(path):
     data = Path(path).read_bytes()
@@ -249,7 +257,10 @@ def main():
     parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
     result = convert(
-        args.pbn, args.play_dbf, args.participants_dbf, args.results_dbf
+        INPUT_DIRECTORIES["pbn"] / args.pbn,
+        INPUT_DIRECTORIES["play_dbf"] / args.play_dbf,
+        INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
+        INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,
     )
     Path(args.output).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n",

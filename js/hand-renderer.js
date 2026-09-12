@@ -5,6 +5,74 @@ function roundSym (num,decPlaces) {
 	return value;
 }
 
+function higherHonourCount(suit,base)
+{
+	var honours = base=="T" ? "JQKA" : base=="J" ? "QKA" : base=="Q" ? "KA" : base=="K" ? "A" : "";
+	var count = 0;
+
+	for (var i=0;i<honours.length;i++)
+		if (suit.includes(honours[i])) count++;
+
+	return count;
+}
+
+function krCalc(suits)
+{
+	var totalCards = suits.reduce((total,suit) => total + suit.length,0);
+	if (totalCards!=13) return "";
+
+	var total = 0;
+	for (var i=0;i<4;i++)
+	{
+		var suit = suits[i];
+		var points = 0;
+		if (suit.includes("A")) points += 4;
+		if (suit.includes("K")) points += 3;
+		if (suit.includes("Q")) points += 2;
+		if (suit.includes("J")) points += 1;
+		if (suit.includes("T")) points += 0.5;
+
+		if (suit.length>=2 && suit.length<=6)
+		{
+			if (suit.includes("T") && (suit.includes("J") || higherHonourCount(suit,"J")>=2)) points += 0.5;
+			if (suit.includes("9") && (suit.includes("8") || suit.includes("T") || higherHonourCount(suit,"T")==2)) points += 0.5;
+		}
+		if (suit.length>=4 && suit.length<=6 && suit.includes("9") && !suit.includes("8") && !suit.includes("T") && higherHonourCount(suit,"T")==3) points += 0.5;
+		if (suit.length>=7 && (!suit.includes("Q") || !suit.includes("J"))) points += 1;
+		if (suit.length>=8 && !suit.includes("Q")) points += 1;
+		if (suit.length>=9 && !suit.includes("Q") && !suit.includes("J")) points += 1;
+
+		points = suit.length * points / 10;
+		if (suit.includes("A")) points += 3;
+		if (suit.includes("K") && suit.length>=2) points += 2;
+		if (suit.includes("K") && suit.length==1) points += 0.5;
+		if (suit.length>=3 && suit.includes("Q")) points += suit.includes("A") || suit.includes("K") ? 1 : 0.75;
+		if (suit.length==2 && suit.includes("Q")) points += suit.includes("A") || suit.includes("K") ? 0.5 : 0.25;
+
+		if (suit.includes("J"))
+		{
+			var jCount = higherHonourCount(suit,"J");
+			if (jCount==2) points += 0.5;
+			else if (jCount==1) points += 0.25;
+		}
+		if (suit.includes("T"))
+		{
+			var tCount = higherHonourCount(suit,"T");
+			if (tCount==2) points += 0.25;
+			if (suit.includes("9") && tCount==1) points += 0.25;
+		}
+
+		if (suit.length==0) points += 3;
+		else if (suit.length==1) points += 2;
+		else if (suit.length==2) points += 1;
+		total += points;
+	}
+
+	total -= 1;
+	if (suits.filter(suit => suit.length==3).length==3) total += 0.5;
+	return total;
+}
+
 function buttclick(pthis)
 {
 	var str = pthis.id.replace("button","");

@@ -16,7 +16,13 @@ pre#output
   margin-left:4em;
 }
 #mklab1, #mklab2, #mkrad1, #mkrad2 {cursor:pointer;}
-#bdy {background-color:white;width:1000px;}
+#bdy {
+  background-color:white;
+  width:100%;
+  max-width:1000px;
+  margin:0 auto;
+  box-sizing:border-box;
+}
 #showGeneralHelp {margin-left:20px;}
 
 /*#clipboard {
@@ -81,18 +87,43 @@ table#traveller {
 }
 
 fieldset#data {
-    margin-left:51px;
+    margin-left:5%;
+    margin-right:5%;
     margin-top:2ex;
-    width:fit-content;
+    width:auto;
+    max-width:90%;
+    min-width:0;
+    box-sizing:border-box;
     border:1px solid #aaa;/* black;*/
     /*border-radius: 10px;*/
 }
 
 fieldset#data > legend {
+    display:block;
+    width:100%;
     border:1px solid black;
     background-color:#ddffdd;
+    max-width:100%;
+    box-sizing:border-box;
+    white-space:normal;
+    overflow-wrap:anywhere;
     /*border-radius: 10px;*/
     padding:3px 3px 3px 3px;
+}
+
+@media (max-width:600px) {
+  fieldset#data {
+    margin-left:12px;
+    margin-right:12px;
+    max-width:none;
+  }
+
+  fieldset#data button {
+    margin-top:2px;
+    margin-bottom:2px;
+    max-width:100%;
+    white-space:normal;
+  }
 }
 
 .common {

@@ -112,6 +112,15 @@ fieldset#data > legend {
 }
 
 @media (max-width:600px) {
+  #abuttons-content {
+    margin-left:12px;
+    width:calc(100% - 24px);
+  }
+
+  table#traveller {
+    margin-left:0;
+  }
+
   fieldset#data {
     width:auto;
     max-width:none;
@@ -620,7 +629,9 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
   background-color: white;
   float:left;
   /*background-color:#DDDDDD;*/
-  width:110%;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
 }
 
 #showSettingsHelp {

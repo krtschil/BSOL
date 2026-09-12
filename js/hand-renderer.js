@@ -329,6 +329,48 @@ function createHandString(hand,index)
 	return record;
 }
 
+function drawMiniHand()
+{
+	if (checkBoardValid(g_lastBindex)&&((typeof g_hands.boards[g_lastBindex].Deal)!="undefined"))
+	{
+		var minitable = document.getElementById("minihand");
+		minitable.rows[1].cells[1].innerHTML = "<span style=\"font-size:20px;\">" + g_hands.boards[g_lastBindex].board + "</span>";
+		minitable.rows[1].cells[1].style.textAlign = "center";
+
+		var north = createMiniHandString(g_hands.boards[g_lastBindex],0);
+		var east = createMiniHandString(g_hands.boards[g_lastBindex],1);
+		var south = createMiniHandString(g_hands.boards[g_lastBindex],2);
+		var west = createMiniHandString(g_hands.boards[g_lastBindex],3);
+
+		var miniPoints = document.getElementById("miniPoints");
+
+		if (miniPoints!=null)
+		{
+			var ptsSpan = "<span style=\"font-size:10px;\">";
+
+			miniPoints.rows[0].cells[1].innerHTML = ptsSpan + north.points + "</span>";
+			miniPoints.rows[1].cells[0].innerHTML = ptsSpan + west.points + "</span>";
+			miniPoints.rows[1].cells[2].innerHTML = ptsSpan + east.points + "</span>";
+			miniPoints.rows[2].cells[1].innerHTML = ptsSpan + south.points + "</span>";
+		}
+
+		document.getElementById("miniNorth").innerHTML = north.text;
+		document.getElementById("miniEast").innerHTML = east.text;
+		document.getElementById("miniSouth").innerHTML = south.text;
+		document.getElementById("miniWest").innerHTML = west.text;
+		document.getElementById("miniDlr").innerHTML = "<span style=\"font-size:10px;\">Dlr: " + g_hands.boards[g_lastBindex].Dealer + "<br>Vul: " + g_hands.boards[g_lastBindex].Vulnerable + "</span>";
+
+		redrawMCTable(false);
+		$("#minihand").show();
+		$("#miniMakeableContracts").show();
+	}
+	else
+	{
+		$("#minihand").hide();
+		$("#miniMakeableContracts").hide();
+	}
+}
+
 function displayHands() {
     const board = appState.hands.boards[appState.lastBoardIndex];
 
@@ -342,4 +384,3 @@ function displayHands() {
     south.innerHTML = createHandString(board, 2).text;
     west.innerHTML = createHandString(board, 3).text;
 }
-

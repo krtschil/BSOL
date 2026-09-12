@@ -662,3 +662,400 @@ function generatePBN(all)
 	log("button=save");
 	downloadFile(str, "text/pbn", "boards.pbn");
 }
+
+function pbnToJson(fileData)
+{
+		// Make sure there is a defined "trim" function (needed for IE8 and earlier)
+	if(typeof String.prototype.trim !== 'function') {
+	  String.prototype.trim = function() {
+		return this.replace(/^\s+|\s+$/g, '');
+	  }
+	}
+
+	g_fullInfo = true;	// Assume makeable contracts table contains full information
+
+	var defaultBoard = 1;
+
+		// This routine only works for PBN files that conform to "Export Format"
+		// First convert the different types of line endings to a single "\n"
+		// [KK] Replace empty lines within comments of "[Result ". 5 empty lines are accepted
+	fileData = fileData.replace(/\r\n/g,"\n");
+	fileData = fileData.replace(/\r/g,"\n");
+	fileData = fileData.replaceAll("{\n","{");
+	fileData = fileData.replaceAll("{\n","{");
+	fileData = fileData.replaceAll("{\n","{");
+	fileData = fileData.replaceAll("{\n","{");
+	fileData = fileData.replaceAll("{\n","{");
+	fileData = stripComments(fileData);   // [KK] Comments after "[Result " are not stripped instead used for displaying board comments
+	fileData = fileData.split("\n");
+
+	var line = "";
+	var outStr = "{\"boards\":[";
+
+	var count = 0;
+
+	var i,tmp;
+
+	while (fileData.length>0)
+	{
+		var data = getPBNSegment(fileData);
+
+		tmp=getLine(data,"[Board",true);
+
+		if (tmp===null)
+		{
+			tmp = "" + defaultBoard++;
+		}
+		var playerN = "";
+		var playerE = "";
+		var playerW = "";
+		var playerS = "";
+
+		var contract = "";
+		var declarer = "";
+		var score = "";
+		var result = "";
+		var resultComment = "";
+		var scoreTableH ="";
+		var scoreTable = "";
+		var notes = [];
+
+		var dealer = getLine(data,"[Dealer",true);
+		var vulStr = getLine(data,"[Vulnerable",true);
+		var deal = getLine(data,"[Deal ",true);	// Include space to distinguish from "Dealer" keyword.
+		playerN = getLine(data,"[North ",true);
+		playerE = getLine(data,"[East ",true);
+		playerS = getLine(data,"[South ",true);
+		playerW = getLine(data,"[West ",true);
+		contract = getLine(data,"[Contract ",true);
+		declarer = getLine(data,"[Declarer ",true);
+		score = getLine(data,"[Score ",true);
+		result = getLine(data,"[Result ",true);
+		resultComment = getLineFull(data,"[Result ");
+		resultComment = resultComment.replaceAll("}","");
+		notes = getLineNotes(data,"[Note ",true);
+		scoreTableH = getLine(data,"[ScoreTable",true);
+		if (scoreTableH !=null) scoreTableH = scoreTableH.replaceAll(/\\[A-Z0-9]*;?/g," ");
+
+		scoreTable = getLineFull(data,"[ScoreTable",true);
+		scoreTable = scoreTable.replaceAll(/PASS/g,"PAXX");
+		scoreTable = scoreTable.replaceAll(/ SA /g," NT ");
+		scoreTable = scoreTable.replaceAll(/S:/g,"Z:");
+		scoreTable = scoreTable.replaceAll(/ S /g," Z ");
+		scoreTable = scoreTable.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+		scoreTable = scoreTable.replaceAll(/Z:/g,"S:");
+		scoreTable = scoreTable.replaceAll(/ Z /g," S ");
+		scoreTable = scoreTable.replaceAll(/ NT /g," SA ");
+		scoreTable = scoreTable.replaceAll(/PAXX/g,"PASS");
+
+		/*
+		const fieldNames = ["Contract", "Declarer", "Tricks", "Score", "NS", "EW", "MP_NS", "MP_EW"];
+		const lines = scoreTable
+				.split("<br>")
+				.map(line => line.trim())
+				.filter(line => line.length > 0);
+
+		const scores = lines.map(line => {
+			const values = line.split(/\s+/);
+			const obj = {};
+			fieldNames.forEach((field, i) => {
+				obj[field] = values[i];
+				});
+			return obj;
+		});
+		*/
+
+		// Set title to the Event as given in the pbn file
+		if ((g_hands.Title == "") || (typeof g_hands.Title == 'undefined')){
+			if (getLine(data,"[Event ",true) !== null) {
+				g_hands.Title = "<b>" + getLine(data,"[Event ",true) + "</b>";
+			}
+		}
+
+		var auction = getLineFull(data,"[Auction ");
+		if (auction !="") {
+			auction = auction.replace(/\t/g, ' ');
+			auction = auction.replace(/\s+/g, ' ');
+
+			/*var n;
+			if (notes != null){
+				for (var k=1;k<notes.length;k++){
+					n = notes[k];
+					n = n.trim();
+					auction = auction.replace(" =" + k + "= ","|" + n + " ");
+				}
+			}
+			*/
+			auction = auction.replace(/ =/g, '=');
+			//auction = auction.replace(/= /g, '=');
+			auction = auction.replace(/  /g, ' ');
+			auction = auction.trim();
+		}
+		var playLeader = getLine(data,"[Play ",true);	// Who leads to the first trick (peek only, doesn't consume "data")
+		var play = getLineFull(data,"[Play ");
+		if (play != ""){
+			play = play.replace(/\t/g, ' ');
+			play = play.replace(/  /g, ' ');
+			play = play.trim();
+		}
+
+		if ((dealer!==null)&&(vulStr!==null)&&(deal!==null))
+		{
+			if ((dealer!="")&&(vulStr!="")&&(deal!=""))
+			{
+				if (count!=0) outStr = outStr + ",";
+
+				count++;
+				outStr = outStr + "{\"board\":\"" + tmp + "\",";
+
+				if ((playerN!=null) && (playerE !=null) && (playerS!=null) && (playerW!=null)){
+					outStr = outStr + "\"PlayerNames\":[\"" + playerS + "\",\"" + playerW + "\",\"" + playerN + "\",\"" + playerE + "\"],";
+				}
+
+				outStr = outStr + "\"Dealer\":\"" + dealer + "\",";
+
+				if ((vulStr=="Love")||(vulStr=="-")) vulStr = "None";
+				if (vulStr=="Both") vulStr = "All";
+
+				outStr = outStr + "\"Vulnerable\":\"" + vulStr + "\",";
+				outStr = outStr + "\"Deal\":[";
+
+				var first = deal.charAt(0);
+				deal = deal.substring(deal.indexOf(':')+1).trim();
+
+				var lang = identifyHonourCardSet(deal,lang);
+				deal = convertToJQKA(deal,lang);
+
+				var index = 0;
+
+				if (first=='N')
+					index = 0;
+				else if (first=='S')
+					index = 2;
+				else if (first=='W')
+					index = 3;
+				else if (first=='E')
+					index = 1;
+
+				var hands2 = deal.split(" ");
+				var hands = new Array(4);
+
+				for (i=0;i<4;i++)
+				{
+					if (hands2[i].trim()=="-")
+						hands2[i] = "...";	// Empty hand
+
+					hands[index] = hands2[i];
+					index++;
+
+					if (index>3) index = 0;
+				}
+
+				for (i=0;i<4;i++)
+				{
+					outStr = outStr + "\"" + hands[i] + "\"";
+
+					if (i!=3) outStr = outStr + ",";
+				}
+
+				outStr = outStr + "],";
+
+				if (contract!=null){
+					outStr = outStr + "\"Contract\":" + "\"" + contract + "\",";
+				}
+
+				if (declarer!=null){
+					outStr = outStr + "\"Declarer\":" + "\"" + declarer + "\",";
+				}
+
+				if (result!=null){
+					outStr = outStr + "\"Claimed\":" + "\"" + result + "\",";
+				}
+
+				if (resultComment!=null){
+					outStr = outStr + "\"Explanation\":" + "\"" + resultComment + "\",";
+				}
+
+				if (score!=null){
+					outStr = outStr + "\"Score\":\"" + score + "\",";
+				}
+
+				if (auction != ""){
+					auction = auction.split(" ");
+					outStr = outStr + "\"Bids\":[";
+					for (var j=0;j<auction.length;j++){
+
+						var n;
+						var a = auction[j];
+
+						/*
+							If alerts contain the = character replace it with -
+							Otherwise there is a collision with the second type of alerts
+							marked by =1= and taken from the notes object
+						*/
+						if (a.indexOf("|") != -1)
+						{
+							a = a.replaceAll("=","-");
+						}
+
+						pos = a.indexOf("=");
+						if (pos!=-1)
+						{
+							if (notes != null){
+								for (var k=1;k<notes.length;k++){
+									pos = a.indexOf("=" + k + "=");
+									if (pos!=-1)
+									{
+										n = notes[k];
+										n = n.trim();
+										a = a.replace("=" + k + "=","|" + n);
+										break;
+									}
+
+								}
+							} else {  //if alerted but no explanations available (e.g. Realbridge)
+								var anz = 1;
+								while (a.indexOf("=")!=-1){
+									a = a.replace("=" + anz + "=","|");
+									anz++;
+								}
+							}
+						}
+
+						outStr = outStr + "\"" + a + "\"";
+						if (auction.length == j+1){
+							outStr = outStr + "],";
+						} else {
+							outStr = outStr + ",";
+						}
+
+					}
+				}
+
+				if (play != ""){
+					play = play.split(" ");
+					play = reorderPlaySequence(play,playLeader,contract);	// [KK] Re-derive true chronological play order from PBN's fixed-column layout
+					outStr = outStr + "\"Played\":[";
+					for (var j=0;j<play.length;j++){
+						outStr = outStr + "\"" + play[j] + "\"";
+						if (play.length == j+1){
+							outStr = outStr + "],";
+						} else {
+							outStr = outStr + ",";
+						}
+
+					}
+				}
+
+				var ddum = "********************";
+
+				var optScore = getLine(data.slice(0),"[OptimumScore",true);
+
+				if (optScore!==null)
+				{
+					outStr = outStr + "\"OptimumScore\":\"" + optScore + "\",";
+				}
+
+				var optPresent = getLine(data,"[OptimumResultTable",false);
+
+				if (optPresent!==null)
+				{
+					var trickCount = new Array(20);
+					var idx = new Array(20);
+
+					for (i=0;i<20;i++)
+					{
+						trickCount[i] = 0;
+						idx[i] = 0;
+					}
+
+					for (i=0;i<20;i++)
+					{
+						var ctr;
+
+						if (i<data.length)
+							ctr = data[i];
+						else	// end of file
+						{
+							break;
+						}
+
+						ctr = ctr.trim();
+
+						if (ctr.length==0) continue;	// Ignore blank lines
+
+						if (ctr.charAt(0)=='[')		// No more entries in table, rewind and start search for new board
+						{
+							break;
+						}
+
+						ctr = ctr.trim();
+						var comp = ctr.split(/ +/);
+
+						var decl = comp[0].trim().toUpperCase().charAt(0);
+
+						if (decl=='N') idx[i] = 0;
+						else if (decl=='S') idx[i] = 5;
+						else if (decl=='E') idx[i] = 10;
+						else if (decl=='W') idx[i] = 15;
+
+						var cont = comp[1].trim().toUpperCase().charAt(0);
+
+						if (cont=='N') idx[i] = idx[i] + 0;
+						else if (cont=='S') idx[i] = idx[i] + 1;
+						else if (cont=='H') idx[i] = idx[i] + 2;
+						else if (cont=='D') idx[i] = idx[i] + 3;
+						else if (cont=='C') idx[i] = idx[i] + 4;
+
+						trickCount[i] = parseInt(comp[2]);
+					}
+
+					var fullInfo = false;	// Set true if full information is present in the table (not just for makeable contracts);
+
+					for (i=0;i<20;i++)
+					{
+						if ((trickCount[i]>1)&&(trickCount[i]<7))
+						{
+								// 0 1nd 1 are often used to indicate number of tricks for a particular contract is not present, but any value
+								// in range 2 to 7 inclusive suggests that full information is present.
+							fullInfo = true;
+							break;
+						}
+					}
+
+					if (!fullInfo) g_fullInfo = false;
+
+					for (i=0;i<20;i++)
+					{
+						if (!fullInfo)
+							if (trickCount[i]<7) trickCount[i] = -1;
+
+						if (trickCount[i]>=0)
+							ddum = setCharAt(ddum,idx[i],parseInt(trickCount[i]).toString(16).trim().charAt(0));
+						else
+							ddum = setCharAt(ddum,idx[i],'-');
+					}
+				}
+				else
+				{
+					g_fullInfo = false;
+				}
+
+				if (scoreTable != "")
+				{
+					outStr = outStr + "\"ScoreTable\":\"" + scoreTable + "\",";
+				}
+
+				if (scoreTableH != "")
+				{
+					outStr = outStr + "\"ScoreTableH\":\"" + scoreTableH + "\",";
+				}
+
+				outStr = outStr + "\"DoubleDummyTricks\":\"" + ddum + "\"}";
+			}
+		}
+	}
+
+	outStr = outStr + "]}";//console.log(outStr);
+	return outStr;
+}

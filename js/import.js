@@ -516,3 +516,194 @@ function linToJson(str)
 		//console.log(outStr);
 	return outStr;
 }
+
+function handsNotFound(jqXHR,textStatus,errorThrown)
+{
+	// Hands Not Found
+	/*var msg = "Hand Record file could not be retrieved"; **KK** */
+	switch(language)
+	{
+		case "de":
+			var msg = "Die Datei konnte nicht geholt werden (Falsche URL oder CORS-Kopfzeile 'Access-Control-Allow-Origin' fehlt)";
+			break;
+		default:
+			var msg = "Hand Record file could not be retrieved (wrong URL or CORS header 'Access-Control-Allow-Origin' missing)";
+	}
+	var errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:200px;position:absolute;top:100px;left:100px;\"><span style=\"font-size:16px;\">" + msg + "</span></div>";
+	displayError(document.getElementById("boardNumber"),errormsg);
+	clearPBNlocalStorage();
+	getTraveller(this);
+}
+
+
+
+function loadHands(data,statusText,jqXHR,context)
+{
+	loadHands_1(data,statusText,jqXHR,this);
+}
+
+function loadHands_1(data,statusText,jqXHR,context)
+{
+	if ( typeof String.prototype.endsWith != 'function' ) {
+	  String.prototype.endsWith = function( str ) {
+		return this.substring( this.length - str.length, this.length ) === str;
+	  }
+	};
+
+	if ((typeof context)!="undefined")
+		if ((typeof context.callback)!="undefined")
+			this.callback = context.callback;
+
+	var hands;
+
+	if (g_file!==1)	// If pbn data not supplied as string
+	{
+		if ((g_file=='')||(g_file.toUpperCase().endsWith('PBN')))
+			hands = pbnToJson(data);
+		else if (g_file.toUpperCase().endsWith('DLM'))
+			hands = dlmToJson(data);
+		else if (g_file.toUpperCase().endsWith('LIN'))
+			hands = linToJson(data);
+		else	// if pbn string was not supplied as explicit parameter
+		{
+			hideSpinner();
+			switch(language)
+			{
+				case "de":
+					alert("Nur PBN, DLM und LIN-Dateien von BBO werden unterstützt.");
+					break;
+				default:
+					alert("Only PBN, DLM, and bridge base online LIN file types are supported.");
+			}
+
+			return;
+		}
+	}
+	else
+	{
+		hands = data;
+	}
+
+	hands = JSON.parse(hands);
+
+    var saved_boards = g_hands.boards;
+
+	var i;
+	var board = {};
+
+	if (typeof g_hands.boards!=="undefined")
+		board = g_hands.boards[g_lastBindex].board;
+	else
+		saved_boards = {};
+
+	g_hands.boards = hands.boards;
+
+	if ((typeof hands.PlayerNames)!="undefined")
+		g_hands.PlayerNames = hands.PlayerNames;
+
+    for (i=0;i<saved_boards.length;i++)
+	{
+		board = saved_boards[i];
+
+		if ((typeof board.board)!="undefined")
+		{
+			if (board.board.toString().indexOf(".edited")!=-1)
+			{
+				g_hands.boards[g_hands.boards.length] = board;
+			}
+		}
+	}
+
+	var index = 0;
+
+    if ((typeof board.board)!="undefined")
+		index = getTindexByName(g_hands.boards,board.board);
+
+	if ((g_file=='')||(g_xml!="")) // If request is from Bridgewebs, or if xml filename or xml string has been explicitly supplied
+	{
+		setLastBoardIndex(index);
+
+		setupTraveller(g_lastBindex,true);
+		getTraveller(this);
+	}
+	else
+	{
+		if (index!=-1)	// Shouldn't happen that index==-1 unless current hand is not in retrieved PBN file !!
+		{
+			setupTraveller(index,true);
+			enterPlayMode();
+		}
+		else
+		{
+			hideSpinner();
+			document.getElementById("bdy").style.display="none";
+			switch(language)
+			{
+				case "de":
+					alert("Board " + board.board + " gibt es nicht");
+					break;
+				default:
+					alert("Board " + board.board + " does not exist");
+			}
+		}
+
+		hideSpinner();
+		resetTimeout();
+		this.callback();
+	}
+}
+
+function getHands(context)
+{
+		var data="";
+
+		if (requestPending())
+			return;	// Don't allow while there is a request in progress.
+		else
+			setRequestTimeout();
+
+			// Get the hand records for this event
+		var turl = "";
+
+		if (g_file=='')	// No pbn url or pbn string supplied.
+		{
+			if (g_test==1)
+				turl = "data/" + g_hands.club + "_" + g_hands.event + ".pbn";
+		}
+		else if (g_file!==1)	// filename supplied (1 would indicate pbn content supplied as a string parameter)
+		{
+			turl = g_file;
+		}
+
+		if ((data!=="")&&(g_loaded==false))
+		{
+			g_loaded = true;
+			loadHands_1(data,"","",context);
+		}
+		else if ((turl!="")&&(g_loaded==false))
+		{
+			g_loaded = true;
+			hideRanking();
+			$("#scores").hide();
+			$("#comparison").hide();
+			$("#checkListDiv").hide();
+			largeSpinner();
+			doRequestHTMLasync(turl,loadHands,handsNotFound,context);
+		}
+		else if ((g_handstr!=="")&&(g_loaded==false))
+		{
+			var data = "";
+			g_loaded = true;
+
+			if (g_handstrType=="pbn")
+				data = pbnToJson(g_handstr);
+			else if (g_handstrType=="lin")
+				data = linToJson(g_handstr);
+			else if (g_handstrType=="dlm")
+				data = dlmToJson(g_handstr);
+
+			loadHands_1(data,"","",context);
+		}
+		else
+			loadTraveller_1("","","",context);
+}

@@ -1144,6 +1144,72 @@ function checkHigherScoringPairs(traveller,prow,direction)
 	return result;
 }
 
+function getPlayerAndRole(info,tline)
+{
+	var prole = {};
+	var found = false;
+	var tdirection = 1;
+	var declarer_pair = false;
+	var first = false;
+	var opp_pair;
+	var optNE = document.getElementById("pdiroptNE").checked;
+	var optNW = document.getElementById("pdiroptNW").checked;
+	var optSE = document.getElementById("pdiroptSE").checked;
+
+	if ((info.pair_number==tline.ns_pair_number)&&((info.direction==1)||info.singleWinner))
+	{
+		found = true;
+		tdirection = 1;
+		opp_pair = tline.ew_pair_number;
+
+		if ((tline.played_by=="N")||(tline.played_by=="S"))
+		{
+			declarer_pair = true;
+
+			if (((!info.singleWinner)&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optSE&&(tline.played_by=="S")))
+				first = true;
+		}
+		else if (((!info.singleWinner)&&(tline.played_by=="W"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="W"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="W"))||
+				((info.singleWinner)&&optSE&&(tline.played_by=="E")))
+			first = true;
+	}
+	else if ((info.pair_number==tline.ew_pair_number)&&((info.direction==2)||info.singleWinner))
+	{
+		found = true;
+		tdirection = 2;
+		opp_pair = tline.ns_pair_number;
+
+		if ((tline.played_by=="E")||(tline.played_by=="W"))
+		{
+			declarer_pair = true;
+
+			if (((!info.singleWinner)&&(tline.played_by=="E"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="E"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="W"))||
+				((info.singleWinner)&&optSE&&(tline.played_by=="E")))
+				first = true;
+		}
+		else if (((!info.singleWinner)&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optNE&&(tline.played_by=="N"))||
+				((info.singleWinner)&&optNW&&(tline.played_by=="S"))||
+				((info.singleWinner)&&optSE&&(tline.played_by=="N")))
+			first = true;
+	}
+
+	prole.found = found;
+	prole.tdirection = tdirection;
+	prole.declarer_pair = declarer_pair;
+	prole.first = first;
+	prole.opp_pair = opp_pair;
+
+	return prole;
+}
+
 function setupRanking(keepScrollSetting)
 {
 	g_sessionMode = "ranking";
@@ -1889,5 +1955,3 @@ function setupScorecard(keepScrollSetting)
 	$("#comparison").hide();
 	$("#checkListDiv").hide();
 }
-
-

@@ -2,7 +2,6 @@ function showTravellerRowButtons()
 {
 	// should return true if g_xml!=="" ?
 	// return (g_showAllControls);
-	return false;
 }
 
 function setupTraveller(index,active)
@@ -2269,5 +2268,130 @@ function reportBSOLNotSupported()
 	}
 }
 
+function setButtonColor()
+{
+	document.getElementById("ascorecard").style.backgroundColor = "";
+	document.getElementById("aranking").style.backgroundColor = "";
+	document.getElementById("atraveller").style.backgroundColor = "";
+	document.getElementById("acheck").style.backgroundColor = "";
 
+	if (g_sessionMode=="scorecard") document.getElementById("ascorecard").style.backgroundColor = "#BBBB88";
+	else if (g_sessionMode=="ranking") document.getElementById("aranking").style.backgroundColor = "#BBBB88";
+	else if (g_sessionMode=="traveller") document.getElementById("atraveller").style.backgroundColor = "#BBBB88";
+	else if (g_sessionMode=="check") document.getElementById("acheck").style.backgroundColor = "#BBBB88";
+}
+
+function showPlayAnalysis(bd)
+{
+	var ctx = g_scorecardContext[bd];
+	var data=checkHigherScoringPairs(ctx.tlines,ctx.row,ctx.direction);
+	setupResultReasons(ctx,data);
+	var index = getTindexByName(g_hands.boards,bd);
+	setupTraveller(index,false);
+
+	if ((typeof g_hands.boards[g_lastBindex].Played)!="undefined")
+		if (g_hands.boards[g_lastBindex].Played.length>1)
+			playLinContract(true,1);
+}
+
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
+function getDirectionForTline(tline,info)
+{
+}
+
+function setDefaultContracts()
+{
+	var i,j;
+	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
+
+	for (i=0;i<g_travellers.event.board.length;i++)
+	{
+		var bindex = getBoardIndex(i);
+
+		if (bindex==null)
+		{
+			var newindex = g_hands.boards.length;
+			g_hands.boards[newindex] = {};
+			g_hands.boards[newindex].board = "" + g_travellers.event.board[i].board_no;
+		}
+	}
+
+	for (j=0;j<g_hands.boards.length;j++)
+	{
+		var leadstr = getRequestedLeads(j);
+
+		if (leadstr!="") g_hands.boards[j].requestedLeads = leadstr;
+
+		var found = false;
+
+		for (i=0;i<g_travellers.event.board.length;i++)
+		{
+			if (g_travellers.event.board[i].board_no==g_hands.boards[j].board)
+			{
+				var tlineData = getTlineForPair(j,info);
+
+				if (tlineData!=null)
+				{
+					var tline = tlineData.tline;
+
+					if (!setHandRecordFromLin(j,tline))
+					{
+						g_hands.boards[j].Declarer = tline.played_by;
+						g_hands.boards[j].Contract = tline.contract;
+
+						var played = [];
+						var lead = leadCard(tline.lead).replace("10","T");
+
+						if (lead.length==2)
+							lead = lead.charAt(1) + lead.charAt(0);
+						else
+							lead = "  ";
+
+						played[0] = lead;
+						g_hands.boards[j].Played = played;
+						g_hands.boards[j].Bids = [];
+					}
+
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (!found)
+		{
+			delete g_hands.boards[j].Declarer;
+			delete g_hands.boards[j].Contract;
+		}
+	}
+}
+
+function needToAnalyse()
+{
+	for (var i=0;i<g_hands.boards.length;i++)
+	{
+		if (checkBoardValid(i))
+		{
+			if (((typeof g_hands.boards[i].DoubleDummyTricks)=="undefined")||(g_hands.boards[g_lastBindex].DoubleDummyTricks == "********************")||(g_hands.boards[g_lastBindex].DoubleDummyTricks == "--------------------"))
+				return true;
+
+			if (((typeof g_hands.boards[i].OptimumScore)=="undefined")||(g_hands.boards[i].OptimumScore==""))
+				return true;
+
+			if (g_travellers!=null)
+			{
+				getRequestedLeads(i);
+				if (g_travellersHaveLeads)
+					return true;
+			}
+		}
+	}
+	return false;
+}
 

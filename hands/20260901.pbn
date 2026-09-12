@@ -1,0 +1,486 @@
+% PBN 1.0
+% EXPORT
+%
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "1"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A98.T53.K6.KJT82 J.AQ98.AJT87.Q53 T432.J76.Q93.A76 KQ765.K42.542.94"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3NT  O  9 -400    12     1  0  8
+3NT  O  7  100    11     9  7  1
+2D   O 10 -130     7     2  2  6
+3D   O  8   50     6    10  4  4
+3S   W  7  100     3     4  7  1
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "2"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KQ43.A.43.KQT982 J2.KQ642.T62.AJ3 AT97.J9.KQ987.76 865.T8753.AJ5.54"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4S   W 11 -450    12     1  1  7
+4H   S  8 -200    11     9  8  0
+4S   O 10 -420     7     2  5  3
+4S   O 10 -420     6    10  5  3
+4S   O 11 -450     3     4  1  7
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "3"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:.T73.AKQJT6.J954 AKQ975.AJ842.9.7 T642.K9.8432.AKQ J83.Q65.75.T8632"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3S   W 10 -170    12     2  1  7
+4Sx  W  8  500     1    10  8  0
+3D   S 12  170     6     9  6  2
+3S   W 10 -170     8     3  1  7
+4S   W  9  100     7    11  4  4
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "4"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:A94.A8532.54.A94 76.QT96.AJT63.Q3 KQT832.74.K7.J76 J5.KJ.Q982.KT852"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4S   O  9  100    12     2  8  0
+3S   O  9 -140     1    10  5  3
+3S   O 10 -170     6     9  1  7
+3S   O  9 -140     8     3  5  3
+2S   O 10 -170     7    11  1  7
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "5"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:765.J6.KQ86.AT52 KQJT83.K3.T72.K9 2.T875.9543.J743 A94.AQ942.AJ.Q86"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4S   O 12 -480    12     3  2  6
+4S   O 11 -450     2    11  7  1
+4S   O 12 -480     7    10  2  6
+4S   O 11 -450     9     4  7  1
+4S   O 12 -480     8     1  2  6
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "6"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:AKQ9.982.42.9542 J43.74.AKT6.QJ83 82.QJT65.J873.T7 T765.AK3.Q95.AK6"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4Sx  N  9 -100    12     3  0  8
+3NT  N 10  430     2    11  6  2
+3NT  N 10  430     7    10  6  2
+3NT  N 10  430     9     4  6  2
+3NT  N  9  400     8     1  2  6
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "7"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:QJ4.KT63.K654.AJ AKT6.7.AQJ7.T842 72.Q54.932.97653 9853.AJ982.T8.KQ"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+1S   W 11 -200     6     7  2  6
+2H   O  9 -140    12     4  6  2
+2H   O  8 -110     3     1  8  0
+2NT  W 12 -240     8    11  0  8
+1NT  W 10 -180     9     2  4  4
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "8"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:AK.AKQ962.732.K9 4.873.KJ65.AT762 J2.JT54.A94.QJ83 QT987653..QT8.54"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+5H   W 11 -450     6     7  6  2
+6H   O 12 -980    12     4  0  8
+4H   W 11 -450     3     1  6  2
+4H   O 12 -480     8    11  2  6
+4H   W 11 -450     9     2  6  2
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "9"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KT4.A2.Q983.9865 873.K75.A7.KT432 52.QJT963.KJT2.J AQJ96.84.654.AQ7"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4Hx  S  9 -100     7     8  5  3
+3S   W  8  100     4     2  8  0
+3S   W 11 -200     9     1  1  7
+4Hx  S  9 -100    11     6  5  3
+3S   W 11 -200    10     3  1  7
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "10"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:7.752.J982.A9743 8542.K643.54.KQ8 KQT3.98.KQT7.J62 AJ96.AQJT.A63.T5"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+1NT  N  9  150     7     8  6  2
+3H   S  9  140     4     2  3  5
+4Sx  N 10  790     9     1  8  0
+3H   S  9  140    11     6  3  5
+4H   N  9 -100    10     3  0  8
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "11"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:52.A2.9532.AJ943 864.JT8.AJ7.T875 AKQ7.K93.KQ86.62 JT93.Q7654.T4.KQ"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3NT  N  8  -50    11     4  1  7
+5D   N 11  400     8     9  7  1
+1NT  N 10  180    12     6  4  4
+3NT  N  9  400    10     2  7  1
+3NT  N  8  -50     1     7  1  7
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "12"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:JT65.KQ2.K5.AJT9 987.A8.A872.Q854 K32.J73.T943.763 AQ4.T9654.QJ6.K2"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+1NT  N  6 -100    11     4  1  7
+2D   O  4  200     8     9  8  0
+1S   W  7  -80    12     6  4  4
+1NT  N  6 -100    10     2  1  7
+1H   S  8  110     1     7  6  2
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "13"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:JT6.6.QT8653.542 AK932.JT75.J9.K7 Q854.A983.74.AT9 7.KQ42.AK2.QJ863"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+1NT  W 11 -210     9    10  8  0
+4H   O 11 -650    12     7  0  8
+4H   O 10 -620     6     4  4  4
+4H   O 10 -620    11     3  4  4
+4H   O 10 -620     2     8  4  4
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "14"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:T.73.J9642.QT863 .AJT9864.T3.J542 QJ954.Q2.AQ875.9 AK87632.K5.K.AK7"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4H   S 11  450     9    10  7  1
+2H   S  9  140    12     7  2  6
+4H   S 11  450     6     4  7  1
+4H   S 10  420    11     3  4  4
+6H   S 11  -50     2     8  0  8
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "15"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:97.T983.QJT2.J96 AK84.KQJ62.9.Q75 Q6532.7.K764.KT8 JT.A54.A853.A432"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4H   W 10 -420     3     9  6  2
+4H   W 11 -450     2     6  1  7
+4H   W 10 -420    10    11  6  2
+4H   W 10 -420    12     8  6  2
+4H   W 11 -450     1     4  1  7
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "16"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:852.5432.J43.KQ7 6.KQ96.AT96.8432 JT94.J87.Q85.AJ9 AKQ73.AT.K72.T65"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3NT  N  9  400     3     9  5  3
+3NT  N 10  430     2     6  8  0
+1NT  N  9  150    10    11  0  8
+3NT  N  9  400    12     8  5  3
+2NT  N 10  180     1     4  2  6
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "17"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KJT5.652.7542.64 A73.Q.AQT983.873 Q2.KJ87.J6.AQJT9 9864.AT943.K.K52"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+2S   W  9 -140     4    10  0  8
+3D   O  9 -110     3     7  6  2
+3D   O  9 -110    11     1  6  2
+3D   O  9 -110    12     9  6  2
+3D   O 10 -130     8     6  2  6
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "18"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:J.A985.94.T98742 A7532.42.Q765.AJ QT984.J7.KJ3.653 K6.KQT63.AT82.KQ"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3NT  N  8 -100     4    10  6  2
+2H   N 10  170     3     7  8  0
+3NT  N  7 -200    11     1  2  6
+3NT  N  7 -200    12     9  2  6
+3NT  S  7 -200     8     6  2  6
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "19"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:JT97.763.9.KQT76 532.AK.AKQJ3.J42 AQ4.QJ8.T7652.A5 K86.T9542.84.983"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+1D   W  8  -90     3     6  1  7
+2NT  W  7  100     4     8  7  1
+2S   S  7  -50     1     2  4  4
+2D   W  7  100    12    10  7  1
+1D   W  8  -90     9     7  1  7
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "20"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:9874.A64.842.T87 AKJ62.Q.KQJT3.J6 Q3.J753.765.AQ43 T5.KT982.A9.K952"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3NT  S  9  600     3     6  2  6
+3NT  S 10  630     4     8  7  1
+3S   N  9  140     1     2  0  8
+3NT  S 10  630    12    10  7  1
+4S   N 10  620     9     7  4  4
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "21"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:J953.63.J652.872 KT82.AKT54.AT.96 64.QJ972.Q743.53 AQ7.8.K98.AKQJT4"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+3NT  W 13 -520    10     8  6  2
+6NT  O 13-1020     4     7  2  6
+6NT  O 13-1020     6     1  2  6
+5S   O 13 -510     2     3  8  0
+6NT  W 13-1020    12    11  2  6
+
+[Event "none"]
+[Site "?"]
+[Date "2026.09.01"]
+[Board "22"]
+[West "?"]
+[North "?"]
+[East "?"]
+[South "?"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:Q54.83.96543.Q92 A96.KQJT52.AQ.T7 JT.964.JT872.J85 K8732.A7.K.AK643"]
+[Scoring "MP"]
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+[ScoreTable "Con  De R Score   NS    EW   MP"]
+4H   S 13  510    10     8  1  7
+6H   S 12  980     4     7  4  4
+7H   S 13 1510     6     1  8  0
+6NT  N 12  990     2     3  6  2
+4H   S 13  510    12    11  1  7

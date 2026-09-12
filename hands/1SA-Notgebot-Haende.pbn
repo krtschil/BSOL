@@ -1,0 +1,335 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.116
+%Created: Fri Jan  9 20:09:21 2026 +0100
+%BCOptions Center GutterH GutterV PageHeader STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 4
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 4
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",16,700,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 200,200
+%HRTitleDate 0
+%HRTitleEvent ""
+%HRTitleSetID ""
+%HRTitleSetIDPrefix ""
+%HRTitleSite ""
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 300,300,300,300
+%PaperSize 1,2159,2794,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 1
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+%Translate "N-S" "NS"
+%Translate "E-W" "OW"
+%Translate "Lead" "Ausspiel"
+%Translate "% Deals" "Teiler %"
+%Translate "% Vul" "% in Gefahr"
+%Translate "North" "Nord"
+%Translate "East" "Ost"
+%Translate "South" "S&uuml;d"
+%Translate "None" "Keiner"
+%Translate "Both" "Alle"
+%Translate "J" "B"
+%Translate "Q" "D"
+%Translate "vs" "gg."
+%Translate "NT" "SA"
+%Translate "Pass" "Passe"
+%Translate "Dbl" "X"
+%Translate "Rdbl" "XX"
+%Translate "All pass" "Alle passen"
+%Translate "by" "von"
+%Translate "Trick" "Stich"
+%Translate "2nd" "2."
+%Translate "3rd" "3."
+%Translate "4th" "4."
+%Translate "Made %" "% erf&uuml;llt"
+%Translate "Down %" "% Faller"
+[Event "1SA-Notgebot"]
+[Site ""]
+[Date ""]
+[Board "1"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:98.AQT98.A5.AKJ4 QJT2.K65.98.Q765 765.J7.KQJT7.T98 AK43.432.6432.32"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result ""]
+{Nord zeigt einen starken Zweif&auml;rber (mind. 5-4 in Coeur und Treff). S&uuml;d sollte vorrangig sein double Coeur zeigen. Eine eigene Karo-Reizung
+ zeigt eine 6er-Farbe und verneint Fit sowohl in Coeur und Treff. Wegen des fehlenden Pik-Stoppers k&ouml;nnen weder
+ Nord noch S&uuml;d SA reizen.}
+[BCFlags "1f"]
+[Auction "N"]
+1H Pass 1NT Pass
+3C Pass 3H Pass
+4H AP
+[Play "E"]
+SQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:J3.AK6543.J98.K8 KQT4.Q987.K32.Q9 98..QT765.AT7652 A7652.JT2.A4.J43"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3C"]
+[Result ""]
+{Ost hat zwar beide Unterfarben, beide zu zeigen bedarf einer eigenen Konvention.
+Hier kann Ost mit dem 6er Treff diese reizen und West muss passen.}
+[BCFlags "1f"]
+[Auction "W"]
+1H Pass 1NT Pass
+2H Pass 3C AP
+[Play "S"]
+DA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:K32.AK987.KJ98.5 QJ54.QT54.A43.J4 987.6.Q2.KQT9876 AT6.J32.T765.A32"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3C"]
+[Result ""]
+{Nord hat weder in Couer noch in Karo einen Anschlu&szlig; f&uuml;r einen 7-Kartenfit und reizt deshalb seine eigene
+ lange Farbe. Er&ouml;ffner MUSS passen.}
+[BCFlags "1f"]
+[Auction "S"]
+1H Pass 1NT Pass
+2D Pass 3C AP
+[Play "E"]
+CA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:K6.AK543.JT98.A5 J87.QT9.KQ432.43 QT9.J.765.KQT987 A5432.8762.A.J62"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3C"]
+[Result ""]
+{West reizt einen billigen Zweif&auml;rber (max. ca. 15-16P). Da die eigenen Treffs sehr
+gut und lang sind, will Ost lieber Treff spielen. Er&ouml;ffner muss passen.}
+[BCFlags "1f"]
+[Auction "W"]
+1H Pass 1NT Pass
+2D Pass 3C AP
+[Play "S"]
+S3
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "5"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:AK543.7.AQ98.T98 QJT9.J43.K54.K75 2.KQT965.T76.QJ6 876.A82.J32.A432"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2H"]
+[Result ""]
+{S&uuml; reizt einen billigen Zweif&auml;rber. Mit einer guten 6er-L&auml;nge ohne Fit in Partners Farben reizt Nord seine 6er-L&auml;nge (passen w&auml;re auch eine Option, immerhin 4-3 Fit).}
+[BCFlags "1f"]
+[Auction "S"]
+1S Pass 1NT Pass
+2D Pass 2H AP
+[Play "E"]
+HA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "6"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:AKJT9.J54.AKQ9.7 Q65.A32.T54.KQ54 87.KQ986.J87.J86 432.T7.632.AT932"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result ""]
+{Ost reizt einen billigen Zweif&auml;rber im Sprung, zeigt also eine starke Hand (ca.
+ 17+). West h&auml;lt zwar die Coeurs, aber die Treffs sehen ziemlich offen aus, daher lieber
+ auf 3 Pik ausbessern, die Ost ins Vollspiel heben kann.}
+[BCFlags "1f"]
+[Auction "E"]
+1S Pass 1NT Pass
+3D Pass 3S Pass
+4S AP
+[Play "S"]
+CK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "7"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AQ987.8.KT98.A76 654.J65.A32.QJT5 T2.AK432.J76.432 KJ3.QT97.Q54.K98"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result ""]
+{Nord reizt einen billigen Zweif&auml;rber. S&uuml;d sollte sich davor h&uuml;ten, sein 5er Coeur zu
+ reizen, besser in 2 Pik ausbessern (sicherer 7-Karten-Fit, wohingegen in Coeur ein
+ Double oder sogar Single mehr als 50% Wahrscheinlichkeit hat).}
+[BCFlags "df"]
+[ScoreTableCaption "DD"]
+[Auction "N"]
+1S Pass 1NT Pass
+2D Pass 2S AP
+[Play "E"]
+CQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "8"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:AJT98.2.KJ98.A53 Q32.QT6.765.QJT9 76.KJ985.QT.K876 K54.A743.A432.42"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result ""]
+{Ost reizt einen billigen Zweif&auml;rber. West sollte sich davor h&uuml;ten, sein 5er Coeur zu
+ reizen, besser in 2Pik ausbessern (sicherer 7-Karten-Fit, wohingegen in Coeur ein
+ Double oder sogar Single mehr als 50% Wahrscheinlichkeit hat).}
+[BCFlags "1f"]
+[Auction "E"]
+1S Pass 1NT Pass
+2D Pass 2S AP
+[Play "S"]
+CQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "9"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:QT987.K5.A6.AK95 K54.A9432.T875.3 6.QT87.KQ9.Q8764 AJ32.J6.J432.JT2"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3N"]
+[Result ""]
+{Nord reizt einen billigen Zweif&auml;rber. S&uuml;d hat Maximum und Treffs dazu, damit kann er
+Er&ouml;ffner einladen. Nord hat Halt in den Restfarben und kann bequem 3 SA ansagen.}
+[BCFlags "1f"]
+[Auction "N"]
+1S Pass 1NT Pass
+2C Pass 3C Pass
+3NT AP
+[Play "W"]
+D2
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "10"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:KJT762.K.J52.A43 Q53.A4.K863.J982 A8.QJT9532.T9.T6 94.876.AQ74.KQ75"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2S"]
+[Result ""]
+{Ost sollte sich davor h&uuml;ten, in der ersten Reizrunde die Coeurs ins Rennen zu
+ werfen, weder mit 2 Coeur noch mit 3 Coeur (zu wenige Punkte).}
+[BCFlags "1f"]
+[Auction "W"]
+1S Pass 1NT Pass
+2S AP
+[Play "N"]
+D6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "11"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:T6.KJT76.AQT9.QT Q532.Q8.J82.A842 KJ7.93.K65.J9765 A984.A542.743.K3"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2H"]
+[Result ""]
+{Ost reizt einen billigen Zweif&auml;rber. West muss in 2 Coeur ausbessern. Bei gleicher
+ Gesamtl&auml;nge in Er&ouml;ffners Farben wird der Oberfarbe der Vorzug gegeben.}
+[BCFlags "1f"]
+[Auction "E"]
+1H Pass 1NT Pass
+2D Pass 2H AP

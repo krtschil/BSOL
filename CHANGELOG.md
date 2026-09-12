@@ -2,7 +2,7 @@
 
 ## Updates
 
-### ddummy6.js (recommended by Claude)
+### Legacy refactoring notes
 
 - Added [DOMPurify](https://github.com/cure53/dompurify) functionality to sanitize strings for `.innerHTML` usage
 - Modernized `Object` and `Array` creation

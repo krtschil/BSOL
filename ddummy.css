@@ -1538,6 +1538,16 @@ table.ranking th {
   color: var(--danger);
 }
 
+/* Keep the board and play view in its original, softer display type. */
+#board,
+#board td,
+#board div,
+#board button,
+#boardNumber,
+#currentPosition {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+
 .inlr1 {
   height:25px;
   width:98%;

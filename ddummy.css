@@ -139,6 +139,17 @@ fieldset#data > button {
     margin:0;
 }
 
+fieldset#data > form > input[type="button"],
+fieldset#data > button {
+    font-size:13px;
+    padding-left:2px;
+    padding-right:2px;
+}
+
+#data > #showGeneralHelp {
+    margin-left:4px;
+}
+
 @media (max-width:600px) {
   #abuttons-content {
     margin-left:12px;

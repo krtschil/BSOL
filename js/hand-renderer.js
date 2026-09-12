@@ -1,3 +1,20 @@
+function buttclick(pthis)
+{
+	var str = pthis.id.replace("button","");
+	var suit = Number(str.charAt(2));
+	var cd;
+
+	if (str.length==4)
+		cd = Number(str.charAt(3));
+	else
+		cd = Number(str.substring(3));
+
+	if (g_handEntryMode==0)
+		handlePlayCardClick(pthis);
+	else
+		handleHandEntryCardClick(suit,cd);
+}
+
 function createMiniHandString(hand,index)
 {
 		// Create a string containing the hand for North, South, East, or West, to go into the mini hand diagram

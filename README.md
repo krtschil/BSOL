@@ -15,6 +15,7 @@ Code has been split into several files:
 - Import and XML conversion are in `js/import.js` and `js/xml.js`
 - Double-dummy worker and WebAssembly files are in `js/worker/`
 - The browser-only XML conversion smoke test is `test/xml-smoke.html`
+- HTML structure is checked with `npm run validate:html`
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:

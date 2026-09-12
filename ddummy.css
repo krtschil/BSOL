@@ -888,6 +888,81 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
   vertical-align:middle;
 }
 
+/*
+  Keep dialogs inside the viewport on narrow screens. The desktop layout
+  intentionally keeps its historical positions and dimensions.
+*/
+@media (max-width: 600px) {
+  #optionsBox,
+  #settings,
+  #generalHelp,
+  #krHelpText,
+  #settingsHelp,
+  #resultReasons,
+  #playMatchContractHelp,
+  #editHelp,
+  #playHelp,
+  #commandHelp,
+  #popup_box,
+  #progressDiv,
+  #toolsSubMenu {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 24px);
+    box-sizing: border-box;
+    overflow: auto;
+  }
+
+  #optionsBox > table,
+  #settings > table {
+    width: 100%;
+  }
+
+  #optionsBox .options,
+  #optionsBox .options tbody,
+  #optionsBox .options tr,
+  #optionsBox .options td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #optionsBox .options td {
+    white-space: normal;
+    padding: 4px;
+  }
+
+  #optionsBox .options br {
+    display: none;
+  }
+
+  #optionsBox .options input[type="radio"] {
+    margin: 8px 6px 8px 0;
+  }
+
+  #toolsSubMenu button {
+    display: block;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    margin-top: 5px;
+  }
+
+  #progressDiv {
+    text-align: center;
+  }
+
+  #progressBarBox {
+    float: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 #krLabel {
   cursor:pointer;
   vertical-align:middle;

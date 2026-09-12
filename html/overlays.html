@@ -1,0 +1,405 @@
+<div id="allBoards">
+	<div id="scrollDiv">
+		<table id="travellers">
+			<tr>
+                <td class="t-center">
+                    <span class="font-16">Scroll through boards and tap on a board number to make it the active board</span>
+                </td>
+			</tr>
+		</table>
+	</div>
+	<div id="allBoards-d">
+		<table id="allBoards-t">
+			<tr class="h-20">
+                <td class="t-center">
+                    <span class="font-bold">Scroll through boards and tap on a board number to make it the active board</span>
+                </td>
+			<td class="t-right v-middle">
+				<div id="progressBox"><div id="progress"></div></div>
+				<div class="f-right"><button type="button" id="analyseAll" class="menuButton">Alles analysieren</button></div>
+			</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div id="progressDiv">
+	<table id="progressDiv-t">
+		<tr class="h-20">
+			<td class="t-center">
+				<div id="progressBarBox">
+                    <div id="progressBar"></div>
+                </div>
+                <div class="f-right"></div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="popup_box">
+</div>
+
+<div id="spinner">
+	<img src="pics/spinner.gif" alt="loading">
+</div>
+
+<div id="largeSpinner">
+	<img src="pics/largeSpin.gif" alt="loading">
+</div>
+
+<div id="commandHelp">
+</div>
+
+<div id="playHelp">
+</div>
+
+<div id="editHelp">
+</div>
+
+<div id="playMatchContractHelp">
+</div>
+
+<div id="resultReasons">
+</div>
+
+<div id="settingsHelp">
+</div>
+
+<div id="krHelpText">
+</div>
+
+<div id="generalHelp">
+</div>
+
+<div id="settings">
+	<table>
+        <tr>
+            <th><span id="settingsT" class="font-bold font-16">Einstellungen:</span></th>
+        </tr>
+        <tr>
+            <td class="b0p10">
+            <div id="runremote">
+                    <label id="mkuseremoteLabel"><input id="mkuseremote" type="checkbox" name="mkuseremote" value="1">Double Dummy auf dem Server berechnen (steht nicht zur Verfügung)</label><br>
+            </div>
+            <input id="mkauto1" type="checkbox" name="autoOptions" value="1" checked >
+            <label id="mkautolab1" for="mkauto1" >Alle Boards automatisch analysieren</label>
+            </td>
+        </tr>
+        <tr>
+            <td><button type="button" id="settingsHide">Schließen</button><button type="button" id="showSettingsHelp">Hilfe</button></td>
+        </tr>
+	</table>
+</div>
+
+<div id="optionsBox">
+	<table class="options">
+        <tr class="inlr10">
+            <td class="b0p10">&nbsp;&nbsp;&nbsp;&nbsp;<span id="nsshow_playable">N/S: Anzeige für spielbare Karten:</span>
+                <p>
+                    <br>
+                    <input id="nsrad1" type="radio" name="NSOptions" value="1" checked ><label id="nslab1" for="nsrad1" >Zahlen und Farben</label>
+                    <br>
+                    <input id="nsrad2" type="radio" name="NSOptions" value="2" ><label id="nslab2" for="nsrad2" >Nur Farben</label>
+                    <br>
+                    <input id="nsrad3" type="radio" name="NSOptions" value="3" ><label id="nslab3" for="nsrad3" >Weder Farben noch Zahlen</label>
+                    <br>
+                </p>
+            </td>
+            <td class="b0p10">&nbsp;&nbsp;&nbsp;&nbsp;<span id="ewshow_playable">O/W: Anzeige für spielbare Karten:</span>
+                <p>
+                    <br>
+                    <input id="ewrad1" type="radio" name="EWOptions" value="1" checked ><label id="ewlab1" for="ewrad1" >Zahlen und Farben</label>
+                    <br>
+                    <input id="ewrad2" type="radio" name="EWOptions" value="2" ><label id="ewlab2" for="ewrad2" >Nur Farben</label>
+                    <br>
+                    <input id="ewrad3" type="radio" name="EWOptions" value="3" ><label id="ewlab3" for="ewrad3" >Weder Farben noch Zahlen</label>
+                    <br>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>&nbsp;&nbsp;<span id="table_makeable">Tabelle der machbaren Kontrakte:</span>
+                <p>
+                    <br>
+                    <input id="mkrad1" type="radio" name="mkOptions" value="1" checked >
+                    <label id="mklab1" for="mkrad1" >Zeige machbare Kontrakte</label>
+                    <br>
+                    <input id="mkrad2" type="radio" name="mkOptions" value="2" >
+                    <label id="mklab2" for="mkrad2" >Zeige Stichzahl</label>
+                    <br>
+                </p>
+            </td>
+            <td>
+                <label id="shorts">Kürzel für die Figuren:</label>
+                 <select title="Select honour card set" id="honourCardSet">
+                    <option value="JQKA">JQKA</option>
+                    <option value="BDKA">BDKA</option>
+                    <option value="VDRA">VDRA</option>
+                    <option value="BVHA">BVHA</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <table class="inlr11">
+        <tr>
+            <td class="t-left">
+                <br>
+                <button type="button" id="optionsClose">Schließen</button>&nbsp;&nbsp;<button type="button" id="optionsSave">Als Standard speichern</button>
+                <span id="optionsSaveFeedback">Auswahl gespeichert</span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="toolsSubMenu">
+	<h2 id="toolsChoose">Wähle aus:</h2>
+	<button type="button" id="analyseAllBoards"><span class="font-bold">Alle Boards analysieren</span></button><br>
+	<button type="button" id="showPlayerAcc"><span class="font-bold">Matrix zur Spielgenauigkeit</span></button>
+	<button type="button" id="showSettings"><span class="font-bold">Einstellungen...</span></button>
+	<button type="button" id="showReleaseHistory"><span class="font-bold">Versionshinweise...</span></button>
+	<br><br>
+	<button type="button" id="toolsSubMenuClose" ><span  class="font-bold">Schließen</span></button>
+</div>
+
+<div id="rcheckdiv">
+  <input type="checkbox" id="rankcheck" value="checkbox"><label id="rankcheck1" for="rankcheck" class="font-bold">Tabellen nach Paarnummer sortieren</label>
+</div>
+
+<div id="ranking">
+	<table  id="rankingNS"  class="ranking">
+        <thead class="t-center">
+            <tr>
+                <th id="ranking1">Pos</th>
+                <th id="ranking2">Paar</th>
+                <th id="ranking3">N/S Spielernamen</th>
+                <th colspan="2">%</th>
+                <th id="rankingDD">Dbl Dummy</th>
+            </tr>
+        </thead>
+	</table>
+</div>
+
+<div id="scores">
+	<div class="f-l-c">
+		<table  id="scoring" class="ranking">
+            <thead class="t-center">
+                <tr>
+                    <th id="scPlayerNames" colspan="13">Namen</th>
+                </tr>
+                <tr>
+                    <th id="scoring1">Bd</th>
+                    <th id="scoring2">Vs</th>
+                    <th id="scoring3">Gebot</th>
+                    <th id="scoring4">von</th>
+                    <th id="scoring5">Ausspiel</th>
+                    <th id="scoring6" colspan="2">Stiche</th>
+                    <th id="scoring7" colspan="3">DD Stiche(ETF)</th>
+                    <th id="scoring8" colspan="3">Prozent</th>
+                </tr>
+            </thead>
+		</table>
+	</div>
+	<div class="inlr12">
+		<div id="player_direction">
+			<div id="first_player_name">Setze Sitzposition für </div>
+            <div id="optNEdiv"><label><input id="pdiroptNE" type="radio" name="pdirgroup" value="radio" checked>N&amp;O</label></div>
+            <div id="optNWdiv"><label><input id="pdiroptNW" type="radio" name="pdirgroup" value="radio">N&amp;W</label></div>
+            <div id="optSEdiv"><label><input id="pdiroptSE" type="radio" name="pdirgroup" value="radio">S&amp;O</label></div>
+		</div>
+		<div class="f-l-c">
+			<table  id="scoring_summary" class="ranking">
+				<tr>
+                    <th id="scoring_summary1" colspan="2">Summary</th>
+                </tr>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div id="checkListDiv">
+	<div class="f-left">
+		<table id="checkList" class="ranking">
+			<tr>
+                <th>Bd</th>
+                <th>NS</th>
+                <th>OW</th>
+                <th>Gebot</th>
+                <th>von</th>
+                <th>Ausspiel</th>
+                <th>Stiche</th>
+                <th>Kommentar</th>
+			</tr>
+		</table>
+	</div>
+	<div id="checkTravellerDiv">
+		<div class="f-left">
+			<table id="checkTraveller" class="ranking">
+				<tr>
+                    <th>NS</th>
+                    <th>OW</th>
+                    <th>Gebot</th>
+                    <th>von</th>
+                    <th>Ausspiel</th>
+                    <th>Stiche</th>
+				</tr>
+			</table>
+		</div>
+		<div id="checkBoard">
+		</div>
+	</div>
+</div>
+
+<div id="comparison">
+	<div id="compSubHeading"></div>
+	<br>
+	<div id="percentValue"></div>
+	<div id="ourPercentage">
+        <div id="pbar"></div>
+	</div>
+	<br>
+	<div id="comparisonText"></div>
+	<br>
+	<div class="inlr13">
+	  <input type="checkbox" id="cfcheck" value="checkbox" checked><label for="cfcheck" class="font-bold">Zeige Tabelle der Kontrakthäufigkeiten</label>
+	</div>
+	<table id="travandhand">
+		<tr>
+            <td colspan="2">
+                <table id="contractTable">
+                    <tr>
+                        <td id="contractTable1">Kontrakt</td>
+                        <td id="contractTable2">Alleinspieler</td>
+                        <td id="contractTable3">Frequenz</td>
+                        <td id="contractTable4">Durchschnitt %</td>
+                    </tr>
+                </table>
+                <br>
+            </td>
+        </tr>
+		<tr>
+            <td class="v-top">
+                <table id="travellerTable" class="ranking">
+                    <tr>
+                        <th id="travellerTable1"  colspan="2">Paare</th>
+                        <th id="travellerTable2"  colspan="3">Kontrakt</th>
+                        <th id="travellerTable3"  colspan="2">Zu erfüllen</th>
+                        <th id="travellerTable4"  colspan="3">Double Dummy</th>
+                        <th id="travellerTable5" >Anschrift</th>
+                        <th id="travellerTable6"  colspan="3">Prozent</th>
+                    </tr>
+                    <tr>
+                        <th id="travellerTable7" >NS</th>
+                        <th id="travellerTable8" >OW</th>
+
+                        <th id="travellerTable9" >Kontr</th>
+                        <th id="travellerTable10" >von</th>
+                        <th id="travellerTable11" >Aussp</th>
+
+                        <th id="travellerTable12" >Stiche</th>
+                        <th id="travellerTable13" >Über</th>
+
+                        <th id="travellerTable14" >Ziel</th>
+                        <th id="travellerTable15" colspan="2">Erfüllt</th>
+
+                        <th id="travellerTable16" >(NS)</th>
+
+                        <th id="travellerTable17" >NS</th>
+                        <th></th>
+                        <th id="travellerTable18" >OW</th>
+                    </tr>
+                </table>
+            </td>
+		    <td class="v-top">
+                <table class="inlr14">
+                    <tr>
+                        <td>
+                            <table id="minihand">
+                                <tr>
+                                    <td class="width-33" id="miniDlr"></td>
+                                    <td id="miniNorth" class="width-33"></td>
+                                    <td class="width-33"></td>
+                                </tr>
+                                <tr>
+                                    <td id="miniWest"></td>
+                                    <td></td>
+                                    <td id="miniEast"></td>
+                                </tr>
+                                <tr>
+                                    <td class="width-33">
+                                        <table id="miniPoints" class="pointsTable">
+                                            <tr>
+                                                <td class="width-33"></td>
+                                                <td class="width-33 v-bottom t-center"></td>
+                                                <td class="width-33"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="t-right v-middle"></td>
+                                                <td></td>
+                                                <td class="t-left v-middle"></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="v-top t-center"></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td id="miniSouth"></td>
+                                    <td class="width-33"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="t-center">
+                            <table id="miniMakeableContracts" class="mc_small">
+                                <tr>
+                                    <td></td>
+                                    <td>&#9827;</td>
+                                    <td><span class="color-red">&#9830;</span></td>
+                                    <td><span class="color-red">&#9829;</span></td>
+                                    <td>&#9824;</td>
+                                    <td>NT</td>
+                                </tr>
+                                <tr>
+                                    <td>N</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>S</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>E</td>
+                                    <td>-</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>W</td>
+                                    <td>-</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                            </table>
+                            </td>
+                        </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+

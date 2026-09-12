@@ -16,6 +16,7 @@ Code has been split into several files:
 - Double-dummy worker and WebAssembly files are in `js/worker/`
 - The browser-only XML conversion smoke test is `test/xml-smoke.html`
 - HTML structure is checked with `npm run validate:html`
+- The static `index.html` is assembled from the fragments in `html/` with `npm run build:html`
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:

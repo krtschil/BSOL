@@ -2,11 +2,9 @@
   "name": "bsol-regression-tests",
   "private": true,
   "scripts": {
+    "build:html": "node scripts/build-html.js",
     "test": "node --test test/*.test.js",
     "validate:html": "html-validate index.html"
-  },
-  "devDependencies": {
-    "html-validate": "^9.0.0"
   },
   "devDependencies": {
     "html-validate": "^9.7.1"

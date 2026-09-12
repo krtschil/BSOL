@@ -464,6 +464,19 @@ function showForwardPlay()
 	} catch (err) {};
 }
 
+function handlePlayCardClick(pthis)
+{
+	var str = pthis.id.replace("button","");
+
+	if (requestPending())
+		return;
+	else
+		setRequestTimeout(true);
+
+	spinner(pthis);
+	callddd(str.substring(0,2));
+}
+
 function calldds(str)
 {
 	var board = g_hands.boards[g_lastBindex];

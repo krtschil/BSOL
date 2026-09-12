@@ -125,12 +125,6 @@ var cacheTimeout = 300000;			// Limit in milliseconds on how long PBN and json a
 
 function buttclick(pthis)
 {
-		// When a button is clicked on a playable card this function send the card played to the server which will
-		// then update the current position and return a json string containing it.
-
-	var cards = "23456789TJQKA";
-	var suits = "SHDC";
-
 	var str = pthis.id.replace("button","");
 	var suit = Number(str.charAt(2));
 	var cd;
@@ -141,97 +135,7 @@ function buttclick(pthis)
 		cd = Number(str.substring(3));
 
 	if (g_handEntryMode==0)
-	{
-		str = str.substring(0,2);
-
-		if (requestPending())
-			return;	// Don't allow while there is a request in progress.
-		else
-			setRequestTimeout(true);
-
-/*		for (var i=0;i<4;i++)
-		{
-			var cstr = suits[i] + ": ";
-
-			for (var j=0;j<13;j++)
-			{
-				if (g_inactiveCards[i][j]==0)
-					cstr += cards[j];
-			}
-
-			alert(cstr);
-		}*/
-
-		spinner(pthis);
-		callddd(str);
-	}
+		handlePlayCardClick(pthis);
 	else
-	{
-		var count;
-
-			// Check number of cards already allocated to this quadrant.
-		if ((count = countAllocated(g_inputDir))<13)
-		{
-            clearMakeableOnInputBoard();
-			count++;
-			g_playableCards[suit][cd] = -1;
-			g_cardQuadrant[suit][cd] = g_inputDir;
-
-			var nextdir = g_inputDir;
-			var i;
-
-			if (count==13)
-			{
-				for (i=0;i<4;i++)
-				{
-					if (nextdir==3)
-						nextdir = 0;
-					else
-						nextdir++;
-
-					if (countAllocated(nextdir)==0) break;	// Found an empty quadrant
-				}
-
-				if (countAllocated(nextdir)==0)
-				{
-					if (13==countUnallocated())	// Allocate all remaining cards to this quadrant
-					{
-						selectQuadrant(nextdir);
-
-						for (i=0;i<4;i++)
-						{
-							for (j=0;j<13;j++)
-							{
-								if (g_playableCards[i][j]>=0)
-								{
-									g_playableCards[i][j] = -1;
-									g_cardQuadrant[i][j] = nextdir;
-								}
-							}
-						}
-
-						deselectCurrentDir(g_inputDir);
-						exitHandEntryMode();
-						return;
-					}
-
-					selectQuadrant(nextdir);
-				}
-/*				else	// All quadrants are full, so exit edit mode
-				{
-					deselectCurrentDir(g_inputDir);
-					processHandEntry();
-					exitHandEntryMode();
-				}*/
-			}
-			processHandEntry();
-		}
-		else
-		{
-			var compass = ["North","East","South","West"];
-			displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">13 Cards already allocated to " + compass[g_inputDir] + "</span>");
-		}
-	}
-
-	g_stopPropagation = 1;
+		handleHandEntryCardClick(suit,cd);
 }

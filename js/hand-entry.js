@@ -538,4 +538,68 @@ function selectQuadrant(index)
 			processHandEntry();
 		}
 	}
+
 }
+
+function handleHandEntryCardClick(suit,cd)
+	{
+		var count;
+
+		if ((count = countAllocated(g_inputDir))<13)
+		{
+			clearMakeableOnInputBoard();
+			count++;
+			g_playableCards[suit][cd] = -1;
+			g_cardQuadrant[suit][cd] = g_inputDir;
+
+			var nextdir = g_inputDir;
+			var i;
+
+			if (count==13)
+			{
+				for (i=0;i<4;i++)
+				{
+					if (nextdir==3)
+						nextdir = 0;
+					else
+						nextdir++;
+
+					if (countAllocated(nextdir)==0) break;
+				}
+
+				if (countAllocated(nextdir)==0)
+				{
+					if (13==countUnallocated())
+					{
+						selectQuadrant(nextdir);
+
+						for (i=0;i<4;i++)
+						{
+							for (var j=0;j<13;j++)
+							{
+								if (g_playableCards[i][j]>=0)
+								{
+									g_playableCards[i][j] = -1;
+									g_cardQuadrant[i][j] = nextdir;
+								}
+							}
+						}
+
+						deselectCurrentDir(g_inputDir);
+						exitHandEntryMode();
+						return;
+					}
+
+					selectQuadrant(nextdir);
+				}
+			}
+			processHandEntry();
+		}
+		else
+		{
+			var compass = ["North","East","South","West"];
+			displayError(document.getElementById("boardNumber"),"<span style=\"font-size:18px;background-color:#FFFFEE;padding:10px;border:1px;border-color:black;\">13 Cards already allocated to " + compass[g_inputDir] + "</span>");
+		}
+
+		g_stopPropagation = 1;
+	}

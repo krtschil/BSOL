@@ -787,9 +787,85 @@ async function readClipboard()
 					: "Clipboard does not contain PBN/LIN/DLM data");
 			}
 		}
+
 	}
 	catch (err)
 	{
 		console.error("Failed to read clipboard: ", err);
 	}
 }
+
+function createEmptyBoard()
+		{
+			startup();
+			var result = {};
+			var board = {};
+			board.board = "1";
+			board.Vulnerable = "None";
+			board.Dealer = "N";
+			board.Deal = ["...","...","...","..."];
+			board.DoubleDummyTricks = "********************";
+			result.boards = [];
+			result.boards.push(board);
+
+			buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
+		}
+
+		function readText(file)
+		{
+			const reader = new FileReader();
+			reader.addEventListener(
+				"load",
+				(e) => {
+					var result = {};
+					result.handstr = e.target.result;
+
+					var filename = file.name.toUpperCase();
+
+					if (filename.endsWith(".PBN"))
+						result.handstrType = "pbn";
+					else if (filename.endsWith(".LIN"))
+						result.handstrType = "lin";
+					else
+						result.handstrType = "dlm";
+
+					result.board=1;
+
+					if (result!="")
+						buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
+				},
+				false,
+			);
+
+			reader.readAsText(file);
+		}
+
+		function handleLoadFileSelect(evt)
+		{
+			var files = evt.target.files;
+
+			if (files.length>0)
+			{
+				var infile = files[0];
+				if (infile.name.toUpperCase().endsWith(".PBN")||infile.name.toUpperCase().endsWith(".LIN")||infile.name.toUpperCase().endsWith(".DLM"))
+				{
+					readText(infile);
+					evt.target.value = null;
+					let fn = document.getElementById("filename");
+					let tmp = "<br>(" + infile.name +")";
+					const clean = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
+					fn.replaceChildren(clean);
+				}
+				else
+				{
+					switch(language)
+					{
+						case "de":
+							alert("Keine PBN, LIN, oder DLM Datei");
+							break;
+						default:
+							alert("Not a PBN, LIN, or DLM file");
+					}
+				}
+			}
+		}

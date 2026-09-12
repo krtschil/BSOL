@@ -589,3 +589,199 @@ function showNewFeaturesNotice()
 	} catch (err) {};
 }
 
+function setDisplaySizing()
+{
+	var dim = "800#480";
+	dim = dim.split("#");
+
+	var width,height;
+
+		// Default settings - for windowed desktop systems.
+	width = dim[0];
+	height = dim[1];
+	height = ((800*height)/width) -17 - 25; // allow for table padding and buttons below
+	g_sectionHeight = height/3;
+
+	var ismobi = false;
+
+	if (navigator.userAgent!="undefined")
+		ismobi = /mobile/i.test(navigator.userAgent) && !/ipad|tablet/i.test(navigator.userAgent); // if true, it's a phone rather than PC or tablet
+
+	g_isMobi = ismobi;
+
+	var defaultHeight = 480 - 17 - 25;
+
+//	if ((ismobi=="Mobi")|(ismobi=="Android"))
+	{
+		var screen_width = screen.availWidth;
+		var screen_height = screen.availHeight;
+
+		if ((screen_width!="undefined")&&(screen_height!="undefined"))
+		{
+			height = screen_height;
+			width = screen_width;
+
+				// Sanity check
+			var ratio = width/height;
+
+			if (ratio<1.66) height = width/1.66
+
+	/*		if (ratio>1.666)	// If ratio is lower than 1.666 use default values for height and width
+			{
+				if (ratio>1.78)	// BSOL window won't look right at very high aspect ratio, so use defaults instead.
+				{
+					width=800;
+					height=450;
+				}
+			}*/
+
+			if (width>height)
+				height = ((800*height)/width) -17 - 80; // allow for table padding and buttons below
+			else	// Use the defaults
+			{
+				height = defaultHeight;
+			}
+
+			g_sectionHeight = Math.floor(height/3);
+		}
+	}
+
+	var buttHeight = Math.floor((g_sectionHeight/4)) + "px";
+	var vulBarHeight = Math.floor(((20*height)/defaultHeight));
+	g_vulBarLength = Math.floor((g_sectionHeight-2*vulBarHeight));
+
+	document.getElementById("northHand").style.height = g_sectionHeight + "px";
+	document.getElementById("westHand").style.height = g_sectionHeight + "px";
+	document.getElementById("southHand").style.height = g_sectionHeight + "px";
+	document.getElementById("wvul").style.height = (g_sectionHeight-2*vulBarHeight) + "px";	// Increase height of vulnerability bar to match new table height.
+	document.getElementById("wvul").style.width = vulBarHeight + "px";	// Increase height of vulnerability bar to match new table height
+	document.getElementById("nvul").style.width = g_vulBarLength + "px";	// Set length of vulnerability bar
+	document.getElementById("svul").style.width = g_vulBarLength + "px";	// Set length of vulnerability bar
+	document.getElementById("vul").style.height = g_sectionHeight + "px";	// Increase width of table centre to match new table height.
+	document.getElementById("vul").style.width = g_sectionHeight + "px";	// Increase width of table centre to match new table height.
+
+	for (var i=0;i<3;i++)
+	{
+		document.getElementById("vul").rows[i].cells[0].style.width = vulBarHeight + "px";
+		document.getElementById("vul").rows[i].cells[2].style.width = vulBarHeight + "px";
+	}
+
+
+	var table = document.getElementById("vul");
+	var rows = table.rows;
+	rows[0].style.height = vulBarHeight + "px";
+	rows[0].cells[0].style.height = vulBarHeight + "px";
+	rows[2].style.height = vulBarHeight + "px";
+	rows[2].cells[0].style.height = vulBarHeight + "px";
+	document.getElementById("nvul").style.height = vulBarHeight + "px";
+	document.getElementById("svul").style.height = vulBarHeight + "px";
+
+	g_boardNumberFontSize = Math.floor(((48*height)/defaultHeight)) + "px";
+	g_fontRatio = height/defaultHeight;
+
+	document.getElementById("scrollDiv").style.height = (height + 10) + "px";
+
+	var nodes = document.getElementsByClassName("blankButton");
+
+	var i;
+
+	for (i=0;i<nodes.length;i++)
+	{
+		nodes[i].style.height = buttHeight;
+	}
+
+	if (g_isMobi)
+		g_namSize = g_sectionHeight/9 + "px";
+	else
+		g_namSize = g_sectionHeight/10 + "px";
+
+	var namstr = document.getElementById("namstr");
+
+	if (namstr!=null)
+		namstr.style.fontSize = g_namSize;
+
+	var bidtable = document.getElementById("bidding");
+	var biddingHeader = document.getElementById("biddingHeader");
+
+	if (g_isMobi)
+		g_bidFontSize = eval(Math.floor(g_sectionHeight/8)+3) + "px";
+	else
+		g_bidFontSize = eval(Math.floor(g_sectionHeight/10)+3) + "px";
+
+	if (bidtable!=null)
+	{
+		for (var i=0;i<bidtable.rows.length;i++)
+		{
+			var row = bidtable.rows[i];
+
+			for (var j=0;j<row.cells.length;j++)
+				row.cells[j].style.fontSize = g_bidFontSize;
+		}
+
+		var row = biddingHeader.rows[0];
+
+		for (var i=0;i<row.cells.length;i++)
+			row.cells[i].style.fontSize = g_sectionHeight/8 + "px";
+
+		document.getElementById("biddingContent").style.height = 3*g_sectionHeight/5 + "px";
+	}
+
+	var optFontSize = Math.floor(g_sectionHeight/7) + "px";
+	var lottFontSize = Math.floor(g_sectionHeight/9) + "px";
+
+	var optimumStr = document.getElementById("optStr");
+
+	if (optimumStr!=null) optimumStr.style.fontSize = optFontSize;
+
+	var lottStr = document.getElementById("lott");
+
+	if (lottStr!=null) lottStr.style.fontSize = lottFontSize;
+
+	g_dealerFontSize = Math.floor(16*g_fontRatio);
+
+	var dealerEl = document.getElementById("dealerChar");
+
+	if (dealerEl!=null)
+		dealerEl.style.fontSize = g_dealerFontSize + "px";
+
+	g_urqButtonHeight = Math.floor(g_sectionHeight/5) + "px";
+	g_urqButtFontSize = Math.floor(g_textBratio*0.8*g_sectionHeight/6) + "px";
+
+	var linplay = document.getElementById("linPlay");
+
+	if (linplay!=null)
+	{
+		document.getElementById("prevrow").style.height = g_urqButtonHeight;
+		document.getElementById("nextrow").style.height = g_urqButtonHeight;
+		document.getElementById("accbutton").style.height = g_urqButtonHeight;
+		document.getElementById("linPlay").style.height = g_urqButtonHeight;
+		document.getElementById("matchContractHelp").style.height = g_urqButtonHeight;
+		document.getElementById("prevRowButtFontSize").style.fontSize = g_urqButtFontSize;
+		document.getElementById("nextRowButtFontSize").style.fontSize = g_urqButtFontSize;
+		document.getElementById("accButtFontSize").style.fontSize = g_urqButtFontSize;
+		document.getElementById("linPlayButtFontSize").style.fontSize = g_urqButtFontSize;
+		document.getElementById("matchContractHelpButtFontSize").style.fontSize = g_urqButtFontSize;
+	}
+
+	g_scoreFontSize = g_sectionHeight/8 + "px";
+
+	var scorespan = document.getElementById("scoreSpan");
+
+	if (scorespan!=null) scorespan.style.fontSize = g_scoreFontSize;
+
+	var vul = document.getElementById("setVul");
+
+	if (vul!=null) vul.style.minWidth = g_vulBarLength + "px";
+
+	var dlr = document.getElementById("setDealer");
+
+	if (dlr!=null) dlr.style.minWidth = g_vulBarLength + "px";
+}
+
+function orientationChanged()
+{
+	setDisplaySizing();
+	if (g_handEntryMode==0) document.getElementById("boardNumber").innerHTML = "<span style=\"font-size:" + Math.floor(g_boardNumberFontSize) + ";font-weight:normal;\">" + makeBoardNameString(g_hands.boards[g_lastBindex].board) + "</span>";
+	displayHands();
+	redrawMCTable(true);
+}

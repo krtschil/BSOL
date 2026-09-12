@@ -904,3 +904,104 @@ function storeAccInMemory(context,index,count)
 	return board;
 }
 
+function checkAccsProcessedForName(name)
+{
+	var keys = Object.keys(g_accTrans[name].transList);
+
+	if (keys.length==0)
+		return true;
+	else
+		return false;
+}
+
+function allAccsProcessed(name=null)
+{
+	if (name!==null)
+	{
+		return checkAccsProcessedForName(name);
+	}
+	else	// Check if finished for all names
+	{
+		for (var key in g_accTrans)
+		{
+			if (!checkAccsProcessedForName(key)) return false;
+		}
+	}
+
+	return true;
+}
+
+function accCalcPossible()
+{
+	var found = false;
+
+	for (var i=0;i<g_hands.boards.length;i++)
+	{
+		if (g_travellers!==null)
+		{
+			var traveller = getTravellerForBoard(i);
+
+			var tlines = traveller.traveller_line;
+
+			for (var j=0;j<tlines.length;j++)
+			{
+				var board = tlines[j].board;
+
+				if (accCalcPossibleForBoard(board))
+				{
+					found = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			var board = g_hands.boards[i];
+
+			if (accCalcPossibleForBoard(board))
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (found) break;
+	}
+
+	return found;
+}
+
+function updatePlayerAccCountsFromBoard(board,lindata)
+{
+    if (typeof board=="undefined") return;
+	if (typeof board.acc=="undefined") return;
+
+	var acc = board.acc;
+
+	var names = board.PlayerNames;
+	var declarer = board.Declarer;
+
+	if (typeof declarer=="undefined") return;	// could happen if board is edited
+
+	var direction = "NESW";
+	var declIndex = direction.indexOf(declarer.toUpperCase());
+	var declName = returnName(names,declIndex,false);
+	var leadIndex = (declIndex + 1) % 4;
+	var leadName = returnName(names,leadIndex,false);
+	var leadPartnerIndex = (leadIndex + 2) % 4;
+	var leadPartnerName = returnName(names,leadPartnerIndex,false);
+
+	var declErrCount = returnAccCount(acc,declIndex);
+	var leadErrCount = returnAccCount(acc,leadIndex);
+	var partnerErrCount = returnAccCount(acc,leadPartnerIndex);
+
+	updatePlayerAccCounts(declName,"decl",declErrCount,board,lindata);
+	updatePlayerAccCounts(leadName,"lead",leadErrCount,board,lindata);
+	updatePlayerAccCounts(leadPartnerName,"leadPartner",partnerErrCount,board,lindata);
+}
+
+function returnAccValue(acc,index)
+{
+	var index = (index + 2) % 4;
+	return acc[index];
+}

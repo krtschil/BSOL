@@ -147,7 +147,9 @@ function addRankPositions(data)
 
 	for (i=0;i<data.length;i++)
 	{
-		if (i==0) data[i].crossImpsPosition = ximpsPos;
+		if (i==0)
+			data[i].crossImpsPosition = g_travellers.event.ranking_method=="VICTORY_POINTS" ?
+				data[i].position : ximpsPos;
 
 		if (i>0)
 		{
@@ -165,8 +167,10 @@ function addRankPositions(data)
 				{
 					if (g_travellers.event.ranking_method=="VICTORY_POINTS")
 					{
+						data[i].crossImpsPosition = data[i].position;
 						if (data[i].position==data[i-1].position)
 						{
+							data[i-1].crossImpsPosition = data[i-1].position;
 							data[i].samePosition = "=";
 							data[i-1].samePosition = "=";
 						}
@@ -2104,6 +2108,8 @@ function calculateCrossImps()
 							nsObj.crossImpsBoardsSeen = {};
 						if (!ewObj.crossImpsBoardsSeen)
 							ewObj.crossImpsBoardsSeen = {};
+						var addCrossImps = !nsObj.crossImpsBoardsSeen[nsBoardKey] &&
+							!ewObj.crossImpsBoardsSeen[ewBoardKey];
 						if (!nsObj.crossImpsBoardsSeen[nsBoardKey])
 						{
 							nsObj.crossImpsBoardsSeen[nsBoardKey] = true;
@@ -2115,8 +2121,11 @@ function calculateCrossImps()
 							ewObj.crossImpsBoardsPlayed++;
 						}
 
-						nsObj.totalCrossImps += Number((totalNS/nplayed).toFixed(2));
-						ewObj.totalCrossImps += Number((totalEW/nplayed).toFixed(2));
+						if (addCrossImps)
+						{
+							nsObj.totalCrossImps += Number((totalNS/nplayed).toFixed(2));
+							ewObj.totalCrossImps += Number((totalEW/nplayed).toFixed(2));
+						}
 					}
 				}
 				else

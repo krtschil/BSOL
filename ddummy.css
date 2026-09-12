@@ -119,6 +119,26 @@ fieldset#data > legend {
     padding:3px 3px 3px 3px;
 }
 
+fieldset#data {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:4px;
+}
+
+fieldset#data > legend {
+    flex:0 0 100%;
+}
+
+fieldset#data > form {
+    display:contents;
+}
+
+fieldset#data > button {
+    flex:0 1 auto;
+    margin:0;
+}
+
 @media (max-width:600px) {
   #abuttons-content {
     margin-left:12px;
@@ -1302,14 +1322,6 @@ fieldset#data > legend {
 
   #results-t td,
   #results-t button {
-    white-space: nowrap;
-  }
-}
-
-@media (min-width: 1000px) {
-  #data,
-  #data > form,
-  #data > button {
     white-space: nowrap;
   }
 }

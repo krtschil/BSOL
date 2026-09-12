@@ -117,10 +117,3 @@ function startup(){
 		//processRequest();
 		extractParas();
 }
-
-/*
-function replaceLang(url, newLang) {
-  const u = new URL(url);
-  u.searchParams.set("lang", newLang);
-  return u.toString();
-}*/

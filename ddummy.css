@@ -1296,6 +1296,10 @@ fieldset#data > legend {
 }
 
 @media (min-width: 601px) {
+  #abuttons-content {
+    white-space: nowrap;
+  }
+
   #results-t td,
   #results-t button {
     white-space: nowrap;

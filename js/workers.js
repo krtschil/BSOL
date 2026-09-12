@@ -187,7 +187,7 @@ function createBackgroundWorkers()
 
 	for (var i=0;i<nworkers;i++)
 	{
-		var worker = new Worker("calldds.js");
+		var worker = new Worker("js/worker/calldds.js");
 		worker.addEventListener("message",listenerBackground);
 		g_mworkers.push(worker);
 	}
@@ -217,7 +217,7 @@ function createMainWorker()
 	{
 		if ((g_hands!=null)&&(g_session!==0)) exitCardPlay();	// g_hands may not have been initialised yet when createMainWorker is called at startup
 		console.log("creating main worker thread");
-		g_worker = new Worker("calldds.js");
+		g_worker = new Worker("js/worker/calldds.js");
 		g_worker.addEventListener("message",listenerMain);
 	} else {
         /* **KK**
@@ -229,7 +229,7 @@ function createMainWorker()
       g_initialised = false;
       g_loaded = false;
       console.log("creating main worker thread again");
-      g_worker = new Worker("calldds.js");
+      g_worker = new Worker("js/worker/calldds.js");
       g_worker.addEventListener("message",listenerMain);
     }
 }

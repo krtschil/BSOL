@@ -13,6 +13,7 @@ Code has been split into several files:
 - Upgraded jQuery to `jquery-4.0.0.min.js`
 - Bootstrap and URL parsing are in `js/bootstrap.js`
 - Import and XML conversion are in `js/import.js` and `js/xml.js`
+- Double-dummy worker and WebAssembly files are in `js/worker/`
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:

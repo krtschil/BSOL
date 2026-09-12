@@ -640,13 +640,6 @@ function startup(){
 		}
   }
 
-function roundSym (num,decPlaces) {
-	var multi = Math.pow(10, decPlaces);
-	var value = (Math.round(multi*Math.abs(num))/multi).toFixed(decPlaces);
-	if (num<0) { value = -value; }
-	return value;
-}
-
 function higherHonourCount(suit,base)
 {
 	var honours = "";

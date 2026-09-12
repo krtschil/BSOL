@@ -1,3 +1,13 @@
+function show(button)
+{
+	$("#"+button).show();
+}
+
+function hide(button)
+{
+	$("#"+button).hide();
+}
+
 function getPosition(element) {
 		// Find location of an element (for display of popup messages at cursor location)
     var xPosition = 0;
@@ -540,4 +550,3 @@ function showNames(pthis,dir){
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
 }
-

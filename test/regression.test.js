@@ -11,13 +11,21 @@ test("converts a PBN file into valid board JSON", () => {
 	});
 	loadScript(context, "js/scoring.js");
 	loadScript(context, "js/pbn.js");
-	const pbn = fs.readFileSync(`${root}/hands/sample-traveller.pbn`, "utf8");
+	const pbn = fs.readFileSync(`${root}/test/fixtures/sample-traveller.pbn`, "utf8");
 	const result = JSON.parse(context.pbnToJson(pbn));
 
 	assert.ok(result.boards.length > 0);
 	assert.equal(result.boards[0].Deal.length, 4);
 	assert.equal(result.boards[0].Deal.join(".").replace(/\./g, "").length, 52);
 	assert.equal(context.validateBoard(result.boards[0]), 1);
+});
+
+test("keeps the Traveller JSON fixture available", () => {
+	const traveller = JSON.parse(
+		fs.readFileSync(`${root}/test/fixtures/sample-traveller.json`, "utf8")
+	);
+
+	assert.equal(traveller.event.board.length, 26);
 });
 
 test("converts a LIN board into valid board JSON", () => {

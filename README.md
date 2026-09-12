@@ -6,8 +6,8 @@ This is a fork of the original Bridge Solver Online authored by John Goacher (ht
 ## Javascript 
 Code has been split into several files:
 
-- Function definitions into `functions.js`
-- Events into `events.js`
+- Startup initialization into `js/startup.js`
+- Events into `js/events.js`
 - Help text into `js/help.js`
 - Inline javascript moved into the separate files
 - Upgraded jQuery to `jquery-4.0.0.min.js`
@@ -20,7 +20,7 @@ To allow text (help text and display text) to appear in other languages the foll
 - A language switcher has been created (`changeLanguage()`). Whereever possible displayed text is piped through this function
 - Added flags on the frontpage to allow the switch of language
 - Currently English and German are implemented
-- The default language is initialized in `functions.js` (e.g. `language="de"`). Language codes follow the 2-character code (e.g. en, de)
+- The default language is initialized in `js/startup.js` (e.g. `language="de"`). Language codes follow the 2-character code (e.g. en, de)
 
 ## Styles
 Inline Styles have been removed and added to the respective style sheet

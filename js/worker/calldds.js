@@ -225,7 +225,7 @@ var Module = {
  };
   
 importScripts("dds.js");
-importScripts("js/shared/bridge-utils.js");
+importScripts("../shared/bridge-utils.js");
 
 function getBestScore(msg)
 {

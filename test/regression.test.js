@@ -45,6 +45,18 @@ test("converts a LIN board into valid board JSON", () => {
 	assert.equal(result.boards[0].Deal.length, 4);
 });
 
+test("converts a DLM file into valid board JSON", () => {
+	const context = createContext({g_fullInfo: false});
+	loadScript(context, "js/import.js");
+	const dlm = fs.readFileSync(`${root}/test/fixtures/Team2024.dlm`, "utf8");
+	const result = JSON.parse(context.dlmToJson(dlm));
+
+	assert.ok(result.boards.length > 0);
+	assert.equal(result.boards[0].Deal.length, 4);
+	assert.ok(result.boards[0].Dealer);
+	assert.ok(result.boards[0].Vulnerable);
+});
+
 test("validates contracts and converts honour-card alphabets", () => {
 	const context = createContext();
 	loadScript(context, "js/pbn.js");
@@ -69,6 +81,62 @@ test("parses supported URL parameters into board and traveller settings", () => 
 	assert.equal(result.boards[0].board, "7");
 	assert.equal(result.boards[0].Dealer, "E");
 	assert.equal(result.boards[0].Vulnerable, "NS");
+});
+
+test("resets import and Traveller state when building a new page", () => {
+	const context = createContext({
+		g_file: "old.pbn",
+		g_handstr: "old data",
+		g_handstrType: "pbn",
+		g_xml: "old.xml",
+		g_xmlstr: "old traveller",
+		g_loaded: true,
+		g_travellers: {event: {}},
+		g_currentTraveller: {board: 1},
+		g_sessInfo: {event: "old"},
+		g_rankInfo: {pairs: []},
+		largeSpinner: () => {},
+		hideSpinner: () => {},
+		webAssemblySupported: () => false,
+		workerSupported: () => false,
+		reportBSOLNotSupported: () => {},
+	});
+	loadScript(context, "js/bootstrap.js");
+	context.buildPage({}, "{}");
+
+	assert.equal(context.g_file, "");
+	assert.equal(context.g_handstr, "");
+	assert.equal(context.g_handstrType, "");
+	assert.equal(context.g_xml, "");
+	assert.equal(context.g_xmlstr, "");
+	assert.equal(context.g_loaded, false);
+	assert.equal(context.g_travellers, null);
+	assert.equal(context.g_currentTraveller, null);
+	assert.equal(context.g_sessInfo, null);
+	assert.equal(context.g_rankInfo, null);
+});
+
+test("switches localization labels between German and English", () => {
+	const labels = {
+		loadFile1: {value: ""},
+		blankInput: {textContent: ""},
+		bsession: {textContent: ""},
+		clipboard: {textContent: ""},
+	};
+	const context = createContext({
+		document: {
+			getElementById: (id) => labels[id] || {style: {}, textContent: "", value: "", innerHTML: ""},
+		},
+	});
+	loadScript(context, "js/localization.js");
+
+	context.changeLanguage("de");
+	assert.equal(labels.loadFile1.value, "Datei auswählen");
+	assert.equal(labels.bsession.textContent, "Ergebnisanalyse");
+
+	context.changeLanguage("en");
+	assert.equal(labels.loadFile1.value, "Open file");
+	assert.equal(labels.bsession.textContent, "Results Analysis");
 });
 
 test("calculates representative bridge scores", () => {

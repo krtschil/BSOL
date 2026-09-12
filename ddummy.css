@@ -1361,6 +1361,168 @@ fieldset#data > legend {
 
 /* Removed inline styles */
 
+:root {
+  --page-background: #e8f0f2;
+  --surface: #ffffff;
+  --surface-muted: #f4f8f8;
+  --surface-accent: #e4f2ef;
+  --surface-dialog: #fffdf2;
+  --border: #8aa0a5;
+  --border-strong: #355b63;
+  --text: #1f2d32;
+  --text-muted: #52676d;
+  --primary: #176b78;
+  --primary-dark: #0e4d58;
+  --primary-soft: #d9edf0;
+  --success: #2d7a56;
+  --danger: #b54141;
+  --focus: #e0a627;
+}
+
+body {
+  background-color: var(--page-background);
+  color: var(--text);
+}
+
+button,
+input[type="button"],
+select {
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface-accent);
+  color: var(--text);
+}
+
+#bdy {
+  background-color: var(--surface);
+}
+
+fieldset#data {
+  border-color: var(--border);
+  background-color: var(--surface);
+}
+
+fieldset#data > legend {
+  border-color: var(--border-strong);
+  background-color: var(--surface-accent);
+  color: var(--text);
+}
+
+a,
+a:link,
+a:visited {
+  color: var(--primary);
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+.clickable,
+.myLink {
+  color: var(--primary);
+}
+
+.title-bar {
+  background-color: var(--primary-dark);
+}
+
+.blue-bar {
+  background-color: var(--primary);
+}
+
+.month-heading,
+table.calendar th {
+  color: var(--primary-dark);
+  background-color: var(--primary-soft);
+}
+
+input[type=radio] + label {
+  border-color: var(--border);
+  background-color: var(--surface-muted);
+}
+
+input[type=radio]:checked + label {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+table.results H1,
+table.traveller H1 {
+  color: var(--primary);
+}
+
+table.results H2,
+table.traveller H2 {
+  background-color: var(--primary-dark);
+}
+
+table.results,
+table.traveller,
+table.travheader {
+  background-color: var(--surface);
+}
+
+table.ranking {
+  border-color: var(--border-strong);
+}
+
+table.ranking th {
+  background-color: var(--primary);
+}
+
+.results_tr_grey,
+.traveller_tr_alt {
+  background-color: var(--surface-muted);
+}
+
+.menuButton,
+.sessionMenuButton,
+.doubleHeightMenuButton,
+.btn-circle {
+  border-color: var(--border-strong);
+  background-color: var(--surface-accent);
+  color: var(--text);
+}
+
+.menuButton:active,
+.sessionMenuButton:active,
+.btn-circle:active {
+  background-color: var(--primary-soft);
+}
+
+.sessionMenuButton {
+  background-color: #dcefe2;
+}
+
+.sessionMenuButton:active {
+  background-color: #b9d9c4;
+}
+
+#optionsBox,
+#settings,
+#generalHelp,
+#krHelpText,
+#settingsHelp,
+#resultReasons,
+#playMatchContractHelp,
+#editHelp,
+#playHelp,
+#commandHelp,
+#toolsSubMenu {
+  border-color: var(--border-strong);
+  background-color: var(--surface-dialog);
+}
+
+#popup_box,
+#progressDiv {
+  border-color: var(--border-strong);
+  background-color: var(--surface);
+}
+
+.color-red {
+  color: var(--danger);
+}
+
 .inlr1 {
   height:25px;
   width:98%;

@@ -1355,6 +1355,19 @@ fieldset#data > legend {
   }
 }
 
+@media (max-width: 700px) {
+  #outerProgress {
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
+  }
+
+  table.inlr2 {
+    width: 100%;
+    table-layout: fixed;
+  }
+}
+
 #greenTable {
   height: 50px;
 }

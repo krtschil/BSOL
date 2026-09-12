@@ -1366,6 +1366,8 @@ fieldset#data > legend {
   --surface: #ffffff;
   --surface-muted: #f4f8f8;
   --surface-accent: #e4f2ef;
+  --action-surface: #c9e7e9;
+  --action-surface-hover: #b3dce0;
   --surface-dialog: #fffdf2;
   --border: #8aa0a5;
   --border-strong: #355b63;
@@ -1388,8 +1390,14 @@ button,
 input[type="button"],
 select {
   border: 1px solid var(--border-strong);
-  background-color: var(--surface-accent);
+  background-color: var(--action-surface);
   color: var(--text);
+}
+
+button:hover,
+input[type="button"]:hover,
+select:hover {
+  background-color: var(--action-surface-hover);
 }
 
 #bdy {
@@ -1403,7 +1411,7 @@ fieldset#data {
 
 fieldset#data > legend {
   border-color: var(--border-strong);
-  background-color: var(--surface-accent);
+  background-color: var(--surface-muted);
   color: var(--text);
 }
 
@@ -1480,8 +1488,15 @@ table.ranking th {
 .doubleHeightMenuButton,
 .btn-circle {
   border-color: var(--border-strong);
-  background-color: var(--surface-accent);
+  background-color: var(--action-surface);
   color: var(--text);
+}
+
+.menuButton:hover,
+.sessionMenuButton:hover,
+.doubleHeightMenuButton:hover,
+.btn-circle:hover {
+  background-color: var(--action-surface-hover);
 }
 
 .menuButton:active,

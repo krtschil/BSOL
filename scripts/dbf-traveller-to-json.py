@@ -18,7 +18,7 @@ DECLARER = {"O": "E"}
 
 # Set these directories to the locations of the original export files.
 INPUT_DIRECTORIES = {
-    "pbn": Path("."),
+    "pbn": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
     "play_dbf": Path("."),
     "participants_dbf": Path("."),
     "results_dbf": Path("."),

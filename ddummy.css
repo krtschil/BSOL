@@ -1238,6 +1238,81 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
   width: 700px;
 }
 
+/* Consistent spacing for the main UI regions. */
+fieldset#data {
+  margin: 1.25rem 12px 0;
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+fieldset#data > legend {
+  padding: 0.35rem 0.5rem;
+}
+
+#abuttons-content {
+  margin: 1.25rem 1rem 0;
+}
+
+#rcheckdiv,
+#ranking,
+#scores,
+#comparison {
+  margin-left: 2rem;
+}
+
+#ranking,
+#scoring_summary {
+  margin-bottom: 1.25rem;
+}
+
+#checkListDiv,
+#comparison {
+  padding-left: 0.75rem;
+}
+
+#comparison {
+  margin-top: 1rem;
+}
+
+#optionsBox,
+#settings,
+#generalHelp,
+#krHelpText,
+#settingsHelp,
+#resultReasons,
+#playMatchContractHelp,
+#editHelp,
+#playHelp,
+#commandHelp,
+#toolsSubMenu {
+  padding: 0.75rem;
+}
+
+#optionsBox > table {
+  border-spacing: 0;
+}
+
+#showSettingsHelp {
+  margin-left: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  #abuttons-content {
+    margin: 1rem 12px 0;
+  }
+
+  #rcheckdiv,
+  #ranking,
+  #scores,
+  #comparison {
+    margin-left: 0;
+  }
+
+  #checkListDiv,
+  #comparison {
+    padding-left: 0;
+  }
+}
+
 #greenTable {
   height: 50px;
 }

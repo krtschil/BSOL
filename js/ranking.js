@@ -1955,3 +1955,165 @@ function setupScorecard(keepScrollSetting)
 	$("#comparison").hide();
 	$("#checkListDiv").hide();
 }
+
+function calculateCrossImps()
+{
+	var boards = g_travellers.event.board;
+	var i;
+
+	var pairs = g_travellers.event.participants.pair;
+
+	for (i=0;i<pairs.length;i++)
+		pairs[i].crossImpsBoardsPlayed = 0;
+
+	for (i=0;i<boards.length;i++)
+	{
+		var tlines = boards[i].traveller_line;
+		var j,k;
+
+		for (j=0;j<tlines.length;j++)
+		{
+			var includeBoard = true;
+
+			includeBoard = isValidCrossImps(tlines[j]);
+
+			if (played(tlines[j]))	// Otherwise this pair didn't play this board.
+			{
+				var totalNS = 0;
+				var totalEW = 0;
+				var nplayed = 0;
+
+				if (scoreContainsAdjustment(tlines[j]))
+				{
+					nplayed++;
+
+					totalNS = convertAdjustmentToCrossImps(tlines[j],1);
+					totalEW = convertAdjustmentToCrossImps(tlines[j],2);
+				}
+				else
+				{
+					var score1 = tlines[j].score;
+
+					for (k=0;k<tlines.length;k++)
+					{
+						if (k!=j)
+						{
+							if (played(tlines[k]))	// otherwise other pair didn't play board
+							{
+								if (!scoreContainsAdjustment(tlines[k]))
+								{
+									nplayed++;
+
+									if (includeBoard)
+									{
+										var score2 = tlines[k].score;
+										totalNS = totalNS + convertScoreToImps(score1,score2);
+										totalEW = totalEW + convertScoreToImps(score2,score1);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				if (nplayed>0)
+				{
+					var infoNS = getPlayerInfo(tlines[j].ns_pair_number,1);
+					var infoEW = getPlayerInfo(tlines[j].ew_pair_number,2);
+					var nsIndex = infoNS.pair_index;
+					var ewIndex = infoEW.pair_index;
+
+					if (includeBoard)
+					{
+						tlines[j].crossImpsNS = (totalNS/nplayed).toFixed(2);
+						tlines[j].crossImpsEW = (totalEW/nplayed).toFixed(2);
+					}
+					else
+					{
+						tlines[j].crossImpsNS = "";
+						tlines[j].crossImpsEW = "";
+					}
+
+					if ((typeof g_travellers.event.participants.pair[nsIndex].boardsPlayed)=="undefined")
+					{
+						g_travellers.event.participants.pair[nsIndex].boardsPlayed = 0;
+						g_travellers.event.participants.pair[nsIndex].totalCrossImps = 0;
+					}
+
+					if ((typeof g_travellers.event.participants.pair[ewIndex].boardsPlayed)=="undefined")
+					{
+						g_travellers.event.participants.pair[ewIndex].boardsPlayed = 0;
+						g_travellers.event.participants.pair[ewIndex].totalCrossImps = 0;
+					}
+
+					var nsObj = g_travellers.event.participants.pair[nsIndex];
+					var ewObj = g_travellers.event.participants.pair[ewIndex];
+
+					nsObj.boardsPlayed++;
+					ewObj.boardsPlayed++;
+
+					if (includeBoard)
+					{
+						nsObj.crossImpsBoardsPlayed++;
+						ewObj.crossImpsBoardsPlayed++;
+
+						nsObj.totalCrossImps += Number((totalNS/nplayed).toFixed(2));
+						ewObj.totalCrossImps += Number((totalEW/nplayed).toFixed(2));
+					}
+				}
+				else
+				{
+					tlines[j].crossImpsNS = "";
+					tlines[j].crossImpsEW = "";
+				}
+			}
+		}
+	}
+
+	var pairs = g_travellers.event.participants.pair;
+
+	for (i=0;i<pairs.length;i++)
+	{
+		pairs[i].crossImpsPerBoard = Number(pairs[i].totalCrossImps)/pairs[i].crossImpsBoardsPlayed;
+	}
+}
+
+function calculateMaxImps()
+{
+	if ((typeof g_travellers)!="undefined")
+	{
+		var travellers = g_travellers.event.board;
+		var maxImps = -32767;
+		var i,j;
+
+		for (i=0;i<g_travellers.event.board.length;i++)
+		{
+			var board = g_travellers.event.board[i];
+
+			for (j=0;j<board.traveller_line.length;j++)
+			{
+				var tline = board.traveller_line[j];
+				var nspts = Number(tline.ns_match_points);
+				var ewpts = Number(tline.ew_match_points);
+
+				if ((nspts<0)||(ewpts<0)) g_scoring = "IMP";
+
+				if (g_eventType!="Teams")
+				{
+					if (nspts>maxImps) maxImps = nspts;
+					if (ewpts>maxImps) maxImps = ewpts;
+				}
+				else if (Math.abs(tline.crossImpsNS)>maxImps)
+				{
+					maxImps = Math.abs(tline.crossImpsNS);
+				}
+				else if (Math.abs(tline.crossImpsEW)>maxImps)
+				{
+					maxImps = Math.abs(tline.crossImpsEW);
+				}
+			}
+		}
+
+		g_maxImps = maxImps;
+	}
+}

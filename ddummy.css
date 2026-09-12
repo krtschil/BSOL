@@ -603,6 +603,11 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
   display:inline;
 }
 
+#travellerDIV {
+  max-width:100%;
+  overflow-x:auto;
+}
+
 #abuttons, #runremote, #scoreandtraveller, #loadFile, #forwardPlay {
   display:none;
 }

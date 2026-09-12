@@ -67,6 +67,6 @@ python3 scripts/dbf-traveller-to-json.py \
 ```
 
 The generated `TEAMS` JSON contains one participant per team and two Traveller
-lines per played board (`*_H` and `*_V`). BSOL can calculate the cross-IMP values
-from those paired games. Team conversion is experimental and remains
-development-only.
+lines per played board (`*_H` and `*_V`). BSOL counts the board once per team,
+while the ranking is taken from the team victory points in the result DBF.
+Team conversion is experimental and remains development-only.

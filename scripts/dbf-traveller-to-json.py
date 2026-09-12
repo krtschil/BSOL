@@ -278,6 +278,7 @@ def enrich_teams(teams, path):
             teams[team].update({
                 "place": str(number(row.get("PLATZ"))),
                 "total_score": str(number(row.get("PUNKTE"))),
+                "team_points": str(number(row.get("PUNKTE"))),
             })
 
 
@@ -327,6 +328,7 @@ def convert_teams(pbn_path, play_path, participants_path, results_path):
             "event_type": "TEAMS",
             "board_scoring_method": "IMPS",
             "winner_type": 1,
+            "ranking_method": "VICTORY_POINTS",
             "participants": {"pair": [
                 teams[team] for team in sorted(teams)
             ]},

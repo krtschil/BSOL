@@ -163,7 +163,15 @@ function addRankPositions(data)
 			{
 				if (data[i].boardsPlayed>0)
 				{
-					if (Number(data[i].crossImpsPerBoard.toFixed(2))==Number(data[i-1].crossImpsPerBoard).toFixed(2))
+					if (g_travellers.event.ranking_method=="VICTORY_POINTS")
+					{
+						if (data[i].position==data[i-1].position)
+						{
+							data[i].samePosition = "=";
+							data[i-1].samePosition = "=";
+						}
+					}
+					else if (Number(data[i].crossImpsPerBoard.toFixed(2))==Number(data[i-1].crossImpsPerBoard).toFixed(2))
 					{
 						data[i].crossImpsPosition = ximpsPos;
 						data[i].samePosition = "=";
@@ -201,22 +209,37 @@ function sortRanking(orderByRank)
 		}
 		else
 		{
-			g_rankInfo.rankNS.sort(function(a,b){
-						if (b.crossImpsPerBoard>a.crossImpsPerBoard) return 1;
-						else if (b.crossImpsPerBoard<a.crossImpsPerBoard) return -1;
-						else return 0;
+			if (g_travellers.event.ranking_method=="VICTORY_POINTS")
+				g_rankInfo.rankNS.sort(function(a,b){
+					return comparePositions(a.position,b.position);
+				});
+			else
+				g_rankInfo.rankNS.sort(function(a,b){
+					if (b.crossImpsPerBoard>a.crossImpsPerBoard) return 1;
+					else if (b.crossImpsPerBoard<a.crossImpsPerBoard) return -1;
+					else return 0;
 				});
 
-			g_rankInfo.rankEW.sort(function(a,b){
-						if (b.crossImpsPerBoard>a.crossImpsPerBoard) return 1;
-						else if (b.crossImpsPerBoard<a.crossImpsPerBoard) return -1;
-						else return 0;
+			if (g_travellers.event.ranking_method=="VICTORY_POINTS")
+				g_rankInfo.rankEW.sort(function(a,b){
+					return comparePositions(a.position,b.position);
+				});
+			else
+				g_rankInfo.rankEW.sort(function(a,b){
+					if (b.crossImpsPerBoard>a.crossImpsPerBoard) return 1;
+					else if (b.crossImpsPerBoard<a.crossImpsPerBoard) return -1;
+					else return 0;
 				});
 
-			g_rankInfo.rankCombined.sort(function(a,b){
-						if (b.crossImpsPerBoard>a.crossImpsPerBoard) return 1;
-						else if (b.crossImpsPerBoard<a.crossImpsPerBoard) return -1;
-						else return 0;
+			if (g_travellers.event.ranking_method=="VICTORY_POINTS")
+				g_rankInfo.rankCombined.sort(function(a,b){
+					return comparePositions(a.position,b.position);
+				});
+			else
+				g_rankInfo.rankCombined.sort(function(a,b){
+					if (b.crossImpsPerBoard>a.crossImpsPerBoard) return 1;
+					else if (b.crossImpsPerBoard<a.crossImpsPerBoard) return -1;
+					else return 0;
 				});
 		}
 	}
@@ -287,6 +310,7 @@ function getRankingInfo()
 				data.direction = 2;
 
 			data.dd = {};
+			data.boardsSeen = {};
 
 			if ((pairs[i].direction=="N")||sessInfo.singleWinner)
 				rankNS[rankNS.length] = data;
@@ -315,13 +339,23 @@ function getRankingInfo()
 				{
 					nsObj.plusMpts += Number(tline.ns_match_points);
 					nsObj.minusMpts += Number(tline.ew_match_points);
-					nsObj.boardsPlayed++;
+					var boardKey = i + ":" + pairNS;
+					if (!nsObj.boardsSeen[boardKey])
+					{
+						nsObj.boardsSeen[boardKey] = true;
+						nsObj.boardsPlayed++;
+					}
 
 					if (nsObj.boardsPlayed>maxPlayed) maxPlayed = nsObj.boardsPlayed;
 
 					ewObj.plusMpts += Number(tline.ew_match_points);
 					ewObj.minusMpts += Number(tline.ns_match_points);
-					ewObj.boardsPlayed++;
+					boardKey = i + ":" + pairEW;
+					if (!ewObj.boardsSeen[boardKey])
+					{
+						ewObj.boardsSeen[boardKey] = true;
+						ewObj.boardsPlayed++;
+					}
 					if (ewObj.boardsPlayed>maxPlayed) maxPlayed = ewObj.boardsPlayed;
 				}
 			}
@@ -2038,24 +2072,48 @@ function calculateCrossImps()
 					{
 						g_travellers.event.participants.pair[nsIndex].boardsPlayed = 0;
 						g_travellers.event.participants.pair[nsIndex].totalCrossImps = 0;
+						g_travellers.event.participants.pair[nsIndex].boardsSeen = {};
 					}
 
 					if ((typeof g_travellers.event.participants.pair[ewIndex].boardsPlayed)=="undefined")
 					{
 						g_travellers.event.participants.pair[ewIndex].boardsPlayed = 0;
 						g_travellers.event.participants.pair[ewIndex].totalCrossImps = 0;
+						g_travellers.event.participants.pair[ewIndex].boardsSeen = {};
 					}
 
 					var nsObj = g_travellers.event.participants.pair[nsIndex];
 					var ewObj = g_travellers.event.participants.pair[ewIndex];
 
-					nsObj.boardsPlayed++;
-					ewObj.boardsPlayed++;
+					var nsBoardKey = i + ":" + nsObj.pair_number;
+					var ewBoardKey = i + ":" + ewObj.pair_number;
+					if (!nsObj.boardsSeen[nsBoardKey])
+					{
+						nsObj.boardsSeen[nsBoardKey] = true;
+						nsObj.boardsPlayed++;
+					}
+					if (!ewObj.boardsSeen[ewBoardKey])
+					{
+						ewObj.boardsSeen[ewBoardKey] = true;
+						ewObj.boardsPlayed++;
+					}
 
 					if (includeBoard)
 					{
-						nsObj.crossImpsBoardsPlayed++;
-						ewObj.crossImpsBoardsPlayed++;
+						if (!nsObj.crossImpsBoardsSeen)
+							nsObj.crossImpsBoardsSeen = {};
+						if (!ewObj.crossImpsBoardsSeen)
+							ewObj.crossImpsBoardsSeen = {};
+						if (!nsObj.crossImpsBoardsSeen[nsBoardKey])
+						{
+							nsObj.crossImpsBoardsSeen[nsBoardKey] = true;
+							nsObj.crossImpsBoardsPlayed++;
+						}
+						if (!ewObj.crossImpsBoardsSeen[ewBoardKey])
+						{
+							ewObj.crossImpsBoardsSeen[ewBoardKey] = true;
+							ewObj.crossImpsBoardsPlayed++;
+						}
 
 						nsObj.totalCrossImps += Number((totalNS/nplayed).toFixed(2));
 						ewObj.totalCrossImps += Number((totalEW/nplayed).toFixed(2));

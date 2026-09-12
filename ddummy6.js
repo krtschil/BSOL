@@ -235,7 +235,3 @@ function buttclick(pthis)
 
 	g_stopPropagation = 1;
 }
-
-function getFullMakeableJson(context)
-{
-}

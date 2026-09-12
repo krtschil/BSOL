@@ -487,6 +487,10 @@ function getRequestedLeads(bindex)
 	else return "";
 }
 
+function getFullMakeableJson(context)
+{
+}
+
 function calculateMakeableSingleBoard(bindex)
 {
 	if (!requestPending())

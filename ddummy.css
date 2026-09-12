@@ -9,6 +9,14 @@ body {
   background-color : #DDFFDD;
   font-family : Verdana, Arial, Helvetica, sans-serif;
   font-size : 14px;
+  line-height:1.4;
+}
+
+button,
+input,
+select,
+textarea {
+  font:inherit;
 }
 
 pre#output
@@ -111,6 +119,37 @@ fieldset#data > legend {
     padding:3px 3px 3px 3px;
 }
 
+fieldset#data {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:4px;
+}
+
+fieldset#data > legend {
+    flex:0 0 100%;
+}
+
+fieldset#data > form {
+    display:contents;
+}
+
+fieldset#data > button {
+    flex:0 1 auto;
+    margin:0;
+}
+
+fieldset#data > form > input[type="button"],
+fieldset#data > button {
+    font-size:13px;
+    padding-left:2px;
+    padding-right:2px;
+}
+
+#data > #showGeneralHelp {
+    margin-left:4px;
+}
+
 @media (max-width:600px) {
   #abuttons-content {
     margin-left:12px;
@@ -210,8 +249,8 @@ input[type=radio]:checked + label {
 }
 
 td, div {
-	font-family: Tahoma, Verdana, Arial, sans-serif;
-	font-size: 13px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
 	font-style: normal;
 	color: #000000;
 }
@@ -221,26 +260,28 @@ div.toppadding {
     overflow: auto;
 }
 H1 {
-	font-family: Tahoma, Verdana, Arial, sans-serif;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 24px;
 	font-style: normal;
 	font-weight: bold;
 	color: blue;  
-   line-height: 28px;  
+   line-height: 1.2;
 }
 H2 {
-   font-family: Arial, Helvetica, sans-serif;
-	font-size: 16px;
+   font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 18px;
 	font-style: normal;
 	font-weight: bold;
 	color: black;   
+   line-height: 1.25;
 }
 H3 {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 13px;
+	font-size: 16px;
 	font-style: normal;
 	font-weight: bold;
 	color: black;
+   line-height: 1.3;
 }
 
 .myLink {
@@ -257,9 +298,9 @@ a:hover { color: red; text-decoration:none }
 
 p { margin: 0px; }
 
-table.results H1{text-align:center;font-family:Tahoma, Verdana, Arial, sans-serif;font-weight:bold;font-size:18pt;color:blue;}
-table.results H2 {text-align:center;font-weight:bold; background-color:red;font-family:Arial, Helvetica, sans-serif;line-height: 16pt;color:white}
-table.results {font-size:16pt; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.results H1{text-align:center;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;font-size:18px;color:blue;}
+table.results H2 {text-align:center;font-weight:bold; background-color:red;font-family:Verdana, Arial, Helvetica, sans-serif;line-height: 1.25;color:white}
+table.results {font-size:14px; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.results th {font-size:10pt;border:2px ridge; color:white;font-style : italic;}
 table.results td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:14px; }
 
@@ -267,15 +308,15 @@ table.results td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 
 .results_tr_grey {background-color:#EEEEFF; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
 
-table.ranking {font-size:14pt; border:1px solid black; border-collapse:collapse; border-spacing:0px; padding:2px; color:black; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.ranking {font-size:14px; border:1px solid black; border-collapse:collapse; border-spacing:0px; padding:2px; color:black; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.ranking th {font-size:9pt;border:2px ridge; padding-right:4px; padding-left:4px; color:white;font-style : normal;background-color:#6699FF;}
 table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:12px;}
 
 .traveller_tr_alt {background-color:#EEEEEE; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
 
-table.traveller H1{text-align:center;font-family:Tahoma, Verdana, Arial, sans-serif;font-weight:bold;font-size:18pt;color:blue;}
-table.traveller H2 {text-align:center;font-weight:bold; background-color:red;font-family:Arial, Helvetica, sans-serif;line-height: 16pt;color:white}
-table.traveller {font-size:16pt; border:0px ; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.traveller H1{text-align:center;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;font-size:18px;color:blue;}
+table.traveller H2 {text-align:center;font-weight:bold; background-color:red;font-family:Verdana, Arial, Helvetica, sans-serif;line-height: 1.25;color:white}
+table.traveller {font-size:14px; border:0px ; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.traveller th {font-size:10pt;border:1px solid #aaa;color:white;font-style : italic;}
 table.traveller td {border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px; }
 
@@ -304,7 +345,7 @@ table.pointsTable tr td {border:0px;padding:0px;white-space: nowrap; font-size:1
 table.vul {border-width:0px;padding:0; border-collapse:collapse; font-family:Tahoma, Verdana, Arial, sans-serif;}
 table.vul tr td {border:0px;padding:0px;white-space: nowrap; font-size:8px; font-weight:bold;  background-color:#6699FF; color:white}
 
-table.options {font-size:18pt; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.options {font-size:14px; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.options td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:14px; }
 
 .trav {font-family:Courier New;font-weight:normal;font-size:10pt;}
@@ -315,7 +356,7 @@ table.options td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 table.calendar td {font-family:Verdana, Arial, Helvetica, sans-serif;}
 table.calendar th {font-weight: bold; color: blue;text-align: center;background-color:#7FFFD4; }
 
-.menuButton {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#ffffdd;
+.menuButton {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#ffffdd;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -324,7 +365,7 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;}
 	
-.menuButton:active {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbbb99;
+.menuButton:active {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbbb99;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -342,7 +383,7 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	height:40px; font-size:10pt; border-width:1px; border-color:black; border-spacing:0px;  padding-left:2px;padding-right:2px; background-color:#ffffdd; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;cursor:pointer;}
 
-.sessionMenuButton {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbffbb;
+.sessionMenuButton {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbffbb;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -351,7 +392,7 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;}
 	
-.sessionMenuButton:active {min-width:75px; height:25px; font-size:12pt; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#448844;
+.sessionMenuButton:active {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#448844;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
@@ -888,6 +929,81 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
   vertical-align:middle;
 }
 
+/*
+  Keep dialogs inside the viewport on narrow screens. The desktop layout
+  intentionally keeps its historical positions and dimensions.
+*/
+@media (max-width: 600px) {
+  #optionsBox,
+  #settings,
+  #generalHelp,
+  #krHelpText,
+  #settingsHelp,
+  #resultReasons,
+  #playMatchContractHelp,
+  #editHelp,
+  #playHelp,
+  #commandHelp,
+  #popup_box,
+  #progressDiv,
+  #toolsSubMenu {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 24px);
+    box-sizing: border-box;
+    overflow: auto;
+  }
+
+  #optionsBox > table,
+  #settings > table {
+    width: 100%;
+  }
+
+  #optionsBox .options,
+  #optionsBox .options tbody,
+  #optionsBox .options tr,
+  #optionsBox .options td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #optionsBox .options td {
+    white-space: normal;
+    padding: 4px;
+  }
+
+  #optionsBox .options br {
+    display: none;
+  }
+
+  #optionsBox .options input[type="radio"] {
+    margin: 8px 6px 8px 0;
+  }
+
+  #toolsSubMenu button {
+    display: block;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    margin-top: 5px;
+  }
+
+  #progressDiv {
+    text-align: center;
+  }
+
+  #progressBarBox {
+    float: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 #krLabel {
   cursor:pointer;
   vertical-align:middle;
@@ -1153,11 +1269,284 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
   width: 700px;
 }
 
+/* Consistent spacing for the main UI regions. */
+fieldset#data {
+  margin: 1.25rem 12px 0;
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+fieldset#data > legend {
+  padding: 0.35rem 0.5rem;
+}
+
+#abuttons-content {
+  margin: 1.25rem 1rem 0;
+}
+
+#rcheckdiv,
+#ranking,
+#scores,
+#comparison {
+  margin-left: 2rem;
+}
+
+#ranking,
+#scoring_summary {
+  margin-bottom: 1.25rem;
+}
+
+#checkListDiv,
+#comparison {
+  padding-left: 0.75rem;
+}
+
+#comparison {
+  margin-top: 1rem;
+}
+
+#optionsBox,
+#settings,
+#generalHelp,
+#krHelpText,
+#settingsHelp,
+#resultReasons,
+#playMatchContractHelp,
+#editHelp,
+#playHelp,
+#commandHelp,
+#toolsSubMenu {
+  padding: 0.75rem;
+}
+
+#optionsBox > table {
+  border-spacing: 0;
+}
+
+#showSettingsHelp {
+  margin-left: 0.75rem;
+}
+
+@media (min-width: 601px) {
+  #abuttons-content {
+    white-space: nowrap;
+  }
+
+  #results-t td,
+  #results-t button {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  #abuttons-content {
+    margin: 1rem 12px 0;
+  }
+
+  #rcheckdiv,
+  #ranking,
+  #scores,
+  #comparison {
+    margin-left: 0;
+  }
+
+  #checkListDiv,
+  #comparison {
+    padding-left: 0;
+  }
+}
+
 #greenTable {
   height: 50px;
 }
 
 /* Removed inline styles */
+
+:root {
+  --page-background: #e8f0f2;
+  --surface: #ffffff;
+  --surface-muted: #f4f8f8;
+  --surface-accent: #e4f2ef;
+  --action-surface: #c9e7e9;
+  --action-surface-hover: #b3dce0;
+  --surface-dialog: #fffdf2;
+  --border: #8aa0a5;
+  --border-strong: #355b63;
+  --text: #1f2d32;
+  --text-muted: #52676d;
+  --primary: #176b78;
+  --primary-dark: #0e4d58;
+  --primary-soft: #d9edf0;
+  --success: #2d7a56;
+  --danger: #b54141;
+  --focus: #e0a627;
+}
+
+body {
+  background-color: var(--page-background);
+  color: var(--text);
+}
+
+button,
+input[type="button"],
+select {
+  border: 1px solid var(--border-strong);
+  background-color: var(--action-surface);
+  color: var(--text);
+}
+
+button:hover,
+input[type="button"]:hover,
+select:hover {
+  background-color: var(--action-surface-hover);
+}
+
+#bdy {
+  background-color: var(--surface);
+}
+
+fieldset#data {
+  border-color: var(--border);
+  background-color: var(--surface);
+}
+
+fieldset#data > legend {
+  border-color: var(--border-strong);
+  background-color: var(--surface-muted);
+  color: var(--text);
+}
+
+a,
+a:link,
+a:visited {
+  color: var(--primary);
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+.clickable,
+.myLink {
+  color: var(--primary);
+}
+
+.title-bar {
+  background-color: var(--primary-dark);
+}
+
+.blue-bar {
+  background-color: var(--primary);
+}
+
+.month-heading,
+table.calendar th {
+  color: var(--primary-dark);
+  background-color: var(--primary-soft);
+}
+
+input[type=radio] + label {
+  border-color: var(--border);
+  background-color: var(--surface-muted);
+}
+
+input[type=radio]:checked + label {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+table.results H1,
+table.traveller H1 {
+  color: var(--primary);
+}
+
+table.results H2,
+table.traveller H2 {
+  background-color: var(--primary-dark);
+}
+
+table.results,
+table.traveller,
+table.travheader {
+  background-color: var(--surface);
+}
+
+table.ranking {
+  border-color: var(--border-strong);
+}
+
+table.ranking th {
+  background-color: var(--primary);
+}
+
+.results_tr_grey,
+.traveller_tr_alt {
+  background-color: var(--surface-muted);
+}
+
+.menuButton,
+.sessionMenuButton,
+.doubleHeightMenuButton,
+.btn-circle {
+  border-color: var(--border-strong);
+  background-color: var(--action-surface);
+  color: var(--text);
+}
+
+.menuButton:hover,
+.sessionMenuButton:hover,
+.doubleHeightMenuButton:hover,
+.btn-circle:hover {
+  background-color: var(--action-surface-hover);
+}
+
+.menuButton:active,
+.sessionMenuButton:active,
+.btn-circle:active {
+  background-color: var(--primary-soft);
+}
+
+.sessionMenuButton {
+  background-color: #dcefe2;
+}
+
+.sessionMenuButton:active {
+  background-color: #b9d9c4;
+}
+
+#optionsBox,
+#settings,
+#generalHelp,
+#krHelpText,
+#settingsHelp,
+#resultReasons,
+#playMatchContractHelp,
+#editHelp,
+#playHelp,
+#commandHelp,
+#toolsSubMenu {
+  border-color: var(--border-strong);
+  background-color: var(--surface-dialog);
+}
+
+#popup_box,
+#progressDiv {
+  border-color: var(--border-strong);
+  background-color: var(--surface);
+}
+
+.color-red {
+  color: var(--danger);
+}
+
+/* Keep the board and play view in its original, softer display type. */
+#board,
+#board td,
+#board div,
+#board button,
+#boardNumber,
+#currentPosition {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
 .inlr1 {
   height:25px;

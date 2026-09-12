@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BSOL XML smoke test</title>
+</head>
+<body>
+  <p id="status">Running...</p>
+  <script src="../js/xml.js"></script>
+  <script>
+    const status = document.getElementById("status");
+
+    fetch("fixtures/sample-traveller.xml")
+      .then((response) => {
+        if (!response.ok) throw new Error(`fixture request failed: ${response.status}`);
+        return response.text();
+      })
+      .then((xml) => {
+        const result = JSON.parse(convertXML(xml));
+        const board = result.event.board[0];
+        if (result.event.event_type !== "Pairs" ||
+            result.event.board.length !== 1 ||
+            board.board_no !== "1" ||
+            board.traveller_line[0].contract !== "4S") {
+          throw new Error("unexpected XML conversion result");
+        }
+        status.textContent = "PASS";
+        document.title = "BSOL XML smoke test: PASS";
+      })
+      .catch((error) => {
+        status.textContent = `FAIL: ${error.message}`;
+        document.title = "BSOL XML smoke test: FAIL";
+      });
+  </script>
+</body>
+</html>

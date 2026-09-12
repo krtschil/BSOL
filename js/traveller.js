@@ -930,7 +930,7 @@ function displayTraveller(pdirection)
 			if (validContract(tline.contract))
 			{
 				row.cells[3].innerHTML = tline.played_by;
-				row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
+				row.cells[4].innerHTML = displayLeadCard(tline.lead);
 				row.cells[5].innerHTML = tline.tricks;
 				row.cells[5].style.textAlign="right";
 

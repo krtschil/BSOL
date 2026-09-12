@@ -21,8 +21,11 @@
 		var players = [];
 
 var Module = {
-	onAbort: function() {
-			self.postMessage("failed");
+		onAbort: function(reason) {
+				self.postMessage({
+					type: "worker-error",
+					message: String(reason || "DDS/WASM runtime aborted")
+				});
 		},
     onRuntimeInitialized: function() {
 		players.push("north");

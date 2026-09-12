@@ -49,3 +49,24 @@ rank-then-suit format, for example `4S` or `QD`.
 
 The generated JSON can be loaded in BSOL together with its PBN file using the normal
 `file` and `xml` URL parameters.
+
+## Team tournaments
+
+Team DBF exports use a separate conversion mode. The participant DBF groups two
+pairs under each team number, while each play record contains the home-table and
+comparison-table game for one board:
+
+```sh
+python3 scripts/dbf-traveller-to-json.py \
+  --mode teams \
+  --pbn 20260903.pbn \
+  --play-dbf play_2249.dbf \
+  --participants-dbf tn_2249.dbf \
+  --results-dbf res_2249a.dbf \
+  --output team-traveller.json
+```
+
+The generated `TEAMS` JSON contains one participant per team and two Traveller
+lines per played board (`*_H` and `*_V`). BSOL can calculate the cross-IMP values
+from those paired games. Team conversion is experimental and remains
+development-only.

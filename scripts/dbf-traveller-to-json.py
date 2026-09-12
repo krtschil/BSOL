@@ -244,6 +244,97 @@ def convert(pbn_path, play_path, participants_path, results_path):
     }
 
 
+def team_participant_map(path):
+    grouped = defaultdict(list)
+    for row in read_dbf(path):
+        team = number(row.get("P_NUMMER"))
+        name1 = str(row.get("NAME1", "")).strip()
+        name2 = str(row.get("NAME2", "")).strip()
+        if team and (name1 or name2):
+            grouped[int(team)].append(
+                " / ".join(name for name in (name1, name2) if name)
+            )
+    return {
+        team: {
+            "pair_number": team,
+            "place": "",
+            "total_score": "",
+            "percentage": "-",
+            "direction": "N",
+            "player": [
+                {"player_name": names[0] if names else ""},
+                {"player_name": names[1] if len(names) > 1 else ""},
+            ],
+        }
+        for team, names in grouped.items()
+    }
+
+
+def enrich_teams(teams, path):
+        for row in read_dbf(path):
+            team = number(row.get("TEAM_NR"))
+            if team not in teams:
+                continue
+            teams[team].update({
+                "place": str(number(row.get("PLATZ"))),
+                "total_score": str(number(row.get("PUNKTE"))),
+            })
+
+
+def team_play_line(row, suffix, pbn_board):
+        ns = str(row.get(f"HOME_NS" if suffix == "H" else "VISIT_NS")).strip()
+        ew = str(row.get(f"VISIT_EW" if suffix == "H" else "HOME_EW")).strip()
+        contract = normalize_contract(row.get(f"CONTRACT_{suffix}", ""))
+        score = number(row.get(f"RESVAL_{suffix}"))
+        declarer = str(row.get(f"NS_EW_{suffix}", "")).strip()
+        return {
+            "ns_pair_number": ns,
+            "ew_pair_number": ew,
+            "contract": contract or "Passed",
+            "played_by": DECLARER.get(declarer, declarer),
+            "lead": normalize_card(row.get(f"LC_{suffix}", "")),
+            "tricks": "",
+            "score": score,
+            "ns_score": score if score >= 0 else "",
+            "ew_score": -score if score < 0 else "",
+            "ns_match_points": "",
+            "ew_match_points": "",
+            "lindata": None,
+        }
+
+
+def convert_teams(pbn_path, play_path, participants_path, results_path):
+    pbn = parse_pbn(pbn_path)
+    teams = team_participant_map(participants_path)
+    enrich_teams(teams, results_path)
+    grouped = defaultdict(list)
+    for row in read_dbf(play_path):
+        board = int(row.get("BOARD") or 0)
+        if board and str(row.get("CONTRACT_H", "")).strip().lower() not in ("", "ok"):
+            grouped[board].append(row)
+
+    boards = []
+    for board_no in sorted(pbn):
+        lines = []
+        for row in grouped.get(board_no, []):
+            lines.append(team_play_line(row, "H", pbn[board_no]))
+            lines.append(team_play_line(row, "V", pbn[board_no]))
+        boards.append({"board_no": board_no, "traveller_line": lines})
+
+    return {
+        "event": {
+            "match_scoring_method": "IMPS",
+            "event_type": "TEAMS",
+            "board_scoring_method": "IMPS",
+            "winner_type": 1,
+            "participants": {"pair": [
+                teams[team] for team in sorted(teams)
+            ]},
+            "board": boards,
+        }
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pbn", required=True, help="PBN board file")
@@ -254,9 +345,14 @@ def main():
     parser.add_argument(
         "--results-dbf", required=True, help="Ranking/result DBF"
     )
+    parser.add_argument(
+        "--mode", choices=("pairs", "teams"), default="pairs",
+        help="Tournament format (default: pairs)",
+    )
     parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
-    result = convert(
+    converter = convert_teams if args.mode == "teams" else convert
+    result = converter(
         INPUT_DIRECTORIES["pbn"] / args.pbn,
         INPUT_DIRECTORIES["play_dbf"] / args.play_dbf,
         INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
@@ -267,7 +363,8 @@ def main():
         encoding="utf-8",
     )
     print(f"wrote {args.output}: {len(result['event']['board'])} boards, "
-          f"{len(result['event']['participants']['pair'])} pairs")
+          f"{len(result['event']['participants']['pair'])} "
+          f"{'teams' if args.mode == 'teams' else 'pairs'}")
 
 
 if __name__ == "__main__":

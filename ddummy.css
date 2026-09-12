@@ -1296,6 +1296,10 @@ fieldset#data > legend {
 }
 
 @media (min-width: 601px) {
+  #data {
+    white-space: nowrap;
+  }
+
   #data > form,
   #data > button {
     white-space: nowrap;

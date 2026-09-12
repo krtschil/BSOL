@@ -449,7 +449,7 @@ function processPosition(hcards,para)
 
 function hideForwardPlay()
 {
-		// Try/Catch in case using older version of ddummy.htm without this button
+		// Try/Catch in case using an older page version without this button
 	try {
 		hide("forwardPlay");
 	} catch (err) {};
@@ -457,7 +457,7 @@ function hideForwardPlay()
 
 function showForwardPlay()
 {
-		// Try/Catch in case using older version of ddummy.htm without this button
+		// Try/Catch in case using an older page version without this button
 	try {
 			// Only show this button if playing a contract from a BBO lin file
 		if (g_showPlay!=0) show("forwardPlay");

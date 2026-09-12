@@ -437,7 +437,7 @@ function getRankingInfo()
 function getPlayerInfo(pair,direction)
 {
 		// Gets player information for the current pair from the travellers record, using the information
-		// passed to ddummy.htm in the pair_number and direction fields.
+		// passed to index.html in the pair_number and direction fields.
 	var info = {};
 	var pair_found = false;
 	var pairs = g_travellers.event.participants.pair;

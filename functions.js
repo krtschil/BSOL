@@ -640,38 +640,6 @@ function startup(){
 		}
   }
 
-function updatePointsDisplay()
-{
-	var npts,epts,spts,wpts;
-
-	var tindex = g_lastBindex;
-
-	if (!g_handEntryMode)
-	{
-		var handstr = createHandString(g_hands.boards[tindex],0);
-		npts = handstr.points;
-
-		handstr = createHandString(g_hands.boards[tindex],1);
-		epts = handstr.points;
-
-		handstr = createHandString(g_hands.boards[tindex],2);
-		spts = handstr.points;
-
-		handstr = createHandString(g_hands.boards[tindex],3);
-		wpts = handstr.points;
-	}
-	else
-	{
-		npts = epts = spts = wpts = "";
-	}
-
-	var points = document.getElementById("points");
-	points.rows[0].cells[1].innerHTML = npts;
-	points.rows[1].cells[0].innerHTML = wpts;
-	points.rows[1].cells[2].innerHTML = epts;
-	points.rows[2].cells[1].innerHTML = spts;
-}
-
 function changeLanguage(l) {
 	switch(l)
 	{

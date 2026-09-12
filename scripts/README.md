@@ -27,8 +27,10 @@ The input files are:
 - `--output`: generated BSOL Traveller JSON
 
 The converter uses only the Python standard library. It maps German suit and
-direction codes, joins play rows with the PBN score tables to obtain declarers and
-tricks, and adds participant names and final ranking data.
+direction codes, converts German card ranks (`D`/`B`) to BSOL's `Q`/`J`, joins
+play rows with the PBN score tables to obtain declarers and tricks, and adds
+participant names and final ranking data. Opening leads are written in BSOL's
+rank-then-suit format, for example `4S` or `QD`.
 
 The generated JSON can be loaded in BSOL together with its PBN file using the normal
 `file` and `xml` URL parameters.

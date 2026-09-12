@@ -84,8 +84,10 @@ def normalize_card(value):
     text = str(value).strip().upper()
     if not text:
         return ""
-    suit = {"P": "S", "C": "H", "K": "D", "T": "C"}.get(text[0], text[0])
-    return suit + text[1:]
+    suit, rank = text[0], text[1:]
+    rank = {"10": "T", "D": "Q", "B": "J"}.get(rank, rank)
+    suit = {"P": "S", "C": "H", "K": "D", "T": "C"}.get(suit, suit)
+    return rank + suit
 
 
 def parse_pbn(path):

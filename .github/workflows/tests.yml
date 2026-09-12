@@ -23,9 +23,17 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 18
+          cache: npm
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+          done < <(find . -name '*.js' -not -path './node_modules/*' -print0)
 
       - name: Run regression tests
-        run: npm test
+        run: npm ci && npm test
 
       - name: Set up Chrome
         uses: browser-actions/setup-chrome@v2

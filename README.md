@@ -8,10 +8,11 @@ Code has been split into several files:
 
 - Function definitions into `functions.js`
 - Events into `events.js`
-- Help text into `helpText.js`
+- Help text into `js/help.js`
 - Inline javascript moved into the separate files
 - Upgraded jQuery to `jquery-4.0.0.min.js`
-- Main functionalities remain in `ddummy6.js`
+- Bootstrap and URL parsing are in `js/bootstrap.js`
+- Import and XML conversion are in `js/import.js` and `js/xml.js`
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:
@@ -19,7 +20,7 @@ To allow text (help text and display text) to appear in other languages the foll
 - A language switcher has been created (`changeLanguage()`). Whereever possible displayed text is piped through this function
 - Added flags on the frontpage to allow the switch of language
 - Currently English and German are implemented
-- The default language is defined in `ddummy6.js` (e.g. language="en"). Language codes follow the 2-character code (e.g. en, de)
+- The default language is initialized in `functions.js` (e.g. `language="de"`). Language codes follow the 2-character code (e.g. en, de)
 
 ## Styles
 Inline Styles have been removed and added to the respective style sheet

@@ -1,0 +1,177 @@
+<table class="results inlr2">
+    <tr id="mainTitle">
+        <td id="titleText"></td>
+    </tr>
+    <tr id="scoreandtraveller">
+        <td class="v-top inlr3">
+            <div id="travellerDIV">
+                <table  id="traveller" class="traveller">
+                    <tr>
+                        <th>
+                            <table class="results" id="board">
+                                <tr>
+                                    <td class="width-33">&nbsp;</td>
+                                    <td id="northHand">
+                                        &#9824; K 4 2
+                                        <br>
+                                        <span class="color-red">&#9829;</span> K 3 2
+                                        <br>
+                                        <span class="color-red">&#9830;</span> K J 7
+                                        <br>&#9827; 10 9 8 4
+                                        <br>
+                                    </td>
+                                    <td id="currentPosition">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td id="westHand">&#9824; A 8 7 5<br>
+                                        <span class="color-red">&#9829;</span> 10 9 7 6<br>
+                                        <span class="color-red">&#9830;</span> Q 6<br>&#9827; A J 7<br>
+                                    </td>
+                                    <td class="width-33 h-100 v-middle t-center">
+                                        <table id="vul" class="vul">
+                                            <tr class="h-20">
+                                                <td class="w-20"></td>
+                                                <td id="nvul"></td>
+                                                <td class="w-20"></td>
+                                            </tr>
+                                            <tr class="h-100">
+                                                <td id="wvul"></td>
+                                                <td id="boardNumber"></td>
+                                                <td id="evul"></td>
+                                            </tr>
+                                            <tr class="h-20">
+                                                <td class="h-20"></td>
+                                                <td id="svul">O</td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td id="eastHand">&#9824; J 10
+                                        <br>
+                                        <span class="color-red">&#9829;</span> Q J 4
+                                        <br>
+                                        <span class="color-red">&#9830;</span> A 10 9 8 2
+                                        <br>&#9827; Q 6 5
+                                        <br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="width-33" id="krLabel-t">
+                                        <div id="ptsctl">
+                                            <label id="krLabel"><input id="krcalc" type="checkbox" name="krcalc">KR</label>
+                                          <input title="Info zu Kaplan-Rubens" id="krhelp" readonly value="?" />
+                                          </div>
+                                        <table id="points" class="pointsTable">
+                                            <tr>
+                                                <td class="width-33"></td>
+                                                <td class="t-center v-bottom inlr4"></td>
+                                                <td class="width-33"></td>
+                                            </tr>
+                                            <tr id="greenTable">
+                                                <td class="t-right v-middle inlr5"></td>
+                                                <td class="inlr6"></td>
+                                                <td class="t-left v-middle inlr7"></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="v-top t-center inlr8"></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td id="southHand">&#9824; Q 9 6 3
+                                        <br>
+                                        <span class="color-red">&#9829;</span> A 8 5
+                                        <br>
+                                        <span class="color-red">&#9830;</span> 5 4 3
+                                        <br>&#9827; K 3 2
+                                        <br>
+                                    </td>
+                                    <td class="width-33 t-center v-middle">
+                                        <div id="mctable">
+                                            <table id="makeableContracts" class="mc">
+                                                <tr>
+                                                    <td></td>
+                                                    <td>&#9827;</td>
+                                                    <td><span class="color-red">&#9830;</span></td>
+                                                    <td><span class="color-red">&#9829;</span></td>
+                                                    <td>&#9824;</td>
+                                                    <td>NT</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>N</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>S</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>E</td>
+                                                    <td>-</td>
+                                                    <td>2</td>
+                                                    <td>2</td>
+                                                    <td>1</td>
+                                                    <td>1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>W</td>
+                                                    <td>-</td>
+                                                    <td>2</td>
+                                                    <td>2</td>
+                                                    <td>1</td>
+                                                    <td>1</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </table>
+                <table class="results" id="results-t">
+                    <tr class="inlr9">
+                        <td class="t-left">
+                            <button type="button" id="bsession" class="sessionMenuButton">Ergebnisanalyse</button>
+                            <button type="button" class="btn-circle" id="bsessionHelp">?</button>
+                        </td>
+                        <td class="t-center">
+                            <button type="button" id="prev"         class="menuButton">&lt;</button>
+                            <button type="button" id="gotoBoard"    class="menuButton">Gehe zu</button>
+                            <button type="button" id="next"         class="menuButton">></button>
+                            <button type="button" id="showBoards"   class="menuButton">Boards</button>
+                            <button type="button" id="newBoard"       class="menuButton">Neu...</button>
+                            <button type="button" id="deleteBoard"    class="menuButton">Löschen</button>
+                            <button type="button" id="saveLIN"        class="menuButton">Als LIN speichern</button>
+                            <button type="button" id="saveBoards"     class="menuButton">Speichern</button>
+                            <button type="button" id="editHand"       class="menuButton">Bearbeiten</button>
+                            <button type="button" id="clearHand"      class="menuButton">Leeren</button>
+                            <button type="button" id="backPlay"       class="menuButton">&lt;</button>
+                            <button type="button" id="play"           class="menuButton">Spielen</button>
+                            <button type="button" id="forwardPlay"    class="menuButton">&gt;</button>
+                            <button type="button" id="options"        class="menuButton">Optionen</button>
+                            <button type="button" id="help"           class="menuButton">Hilfe</button>
+                        </td>
+                        <td class="t-right">
+                            <button type="button" id="branking" class="menuButton">Ranking</button>
+                            <button type="button" class="menuButton" id="bscorecard">Scorecard</button>
+                            <button type="button" class="menuButton" id="btraveller">Traveller</button>
+                            <button type="button" id="computeMakeable" class="menuButton">Analyse</button>
+                            <button type="button" id="tools" class="menuButton">Mehr..</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+

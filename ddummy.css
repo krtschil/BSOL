@@ -1295,6 +1295,13 @@ fieldset#data > legend {
   margin-left: 0.75rem;
 }
 
+@media (min-width: 601px) {
+  #results-t td,
+  #results-t button {
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 600px) {
   #abuttons-content {
     margin: 1rem 12px 0;

@@ -5,14 +5,15 @@
 <div id="dropzone"><!-- Area for pasting PBN/LIN data or dropping a file with PBN/LIN content-->
     <fieldset id="data">
         <legend id="data-legend"><span id="flegend"><b>Analysiere Bridgehände (PBN/LIN/DLM): Datei/manuell eingeben/Paste/Drop</b></span>&nbsp;
-            <img id="switchEnglish" title="English" alt="English" src="pics/gb.gif"/>
+            <button id="switchEnglish" type="button" title="English" aria-label="Switch language to English"><img alt="" src="pics/gb.gif"/></button>
             <img id="empty" title="white space" alt="" src="pics/empty.gif"/>
-            <img id="switchGerman" title="Deutsch" alt="Deutsch" src="pics/de.gif"/>
+            <button id="switchGerman" type="button" title="Deutsch" aria-label="Sprache auf Deutsch umschalten"><img alt="" src="pics/de.gif"/></button>
             <span id="filename"></span></legend>
 
         <form id="input-file" method="post" action="." enctype="multipart/form-data"><!-- label for="loadFile1">Datei ausw&auml;hlen:</label -->
-            <input type="button" id="loadFile1"  value="Datei auswählen"/>
-            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm" id="loadFile" name="loadfiles[]"/>
+            <label for="loadFile" id="loadFileLabel">Datei auswählen</label>
+            <input type="button" id="loadFile1" value="Datei auswählen" aria-label="Datei auswählen"/>
+            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm" id="loadFile" name="loadfiles[]" aria-label="Bridge-Datei auswählen"/>
         </form>
 
         <!-- Buttons are handled by event triggers (see events.js)-->
@@ -40,4 +41,3 @@
 	</div>
 	<div class="inlr1"></div>
 </div>
-

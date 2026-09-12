@@ -1,3 +1,55 @@
+function calculateBridgeScore({
+	level,
+	suit,
+	doubled,
+	declarerVulnerable,
+	tricksTaken
+})
+{
+	const trickValues = {C:20, D:20, H:30, S:30, N:[40,30]};
+	const contractTricks = 6 + eval(level);
+	const made = tricksTaken >= contractTricks;
+	const doubledMultiplier = doubled === "XX" ? 4 : doubled === "X" ? 2 : 1;
+	const insultBonus = doubled === "XX" ? 100 : doubled === "X" ? 50 : 0;
+	let baseScore = 0;
+
+	if (made)
+	{
+		if (suit === "N")
+			baseScore = (trickValues.N[0] + trickValues.N[1] * (level - 1)) * doubledMultiplier;
+		else
+			baseScore = trickValues[suit] * level * doubledMultiplier;
+
+		const overtricks = tricksTaken - contractTricks;
+		let overtrickScore = 0;
+		if (doubledMultiplier === 1)
+			overtrickScore = (suit=="N" ? trickValues.N[1] : trickValues[suit]) * overtricks;
+		else
+			overtrickScore = (doubledMultiplier === 2
+				? (declarerVulnerable ? 200 : 100)
+				: (declarerVulnerable ? 400 : 200)) * overtricks;
+
+		let bonus = baseScore >= 100 ? (declarerVulnerable ? 500 : 300) : 50;
+		if (level === 6) bonus += declarerVulnerable ? 750 : 500;
+		else if (level === 7) bonus += declarerVulnerable ? 1500 : 1000;
+		return baseScore + overtrickScore + bonus + insultBonus;
+	}
+
+	const undertricks = contractTricks - tricksTaken;
+	let penalty = 0;
+	if (doubledMultiplier === 1)
+		penalty = undertricks * (declarerVulnerable ? 100 : 50);
+	else
+	{
+		if (declarerVulnerable)
+			penalty = undertricks === 1 ? 200 : undertricks === 2 ? 500 : 500 + (undertricks - 2) * 300;
+		else
+			penalty = undertricks === 1 ? 100 : undertricks === 2 ? 300 : undertricks === 3 ? 500 : 500 + (undertricks - 3) * 300;
+		penalty *= doubledMultiplier / 2;
+	}
+	return -penalty;
+}
+
 function validContract(contract)
 {
 	var levels = "1234567";
@@ -566,4 +618,3 @@ function makeBoardNameString(boardName)
 
 	return result;
 }
-

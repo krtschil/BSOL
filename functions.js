@@ -640,32 +640,6 @@ function startup(){
 		}
   }
 
-  function processRequest()
-  {
-  		var result = extractParas();
-
-/* Moved to events.js
-		if (result===false)
-		{
- 			document.getElementById("form1").style.display = "block";
- 			var loadfilectl = document.getElementById("loadFile");
-			loadfilectl.addEventListener("change", handleLoadFileSelect,false);
- 			return;
-		}
-*/
-
-		if (result!=""){
-			buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
-		}
-
-		setupGeneralHelp();
-		/*document.getElementById("showGeneralHelp").onclick = function()
-		{
-			showHelp(this,"generalHelp");
-		}*/
-		window.focus();
-  }
-
   function calculateBridgeScore({
 	level,
 	suit, // 'C', 'D', 'H', 'S', 'N'

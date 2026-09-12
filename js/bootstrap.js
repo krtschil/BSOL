@@ -400,3 +400,14 @@ function buildpage2()
 
 	showNewFeaturesNotice();
 }
+
+function processRequest()
+{
+	var result = extractParas();
+
+	if (result!="")
+		buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
+
+	setupGeneralHelp();
+	window.focus();
+}

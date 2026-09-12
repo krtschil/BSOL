@@ -11,7 +11,7 @@
                             <table class="results" id="board">
                                 <tr>
                                     <td class="width-33">&nbsp;</td>
-                                    <td id="northHand">
+                                    <td id="northHand" aria-label="Karten von Nord">
                                         &#9824; K 4 2
                                         <br>
                                         <span class="color-red">&#9829;</span> K 3 2
@@ -20,10 +20,10 @@
                                         <br>&#9827; 10 9 8 4
                                         <br>
                                     </td>
-                                    <td id="currentPosition">&nbsp;</td>
+                                    <td id="currentPosition" aria-live="polite" aria-label="Aktuelle Spielposition">&nbsp;</td>
                                 </tr>
                                 <tr>
-                                    <td id="westHand">&#9824; A 8 7 5<br>
+                                    <td id="westHand" aria-label="Karten von West">&#9824; A 8 7 5<br>
                                         <span class="color-red">&#9829;</span> 10 9 7 6<br>
                                         <span class="color-red">&#9830;</span> Q 6<br>&#9827; A J 7<br>
                                     </td>
@@ -36,7 +36,7 @@
                                             </tr>
                                             <tr class="h-100">
                                                 <td id="wvul"></td>
-                                                <td id="boardNumber"></td>
+                                                <td id="boardNumber" aria-live="polite" aria-label="Aktuelle Boardnummer"></td>
                                                 <td id="evul"></td>
                                             </tr>
                                             <tr class="h-20">
@@ -46,7 +46,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td id="eastHand">&#9824; J 10
+                                    <td id="eastHand" aria-label="Karten von Ost">&#9824; J 10
                                         <br>
                                         <span class="color-red">&#9829;</span> Q J 4
                                         <br>
@@ -79,7 +79,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td id="southHand">&#9824; Q 9 6 3
+                                    <td id="southHand" aria-label="Karten von Süd">&#9824; Q 9 6 3
                                         <br>
                                         <span class="color-red">&#9829;</span> A 8 5
                                         <br>
@@ -174,4 +174,3 @@
         </td>
     </tr>
 </table>
-

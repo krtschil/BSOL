@@ -46,14 +46,15 @@
 <div id="dropzone"><!-- Area for pasting PBN/LIN data or dropping a file with PBN/LIN content-->
     <fieldset id="data">
         <legend id="data-legend"><span id="flegend"><b>Analysiere Bridgehände (PBN/LIN/DLM): Datei/manuell eingeben/Paste/Drop</b></span>&nbsp;
-            <img id="switchEnglish" title="English" alt="English" src="pics/gb.gif"/>
+            <button id="switchEnglish" type="button" title="English" aria-label="Switch language to English"><img alt="" src="pics/gb.gif"/></button>
             <img id="empty" title="white space" alt="" src="pics/empty.gif"/>
-            <img id="switchGerman" title="Deutsch" alt="Deutsch" src="pics/de.gif"/>
+            <button id="switchGerman" type="button" title="Deutsch" aria-label="Sprache auf Deutsch umschalten"><img alt="" src="pics/de.gif"/></button>
             <span id="filename"></span></legend>
 
         <form id="input-file" method="post" action="." enctype="multipart/form-data"><!-- label for="loadFile1">Datei ausw&auml;hlen:</label -->
-            <input type="button" id="loadFile1"  value="Datei auswählen"/>
-            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm" id="loadFile" name="loadfiles[]"/>
+            <label for="loadFile" id="loadFileLabel">Datei auswählen</label>
+            <input type="button" id="loadFile1" value="Datei auswählen" aria-label="Datei auswählen"/>
+            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm" id="loadFile" name="loadfiles[]" aria-label="Bridge-Datei auswählen"/>
         </form>
 
         <!-- Buttons are handled by event triggers (see events.js)-->
@@ -95,7 +96,7 @@
                             <table class="results" id="board">
                                 <tr>
                                     <td class="width-33">&nbsp;</td>
-                                    <td id="northHand">
+                                    <td id="northHand" aria-label="Karten von Nord">
                                         &#9824; K 4 2
                                         <br>
                                         <span class="color-red">&#9829;</span> K 3 2
@@ -104,10 +105,10 @@
                                         <br>&#9827; 10 9 8 4
                                         <br>
                                     </td>
-                                    <td id="currentPosition">&nbsp;</td>
+                                    <td id="currentPosition" aria-live="polite" aria-label="Aktuelle Spielposition">&nbsp;</td>
                                 </tr>
                                 <tr>
-                                    <td id="westHand">&#9824; A 8 7 5<br>
+                                    <td id="westHand" aria-label="Karten von West">&#9824; A 8 7 5<br>
                                         <span class="color-red">&#9829;</span> 10 9 7 6<br>
                                         <span class="color-red">&#9830;</span> Q 6<br>&#9827; A J 7<br>
                                     </td>
@@ -120,7 +121,7 @@
                                             </tr>
                                             <tr class="h-100">
                                                 <td id="wvul"></td>
-                                                <td id="boardNumber"></td>
+                                                <td id="boardNumber" aria-live="polite" aria-label="Aktuelle Boardnummer"></td>
                                                 <td id="evul"></td>
                                             </tr>
                                             <tr class="h-20">
@@ -130,7 +131,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td id="eastHand">&#9824; J 10
+                                    <td id="eastHand" aria-label="Karten von Ost">&#9824; J 10
                                         <br>
                                         <span class="color-red">&#9829;</span> Q J 4
                                         <br>
@@ -163,7 +164,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td id="southHand">&#9824; Q 9 6 3
+                                    <td id="southHand" aria-label="Karten von Süd">&#9824; Q 9 6 3
                                         <br>
                                         <span class="color-red">&#9829;</span> A 8 5
                                         <br>
@@ -284,7 +285,7 @@
 	</div>
 </div>
 
-<div id="progressDiv">
+<div id="progressDiv" role="status" aria-live="polite" aria-label="Fortschritt">
 	<table id="progressDiv-t">
 		<tr class="h-20">
 			<td class="t-center">
@@ -297,42 +298,42 @@
 	</table>
 </div>
 
-<div id="popup_box">
+<div id="popup_box" role="alert" aria-live="assertive" aria-atomic="true">
 </div>
 
-<div id="spinner">
+<div id="spinner" role="status" aria-live="polite" aria-label="Laden">
 	<img src="pics/spinner.gif" alt="loading">
 </div>
 
-<div id="largeSpinner">
+<div id="largeSpinner" role="status" aria-live="polite" aria-label="Laden">
 	<img src="pics/largeSpin.gif" alt="loading">
 </div>
 
-<div id="commandHelp">
+<div id="commandHelp" role="dialog" aria-modal="true" aria-label="Befehls-Hilfe">
 </div>
 
-<div id="playHelp">
+<div id="playHelp" role="dialog" aria-modal="true" aria-label="Abspiel-Hilfe">
 </div>
 
-<div id="editHelp">
+<div id="editHelp" role="dialog" aria-modal="true" aria-label="Bearbeitungs-Hilfe">
 </div>
 
-<div id="playMatchContractHelp">
+<div id="playMatchContractHelp" role="dialog" aria-modal="true" aria-label="Kontrakt-Hilfe">
 </div>
 
-<div id="resultReasons">
+<div id="resultReasons" role="dialog" aria-modal="true" aria-label="Ergebnisgründe">
 </div>
 
-<div id="settingsHelp">
+<div id="settingsHelp" role="dialog" aria-modal="true" aria-label="Einstellungs-Hilfe">
 </div>
 
-<div id="krHelpText">
+<div id="krHelpText" role="dialog" aria-modal="true" aria-label="Kaplan-Rubens-Hilfe">
 </div>
 
-<div id="generalHelp">
+<div id="generalHelp" role="dialog" aria-modal="true" aria-label="Allgemeine Hilfe">
 </div>
 
-<div id="settings">
+<div id="settings" role="dialog" aria-modal="true" aria-labelledby="settingsT">
 	<table>
         <tr>
             <th><span id="settingsT" class="font-bold font-16">Einstellungen:</span></th>
@@ -352,7 +353,7 @@
 	</table>
 </div>
 
-<div id="optionsBox">
+<div id="optionsBox" role="dialog" aria-modal="true" aria-labelledby="nsshow_playable">
 	<table class="options">
         <tr class="inlr10">
             <td class="b0p10">&nbsp;&nbsp;&nbsp;&nbsp;<span id="nsshow_playable">N/S: Anzeige für spielbare Karten:</span>
@@ -413,7 +414,7 @@
     </table>
 </div>
 
-<div id="toolsSubMenu">
+<div id="toolsSubMenu" role="dialog" aria-modal="true" aria-labelledby="toolsChoose">
 	<h2 id="toolsChoose">Wähle aus:</h2>
 	<button type="button" id="analyseAllBoards"><span class="font-bold">Alle Boards analysieren</span></button><br>
 	<button type="button" id="showPlayerAcc"><span class="font-bold">Matrix zur Spielgenauigkeit</span></button>

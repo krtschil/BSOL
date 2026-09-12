@@ -23,7 +23,7 @@
 	</div>
 </div>
 
-<div id="progressDiv">
+<div id="progressDiv" role="status" aria-live="polite" aria-label="Fortschritt">
 	<table id="progressDiv-t">
 		<tr class="h-20">
 			<td class="t-center">
@@ -36,42 +36,42 @@
 	</table>
 </div>
 
-<div id="popup_box">
+<div id="popup_box" role="alert" aria-live="assertive" aria-atomic="true">
 </div>
 
-<div id="spinner">
+<div id="spinner" role="status" aria-live="polite" aria-label="Laden">
 	<img src="pics/spinner.gif" alt="loading">
 </div>
 
-<div id="largeSpinner">
+<div id="largeSpinner" role="status" aria-live="polite" aria-label="Laden">
 	<img src="pics/largeSpin.gif" alt="loading">
 </div>
 
-<div id="commandHelp">
+<div id="commandHelp" role="dialog" aria-modal="true" aria-label="Befehls-Hilfe">
 </div>
 
-<div id="playHelp">
+<div id="playHelp" role="dialog" aria-modal="true" aria-label="Abspiel-Hilfe">
 </div>
 
-<div id="editHelp">
+<div id="editHelp" role="dialog" aria-modal="true" aria-label="Bearbeitungs-Hilfe">
 </div>
 
-<div id="playMatchContractHelp">
+<div id="playMatchContractHelp" role="dialog" aria-modal="true" aria-label="Kontrakt-Hilfe">
 </div>
 
-<div id="resultReasons">
+<div id="resultReasons" role="dialog" aria-modal="true" aria-label="Ergebnisgründe">
 </div>
 
-<div id="settingsHelp">
+<div id="settingsHelp" role="dialog" aria-modal="true" aria-label="Einstellungs-Hilfe">
 </div>
 
-<div id="krHelpText">
+<div id="krHelpText" role="dialog" aria-modal="true" aria-label="Kaplan-Rubens-Hilfe">
 </div>
 
-<div id="generalHelp">
+<div id="generalHelp" role="dialog" aria-modal="true" aria-label="Allgemeine Hilfe">
 </div>
 
-<div id="settings">
+<div id="settings" role="dialog" aria-modal="true" aria-labelledby="settingsT">
 	<table>
         <tr>
             <th><span id="settingsT" class="font-bold font-16">Einstellungen:</span></th>
@@ -91,7 +91,7 @@
 	</table>
 </div>
 
-<div id="optionsBox">
+<div id="optionsBox" role="dialog" aria-modal="true" aria-labelledby="nsshow_playable">
 	<table class="options">
         <tr class="inlr10">
             <td class="b0p10">&nbsp;&nbsp;&nbsp;&nbsp;<span id="nsshow_playable">N/S: Anzeige für spielbare Karten:</span>
@@ -152,7 +152,7 @@
     </table>
 </div>
 
-<div id="toolsSubMenu">
+<div id="toolsSubMenu" role="dialog" aria-modal="true" aria-labelledby="toolsChoose">
 	<h2 id="toolsChoose">Wähle aus:</h2>
 	<button type="button" id="analyseAllBoards"><span class="font-bold">Alle Boards analysieren</span></button><br>
 	<button type="button" id="showPlayerAcc"><span class="font-bold">Matrix zur Spielgenauigkeit</span></button>
@@ -402,4 +402,3 @@
         </tr>
     </table>
 </div>
-

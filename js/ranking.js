@@ -713,7 +713,7 @@ function setupRankingTable(table,dir,rankInfo,winners)
 			if (g_eventType!="Teams")
 				tvalue = g_travellers.event.participants.pair[i].total_score;
 			else
-				tvalue = g_travellers.event.participants.pair[i].crossImpsPerBoard;
+				tvalue = g_travellers.event.participants.pair[i].total_score;
 
 			if (tvalue!="")
 			{
@@ -732,8 +732,9 @@ function setupRankingTable(table,dir,rankInfo,winners)
 
 	if (g_eventType=="Teams")
 	{
-		rows[0].cells[3].textContent = "Total XImps";
+		rows[0].cells[3].textContent = language=="de" ? "Siegpunkte" : "Victory points";
 		rows[0].cells[4].textContent = "Bds";
+		rows[0].cells[5].textContent = "";
 		cellOffset = 2;	// Allow for extra column which has been inserted.
 	}
 
@@ -765,7 +766,7 @@ function setupRankingTable(table,dir,rankInfo,winners)
 			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].position;
 		else
 		{
-			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].crossImpsPosition;
+			row.cells[0].innerHTML = pairs[i].samePosition + pairs[i].position;
 		}
 
 		row.cells[0].style.textAlign = "right";
@@ -810,12 +811,12 @@ function setupRankingTable(table,dir,rankInfo,winners)
 		}
 		else
 		{
-			row.cells[3].innerHTML = (Number(pairs[i].totalCrossImps)).toFixed(2);
+			row.cells[3].innerHTML = Number(pairs[i].total_score).toFixed(2);
 			row.cells[3].style.textAlign = "right";
 			row.cells[4].innerHTML = pairs[i].crossImpsBoardsPlayed;
 			row.cells[4].style.textAlign = "right";
 			row.cells[4].style.borderRight = "1px solid black";
-			row.cells[3+cellOffset].innerHTML = (Number(pairs[i].crossImpsPerBoard)).toFixed(2);
+			row.cells[3+cellOffset].innerHTML = "";
 		}
 
 		var backColor = "#6666FF";

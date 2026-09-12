@@ -224,7 +224,7 @@ function setLeadForScorecardRow(bnum,row,tline,declarer)
 	var j;
 	var colorPlus = "#ffff00";
 
-	row.cells[4].innerHTML = leadCard(tline.lead.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;"));
+	row.cells[4].innerHTML = displayLeadCard(tline.lead);
 
 	if (g_openingLeadsPresent&&((typeof g_hands.boards[bnum].DoubleDummyTricks)!=null)&&((typeof g_hands.boards[bnum].openingLeads)!="undefined"))
 	{
@@ -520,4 +520,3 @@ function setupResultReasons(ctx,result)
 
 	drawMiniHand();	// Draw the original board in case user clicks on the Board button.
 }
-

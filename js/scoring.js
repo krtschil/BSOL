@@ -467,6 +467,22 @@ function leadCard(lead)
 	return pvalue.replace("T","10");
 }
 
+function displayLeadCard(lead)
+{
+	var card = leadCard(lead);
+	var symbols = {
+		C: "&#9827;",
+		D: "<span style='color:red'>&#9830;</span>",
+		H: "<span style='color:red'>&#9829;</span>",
+		S: "&#9824;"
+	};
+
+	if ((card.length!=2)||(typeof symbols[card.charAt(1)]=="undefined"))
+		return card;
+
+	return symbols[card.charAt(1)] + card.charAt(0);
+}
+
 
 function getLeadsIdx(contract,declarer)
 {

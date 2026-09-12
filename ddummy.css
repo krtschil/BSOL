@@ -1567,6 +1567,23 @@ table.ranking th {
   background-color: #b9d9c4;
 }
 
+#bsession,
+#aboard {
+  background-color: #f2c94c;
+  color: #1f2933;
+  font-weight: bold;
+}
+
+#bsession:hover,
+#aboard:hover {
+  background-color: #e5b52f;
+}
+
+#bsession:active,
+#aboard:active {
+  background-color: #c99518;
+}
+
 #optionsBox,
 #settings,
 #generalHelp,

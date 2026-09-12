@@ -20,7 +20,7 @@ pre#output
   background-color:white;
   width:100%;
   max-width:1000px;
-  margin:0 auto;
+  margin:0;
   box-sizing:border-box;
 }
 #showGeneralHelp {margin-left:20px;}
@@ -87,11 +87,11 @@ table#traveller {
 }
 
 fieldset#data {
-    margin-left:5%;
-    margin-right:5%;
+    margin-left:12px;
+    margin-right:12px;
     margin-top:2ex;
-    width:auto;
-    max-width:90%;
+    width:fit-content;
+    max-width:calc(100% - 24px);
     min-width:0;
     box-sizing:border-box;
     border:1px solid #aaa;/* black;*/
@@ -113,8 +113,7 @@ fieldset#data > legend {
 
 @media (max-width:600px) {
   fieldset#data {
-    margin-left:12px;
-    margin-right:12px;
+    width:auto;
     max-width:none;
   }
 

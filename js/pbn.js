@@ -1,3 +1,45 @@
+function identifyHonourCardSet(str)
+{
+	if ((str != "") && (typeof str != "undefined"))
+	{
+		var lang = "english";
+
+		if (str.indexOf("R")!=-1)
+			lang = "french";
+		else if (str.indexOf("H")!=-1)
+			lang = "dutch";
+		else if (str.indexOf("D")!=-1)
+			lang = "german";
+
+		return lang;
+	}
+
+	return "english";
+}
+
+function convertToJQKA(str,lang)
+{
+	if (lang=="french")
+	{
+		str = str.replace(/V/g,"J");
+		str = str.replace(/D/g,"Q");
+		str = str.replace(/R/g,"K");
+	}
+	else if (lang=="german")
+	{
+		str = str.replace(/B/g,"J");
+		str = str.replace(/D/g,"Q");
+	}
+	else if (lang=="dutch")
+	{
+		str = str.replace(/B/g,"J");
+		str = str.replace(/V/g,"Q");
+		str = str.replace(/H/g,"K");
+	}
+
+	return str;
+}
+
 function getPBNSegment(data)
 {
 		// Return information for one board from the PBN data and also remove these lines from the original array

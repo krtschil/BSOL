@@ -118,49 +118,6 @@ function startup(){
 		extractParas();
 }
 
-  function identifyHonourCardSet(str)
-	{
-		if ((str != "") && (typeof str != "undefined"))
-		{
-			var lang = "english";
-
-			if (str.indexOf("R")!=-1)
-				lang = "french";
-			else if (str.indexOf("H")!=-1)
-				lang = "dutch";
-			else if (str.indexOf("D")!=-1) // german or french, but french has already been eliminated above
-				lang = "german";
-
-			return lang;
-		} else {
-			var lang = "english";
-			return lang;
-		}
-	}
-
-  function convertToJQKA(str,lang)
-	{
-		if (lang=="french")
-		{
-			str = str.replace(/V/g,"J");
-			str = str.replace(/D/g,"Q");
-			str = str.replace(/R/g,"K");
-		}
-		else if (lang=="german")
-		{
-			str = str.replace(/B/g,"J");
-			str = str.replace(/D/g,"Q");
-		}
-		else if (lang=="dutch")
-		{
-			str = str.replace(/B/g,"J");
-			str = str.replace(/V/g,"Q");
-			str = str.replace(/H/g,"K");
-		}
-
-		return str;
-	}
-
   function extractParas()
   {
     const validDealers = "NSEW";

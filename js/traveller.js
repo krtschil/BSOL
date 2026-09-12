@@ -1938,7 +1938,10 @@ function loadTraveller_1(data,statusText,jqXHR,context)
 				if (g_debug)
 					alert(data);
 
-				data = convertXML(data);	// convert it to json
+				// Bridgewebs normally supplies XML, but local/test integrations may
+				// provide the already-converted traveller JSON.
+				if (typeof data === "string" && data.trim().charAt(0)=="<")
+					data = convertXML(data);	// convert it to json
 
 				if (g_debug)
 					alert(JSON.stringify(data));
@@ -2394,4 +2397,3 @@ function needToAnalyse()
 	}
 	return false;
 }
-

@@ -282,7 +282,7 @@ export function linToJson(str)
 	var playerNames = [];
 	var boardDealt = false;
 	var outStr = "";
-	var i,j;
+	var i,j,k;
 	var inHeader = true;
 
 	str = str.replace(/[\"\[\]]/g,"");  // Filter out characters which won't survive conversion of the final json string to a json object

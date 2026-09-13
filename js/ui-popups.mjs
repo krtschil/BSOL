@@ -1,4 +1,5 @@
 import { localStorageSupported } from "./storage.mjs";
+import { displayHands } from "./hand-renderer.mjs";
 
 export function show(button)
 {

@@ -5,6 +5,7 @@ import { exitHandEntryMode, showDealerKeypad, showVulnerabilityKeypad } from "./
 import { startup } from "./startup.mjs";
 import { changeLanguage } from "./localization.mjs";
 import { showHelp } from "./ui-popups.mjs";
+import { displayHands } from "./hand-renderer.mjs";
 
 export function closetoolsSubMenuClose(event){
     document.getElementById('toolsSubMenu').style.display='none';

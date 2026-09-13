@@ -158,6 +158,8 @@ function buildPage1(data,options)
 	hideRanking();
 	hide("scores");
 	hide("scoreandtraveller");
+	hide("comparison");	// Hide stale "Board" (traveller comparison) view from a previous file/paste.
+	hide("checkListDiv");
 
 	document.getElementById("northHand").onclick = function() {selectQuadrant(0);};
 	document.getElementById("eastHand").onclick = function() {selectQuadrant(1);};

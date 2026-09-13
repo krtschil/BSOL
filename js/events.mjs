@@ -1,4 +1,10 @@
-function closetoolsSubMenuClose(event){
+import { sessionHelp } from "./session.mjs";
+import { createEmptyBoard, readClipboard, handleLoadFileSelect, processClipboardData } from "./import.mjs";
+import { setupKRHelp } from "./help.mjs";
+import { exitHandEntryMode, showDealerKeypad, showVulnerabilityKeypad } from "./hand-entry.mjs";
+import { startup } from "./startup.mjs";
+
+export function closetoolsSubMenuClose(event){
     document.getElementById('toolsSubMenu').style.display='none';
 }
 
@@ -203,3 +209,9 @@ dropzone.addEventListener("drop", async (e) => {
     console.error(err);
   }
 });
+// Window-bridge: expose this function as a global in case any legacy
+// classic script needs it. Remove once no longer needed.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, { closetoolsSubMenuClose });
+}

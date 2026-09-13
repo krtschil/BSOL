@@ -9,8 +9,8 @@ test("converts a PBN file into valid board JSON", () => {
 		g_hands: {boards: []},
 		g_title: "",
 	});
-	loadScript(context, "js/scoring.js");
-	loadScript(context, "js/pbn.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
 	const pbn = fs.readFileSync(`${root}/test/fixtures/sample-traveller.pbn`, "utf8");
 	const result = JSON.parse(context.pbnToJson(pbn));
 
@@ -34,7 +34,8 @@ test("converts a LIN board into valid board JSON", () => {
 		g_hands: {},
 		g_title: "",
 	});
-	loadScript(context, "js/pbn.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
 	loadScript(context, "js/import.js");
 	const lin = fs.readFileSync(`${root}/hands/4399982054.lin`, "utf8");
 	const result = JSON.parse(context.linToJson(lin));
@@ -59,7 +60,8 @@ test("converts a DLM file into valid board JSON", () => {
 
 test("validates contracts and converts honour-card alphabets", () => {
 	const context = createContext();
-	loadScript(context, "js/pbn.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
 
 	assert.equal(context.validateContract("4S"), true);
 	assert.equal(context.validateContract("8S"), false);
@@ -72,7 +74,8 @@ test("parses supported URL parameters into board and traveller settings", () => 
 		window: {location: {search: "?file=hands%2Fsample.pbn&xml=traveller.json&board=7&dealer=E&vul=NS"}},
 		changeLanguage: () => {},
 	});
-	loadScript(context, "js/pbn.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
 	loadScript(context, "js/bootstrap.js");
 	const result = context.extractParas();
 
@@ -141,7 +144,7 @@ test("switches localization labels between German and English", () => {
 
 test("calculates representative bridge scores", () => {
 	const context = createContext();
-	loadScript(context, "js/scoring.js");
+	loadScript(context, "js/scoring.mjs");
 
 	assert.equal(context.calculateBridgeScore({
 		level: 4, suit: "H", doubled: "", declarerVulnerable: false, tricksTaken: 10

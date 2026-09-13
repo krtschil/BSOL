@@ -556,7 +556,7 @@ export function loadHands_1(data,statusText,jqXHR,context)
 
 	if ((typeof context)!="undefined")
 		if ((typeof context.callback)!="undefined")
-			this.callback = context.callback;
+			window.callback = context.callback;
 
 	var hands;
 
@@ -628,7 +628,7 @@ export function loadHands_1(data,statusText,jqXHR,context)
 		setLastBoardIndex(index);
 
 		setupTraveller(g_lastBindex,true);
-		getTraveller(this);
+		getTraveller(window);
 	}
 	else
 	{
@@ -653,7 +653,7 @@ export function loadHands_1(data,statusText,jqXHR,context)
 
 		hideSpinner();
 		resetTimeout();
-		this.callback();
+		window.callback();
 	}
 }
 

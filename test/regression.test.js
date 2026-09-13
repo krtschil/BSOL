@@ -153,3 +153,89 @@ test("calculates representative bridge scores", () => {
 		level: 4, suit: "S", doubled: "X", declarerVulnerable: false, tricksTaken: 8
 	}), -300);
 });
+
+test("does not set g_defaultContract when board has no replayable play data", () => {
+	const elements = {};
+	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
+	const createRow = () => ({cells: [createCell(), createCell(), createCell(), createCell(), createCell()]});
+	const getEl = (id) => {
+		if (elements[id]) return elements[id];
+		const el = {
+			style: {},
+			classList: {add: () => {}, remove: () => {}},
+			rows: [createRow(), createRow(), createRow(), createRow(), createRow(), createRow(), createRow()],
+			innerHTML: "",
+			textContent: "",
+			replaceChildren: () => {},
+			deleteRow: () => { el.rows.pop(); }
+		};
+		return (elements[id] = el);
+	};
+	const context = createContext({
+		document: {
+			getElementById: getEl,
+		},
+		$: () => ({show: () => {}, hide: () => {}, finish: () => {}}),
+		g_lastBindex: 0,
+		g_file: "",
+		g_test: 0,
+		g_xml: "",
+		g_hands: {
+			boards: [{
+				Contract: "3NT",
+				Declarer: "N",
+				Played: ["C2"], // only opening lead, no play sequence
+				Bids: [],
+				Deal: ["AK.QJ.T9.8765", "23.45.67.89TJQ", "45.67.89.AKQJT", "98.76.54.32"],
+			}]
+		},
+		g_travellers: null,
+		g_session: 0,
+		g_credits: "credits",
+		g_urqButtonHeight: "20px",
+		g_urqButtFontSize: "12px",
+		g_scoreFontSize: "12px",
+		language: "de",
+		appState: {},
+		validContract: (c) => typeof c === "string" && c.length >= 2,
+		setMode: () => {},
+		setLastBoardIndex: (i) => { context.g_lastBindex = i; },
+		hideMenuItems: () => {},
+		showMainMenuItems: () => {},
+		show: () => {},
+		hide: () => {},
+		callddd: () => {},
+		setSession: () => {},
+		clearCardData: () => {},
+		createHandString: () => ({text: "", pts: 0, points: 0}),
+		createCentreString: () => "",
+		makeBoardNameString: () => "",
+		setDealerChar: () => {},
+		redrawMCTable: () => {},
+		updateUpperLeftQuadrant: () => {},
+		edit: () => {},
+		calculateTricks: () => 0,
+		showBidding: () => "",
+		displayVulnerability: () => {},
+		showMakeableContracts: () => {},
+		showCredits: () => {},
+		displayTraveller: () => {},
+	});
+
+	loadScript(context, "js/state.js");
+	context.appState = context.window.appState;
+	loadScript(context, "js/traveller.js");
+
+	context.setupTraveller(0, true);
+
+	assert.equal(context.g_defaultContract, 0);
+	assert.equal(context.g_defaultContractIndex, -1);
+
+	// When play data exists, default contract should be set
+	context.g_hands.boards[0].Played = ["C2", "C3", "CK", "CA"];
+	context.setupTraveller(0, true);
+
+	assert.equal(context.g_defaultContract, 1);
+	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+});
+

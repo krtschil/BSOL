@@ -283,7 +283,7 @@ export function setupGeneralHelp()
 	document.getElementById("generalHelp").innerHTML = help;
 }
 
- function setupKRHelp()
+export function setupKRHelp()
 {
     switch(language)
     {
@@ -328,5 +328,6 @@ if (typeof window !== "undefined")
 		setupCommandHelp,
 		setupSettingsHelp,
 		setupGeneralHelp,
+		setupKRHelp,
 	});
 }

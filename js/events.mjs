@@ -3,6 +3,7 @@ import { createEmptyBoard, readClipboard, handleLoadFileSelect, processClipboard
 import { setupKRHelp } from "./help.mjs";
 import { exitHandEntryMode, showDealerKeypad, showVulnerabilityKeypad } from "./hand-entry.mjs";
 import { startup } from "./startup.mjs";
+import { changeLanguage } from "./localization.mjs";
 
 export function closetoolsSubMenuClose(event){
     document.getElementById('toolsSubMenu').style.display='none';

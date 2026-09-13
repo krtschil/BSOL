@@ -131,7 +131,7 @@ test("switches localization labels between German and English", () => {
 			getElementById: (id) => labels[id] || {style: {}, textContent: "", value: "", innerHTML: ""},
 		},
 	});
-	loadScript(context, "js/localization.js");
+	loadScript(context, "js/localization.mjs");
 
 	context.changeLanguage("de");
 	assert.equal(labels.loadFile1.value, "Datei auswählen");

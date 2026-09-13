@@ -1,3 +1,5 @@
+import { getPosition, doPopupNoTimeout } from "./ui-popups.mjs";
+
 export function getBoardIndex(travindex)
 {
 	// get board index, given index to a traveller.

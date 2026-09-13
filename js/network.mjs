@@ -1,3 +1,5 @@
+import { displayError, hideSpinner } from "./ui-popups.mjs";
+
 export function setRequestTimeout(override=false)
 {
 	if ((g_timeoutID=="")&&(override))	// Only put timeout if requests are being made to remote server, or we are in a card play sequence

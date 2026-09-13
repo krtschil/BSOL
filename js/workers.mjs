@@ -7,6 +7,7 @@
 
 import { log } from "./network.mjs";
 import { localStorageSupported } from "./storage.mjs";
+import { displayErrorAbsPosition, hideSpinner } from "./ui-popups.mjs";
 
 export function listener(event,workerType)
 {

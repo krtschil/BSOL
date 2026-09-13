@@ -2,6 +2,7 @@ import { validContract, calcScoreForMakeable, leadCard, getLeadsIdx, makeDealKey
 import { getTravellerForBoard, checkBoardValid, makeableContractRequestsOutstanding } from "./board-utils.mjs";
 import { resetTimeout, requestPending } from "./network.mjs";
 import { restartBackgroundWorkers } from "./workers.mjs";
+import { hide, displayErrorAbsPosition, hideSpinner, largeSpinner, spinnerNoDelay, showEmptyProgressBar } from "./ui-popups.mjs";
 
 export function getMakeableTricksForContract(index,contract,declarer)
 {

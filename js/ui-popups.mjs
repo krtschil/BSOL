@@ -1,14 +1,16 @@
-function show(button)
+import { localStorageSupported } from "./storage.mjs";
+
+export function show(button)
 {
 	$("#"+button).show();
 }
 
-function hide(button)
+export function hide(button)
 {
 	$("#"+button).hide();
 }
 
-function getPosition(element) {
+export function getPosition(element) {
 		// Find location of an element (for display of popup messages at cursor location)
     var xPosition = 0;
     var yPosition = 0;
@@ -25,7 +27,7 @@ function getPosition(element) {
     return { x: xPosition, y: yPosition };
 }
 
-function displayErrorAbsPosition(message,x,y)
+export function displayErrorAbsPosition(message,x,y)
 {
 	var popup = document.getElementById("popup_box");
 	popup.style.top = y + "px";
@@ -37,7 +39,7 @@ function displayErrorAbsPosition(message,x,y)
 	$("#popup_box").delay(100).fadeIn(200).delay(2000).fadeOut(100);
 }
 
-function displayError(element,message)
+export function displayError(element,message)
 {
 	var popup = document.getElementById("popup_box");
 	popup.style.top = ((getPosition(element).y) - 20) + "px";
@@ -49,7 +51,7 @@ function displayError(element,message)
 	$("#popup_box").delay(100).fadeIn(200).delay(5000).fadeOut(100);
 }
 
-function doPopup(pelement,text)
+export function doPopup(pelement,text)
 {
 		// Display popup box containing specified text at location of this element
 	var y = ((getPosition(pelement).y) - 20) + "px";
@@ -57,7 +59,7 @@ function doPopup(pelement,text)
 	doPopupAt(text,x,y);
 }
 
-function doPopupAt(text,px,py)
+export function doPopupAt(text,px,py)
 {
 		// Display popup box containing specified text at location of this element
 	var popup = document.getElementById("popup_box");
@@ -69,7 +71,7 @@ function doPopupAt(text,px,py)
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);  // Display for 4 seconds
 }
 
-function doPopupNoTimeout(pelement,htmltext,posx,posy)
+export function doPopupNoTimeout(pelement,htmltext,posx,posy)
 {
 		// Display popup box containing specified html at location of this element
 	var popup = document.getElementById("popup_box");
@@ -83,7 +85,7 @@ function doPopupNoTimeout(pelement,htmltext,posx,posy)
 	$("#popup_box").show();
 }
 
-function hideAllPopups()
+export function hideAllPopups()
 {
 	$("#popup_box").hide();
 	$("#optionsBox").hide();
@@ -93,7 +95,7 @@ function hideAllPopups()
 	$("#settings").hide();
 }
 
-function hideHelp()
+export function hideHelp()
 {
 	if (g_helpId!="")
 	{
@@ -102,7 +104,7 @@ function hideHelp()
 	}
 }
 
-function showSettings()
+export function showSettings()
 {
 	hideAllPopups();
 	document.getElementById("settingsHide").onclick = hideAllPopups;
@@ -110,7 +112,7 @@ function showSettings()
 	$("#settings").show();
 }
 
-function showOptions(pthis)
+export function showOptions(pthis)
 {
 		// Respond to the HELP button
 	var popup = document.getElementById("optionsBox");
@@ -167,12 +169,12 @@ function showOptions(pthis)
 	$("#optionsBox").show();
 }
 
-function showtoolsSubMenu()
+export function showtoolsSubMenu()
 {
 	$("#toolsSubMenu").show();
 }
 
-function showHelp(pthis,detailedHelp)
+export function showHelp(pthis,detailedHelp)
 {
 		// Respond to the HELP button
 	if ((g_helpId!="")&&(g_helpId!=detailedHelp))
@@ -192,7 +194,7 @@ function showHelp(pthis,detailedHelp)
 	$("#"+detailedHelp).show();
 }
 
-function hideSpinner()
+export function hideSpinner()
 {
 	$("#spinner").finish();
 	$("largeSpinner").finish();
@@ -200,7 +202,7 @@ function hideSpinner()
 	document.getElementById("largeSpinner").style.display="none";
 }
 
-function largeSpinner()
+export function largeSpinner()
 {
 	var spinner = document.getElementById("spinner");
 	var largeSpinner = document.getElementById("largeSpinner");
@@ -211,7 +213,7 @@ function largeSpinner()
 	$("#largeSpinner").fadeIn(1);
 }
 
-function spinnerNoDelay(pthis)
+export function spinnerNoDelay(pthis)
 {
 	var spinner = document.getElementById("spinner");
 	spinner.style.top = ((getPosition(pthis).y) - 20) + "px";
@@ -221,7 +223,7 @@ function spinnerNoDelay(pthis)
 	$("#spinner").fadeIn(1);
 }
 
-function spinnerNoDelayAbs(pthis,px,py)
+export function spinnerNoDelayAbs(pthis,px,py)
 {
 	var spinner = document.getElementById("spinner");
 	spinner.style.top = py;
@@ -231,7 +233,7 @@ function spinnerNoDelayAbs(pthis,px,py)
 	$("#spinner").fadeIn(1);
 }
 
-function spinner(pthis){
+export function spinner(pthis){
 	var spinner = document.getElementById("spinner");
 	spinner.style.top = ((getPosition(pthis).y) - 20) + "px";
 	spinner.style.left = getPosition(pthis).x  + "px";
@@ -240,7 +242,7 @@ function spinner(pthis){
 	$("#spinner").delay(500).fadeIn(200);
 }
 
-function showBoardKeypad()
+export function showBoardKeypad()
 {
 	var boardThreshold = 36; // Show a scroll bar if more boards than this
 	switch(language)
@@ -281,7 +283,7 @@ function showBoardKeypad()
 	doPopupNoTimeout(document.getElementById("gotoBoard"),htmltext,100,50);
 }
 
-function showNewBoardSelector()
+export function showNewBoardSelector()
 {
 	switch(language)
 	{
@@ -328,7 +330,7 @@ function showNewBoardSelector()
 	doPopupNoTimeout(document.getElementById("newBoard"),htmltext,100,50);
 }
 
-function showTravellerKeypad()
+export function showTravellerKeypad()
 {
 	switch(language)
 	{
@@ -364,8 +366,10 @@ function showTravellerKeypad()
 	doPopupNoTimeout(document.getElementById("gotoBoard"),htmltext,100,50);
 }
 
-function initSettings()
+export function initSettings()
 {
+	var res;
+
 	if (localStorageSupported())
 	{
 		if (document.getElementById("mkauto1").checked)
@@ -401,7 +405,7 @@ function initSettings()
 	}
 }
 
-function setOptions(optionsStr)
+export function setOptions(optionsStr)
 {
 		//*** This function is only called at startup, from buildPage1
 	try {
@@ -431,7 +435,7 @@ function setOptions(optionsStr)
 	} catch (err) {alert(err);};
 }
 
-function hideMenuItems()
+export function hideMenuItems()
 {
 	hide("prev");
 	hide("showBoards");
@@ -457,7 +461,7 @@ function hideMenuItems()
 	document.getElementById('popup_box').style.display='none';
 }
 
-function showMainMenuItems()
+export function showMainMenuItems()
 {
 //	if ((typeof g_hands.lin)=="undefined")
 	if ((g_hands.boards.length>1)||(g_test==1)||(g_xml!=""))
@@ -489,7 +493,7 @@ function showMainMenuItems()
 	show("tools");
 }
 
-function showEmptyProgressBar(text)
+export function showEmptyProgressBar(text)
 {
 	$("#toolsSubMenu").hide();
 	document.getElementById("saveBoards").setAttribute("disabled","");
@@ -503,7 +507,7 @@ function showEmptyProgressBar(text)
 	document.getElementById("progress").width = "0px";
 }
 
-function showBidAlert(pthis){
+export function showBidAlert(pthis){
 		// Show the explanation of the bid
 	var id = Number(pthis.id.substring(6));
 	var bids = g_hands.boards[g_lastBindex].Bids;
@@ -525,7 +529,7 @@ function showBidAlert(pthis){
 	popup.style.left = (getPosition(pthis).x -  $(popup).width())  + "px";
 }
 
-function showNames(pthis,dir){
+export function showNames(pthis,dir){
 		// Show popup with player names
 	if (pthis.innerHTML == "") return;
 	var pair = pthis.innerHTML;
@@ -549,4 +553,22 @@ function showNames(pthis,dir){
 	$("#popup_box").finish();
 	popup.style.display="none";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (hand-renderer.js, traveller.js, play.js, ranking.js,
+// bootstrap.js, scorecard.js, board-renderer.js, accuracy.js) can keep
+// calling them unchanged. Remove entries here once every caller has been
+// migrated to `import`.
+if (typeof window !== "undefined")
+{
+    Object.assign(window, {
+        show, hide, getPosition, displayErrorAbsPosition, displayError,
+        doPopup, doPopupAt, doPopupNoTimeout, hideAllPopups, hideHelp,
+        showSettings, showOptions, showtoolsSubMenu, showHelp, hideSpinner,
+        largeSpinner, spinnerNoDelay, spinnerNoDelayAbs, spinner,
+        showBoardKeypad, showNewBoardSelector, showTravellerKeypad,
+        initSettings, setOptions, hideMenuItems, showMainMenuItems,
+        showEmptyProgressBar, showBidAlert, showNames
+    });
 }

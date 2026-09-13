@@ -1,4 +1,5 @@
 import { log, requestPending } from "./network.mjs";
+import { show, hide, getPosition, doPopup, doPopupNoTimeout, showHelp, spinner, hideMenuItems } from "./ui-popups.mjs";
 
 export function clearMakeableOnInputBoard()
 {

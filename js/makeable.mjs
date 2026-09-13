@@ -1,4 +1,7 @@
-function getMakeableTricksForContract(index,contract,declarer)
+import { validContract, calcScoreForMakeable, leadCard, getLeadsIdx, makeDealKey } from "./scoring.mjs";
+import { getTravellerForBoard, checkBoardValid, makeableContractRequestsOutstanding } from "./board-utils.mjs";
+
+export function getMakeableTricksForContract(index,contract,declarer)
 {
 	var trickChars = "0123456789ABCD";
 	var suits = "NSHDC";
@@ -21,7 +24,7 @@ function getMakeableTricksForContract(index,contract,declarer)
 	return Number(value);
 }
 
-function getHighestScoringMakeableContractForDirection(bindex,direction,vulnerable)
+export function getHighestScoringMakeableContractForDirection(bindex,direction,vulnerable)
 {
 	var suit = "CDHSN";
 	var dir = "NS";
@@ -75,7 +78,7 @@ function getHighestScoringMakeableContractForDirection(bindex,direction,vulnerab
 	return null;	// No makeable contract possible
 }
 
-function getMakeableTricksForLead(pindex,tline)
+export function getMakeableTricksForLead(pindex,tline)
 {
 	var ntricks = null;
 
@@ -109,7 +112,7 @@ function getMakeableTricksForLead(pindex,tline)
 	return ntricks;
 }
 
-function calculateMakeableAllBoards()
+export function calculateMakeableAllBoards()
 {
 		// This function is only enabled when makeable contracts are calculated locally, not on the server
 	g_allBoards = 1;
@@ -130,7 +133,7 @@ function calculateMakeableAllBoards()
 		calculateMakeableSingleBoard(i);
 }
 
-function finishBackgroundOperation()
+export function finishBackgroundOperation()
 {
 	$("#progressDiv").hide();
 	document.getElementById("saveBoards").removeAttribute("disabled");
@@ -145,19 +148,19 @@ function finishBackgroundOperation()
 	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
 }
 
-function resetAnalyseAllBoards()
+export function resetAnalyseAllBoards()
 {
 	g_allBoards = 0;
 	finishBackgroundOperation();
 }
 
-function completedAnalyseAllBoards()
+export function completedAnalyseAllBoards()
 {
 	restartBackgroundWorkers();
 	resetAnalyseAllBoards();
 }
 
-function cacheMakeable(pindex,data)
+export function cacheMakeable(pindex,data)
 {
 	var limit = 500;
 	var delMax = limit/10;
@@ -207,7 +210,7 @@ function cacheMakeable(pindex,data)
 	} catch (e) {};
 }
 
-function dddLoadMakeable(data,statusText,jqXHR,bindex)
+export function dddLoadMakeable(data,statusText,jqXHR,bindex)
 {
 	var vul = ["None","All","NS","EW"];
 	var leader = "nesw";
@@ -313,7 +316,7 @@ function dddLoadMakeable(data,statusText,jqXHR,bindex)
 	}
 }
 
-function getDDTricks(msg)
+export function getDDTricks(msg)
 {
 	delete msg.pfunc;	// Can't pass cloned object containing function
 
@@ -330,7 +333,7 @@ function getDDTricks(msg)
 	}
 }
 
-function getIndexedDDTricks(msg)
+export function getIndexedDDTricks(msg)
 {
 	if (g_db==null)
 		getDDTricks(msg);
@@ -356,7 +359,7 @@ function getIndexedDDTricks(msg)
 	}
 }
 
-function startAnalyseAll()
+export function startAnalyseAll()
 {
 	// Generate background requests to calculate makeable contracts for all boards
 	log('button=analyseAll');
@@ -365,7 +368,7 @@ function startAnalyseAll()
 	g_bgObj.fn = "analyseAll";		// Will be processed by worker event listener function when background workers have initialised
 }
 
-function lottPair(direction)
+export function lottPair(direction)
 {
 	// Law of Total Tricks
 	var suitChars = "SHDC";
@@ -437,7 +440,7 @@ function lottPair(direction)
 		return null;
 }
 
-function lott()
+export function lott()
 {
 	var ns = lottPair(1);
 	var ew = lottPair(2);
@@ -451,7 +454,7 @@ function lott()
 		return "N/A";
 }
 
-function getRequestedLeads(bindex)
+export function getRequestedLeads(bindex)
 {
 	var i;
 
@@ -487,17 +490,17 @@ function getRequestedLeads(bindex)
 	else return "";
 }
 
-function getFullMakeableJson(context)
+export function getFullMakeableJson(context)
 {
 }
 
-function calculateMakeableSingleBoard(bindex)
+export function calculateMakeableSingleBoard(bindex)
 {
 	if (!requestPending())
 		calculateMakeableContracts(dddLoadMakeable,getRequestedLeads(bindex),bindex);
 }
 
-function calculateMakeableContracts(pfunc,pleadstr,bindex)
+export function calculateMakeableContracts(pfunc,pleadstr,bindex)
 {
 	var i,j,k;
 
@@ -611,4 +614,33 @@ function calculateMakeableContracts(pfunc,pleadstr,bindex)
 
 		if (mccount==0) completedAnalyseAllBoards();
 	}
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (ranking.js, scorecard.js, traveller.js, workers.js,
+// accuracy.js, board-renderer.js, bootstrap.js) can keep calling them
+// unchanged. Remove entries here once every caller has been migrated to
+// `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		getMakeableTricksForContract,
+		getHighestScoringMakeableContractForDirection,
+		getMakeableTricksForLead,
+		calculateMakeableAllBoards,
+		finishBackgroundOperation,
+		resetAnalyseAllBoards,
+		completedAnalyseAllBoards,
+		cacheMakeable,
+		dddLoadMakeable,
+		getDDTricks,
+		getIndexedDDTricks,
+		startAnalyseAll,
+		lottPair,
+		lott,
+		getRequestedLeads,
+		getFullMakeableJson,
+		calculateMakeableSingleBoard,
+		calculateMakeableContracts,
+	});
 }

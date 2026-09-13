@@ -219,7 +219,7 @@ export function dddLoadMakeable(data,statusText,jqXHR,bindex)
 	var tmp = data;
 	tmp = JSON.parse(tmp);
 
-	if (this.hasOwnProperty("pbn"))	// It's from a remote request, fill in the missing fields from context
+	if ((typeof this !== "undefined") && this && this.hasOwnProperty("pbn"))	// It's from a remote request, fill in the missing fields from context
 	{
 		tmp.sess.pbn = this.pbn;
 		tmp.vul = convertVulStr(this.vul);

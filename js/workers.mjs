@@ -5,7 +5,10 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ***********************************************************************************/
 
-function listener(event,workerType)
+import { log } from "./network.mjs";
+import { localStorageSupported } from "./storage.mjs";
+
+export function listener(event,workerType)
 {
 	if (event.data && event.data.type=="worker-error")
 	{
@@ -154,7 +157,7 @@ function listener(event,workerType)
 	}
 }
 
-function handleWorkerError(message,workerType)
+export function handleWorkerError(message,workerType)
 {
 	var prefix;
 
@@ -189,17 +192,17 @@ function handleWorkerError(message,workerType)
 		displayErrorAbsPosition("<div style=\"padding:10px;background-color:#FFEEEE;border:1px solid black;max-width:360px;\"><span style=\"font-size:16px;\">" + escaped + "</span></div>",100,100);
 }
 
-function listenerMain(event)
+export function listenerMain(event)
 {
 	listener(event,"main");
 }
 
-function listenerBackground(event)
+export function listenerBackground(event)
 {
 	listener(event,"background");
 }
 
-function workerSupported()
+export function workerSupported()
 {
 	if (typeof(Worker)!=="undefined")
 		return true;
@@ -207,7 +210,7 @@ function workerSupported()
 		return false;
 }
 
-function webAssemblySupported()
+export function webAssemblySupported()
 {
 	try {
 		if (typeof WebAssembly === "object"&& typeof WebAssembly.instantiate === "function") {
@@ -220,7 +223,7 @@ function webAssemblySupported()
     return false;
 }
 
-function createBackgroundWorkers()
+export function createBackgroundWorkers()
 {
 	var nworkers = 4;	// Make this the maximum number of concurrent worker threads for makeable contracts
 	/*
@@ -245,7 +248,7 @@ function createBackgroundWorkers()
 	g_nextmworker = 0;
 }
 
-function stopBackgroundWorkers()
+export function stopBackgroundWorkers()
 {
 	console.log("stopping background worker threads");
 
@@ -261,7 +264,7 @@ function stopBackgroundWorkers()
 	resetAnalyseAllBoards();
 }
 
-function createMainWorker()
+export function createMainWorker()
 {
 	if (g_worker==null)
 	{
@@ -290,10 +293,29 @@ function createMainWorker()
     }
 }
 
-function restartBackgroundWorkers()
+export function restartBackgroundWorkers()
 {
 		console.log("terminate then restart background workers");
 
 		stopBackgroundWorkers();
 		createBackgroundWorkers();	// Recreate them
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (accuracy.js, bootstrap.js) can keep calling them unchanged.
+// Remove entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		listener,
+		handleWorkerError,
+		listenerMain,
+		listenerBackground,
+		workerSupported,
+		webAssemblySupported,
+		createBackgroundWorkers,
+		stopBackgroundWorkers,
+		createMainWorker,
+		restartBackgroundWorkers,
+	});
 }

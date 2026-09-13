@@ -1,4 +1,6 @@
 import { validContract, calculateBridgeScore, setCharAt } from "./scoring.mjs";
+import { downloadFile } from "./file-utils.mjs";
+import { log } from "./network.mjs";
 
 export function identifyHonourCardSet(str)
 {

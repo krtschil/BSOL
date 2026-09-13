@@ -1,4 +1,5 @@
 import { log } from "./network.mjs";
+import { getHands } from "./import.mjs";
 
 export function callAnalysisFunction(index)
 {

@@ -36,7 +36,7 @@ test("converts a LIN board into valid board JSON", () => {
 	});
 	loadScript(context, "js/scoring.mjs");
 	loadScript(context, "js/pbn.mjs");
-	loadScript(context, "js/import.js");
+	loadScript(context, "js/import.mjs");
 	const lin = fs.readFileSync(`${root}/hands/4399982054.lin`, "utf8");
 	const result = JSON.parse(context.linToJson(lin));
 
@@ -48,7 +48,7 @@ test("converts a LIN board into valid board JSON", () => {
 
 test("converts a DLM file into valid board JSON", () => {
 	const context = createContext({g_fullInfo: false});
-	loadScript(context, "js/import.js");
+	loadScript(context, "js/import.mjs");
 	const dlm = fs.readFileSync(`${root}/test/fixtures/Team2024.dlm`, "utf8");
 	const result = JSON.parse(context.dlmToJson(dlm));
 

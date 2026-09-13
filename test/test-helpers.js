@@ -40,7 +40,7 @@ function loadScript(context, relativePath)
 	// keyword rather than pulling in a full ES module loader.
 	if (filename.endsWith(".mjs"))
 	{
-		source = source.replace(/^export (function|const|let|var)/gm, "$1");
+		source = source.replace(/^export (async function|function|const|let|var)/gm, "$1");
 		// Strip static `import ... from "...";` statements: the tests load every
 		// script into one shared vm context (mirroring the browser's shared
 		// global scope), so imported functions are already plain identifiers

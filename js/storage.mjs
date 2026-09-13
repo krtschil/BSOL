@@ -1,3 +1,5 @@
+import { getHands } from "./import.mjs";
+
 export function localStorageSupported() {
 	try {
 		return "localStorage" in window && window["localStorage"] !== null;

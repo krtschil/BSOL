@@ -1,4 +1,8 @@
-function dlmToJson(data)
+import { pbnToJson, convertHand, inferHand } from "./pbn.mjs";
+import { requestPending, setRequestTimeout, doRequestHTMLasync } from "./network.mjs";
+import { startup } from "./startup.mjs";
+
+export function dlmToJson(data)
 {
 	var dealerPattern = "NESW";
 	var vulnerabilityPattern = ["None","NS","EW","All","NS","EW","All","None","EW","All","None","NS","All","None","NS","EW"];
@@ -124,7 +128,7 @@ function dlmToJson(data)
 	return outStr;
 }
 
-function writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,claimed,pnames,pnames_g,score,explanation)
+export function writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,claimed,pnames,pnames_g,score,explanation)
 {
 	var outStr = "";
 	var direction = "NESW";
@@ -263,7 +267,7 @@ function writeLinHand(boardStr,dealer,vul,north,south,east,west,bids,played,clai
 	return outStr;
 }
 
-function linToJson(str)
+export function linToJson(str)
 {
 		// Make sure there is a defined "trim" function (needed for IE8 and earlier)
 	if(typeof String.prototype.trim !== 'function') {
@@ -278,7 +282,7 @@ function linToJson(str)
 	var playerNames = [];
 	var boardDealt = false;
 	var outStr = "";
-	var i,j;
+	var i,j,k;
 	var inHeader = true;
 
 	str = str.replace(/[\"\[\]]/g,"");  // Filter out characters which won't survive conversion of the final json string to a json object
@@ -517,7 +521,7 @@ function linToJson(str)
 	return outStr;
 }
 
-function handsNotFound(jqXHR,textStatus,errorThrown)
+export function handsNotFound(jqXHR,textStatus,errorThrown)
 {
 	// Hands Not Found
 	/*var msg = "Hand Record file could not be retrieved"; **KK** */
@@ -537,12 +541,12 @@ function handsNotFound(jqXHR,textStatus,errorThrown)
 
 
 
-function loadHands(data,statusText,jqXHR,context)
+export function loadHands(data,statusText,jqXHR,context)
 {
 	loadHands_1(data,statusText,jqXHR,this);
 }
 
-function loadHands_1(data,statusText,jqXHR,context)
+export function loadHands_1(data,statusText,jqXHR,context)
 {
 	if ( typeof String.prototype.endsWith != 'function' ) {
 	  String.prototype.endsWith = function( str ) {
@@ -552,7 +556,7 @@ function loadHands_1(data,statusText,jqXHR,context)
 
 	if ((typeof context)!="undefined")
 		if ((typeof context.callback)!="undefined")
-			this.callback = context.callback;
+			window.callback = context.callback;
 
 	var hands;
 
@@ -624,7 +628,7 @@ function loadHands_1(data,statusText,jqXHR,context)
 		setLastBoardIndex(index);
 
 		setupTraveller(g_lastBindex,true);
-		getTraveller(this);
+		getTraveller(window);
 	}
 	else
 	{
@@ -649,11 +653,11 @@ function loadHands_1(data,statusText,jqXHR,context)
 
 		hideSpinner();
 		resetTimeout();
-		this.callback();
+		window.callback();
 	}
 }
 
-function getHands(context)
+export function getHands(context)
 {
 		var data="";
 
@@ -708,7 +712,7 @@ function getHands(context)
 			loadTraveller_1("","","",context);
 }
 
-function processClipboardData(text)
+export function processClipboardData(text)
 {
 	var clipBoardData = text;  // + "\n";  // To make sure boards are recognized
 
@@ -767,7 +771,7 @@ function processClipboardData(text)
 }
 
 // Read clipboard when pressing the respective button.
-async function readClipboard()
+export async function readClipboard()
 {
 	try
 	{
@@ -795,7 +799,7 @@ async function readClipboard()
 	}
 }
 
-function createEmptyBoard()
+export function createEmptyBoard()
 		{
 			startup();
 			var result = {};
@@ -811,7 +815,7 @@ function createEmptyBoard()
 			buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
 		}
 
-		function readText(file)
+export function readText(file)
 		{
 			const reader = new FileReader();
 			reader.addEventListener(
@@ -840,7 +844,7 @@ function createEmptyBoard()
 			reader.readAsText(file);
 		}
 
-		function handleLoadFileSelect(evt)
+export function handleLoadFileSelect(evt)
 		{
 			var files = evt.target.files;
 
@@ -869,3 +873,25 @@ function createEmptyBoard()
 				}
 			}
 		}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (traveller.js, bootstrap.js, events.js) can keep calling them
+// unchanged. Remove entries here once every caller has been migrated to
+// `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		dlmToJson,
+		writeLinHand,
+		linToJson,
+		handsNotFound,
+		loadHands,
+		loadHands_1,
+		getHands,
+		processClipboardData,
+		readClipboard,
+		createEmptyBoard,
+		readText,
+		handleLoadFileSelect,
+	});
+}

@@ -1,6 +1,7 @@
 import { validContract, calcScoreForMakeable, leadCard, getLeadsIdx, makeDealKey } from "./scoring.mjs";
 import { getTravellerForBoard, checkBoardValid, makeableContractRequestsOutstanding } from "./board-utils.mjs";
 import { resetTimeout, requestPending } from "./network.mjs";
+import { restartBackgroundWorkers } from "./workers.mjs";
 
 export function getMakeableTricksForContract(index,contract,declarer)
 {

@@ -9,7 +9,7 @@ test("converts a PBN file into valid board JSON", () => {
 		g_hands: {boards: []},
 		g_title: "",
 	});
-	loadScript(context, "js/scoring.js");
+	loadScript(context, "js/scoring.mjs");
 	loadScript(context, "js/pbn.js");
 	const pbn = fs.readFileSync(`${root}/test/fixtures/sample-traveller.pbn`, "utf8");
 	const result = JSON.parse(context.pbnToJson(pbn));
@@ -141,7 +141,7 @@ test("switches localization labels between German and English", () => {
 
 test("calculates representative bridge scores", () => {
 	const context = createContext();
-	loadScript(context, "js/scoring.js");
+	loadScript(context, "js/scoring.mjs");
 
 	assert.equal(context.calculateBridgeScore({
 		level: 4, suit: "H", doubled: "", declarerVulnerable: false, tricksTaken: 10

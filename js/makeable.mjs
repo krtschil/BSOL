@@ -504,8 +504,8 @@ export function calculateMakeableContracts(pfunc,pleadstr,bindex)
 {
 	var i,j,k;
 
-	requestStr = "";
-	paraStr = "";
+	var requestStr = "";
+	var paraStr = "";
 
 	var validBoard = true;
 

@@ -368,6 +368,8 @@ export function showTravellerKeypad()
 
 export function initSettings()
 {
+	var res;
+
 	if (localStorageSupported())
 	{
 		if (document.getElementById("mkauto1").checked)

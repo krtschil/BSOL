@@ -389,6 +389,8 @@ export function showDealerKeypad()
 
 export function showVulnerabilityKeypad()
 {
+	var canonicalVul = ["None","NS","EW","All"];
+
 	switch(language)
 	{
 		case "de":
@@ -404,7 +406,7 @@ export function showVulnerabilityKeypad()
 
 	for (i=0;i<4;i++)
 	{
-		htmltext = htmltext + "<button onclick=\"setVulnerability(\'" + vul[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + vul[i] + "</button>";
+		htmltext = htmltext + "<button onclick=\"setVulnerability(\'" + canonicalVul[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + vul[i] + "</button>";
 		htmltext = htmltext + "<br>";
 	}
 

@@ -1,4 +1,4 @@
-function localStorageSupported() {
+export function localStorageSupported() {
 	try {
 		return "localStorage" in window && window["localStorage"] !== null;
 	} catch (e) {
@@ -6,14 +6,14 @@ function localStorageSupported() {
 	}
 }
 
-function setCookie(c_name, value, exdays) {
+export function setCookie(c_name, value, exdays) {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + exdays);
     var c_value = encodeURIComponent(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
     document.cookie = c_name + "=" + c_value;
 }
 
-function getCookie(c_name) {
+export function getCookie(c_name) {
     var i, x, y, ARRcookies = document.cookie.split(";");
     for (i = 0; i < ARRcookies.length; i++) {
         x = ARRcookies[i].substring(0, ARRcookies[i].indexOf("="));
@@ -25,7 +25,7 @@ function getCookie(c_name) {
     }
 }
 
-function saveEventLocalStorage(data)
+export function saveEventLocalStorage(data)
 {
 	if (localStorageSupported())
 	{
@@ -35,7 +35,7 @@ function saveEventLocalStorage(data)
 	}
 }
 
-function clearPBNlocalStorage()
+export function clearPBNlocalStorage()
 {
 	if (localStorageSupported())
 	{
@@ -43,7 +43,7 @@ function clearPBNlocalStorage()
 	}
 }
 
-function clearTravellersLocalStorage()
+export function clearTravellersLocalStorage()
 {
 	if (localStorageSupported())
 	{
@@ -51,7 +51,7 @@ function clearTravellersLocalStorage()
 	}
 }
 
-function openIndexedDB()
+export function openIndexedDB()
 {
 	if ("indexedDB" in window)
 	{
@@ -82,11 +82,29 @@ function openIndexedDB()
 	}
 }
 
-function invoke_buildPage2()
+export function invoke_buildPage2()
 {
 	if (g_file!='')	// If a pbn or dlm filename was supplied.
 		getHands({callback:buildpage2});
 	else
 		buildpage2();
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (board-renderer.js, bootstrap.js, ui-popups.js, workers.js,
+// traveller.js, import.js) can keep calling them unchanged. Remove
+// entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		localStorageSupported,
+		setCookie,
+		getCookie,
+		saveEventLocalStorage,
+		clearPBNlocalStorage,
+		clearTravellersLocalStorage,
+		openIndexedDB,
+		invoke_buildPage2,
+	});
 }
 

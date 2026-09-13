@@ -1,4 +1,4 @@
-function setupPlayMatchContractHelp()
+export function setupPlayMatchContractHelp()
 {
 	switch(language)
 	{
@@ -46,7 +46,7 @@ function setupPlayMatchContractHelp()
 	document.getElementById("playMatchContractHelp").innerHTML = help;
 }
 
-function setupEditHelp()
+export function setupEditHelp()
 {
 	switch(language)
 	{
@@ -103,7 +103,7 @@ function setupEditHelp()
 	document.getElementById("editHelp").innerHTML = help;
 }
 
-function setupPlayHelp()
+export function setupPlayHelp()
 {
 	switch(language)
 	{
@@ -137,7 +137,7 @@ function setupPlayHelp()
 	document.getElementById("playHelp").innerHTML = help;
 }
 
-function setupCommandHelp()
+export function setupCommandHelp()
 {
 	switch(language)
 	{
@@ -210,7 +210,7 @@ function setupCommandHelp()
 	document.getElementById("commandHelp").innerHTML = help;
 }
 
-function setupSettingsHelp()
+export function setupSettingsHelp()
 {
 	switch(language)
 	{
@@ -237,7 +237,7 @@ function setupSettingsHelp()
 	document.getElementById("settingsHelp").innerHTML = help;
 }
 
-function setupGeneralHelp()
+export function setupGeneralHelp()
 {
 	var help = "<div style=\"float:left;word-wrap:break-word;overflow:scroll;\"><div style=\"font-size:16px;\">";
 
@@ -313,4 +313,20 @@ function setupGeneralHelp()
     }
 	
 	document.getElementById("krHelpText").innerHTML = help;
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (bootstrap.js, events.js, hand-entry.js) can keep calling them
+// unchanged. Remove entries here once every caller has been migrated to
+// `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		setupPlayMatchContractHelp,
+		setupEditHelp,
+		setupPlayHelp,
+		setupCommandHelp,
+		setupSettingsHelp,
+		setupGeneralHelp,
+	});
 }

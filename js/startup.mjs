@@ -1,4 +1,4 @@
-function startup(){
+export function startup(){
 		language = "de";  				// Sets the default language
 		g_logging = false;
 		g_credits =	"";
@@ -116,4 +116,12 @@ function startup(){
 		cacheTimeout = 300000;			// Limit in milliseconds on how long PBN and json are kept in Local Storage
 		//processRequest();
 		extractParas();
+}
+
+// Window-bridge: expose this function as a global so legacy classic
+// scripts (events.js, import.js) can keep calling it unchanged. Remove
+// this entry once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, { startup });
 }

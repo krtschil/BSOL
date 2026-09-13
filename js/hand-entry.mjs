@@ -355,6 +355,8 @@ export function deselectCard(pthis)
 
 export function showDealerKeypad()
 {
+	var canonicalDlr = ["North","East","South","West"];
+
 	switch(language)
 	{
 		case "de":
@@ -370,7 +372,7 @@ export function showDealerKeypad()
 
 	for (i=0;i<4;i++)
 	{
-		htmltext = htmltext + "<button onclick=\"setDealer(\'" + dlr[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">" + dlr[i] + "</button>";
+		htmltext = htmltext + "<button onclick=\"setDealer(\'" + canonicalDlr[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">" + dlr[i] + "</button>";
 		htmltext = htmltext + "<br>";
 	}
 

@@ -77,6 +77,7 @@ function setupTraveller(index,active)
 	if (active==true)
 	{
 		g_defaultContract = 0;
+		g_defaultContractIndex = -1;
 		if (((typeof curBoard.Contract)!="undefined")&&((typeof curBoard.Declarer)!="undefined"))
 		{
 			if (((typeof curBoard.Played)!="undefined") || ((typeof curBoard.Bids)!="undefined"))
@@ -188,19 +189,27 @@ function setupTraveller(index,active)
 						document.getElementById("linPlay").onclick = function(){g_showOriginalContract = true;playLinContract();};
 						document.getElementById("matchContractHelp").onclick = function(){showHelp(this,"playMatchContractHelp");};
 					}
+
+					var declStr = "NSEW";
+					var suitStr = "CDHSN";
+
+					if (validContract(curBoard.Contract))
+					{
+						var declIndex = declStr.indexOf(curBoard.Declarer);
+						var suitIndex = suitStr.indexOf(curBoard.Contract.charAt(1));
+
+						g_defaultContract = 1;
+						g_defaultContractIndex = (declIndex * 5) + suitIndex;
+					}
+				}
+				else
+				{
+					document.getElementById("currentPosition").innerHTML = g_credits;
 				}
 			}
-
-			var declStr = "NSEW";
-			var suitStr = "CDHSN";
-
-			if (validContract(curBoard.Contract))
+			else
 			{
-				var declIndex = declStr.indexOf(curBoard.Declarer);
-				var suitIndex = suitStr.indexOf(curBoard.Contract.charAt(1));
-
-				g_defaultContract = 1;
-				g_defaultContractIndex = (declIndex * 5) + suitIndex;
+				document.getElementById("currentPosition").innerHTML = g_credits;
 			}
 		}
 		else

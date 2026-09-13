@@ -1,10 +1,10 @@
-function setRequestTimeout(override=false)
+export function setRequestTimeout(override=false)
 {
 	if ((g_timeoutID=="")&&(override))	// Only put timeout if requests are being made to remote server, or we are in a card play sequence
 		g_timeoutID = setTimeout(function(){g_timeoutID = "";}, 10000);
 }
 
-function resetTimeout()
+export function resetTimeout()
 {
 	if (g_timeoutID!="")
 	{
@@ -13,7 +13,7 @@ function resetTimeout()
 	}
 }
 
-function requestPending()
+export function requestPending()
 {
 	if (g_timeoutID!="")	// already a request in progress
 	{
@@ -23,14 +23,14 @@ function requestPending()
 	return false;
 }
 
-function failSilently(jqXHR,textStatus,errorThrown)
+export function failSilently(jqXHR,textStatus,errorThrown)
 {
     // Just ignore the error.
     alert("error: " + textStatus);
 	resetTimeout();
 }
 
-function makeHttpObject() {
+export function makeHttpObject() {
   try {return new XMLHttpRequest();}
   catch (error) {}
   try {return new ActiveXObject("Msxml2.XMLHTTP");}
@@ -41,7 +41,7 @@ function makeHttpObject() {
   throw new Error("Could not create HTTP request object.");
 }
 
-function doRequestHTMLasync(fileref,ploadfunc,errorFunc,pcontext)
+export function doRequestHTMLasync(fileref,ploadfunc,errorFunc,pcontext)
 {
 	$.ajax({
 	  url:fileref,
@@ -54,7 +54,7 @@ function doRequestHTMLasync(fileref,ploadfunc,errorFunc,pcontext)
 	});
 }
 
-function errorFunc(jqXHR,textStatus,errorThrown)
+export function errorFunc(jqXHR,textStatus,errorThrown)
 {
 		// textStatus should be one of "timeout", "error", "abort", "parsererror".
 		// errorThrown contains HTTP status if the error was an HTTP error.
@@ -80,7 +80,7 @@ function errorFunc(jqXHR,textStatus,errorThrown)
 	displayError(document.getElementById("boardNumber"),errormsg);
 }
 
-function log(pstr)
+export function log(pstr)
 {
 	if (g_logging)
 	{
@@ -89,6 +89,26 @@ function log(pstr)
 	}
 }
 
-function doNothing()
+export function doNothing()
 {
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (accuracy.js, board-renderer.js, bootstrap.js, hand-entry.js,
+// import.js, play.js, ranking.js, session.js, storage.js, traveller.js,
+// ui-popups.js, workers.js) can keep calling them unchanged. Remove
+// entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		setRequestTimeout,
+		resetTimeout,
+		requestPending,
+		failSilently,
+		makeHttpObject,
+		doRequestHTMLasync,
+		errorFunc,
+		log,
+		doNothing,
+	});
 }

@@ -1,4 +1,9 @@
-function setBars(cells,value,cellindex,range,colorL,colorR,width)
+import { displayLeadCard, getLeadsIdx, leadCard, compareScores, played, makeColor } from "./scoring.mjs";
+import { getMakeableTricksForContract, getHighestScoringMakeableContractForDirection } from "./makeable.mjs";
+import { getTindexByName } from "./board-utils.mjs";
+import { drawMiniHand } from "./hand-renderer.mjs";
+
+export function setBars(cells,value,cellindex,range,colorL,colorR,width)
 {
 		// Graphical indication of percentages
 	var halfRange = range/2;
@@ -27,8 +32,10 @@ function setBars(cells,value,cellindex,range,colorL,colorR,width)
 	cells[cellindex].style.borderLeft="1px solid #CCCCCC";
 }
 
-function addSummaryRow(stable,text)
+export function addSummaryRow(stable,text)
 {
+	var srow;
+
 	stable.insertRow(-1);
 	srow = stable.rows[stable.rows.length-1];
 	srow.insertCell(-1);
@@ -38,7 +45,7 @@ function addSummaryRow(stable,text)
 	return srow;
 }
 
-function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,crossImpBoards,etfAchieved,etfBoards,etfTotal)
+export function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,crossImpBoards,etfAchieved,etfBoards,etfTotal)
 {
 	var srow = addSummaryRow(stable,"Boards:");
 	srow.cells[1].innerHTML = playedInRole;
@@ -97,7 +104,7 @@ function addSummarySection(stable,playedInRole,sumOfPercent,sumOfCrossImps,cross
 	}
 }
 
-function drawHighLowSame(res)
+export function drawHighLowSame(res)
 {
 	var dhwidth = (100*res.higher)/(res.higher+res.lower+res.same);
 	var dswidth = (100*res.same)/(res.higher+res.lower+res.same);
@@ -111,7 +118,7 @@ function drawHighLowSame(res)
 	return result;
 }
 
-function drawBoxedBar(value,vmax,width,height,bcolor,leftBorder)
+export function drawBoxedBar(value,vmax,width,height,bcolor,leftBorder)
 {
 	var rbd = "";
 	var wth = width + "px";
@@ -144,7 +151,7 @@ function drawBoxedBar(value,vmax,width,height,bcolor,leftBorder)
 	return str;
 }
 
-function drawBar(value,vmax,width,height,gradColor)
+export function drawBar(value,vmax,width,height,gradColor)
 {
 	var wth = width + "px";
 	var hgt = height + "px";
@@ -162,7 +169,7 @@ function drawBar(value,vmax,width,height,gradColor)
 	return str;
 }
 
-function mergeScorecardRows(table,nrows,col)
+export function mergeScorecardRows(table,nrows,col)
 {
 		// Merge column cells in adjacent rows of scorecard when pair number and names are shared, and
 		// apply alternate shading to groups of rows.
@@ -171,6 +178,7 @@ function mergeScorecardRows(table,nrows,col)
 	var last = 0;
 	var alt = 0;
 	var shaded = 1;
+	var j;
 
 	while (first<nrows)
 	{
@@ -219,7 +227,7 @@ function mergeScorecardRows(table,nrows,col)
 	}
 }
 
-function setLeadForScorecardRow(bnum,row,tline,declarer)
+export function setLeadForScorecardRow(bnum,row,tline,declarer)
 {
 	var j;
 	var colorPlus = "#ffff00";
@@ -265,7 +273,7 @@ function setLeadForScorecardRow(bnum,row,tline,declarer)
 	}
 }
 
-function setupResultReasons(ctx,result)
+export function setupResultReasons(ctx,result)
 {
 	var suit = "CDHSN";
 	var dir = "NSEW";
@@ -519,4 +527,16 @@ function setupResultReasons(ctx,result)
 	setLastBoardIndex(saveBindex);
 
 	drawMiniHand();	// Draw the original board in case user clicks on the Board button.
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (ranking.js, traveller.js) can keep calling them unchanged.
+// Remove entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+    Object.assign(window, {
+        setBars, addSummaryRow, addSummarySection, drawHighLowSame,
+        drawBoxedBar, drawBar, mergeScorecardRows, setLeadForScorecardRow,
+        setupResultReasons
+    });
 }

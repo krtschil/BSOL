@@ -62,6 +62,7 @@ function buildPage1(data,options)
 	hide("btraveller");
 	hideRanking();
 	hide("scores");
+	hide("abuttons");	// Hide stale "Ergebnisanalyse" toolbar buttons/state from a previous file/paste.
 
 	document.getElementById("northHand").style.whiteSpace = "nowrap";
 	document.getElementById("eastHand").style.whiteSpace = "nowrap";

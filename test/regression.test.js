@@ -319,7 +319,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		drawBoxedBar: () => "",
 	});
 
-	loadScript(context, "js/state.js");
+	loadScript(context, "js/state.mjs");
 	context.appState = context.window.appState;
 	loadScript(context, "js/traveller.mjs");
 

@@ -242,3 +242,64 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
 });
 
+test("renders bidding table with dealer offset without error", () => {
+	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
+	const createTable = () => {
+		const rows = [];
+		return {
+			style: {},
+			rows,
+			insertRow: () => {
+				const cells = [];
+				const r = {
+					style: {},
+					cells,
+					insertCell: () => {
+						const c = createCell();
+						cells.push(c);
+						return c;
+					}
+				};
+				rows.push(r);
+				return r;
+			}
+		};
+	};
+	const createDiv = () => {
+		let children = [];
+		return {
+			style: {},
+			appendChild: (child) => { children.push(child); },
+			get innerHTML() {
+				return children.map((c) => `<table id="${c.id || ''}">${c.rows ? c.rows.map(r => `<tr>${r.cells.map(cell => `<td>${cell.innerHTML}</td>`).join('')}</tr>`).join('') : ''}</table>`).join('');
+			}
+		};
+	};
+	const context = createContext({
+		document: {
+			createElement: (tag) => {
+				if (tag === "table") return createTable();
+				if (tag === "div") return createDiv();
+				return {style: {}, appendChild: () => {}};
+			},
+		},
+		g_lastBindex: 0,
+		g_hands: {
+			boards: [{
+				Dealer: "E", // dealerIndex = 2 (W, N, E, S) -> 2 dashes inserted
+				Vulnerable: "None",
+				Bids: ["1H", "Pass", "2H", "Pass", "Pass", "Pass"],
+			}]
+		},
+		g_bidFontSize: "14px",
+		g_sectionHeight: 300,
+	});
+
+	loadScript(context, "js/board-renderer.mjs");
+	const html = context.showBidding();
+	assert.ok(typeof html === "string");
+	assert.ok(html.includes("biddingHeader"));
+	assert.ok(html.includes("biddingContent"));
+});
+
+

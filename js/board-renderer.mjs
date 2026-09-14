@@ -387,7 +387,7 @@ export function showBidding()
 			{
 				row.insertCell(-1);
 				row.cells[i].style.width="50px";
-				row.cells[i] = "-";
+				row.cells[i].innerHTML = "-";
 				i++;
 			}
 		}

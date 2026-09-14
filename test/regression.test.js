@@ -309,11 +309,19 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		showMakeableContracts: () => {},
 		showCredits: () => {},
 		displayTraveller: () => {},
+		hideAllPopups: () => {},
+		hideRanking: () => {},
+		displayErrorAbsPosition: () => {},
+		setButtonColor: () => {},
+		getPlayerInfo: () => null,
+		played: () => true,
+		drawBar: () => "",
+		drawBoxedBar: () => "",
 	});
 
 	loadScript(context, "js/state.js");
 	context.appState = context.window.appState;
-	loadScript(context, "js/traveller.js");
+	loadScript(context, "js/traveller.mjs");
 
 	context.setupTraveller(0, true);
 
@@ -326,6 +334,33 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	assert.equal(context.g_defaultContract, 1);
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+
+	// Verify showComparison runs without throwing ESM this-binding errors
+	context.g_hands.boards[0].OptimumScore = "N 3NT;+400";
+	assert.doesNotThrow(() => {
+		context.showComparison();
+	});
+
+	// Verify computeTravellerStatistics executes without strict-mode undeclared variable errors
+	context.g_currentTraveller = {
+		traveller_line: [
+			{ contract: "3NT", played_by: "N", ns_match_points: 100, ew_match_points: 0, crossImpsNS: 5, crossImpsEW: -5 }
+		]
+	};
+	const mockTable = {
+		deleteRow: () => {},
+		insertRow: () => {},
+		rows: [{ cells: [{}, {}, {}, { textContent: "" }] }]
+	};
+	mockTable.rows.push({
+		insertCell: () => {},
+		cells: Array.from({ length: 6 }, () => ({ style: {} }))
+	});
+	context.document.getElementById = (id) => (id === "contractTable" ? mockTable : { style: {}, replaceChildren: () => {} });
+
+	assert.doesNotThrow(() => {
+		context.computeTravellerStatistics(1);
+	});
 });
 
 test("calculates ranking info from traveller data", async () => {

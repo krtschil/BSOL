@@ -18,6 +18,7 @@ import {
 	hideAllPopups,
 	hideMenuItems,
 } from "./ui-popups.mjs";
+import { setupTraveller } from "./traveller.mjs";
 import { hideRanking } from "./ranking.mjs";
 import { showCredits } from "./board-renderer.mjs";
 import { displayHands } from "./hand-renderer.mjs";

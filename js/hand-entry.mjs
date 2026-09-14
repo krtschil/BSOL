@@ -1,3 +1,4 @@
+import { setupTraveller, gotoTravellerByIndex } from "./traveller.mjs";
 import { log, requestPending } from "./network.mjs";
 import { show, hide, getPosition, doPopup, doPopupNoTimeout, showHelp, spinner, hideMenuItems } from "./ui-popups.mjs";
 import { createHandString } from "./hand-renderer.mjs";

@@ -1,3 +1,4 @@
+import { gotoNextTraveller, gotoPrevTraveller } from "./traveller.mjs";
 import { getTravellerForBoard } from "./board-utils.mjs";
 import { downloadFile } from "./file-utils.mjs";
 import { finishBackgroundOperation } from "./makeable.mjs";

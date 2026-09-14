@@ -1,3 +1,4 @@
+import { showComparison, checkAllContracts } from "./traveller.mjs";
 import { setupRanking, setupScorecard } from "./ranking.mjs";
 import { validContract, calcScoreForMakeable, leadCard, getLeadsIdx, makeDealKey } from "./scoring.mjs";
 import { getTravellerForBoard, checkBoardValid, makeableContractRequestsOutstanding } from "./board-utils.mjs";
@@ -98,7 +99,7 @@ export function getMakeableTricksForLead(pindex,tline)
 
 				var ltricks;
 
-				for (j=0;j<leads.length;j++)
+				for (var j=0;j<leads.length;j++)
 				{
 					var cl = leads[j];
 

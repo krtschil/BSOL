@@ -1,3 +1,4 @@
+import { getRowFromTraveller, setDefaultContracts, sortTravellerLines, showComparison, showPlayAnalysis, setButtonColor } from './traveller.mjs';
 import { log } from './network.mjs';
 import { getTindexByName, getTravIndex, getBoardIndex, setCurrentTraveller } from './board-utils.mjs';
 import { getMakeableTricksForContract, getMakeableTricksForLead } from './makeable.mjs';

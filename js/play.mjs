@@ -6,6 +6,7 @@
 ***********************************************************************************/
 
 import { clearCardData } from "./board-utils.mjs";
+import { makeAccKey } from "./accuracy.mjs";
 import { validContract, substituteSuitSymbol } from "./scoring.mjs";
 import { requestPending, setRequestTimeout, resetTimeout, log } from "./network.mjs";
 import {

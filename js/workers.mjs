@@ -10,6 +10,13 @@ import { localStorageSupported } from "./storage.mjs";
 import { displayErrorAbsPosition, hideSpinner } from "./ui-popups.mjs";
 import { buildPage1 } from "./bootstrap.mjs";
 import { dddloadfunc, exitCardPlay } from "./play.mjs";
+import {
+	allAccsProcessed,
+	load,
+	processAccs,
+	showPlayerAccMatrix,
+	storeAcc,
+} from "./accuracy.mjs";
 
 export function listener(event,workerType)
 {

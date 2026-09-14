@@ -172,6 +172,29 @@ test("calculates representative bridge scores", () => {
 	}), -300);
 });
 
+test("builds accuracy cache keys and counts trick concessions", () => {
+	const context = createContext();
+	loadScript(context, "js/accuracy.mjs");
+
+	const board = {
+		PlayerNames: ["South", "West", "North", "East"],
+		Deal: ["AKQ.JT9.876.54", "2.345.9.AKQJT", "987.654.32.987", "JT65.2.AKQJT.3"],
+		Contract: "3NT",
+		Played: ["C2", "C3", "CK", "CA"],
+	};
+
+	assert.equal(context.makeAccKey(board), JSON.stringify({
+		names: board.PlayerNames,
+		deal: board.Deal,
+		trumps: "N",
+		cards: board.Played,
+	}));
+	assert.deepEqual(Array.from(context.tricksConceded({
+		tricksConceded: [0, 1, 0, 2, 1],
+		cardDirection: [0, 1, 2, 3, 1],
+	})), [0, 2, 0, 1]);
+});
+
 test("does not set g_defaultContract when board has no replayable play data", () => {
 	const elements = {};
 	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
@@ -316,4 +339,3 @@ test("renders bidding table with dealer offset without error", () => {
 	assert.ok(html.includes("biddingHeader"));
 	assert.ok(html.includes("biddingContent"));
 });
-

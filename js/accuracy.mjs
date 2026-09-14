@@ -1,4 +1,19 @@
-function checkPlayerNameForTline(name,names)
+import { getTravellerForBoard } from "./board-utils.mjs";
+import { downloadFile } from "./file-utils.mjs";
+import { finishBackgroundOperation } from "./makeable.mjs";
+import { log, resetTimeout } from "./network.mjs";
+import { passed, returnAccCount, returnName } from "./scoring.mjs";
+import {
+	displayError,
+	doPopupAt,
+	doPopupNoTimeout,
+	hideAllPopups,
+	hideSpinner,
+	showEmptyProgressBar,
+} from "./ui-popups.mjs";
+import { restartBackgroundWorkers } from "./workers.mjs";
+
+export function checkPlayerNameForTline(name,names)
 {
 	var namePresent = false;
 
@@ -10,7 +25,7 @@ function checkPlayerNameForTline(name,names)
 	return false;
 }
 
-function accCalcPossibleForBoard(board)
+export function accCalcPossibleForBoard(board)
 {
 	var possible = false;
 
@@ -23,7 +38,7 @@ function accCalcPossibleForBoard(board)
 	return false;
 }
 
-function makeAccKey(board)
+export function makeAccKey(board)
 {
 	var key = {};
 
@@ -35,7 +50,7 @@ function makeAccKey(board)
 	return JSON.stringify(key);
 }
 
-function tricksConceded(data)
+export function tricksConceded(data)
 {
 		// Note: The direction index is 0,1,2,3 for N,S,E,W
 	var tricksConceded = data.tricksConceded;
@@ -55,12 +70,12 @@ function tricksConceded(data)
 	return errCount;
 }
 
-function generateBackgroundAccRequests()
+export function generateBackgroundAccRequests()
 {
 	g_bgObj.fn = "processAccs";		// Will be processed by worker event listener function when background workers have initialised
 }
 
-function callGetIndexedAcc()
+export function callGetIndexedAcc()
 {
 		// Revert the current traveller back to g_hands.pair_number/g_hands.direction
 	var display = document.getElementById("scoreandtraveller").style.display;
@@ -70,7 +85,7 @@ function callGetIndexedAcc()
 	getIndexedAcc();
 }
 
-function getIndexedAcc()
+export function getIndexedAcc()
 {
 	restartBackgroundWorkers();
 	g_completionTarget = 0;
@@ -160,7 +175,7 @@ function getIndexedAcc()
 	}
 }
 
-function processAccs(name=null)
+export function processAccs(name=null)
 {
 	for (var key in g_accTrans)
 		g_accTrans[key].transList = {};
@@ -251,7 +266,7 @@ function processAccs(name=null)
 	}
 }
 
-function makeAccRequest(board,bdindex,tindex)
+export function makeAccRequest(board,bdindex,tindex)
 {
 	var declCHARS = "NSEW";
 	var playedCards = "";
@@ -334,7 +349,7 @@ function makeAccRequest(board,bdindex,tindex)
 	g_completionTarget++;
 }
 
-function purgeOldEntries()
+export function purgeOldEntries()
 {
 	if (g_db==null) return;
 
@@ -351,7 +366,7 @@ function purgeOldEntries()
 				// delete oldest items
 			const myIndex = objectStore.index("time");
 
-			myIndex.openCursor().onsuccess = function(){
+			myIndex.openCursor().onsuccess = function(event){
 				const cursor = event.target.result;
 				if (cursor) {
 				  if (delCount>0)
@@ -369,7 +384,7 @@ function purgeOldEntries()
 	};
 }
 
-function storeAcc(data,context)
+export function storeAcc(data,context)
 {
 	var tmp = data.sess;
 
@@ -412,7 +427,7 @@ function storeAcc(data,context)
 	document.getElementById("progress").style.width = ((800*g_completionCount)/g_completionTarget).toFixed(0) + "px";
 }
 
-function getCachedAcc(tline)
+export function getCachedAcc(tline)
 {
 	var board = tline.board;
 	var declarer = board.Declarer;
@@ -434,7 +449,7 @@ function getCachedAcc(tline)
 	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,0,1);
 }
 
-function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,dest)
+export function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,dest)
 {
 	var defErrCount = Number(leadErrCount) + Number(partnerErrCount);
 
@@ -517,7 +532,7 @@ function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,
 	}
 }
 
-function load(data,statusText,jqXHR,ctx)
+export function load(data,statusText,jqXHR,ctx)
 {
 	var context = this;
 		// Note: The direction index for Names is 2,3,0,1 for N,E,S,W, but for errCount is 0,1,2,3
@@ -528,7 +543,7 @@ function load(data,statusText,jqXHR,ctx)
 	tmp = JSON.parse(tmp);
 	tmp = tmp.sess;
 
-	if (load.arguments.length>3)	// being performed locally, not on server
+	if (arguments.length>3)	// being performed locally, not on server
 		context = ctx;
 
 	var errCount = tricksConceded(tmp);
@@ -555,7 +570,7 @@ function load(data,statusText,jqXHR,ctx)
 	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,this.dest);
 }
 
-function load2(data,statusText,	jqXHR)
+export function load2(data,statusText,	jqXHR)
 {
 	hideSpinner();
 	resetTimeout();
@@ -577,7 +592,7 @@ function load2(data,statusText,	jqXHR)
 	doPopupNoTimeout(document.getElementById("boardNumber"),htmltext,250,50);
 }
 
-function showPlayerAccMatrix()
+export function showPlayerAccMatrix()
 {
 	g_playerAcc = [];
 
@@ -802,7 +817,7 @@ function showPlayerAccMatrix()
 	myWindow.document.close();
 }
 
-function confirmShowAcc()
+export function confirmShowAcc()
 {
 	switch(language)
 	{
@@ -825,7 +840,7 @@ function confirmShowAcc()
 	doPopupNoTimeout(document.getElementById("boardNumber"),htmltext,200,100);
 }
 
-function getPlayerAcc(name)
+export function getPlayerAcc(name)
 {
 	for (var i=0;i<g_playerAcc.length;i++)
 	{
@@ -836,7 +851,7 @@ function getPlayerAcc(name)
 	return "";
 }
 
-function updatePlayerAccCounts(name,role,count,board,lindata)
+export function updatePlayerAccCounts(name,role,count,board,lindata)
 {
 	if (count==-1) return;	// Board was probably passed out, or has no play information
 
@@ -879,7 +894,7 @@ function updatePlayerAccCounts(name,role,count,board,lindata)
 	pobj.boards[board.board] = rec;
 }
 
-function storeAccInMemory(context,index,count)
+export function storeAccInMemory(context,index,count)
 {
 	var acc = null;
 	var bdindex = context.bdindex;
@@ -904,7 +919,7 @@ function storeAccInMemory(context,index,count)
 	return board;
 }
 
-function checkAccsProcessedForName(name)
+export function checkAccsProcessedForName(name)
 {
 	var keys = Object.keys(g_accTrans[name].transList);
 
@@ -914,7 +929,7 @@ function checkAccsProcessedForName(name)
 		return false;
 }
 
-function allAccsProcessed(name=null)
+export function allAccsProcessed(name=null)
 {
 	if (name!==null)
 	{
@@ -931,7 +946,7 @@ function allAccsProcessed(name=null)
 	return true;
 }
 
-function accCalcPossible()
+export function accCalcPossible()
 {
 	var found = false;
 
@@ -971,7 +986,7 @@ function accCalcPossible()
 	return found;
 }
 
-function updatePlayerAccCountsFromBoard(board,lindata)
+export function updatePlayerAccCountsFromBoard(board,lindata)
 {
     if (typeof board=="undefined") return;
 	if (typeof board.acc=="undefined") return;
@@ -1000,8 +1015,38 @@ function updatePlayerAccCountsFromBoard(board,lindata)
 	updatePlayerAccCounts(leadPartnerName,"leadPartner",partnerErrCount,board,lindata);
 }
 
-function returnAccValue(acc,index)
+export function returnAccValue(acc,index)
 {
 	var index = (index + 2) % 4;
 	return acc[index];
+}
+
+if (typeof window !== "undefined") {
+	Object.assign(window, {
+		checkPlayerNameForTline,
+		accCalcPossibleForBoard,
+		makeAccKey,
+		tricksConceded,
+		generateBackgroundAccRequests,
+		callGetIndexedAcc,
+		getIndexedAcc,
+		processAccs,
+		makeAccRequest,
+		purgeOldEntries,
+		storeAcc,
+		getCachedAcc,
+		displayAcc,
+		load,
+		load2,
+		showPlayerAccMatrix,
+		confirmShowAcc,
+		getPlayerAcc,
+		updatePlayerAccCounts,
+		storeAccInMemory,
+		checkAccsProcessedForName,
+		allAccsProcessed,
+		accCalcPossible,
+		updatePlayerAccCountsFromBoard,
+		returnAccValue,
+	});
 }

@@ -534,7 +534,7 @@ export function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartn
 
 export function load(data,statusText,jqXHR,ctx)
 {
-	var context = this;
+	var context = ctx;
 		// Note: The direction index for Names is 2,3,0,1 for N,E,S,W, but for errCount is 0,1,2,3
 	hideSpinner();
 	resetTimeout();
@@ -543,8 +543,7 @@ export function load(data,statusText,jqXHR,ctx)
 	tmp = JSON.parse(tmp);
 	tmp = tmp.sess;
 
-	if (arguments.length>3)	// being performed locally, not on server
-		context = ctx;
+	if (typeof context=="undefined") context = this;
 
 	var errCount = tricksConceded(tmp);
 
@@ -567,7 +566,7 @@ export function load(data,statusText,jqXHR,ctx)
 	var partnerErrCount = errCount[leadPartnerIndex];
 	var elapsed = tmp.deltaElapsed;
 
-	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,this.dest);
+	displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartnerName,partnerErrCount,elapsed,context.dest);
 }
 
 export function load2(data,statusText,	jqXHR)

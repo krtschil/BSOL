@@ -54,6 +54,7 @@ import {
 	convertToJQKA,
 	validateBoard,
 } from "./pbn.mjs";
+import { callGetIndexedAcc } from "./accuracy.mjs";
 import { log } from "./network.mjs";
 import { enterPlayMode } from "./play.mjs";
 import { updatePointsDisplay } from "./hand-renderer.mjs";

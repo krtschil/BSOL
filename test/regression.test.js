@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 const fs = require("node:fs");
+const {pathToFileURL} = require("node:url");
 const {createContext, loadScript, root} = require("./test-helpers");
 
 test("converts a PBN file into valid board JSON", () => {
@@ -172,6 +173,76 @@ test("calculates representative bridge scores", () => {
 	}), -300);
 });
 
+test("builds accuracy cache keys and counts trick concessions", () => {
+	const context = createContext();
+	loadScript(context, "js/accuracy.mjs");
+
+	const board = {
+		PlayerNames: ["South", "West", "North", "East"],
+		Deal: ["AKQ.JT9.876.54", "2.345.9.AKQJT", "987.654.32.987", "JT65.2.AKQJT.3"],
+		Contract: "3NT",
+		Played: ["C2", "C3", "CK", "CA"],
+	};
+
+	assert.equal(context.makeAccKey(board), JSON.stringify({
+		names: board.PlayerNames,
+		deal: board.Deal,
+		trumps: "N",
+		cards: board.Played,
+	}));
+	assert.deepEqual(Array.from(context.tricksConceded({
+		tricksConceded: [0, 1, 0, 2, 1],
+		cardDirection: [0, 1, 2, 3, 1],
+	})), [0, 2, 0, 1]);
+});
+
+test("handles accuracy worker responses with explicit context", async () => {
+	const previous = {
+		document: globalThis.document,
+		$: globalThis.$,
+		DOMPurify: globalThis.DOMPurify,
+		g_timeout: globalThis.g_timeout,
+		g_timeoutID: globalThis.g_timeoutID,
+		language: globalThis.language,
+	};
+	const popup = {style: {}, innerHTML: ""};
+
+	try {
+		globalThis.document = {
+			getElementById: (id) => id=="popup_box" ? popup : {style: {}},
+		};
+		globalThis.$ = () => ({finish: () => {}, show: () => {}, hide: () => {}});
+		globalThis.DOMPurify = {sanitize: (value) => value};
+		globalThis.g_timeout = "";
+		globalThis.g_timeoutID = "";
+		globalThis.language = "en";
+
+		const accuracyUrl = pathToFileURL(`${root}/js/accuracy.mjs`).href + `?worker-load=${Date.now()}`;
+		const {load} = await import(accuracyUrl);
+		load(JSON.stringify({
+			sess: {
+				tricksConceded: [0, 1, 2],
+				cardDirection: [0, 1, 3],
+				declErr: 1,
+				deltaElapsed: 2,
+			}
+		}), null, null, {
+			names: ["South", "West", "North", "East"],
+			declarer: "N",
+			dest: 1,
+		});
+
+		assert.match(popup.innerHTML, /Accuracy of Play/);
+	} finally {
+		globalThis.document = previous.document;
+		globalThis.$ = previous.$;
+		globalThis.DOMPurify = previous.DOMPurify;
+		globalThis.g_timeout = previous.g_timeout;
+		globalThis.g_timeoutID = previous.g_timeoutID;
+		globalThis.language = previous.language;
+	}
+});
+
 test("does not set g_defaultContract when board has no replayable play data", () => {
 	const elements = {};
 	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
@@ -316,4 +387,3 @@ test("renders bidding table with dealer offset without error", () => {
 	assert.ok(html.includes("biddingHeader"));
 	assert.ok(html.includes("biddingContent"));
 });
-

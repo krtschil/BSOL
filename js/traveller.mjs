@@ -1,7 +1,7 @@
 import { getTindexByName, getTravellerForBoard, checkBoardValid } from './board-utils.mjs';
 import { getMakeableTricksForContract, calculateMakeableContracts, getMakeableTricksForLead, getRequestedLeads } from './makeable.mjs';
 import { getHands } from './import.mjs';
-import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps } from './ranking.mjs';
+import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo } from './ranking.mjs';
 import { validContract, played, passed, getLeadsIdx, getContractType, scoreContainsAdjustment, makeBoardNameString } from './scoring.mjs';
 import { hideMenuItems, showMainMenuItems, show, hideAllPopups, displayError, showNames } from './ui-popups.mjs';
 import { displayHands, drawMiniHand } from './hand-renderer.mjs';
@@ -9,6 +9,7 @@ import { showCredits } from './board-renderer.mjs';
 import { requestPending, setRequestTimeout, doRequestHTMLasync, log } from './network.mjs';
 import { pbnToJson, inferHand, convertHand } from './pbn.mjs';
 import { restartBackgroundWorkers } from './workers.mjs';
+import { drawBar, drawBoxedBar } from './scorecard.mjs';
 import { exitHandEntryMode } from './hand-entry.mjs';
 
 export function showTravellerRowButtons()
@@ -133,7 +134,7 @@ export function setupTraveller(index,active)
 								var num = score.match(/\d+/);
 								score = num ? Number(num[0]) : null;
 								num = ewscore.match(/\d+/);
-								result = num ? Number(num[0]) : null;
+								var result = num ? Number(num[0]) : null;
 								ewscore = (-Number(result));
 							}
 
@@ -534,7 +535,7 @@ export function sortTravellerLines(lines,pdirection)
 
 export function computeTravellerStatistics(pdirection)
 {
-	var i,j;
+	var i,j, percentLo, percentHi, g_MaxImps;
 	var result = [];
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
 

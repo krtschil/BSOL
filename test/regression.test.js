@@ -313,6 +313,10 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		hideRanking: () => {},
 		displayErrorAbsPosition: () => {},
 		setButtonColor: () => {},
+		getPlayerInfo: () => null,
+		played: () => true,
+		drawBar: () => "",
+		drawBoxedBar: () => "",
 	});
 
 	loadScript(context, "js/state.js");
@@ -335,6 +339,27 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	context.g_hands.boards[0].OptimumScore = "N 3NT;+400";
 	assert.doesNotThrow(() => {
 		context.showComparison();
+	});
+
+	// Verify computeTravellerStatistics executes without strict-mode undeclared variable errors
+	context.g_currentTraveller = {
+		traveller_line: [
+			{ contract: "3NT", played_by: "N", ns_match_points: 100, ew_match_points: 0, crossImpsNS: 5, crossImpsEW: -5 }
+		]
+	};
+	const mockTable = {
+		deleteRow: () => {},
+		insertRow: () => {},
+		rows: [{ cells: [{}, {}, {}, { textContent: "" }] }]
+	};
+	mockTable.rows.push({
+		insertCell: () => {},
+		cells: Array.from({ length: 6 }, () => ({ style: {} }))
+	});
+	context.document.getElementById = (id) => (id === "contractTable" ? mockTable : { style: {}, replaceChildren: () => {} });
+
+	assert.doesNotThrow(() => {
+		context.computeTravellerStatistics(1);
 	});
 });
 

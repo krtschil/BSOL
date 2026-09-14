@@ -99,7 +99,7 @@ export function getMakeableTricksForLead(pindex,tline)
 
 				var ltricks;
 
-				for (j=0;j<leads.length;j++)
+				for (var j=0;j<leads.length;j++)
 				{
 					var cl = leads[j];
 

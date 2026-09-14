@@ -1504,14 +1504,12 @@ export function showComparison()
 			}
 			else	// No Hand Data available
 			{
-				this.bindex = g_lastBindex;
-				loadTraveller_2("","","");
+				loadTraveller_2("","","",g_lastBindex);
 			}
 		}
 		else
 		{
-			this.bindex = g_lastBindex;
-			loadTraveller_2("","","");
+			loadTraveller_2("","","",g_lastBindex);
 		}
 	}
 	else
@@ -1549,9 +1547,10 @@ export function showCurrentBoard()
 		displayErrorAbsPosition("Es gibt kein Handdiagramm für dieses Board",300,200);
 }
 
-export function loadTraveller_2(data,statusText,jqXHR)
+export function loadTraveller_2(data,statusText,jqXHR,bindex)
 {
-	if (data!="") dddLoadMakeable(data,statusText,jqXHR,this.bindex);
+	var targetBindex = (typeof bindex !== "undefined") ? bindex : ((typeof this !== "undefined" && this && typeof this.bindex !== "undefined") ? this.bindex : g_lastBindex);
+	if (data!="") dddLoadMakeable(data,statusText,jqXHR,targetBindex);
 
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
 	var player1 = info.player1;

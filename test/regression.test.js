@@ -309,6 +309,10 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		showMakeableContracts: () => {},
 		showCredits: () => {},
 		displayTraveller: () => {},
+		hideAllPopups: () => {},
+		hideRanking: () => {},
+		displayErrorAbsPosition: () => {},
+		setButtonColor: () => {},
 	});
 
 	loadScript(context, "js/state.js");
@@ -326,6 +330,11 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	assert.equal(context.g_defaultContract, 1);
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+
+	// Verify showComparison runs without throwing ESM this-binding errors
+	assert.doesNotThrow(() => {
+		context.showComparison();
+	});
 });
 
 test("calculates ranking info from traveller data", async () => {

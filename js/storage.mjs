@@ -1,4 +1,5 @@
 import { getHands } from "./import.mjs";
+import { buildpage2 } from "./bootstrap.mjs";
 
 export function localStorageSupported() {
 	try {

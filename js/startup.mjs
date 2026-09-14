@@ -1,3 +1,5 @@
+import { extractParas } from "./bootstrap.mjs";
+
 export function startup(){
 		language = "de";  				// Sets the default language
 		g_logging = false;

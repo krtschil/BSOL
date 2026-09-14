@@ -2,6 +2,7 @@ import { pbnToJson, convertHand, inferHand } from "./pbn.mjs";
 import { requestPending, setRequestTimeout, doRequestHTMLasync } from "./network.mjs";
 import { startup } from "./startup.mjs";
 import { hide, displayError, hideSpinner, largeSpinner } from "./ui-popups.mjs";
+import { buildPage } from "./bootstrap.mjs";
 
 export function dlmToJson(data)
 {

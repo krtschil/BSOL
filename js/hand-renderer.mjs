@@ -1,5 +1,6 @@
 import { checkBoardValid } from "./board-utils.mjs";
 import { handleHandEntryCardClick, deselectCard } from "./hand-entry.mjs";
+import { handlePlayCardClick } from "./play.mjs";
 
 export function roundSym(num,decPlaces) {
 	var multi = Math.pow(10, decPlaces);

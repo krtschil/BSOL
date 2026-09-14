@@ -55,6 +55,7 @@ import {
 	validateBoard,
 } from "./pbn.mjs";
 import { log } from "./network.mjs";
+import { enterPlayMode } from "./play.mjs";
 import { updatePointsDisplay } from "./hand-renderer.mjs";
 import {
 	setupKRHelp,

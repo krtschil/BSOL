@@ -1,5 +1,6 @@
 import { localStorageSupported } from "./storage.mjs";
 import { displayHands } from "./hand-renderer.mjs";
+import { hideForwardPlay } from "./play.mjs";
 
 export function show(button)
 {

@@ -5,7 +5,69 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ***********************************************************************************/
 
-function buildPage(data,options)
+import {
+	hide,
+	hideAllPopups,
+	hideSpinner,
+	largeSpinner,
+	initSettings,
+	setOptions,
+	showBoardKeypad,
+	showNewBoardSelector,
+	showtoolsSubMenu,
+	showSettings,
+	showTravellerKeypad,
+	showHelp,
+	showMainMenuItems,
+} from "./ui-popups.mjs";
+import {
+	webAssemblySupported,
+	workerSupported,
+	createMainWorker,
+	createBackgroundWorkers,
+} from "./workers.mjs";
+import {
+	getCookie,
+	localStorageSupported,
+	openIndexedDB,
+} from "./storage.mjs";
+import {
+	setDisplaySizing,
+	orientationChanged,
+	showNewFeaturesNotice,
+} from "./board-renderer.mjs";
+import {
+	showDeleteConfirmation,
+} from "./board-utils.mjs";
+import {
+	selectQuadrant,
+	edit,
+} from "./hand-entry.mjs";
+import { gotoSession } from "./session.mjs";
+import { calculateMakeableSingleBoard, startAnalyseAll } from "./makeable.mjs";
+import { getHands, linToJson } from "./import.mjs";
+import { downloadFile } from "./file-utils.mjs";
+import {
+	generatePBN,
+	validateContract,
+	identifyHonourCardSet,
+	convertToJQKA,
+	validateBoard,
+} from "./pbn.mjs";
+import { log } from "./network.mjs";
+import { updatePointsDisplay } from "./hand-renderer.mjs";
+import {
+	setupKRHelp,
+	setupCommandHelp,
+	setupPlayHelp,
+	setupEditHelp,
+	setupSettingsHelp,
+	setupPlayMatchContractHelp,
+	setupGeneralHelp,
+} from "./help.mjs";
+import { changeLanguage } from "./localization.mjs";
+
+export function buildPage(data,options)
 {
 //document.body.style.transform = 'scale(' + $(window).width()/800 + ')';
 //document.body.style['-o-transform'] = 'scale(' + $(window).width()/800 + ')';
@@ -38,8 +100,9 @@ function buildPage(data,options)
 	}
 }
 
-function buildPage1(data,options)
+export function buildPage1(data,options)
 {
+	var i, j;
 	g_initialised = true;
 	$("#largeSpinner").finish();
 
@@ -278,8 +341,9 @@ function buildPage1(data,options)
 	openIndexedDB();	// Will call getHands or buildPage2 from onsuccess callback
 }
 
-function buildpage2()
+export function buildpage2()
 {
+	var i;
 	var rank1button = document.getElementById("rank1");
 	var rank2button = document.getElementById("rank2");
 
@@ -404,7 +468,7 @@ function buildpage2()
 	showNewFeaturesNotice();
 }
 
-function extractParas()
+export function extractParas()
   {
     const validDealers = "NSEW";
 	const allowedParameters = new Set([
@@ -821,7 +885,7 @@ function extractParas()
 		return b;
 	}
 
-function processRequest()
+export function processRequest()
 {
 	var result = extractParas();
 
@@ -830,4 +894,19 @@ function processRequest()
 
 	setupGeneralHelp();
 	window.focus();
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (ranking.js, traveller.js, play.js, accuracy.js, state.js)
+// can keep calling them unchanged. Remove entries here once every caller
+// has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		buildPage,
+		buildPage1,
+		buildpage2,
+		extractParas,
+		processRequest,
+	});
 }

@@ -76,7 +76,7 @@ test("parses supported URL parameters into board and traveller settings", () => 
 	});
 	loadScript(context, "js/scoring.mjs");
 	loadScript(context, "js/pbn.mjs");
-	loadScript(context, "js/bootstrap.js");
+	loadScript(context, "js/bootstrap.mjs");
 	const result = context.extractParas();
 
 	assert.equal(result.file, "hands/sample.pbn");
@@ -104,7 +104,7 @@ test("resets import and Traveller state when building a new page", () => {
 		workerSupported: () => false,
 		reportBSOLNotSupported: () => {},
 	});
-	loadScript(context, "js/bootstrap.js");
+	loadScript(context, "js/bootstrap.mjs");
 	context.buildPage({}, "{}");
 
 	assert.equal(context.g_file, "");

@@ -18,6 +18,7 @@ import {
 	hideAllPopups,
 	hideMenuItems,
 } from "./ui-popups.mjs";
+import { hideRanking } from "./ranking.mjs";
 import { showCredits } from "./board-renderer.mjs";
 import { displayHands } from "./hand-renderer.mjs";
 import { exitHandEntryMode } from "./hand-entry.mjs";

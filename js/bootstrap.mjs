@@ -6,6 +6,12 @@
 ***********************************************************************************/
 
 import {
+	hideRanking,
+	setupRanking,
+	setupScorecard,
+	sortRanking,
+} from "./ranking.mjs";
+import {
 	hide,
 	hideAllPopups,
 	hideSpinner,

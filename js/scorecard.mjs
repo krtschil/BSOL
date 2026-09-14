@@ -1,3 +1,4 @@
+import { getPlayerInfo, getPlayerAndRole } from "./ranking.mjs";
 import { displayLeadCard, getLeadsIdx, leadCard, compareScores, played, makeColor } from "./scoring.mjs";
 import { getMakeableTricksForContract, getHighestScoringMakeableContractForDirection } from "./makeable.mjs";
 import { getTindexByName } from "./board-utils.mjs";

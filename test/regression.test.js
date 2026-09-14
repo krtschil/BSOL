@@ -332,6 +332,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
 
 	// Verify showComparison runs without throwing ESM this-binding errors
+	context.g_hands.boards[0].OptimumScore = "N 3NT;+400";
 	assert.doesNotThrow(() => {
 		context.showComparison();
 	});

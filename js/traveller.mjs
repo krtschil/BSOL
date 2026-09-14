@@ -810,6 +810,7 @@ export function displayTraveller(pdirection)
 	var optimum = g_hands.boards[g_lastBindex].OptimumScore;
 	var optscore = "";
 	var optcontract = "";
+	var optcontracts = [];
 
 	if ((typeof optimum)!="undefined")
 	{
@@ -821,9 +822,9 @@ export function displayTraveller(pdirection)
 
 		for (k=0;k<optcontracts.length;k++)
 		{
-			var optcontract = optcontracts[k];
-			optcontract = optcontract.split(" ");
-			var contract = optcontract[1];
+			var currentOptcontract = optcontracts[k];
+			currentOptcontract = currentOptcontract.split(" ");
+			var contract = currentOptcontract[1];
 
 			if (contract.indexOf("+")!=-1)	// remove overtricks
 			{
@@ -834,7 +835,7 @@ export function displayTraveller(pdirection)
 
 			contract = contract.replace("x","*");
 
-			var optdir = optcontract[0];
+			var optdir = currentOptcontract[0];
 
 			var ctricks = getMakeableTricksForContract(g_lastBindex,contract,optdir.charAt(0));
 

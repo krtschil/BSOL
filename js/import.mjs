@@ -1,6 +1,7 @@
 import { pbnToJson, convertHand, inferHand } from "./pbn.mjs";
 import { requestPending, setRequestTimeout, doRequestHTMLasync } from "./network.mjs";
 import { startup } from "./startup.mjs";
+import { hideRanking } from "./ranking.mjs";
 import { hide, displayError, hideSpinner, largeSpinner } from "./ui-popups.mjs";
 import { buildPage } from "./bootstrap.mjs";
 import { enterPlayMode } from "./play.mjs";

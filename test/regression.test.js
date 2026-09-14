@@ -328,6 +328,43 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
 });
 
+test("calculates ranking info from traveller data", async () => {
+	const traveller = JSON.parse(
+		fs.readFileSync(`${root}/test/fixtures/sample-traveller.json`, "utf8")
+	);
+	const previous = {
+		g_travellers: globalThis.g_travellers,
+		g_sessInfo: globalThis.g_sessInfo,
+		g_eventType: globalThis.g_eventType,
+		g_scoring: globalThis.g_scoring,
+		g_validPercentageFields: globalThis.g_validPercentageFields,
+		g_rankInfo: globalThis.g_rankInfo,
+		g_maxImps: globalThis.g_maxImps,
+		g_title: globalThis.g_title,
+		g_uniquePairNumbers: globalThis.g_uniquePairNumbers,
+	};
+
+	try {
+		globalThis.g_travellers = traveller;
+		globalThis.g_sessInfo = null;
+		globalThis.g_rankInfo = null;
+		globalThis.g_uniquePairNumbers = "";
+		globalThis.g_eventType = "Paarturnier";
+		globalThis.g_scoring = "MatchPoints";
+		globalThis.g_validPercentageFields = true;
+		globalThis.g_maxImps = 0;
+
+		const rankingUrl = pathToFileURL(`${root}/js/ranking.mjs`).href + `?test=${Date.now()}`;
+		const { getRankingInfo } = await import(rankingUrl);
+		const rankInfo = getRankingInfo();
+
+		assert.ok(rankInfo.rankNS.length > 0);
+		assert.equal(rankInfo.sessInfo.singleWinner, true);
+	} finally {
+		Object.assign(globalThis, previous);
+	}
+});
+
 test("renders bidding table with dealer offset without error", () => {
 	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
 	const createTable = () => {

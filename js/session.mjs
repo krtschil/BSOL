@@ -1,3 +1,4 @@
+import { setupRanking, setupScorecard } from "./ranking.mjs";
 import { log } from "./network.mjs";
 import { getHands } from "./import.mjs";
 

@@ -1,3 +1,4 @@
+import { setupScorecard } from "./ranking.mjs";
 import { sessionHelp } from "./session.mjs";
 import { createEmptyBoard, readClipboard, handleLoadFileSelect, processClipboardData } from "./import.mjs";
 import { setupKRHelp } from "./help.mjs";

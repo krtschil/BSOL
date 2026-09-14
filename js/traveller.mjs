@@ -1561,6 +1561,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 
 	var pairs = g_travellers.event.participants.pair;
 	var declarer_pair = false;
+	var declarer_name = "";
 
 	var tlines = g_currentTraveller.traveller_line;
 

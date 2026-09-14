@@ -3,6 +3,7 @@ import { requestPending, setRequestTimeout, doRequestHTMLasync } from "./network
 import { startup } from "./startup.mjs";
 import { hide, displayError, hideSpinner, largeSpinner } from "./ui-popups.mjs";
 import { buildPage } from "./bootstrap.mjs";
+import { enterPlayMode } from "./play.mjs";
 
 export function dlmToJson(data)
 {

@@ -1,6 +1,7 @@
 import { validContract, calculateBridgeScore, setCharAt } from "./scoring.mjs";
 import { downloadFile } from "./file-utils.mjs";
 import { log } from "./network.mjs";
+import { calculateTricks } from "./play.mjs";
 
 export function identifyHonourCardSet(str)
 {
@@ -539,6 +540,8 @@ export function generatePBN(all)
 				var vulnerable;
 				var score;
 				var tmp;
+				var pos;
+				var trickdiff;
 
 				if (ContractResult.indexOf("XX") !=-1){
 					doubled="XX";
@@ -1020,6 +1023,7 @@ export function pbnToJson(fileData)
 
 						var n;
 						var a = auction[j];
+						var pos;
 
 						/*
 							If alerts contain the = character replace it with -

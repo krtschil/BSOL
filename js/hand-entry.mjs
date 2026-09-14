@@ -1,6 +1,7 @@
 import { log, requestPending } from "./network.mjs";
 import { show, hide, getPosition, doPopup, doPopupNoTimeout, showHelp, spinner, hideMenuItems } from "./ui-popups.mjs";
 import { createHandString } from "./hand-renderer.mjs";
+import { callddd, enterPlayMode, resetState } from "./play.mjs";
 
 export function clearMakeableOnInputBoard()
 {

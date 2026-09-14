@@ -20,6 +20,21 @@ test("converts a PBN file into valid board JSON", () => {
 	assert.equal(context.validateBoard(result.boards[0]), 1);
 });
 
+test("converts PBN auctions with alert notes", () => {
+	const context = createContext({
+		g_fullInfo: false,
+		g_hands: {boards: []},
+		g_title: "",
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
+	const pbn = fs.readFileSync(`${root}/hands/test2.pbn`, "utf8");
+	const result = JSON.parse(context.pbnToJson(pbn));
+
+	assert.ok(result.boards.length > 0);
+	assert.ok(result.boards.some((board) => (board.Bids || []).some((bid) => bid.includes("|"))));
+});
+
 test("keeps the Traveller JSON fixture available", () => {
 	const traveller = JSON.parse(
 		fs.readFileSync(`${root}/test/fixtures/sample-traveller.json`, "utf8")
@@ -240,5 +255,65 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	assert.equal(context.g_defaultContract, 1);
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+});
+
+test("renders bidding table with dealer offset without error", () => {
+	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
+	const createTable = () => {
+		const rows = [];
+		return {
+			style: {},
+			rows,
+			insertRow: () => {
+				const cells = [];
+				const r = {
+					style: {},
+					cells,
+					insertCell: () => {
+						const c = createCell();
+						cells.push(c);
+						return c;
+					}
+				};
+				rows.push(r);
+				return r;
+			}
+		};
+	};
+	const createDiv = () => {
+		let children = [];
+		return {
+			style: {},
+			appendChild: (child) => { children.push(child); },
+			get innerHTML() {
+				return children.map((c) => `<table id="${c.id || ''}">${c.rows ? c.rows.map(r => `<tr>${r.cells.map(cell => `<td>${cell.innerHTML}</td>`).join('')}</tr>`).join('') : ''}</table>`).join('');
+			}
+		};
+	};
+	const context = createContext({
+		document: {
+			createElement: (tag) => {
+				if (tag === "table") return createTable();
+				if (tag === "div") return createDiv();
+				return {style: {}, appendChild: () => {}};
+			},
+		},
+		g_lastBindex: 0,
+		g_hands: {
+			boards: [{
+				Dealer: "E", // dealerIndex = 2 (W, N, E, S) -> 2 dashes inserted
+				Vulnerable: "None",
+				Bids: ["1H", "Pass", "2H", "Pass", "Pass", "Pass"],
+			}]
+		},
+		g_bidFontSize: "14px",
+		g_sectionHeight: 300,
+	});
+
+	loadScript(context, "js/board-renderer.mjs");
+	const html = context.showBidding();
+	assert.ok(typeof html === "string");
+	assert.ok(html.includes("biddingHeader"));
+	assert.ok(html.includes("biddingContent"));
 });
 

@@ -1,11 +1,15 @@
-function roundSym (num,decPlaces) {
+import { checkBoardValid } from "./board-utils.mjs";
+import { handleHandEntryCardClick, deselectCard } from "./hand-entry.mjs";
+import { handlePlayCardClick } from "./play.mjs";
+
+export function roundSym(num,decPlaces) {
 	var multi = Math.pow(10, decPlaces);
 	var value = (Math.round(multi*Math.abs(num))/multi).toFixed(decPlaces);
 	if (num<0) { value = -value; }
 	return value;
 }
 
-function higherHonourCount(suit,base)
+export function higherHonourCount(suit,base)
 {
 	var honours = base=="T" ? "JQKA" : base=="J" ? "QKA" : base=="Q" ? "KA" : base=="K" ? "A" : "";
 	var count = 0;
@@ -16,7 +20,7 @@ function higherHonourCount(suit,base)
 	return count;
 }
 
-function krCalc(suits)
+export function krCalc(suits)
 {
 	var totalCards = suits.reduce((total,suit) => total + suit.length,0);
 	if (totalCards!=13) return "";
@@ -73,7 +77,7 @@ function krCalc(suits)
 	return total;
 }
 
-function updatePointsDisplay()
+export function updatePointsDisplay()
 {
 	var npts,epts,spts,wpts;
 	var tindex = g_lastBindex;
@@ -101,7 +105,7 @@ function updatePointsDisplay()
 	points.rows[2].cells[1].innerHTML = spts;
 }
 
-function buttclick(pthis)
+export function buttclick(pthis)
 {
 	var str = pthis.id.replace("button","");
 	var suit = Number(str.charAt(2));
@@ -118,7 +122,7 @@ function buttclick(pthis)
 		handleHandEntryCardClick(suit,cd);
 }
 
-function createMiniHandString(hand,index)
+export function createMiniHandString(hand,index)
 {
 		// Create a string containing the hand for North, South, East, or West, to go into the mini hand diagram
 	var points = 0;
@@ -129,6 +133,7 @@ function createMiniHandString(hand,index)
 	hand = hand.Deal[index];
 	hand = hand.split(".");
 	var cardindex;
+	var i,j;
 
 	var text = "";
 
@@ -212,7 +217,7 @@ function createMiniHandString(hand,index)
 	return record;
 }
 
-function convertHonourCards(para)
+export function convertHonourCards(para)
 {
 	var str = para;
 
@@ -244,7 +249,7 @@ function convertHonourCards(para)
 	} catch (e) {return para};
 }
 
-function createHandString(hand,index)
+export function createHandString(hand,index)
 {
 		// Create a string containing the hand for North, South, East, or West, to go into the table above the traveller
 	var points = 0;
@@ -261,7 +266,7 @@ function createHandString(hand,index)
 	var cardindex;
 	var buttHeight =  Math.round(g_sectionHeight/4+4) + "px";
 	var showSubscript = false;
-	var showColourCode = false;
+	var showColorCode = false;
 	var cardFontSize =  Math.round(0.9*g_textBratio*g_sectionHeight/4) + "px";
 	var subFontSize =  Math.round(0.45*(g_textBratio*g_sectionHeight/4)) + "px";
 
@@ -303,6 +308,7 @@ function createHandString(hand,index)
 	var text = "";
 
 	var krpoints = 0;	// Kaplan Reuben evaluator points for this holding
+	var i,j;
 
 	for (i=0;i<4;i++)
 	{
@@ -449,7 +455,7 @@ function createHandString(hand,index)
 	return record;
 }
 
-function drawMiniHand()
+export function drawMiniHand()
 {
 	if (checkBoardValid(g_lastBindex)&&((typeof g_hands.boards[g_lastBindex].Deal)!="undefined"))
 	{
@@ -491,7 +497,7 @@ function drawMiniHand()
 	}
 }
 
-function displayHands() {
+export function displayHands() {
     const board = appState.hands.boards[appState.lastBoardIndex];
 
     const north = document.getElementById("northHand");
@@ -503,4 +509,18 @@ function displayHands() {
     east.innerHTML = createHandString(board, 1).text;
     south.innerHTML = createHandString(board, 2).text;
     west.innerHTML = createHandString(board, 3).text;
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (traveller.js, bootstrap.js, scorecard.js, board-renderer.js,
+// play.js, ui-popups.mjs's inline onclick markup) can keep calling them
+// unchanged. Remove entries here once every caller has been migrated to
+// `import`.
+if (typeof window !== "undefined")
+{
+    Object.assign(window, {
+        roundSym, higherHonourCount, krCalc, updatePointsDisplay, buttclick,
+        createMiniHandString, convertHonourCards, createHandString,
+        drawMiniHand, displayHands
+    });
 }

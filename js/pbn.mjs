@@ -1,4 +1,9 @@
-function identifyHonourCardSet(str)
+import { validContract, calculateBridgeScore, setCharAt } from "./scoring.mjs";
+import { downloadFile } from "./file-utils.mjs";
+import { log } from "./network.mjs";
+import { calculateTricks } from "./play.mjs";
+
+export function identifyHonourCardSet(str)
 {
 	if ((str != "") && (typeof str != "undefined"))
 	{
@@ -17,7 +22,7 @@ function identifyHonourCardSet(str)
 	return "english";
 }
 
-function convertToJQKA(str,lang)
+export function convertToJQKA(str,lang)
 {
 	if (lang=="french")
 	{
@@ -40,7 +45,7 @@ function convertToJQKA(str,lang)
 	return str;
 }
 
-function validateContract(pvalue)
+export function validateContract(pvalue)
 {
 	var suits = "NSHDC";
 
@@ -54,7 +59,7 @@ function validateContract(pvalue)
 	return true;
 }
 
-function checkDeal(board,polarity)
+export function checkDeal(board,polarity)
 {
 	var p = ["North","East","South","West"];
 	var dir = p[polarity];
@@ -74,7 +79,7 @@ function checkDeal(board,polarity)
 	return 1;
 }
 
-function checkForDuplicates(board)
+export function checkForDuplicates(board)
 {
 	var cvalues = "23456789TJQKA";
 	var cards = Array.from({length:4}, () => Array(13).fill(0));
@@ -104,7 +109,7 @@ function checkForDuplicates(board)
 	return 1;
 }
 
-function validateBoard(board)
+export function validateBoard(board)
 {
 	var required = language=="de"
 		? ["Boardnummer nicht angegeben","Teiler nicht angegeben","Gefahrenlage nicht angegeben","Nordhand nicht angegeben","Osthand nicht angegeben","Südhand nicht angegeben","Westhand nicht angegeben"]
@@ -127,7 +132,7 @@ function validateBoard(board)
 	return checkForDuplicates(board);
 }
 
-function getPBNSegment(data)
+export function getPBNSegment(data)
 {
 		// Return information for one board from the PBN data and also remove these lines from the original array
 	var i;
@@ -142,7 +147,7 @@ function getPBNSegment(data)
 	return data.splice(0,i+1);
 }
 
-function getLineNotes(data,s) // read Notes (explanation for alerts)
+export function getLineNotes(data,s) // read Notes (explanation for alerts)
 {		// Used by pbnToJson function
 	var line;
 	var i;
@@ -182,7 +187,7 @@ function getLineNotes(data,s) // read Notes (explanation for alerts)
 	}
 }
 
-function getLineFull(data,s,pre) // read multi line data (Auction and Play in pbn)
+export function getLineFull(data,s,pre) // read multi line data (Auction and Play in pbn)
 {
 	// Used by pbnToJson function
 	var line;
@@ -217,7 +222,7 @@ function getLineFull(data,s,pre) // read multi line data (Auction and Play in pb
 	return "";
 }
 
-function getLine(data,s,resetFlag)
+export function getLine(data,s,resetFlag)
 {
 		// Used by pbnToJson function
 	var line;
@@ -249,7 +254,7 @@ function getLine(data,s,resetFlag)
 	return null;
 }
 
-function evaluateTrickWinner(chronoTrick, trumpSuit)
+export function evaluateTrickWinner(chronoTrick, trumpSuit)
 {
 		// chronoTrick: 4 card tokens (e.g. "CA") in the actual order they were played, leader first.
 		// trumpSuit: "C","D","H","S", or "N" for no-trump.
@@ -280,7 +285,7 @@ function evaluateTrickWinner(chronoTrick, trumpSuit)
 	return winIdx;
 }
 
-function reorderPlaySequence(rawTokens,firstLeader,contract)
+export function reorderPlaySequence(rawTokens,firstLeader,contract)
 {
 		// PBN "Export Format" [Play] data uses fixed table-position columns: column k of every
 		// trick-row always represents the same seat (the rotation starting at firstLeader), NOT
@@ -326,7 +331,7 @@ function reorderPlaySequence(rawTokens,firstLeader,contract)
 	return result;
 }
 
-function convertHand(cards,hand)
+export function convertHand(cards,hand)
 {
 	var str = "";
 	var suits = "SHDC";
@@ -376,7 +381,7 @@ function convertHand(cards,hand)
 	return str;
 }
 
-function inferHand(cards)
+export function inferHand(cards)
 {
 	var suits = "SHDC";
 	var values = "23456789TJQKA";
@@ -400,7 +405,7 @@ function inferHand(cards)
 	return convertHand(cards,hand);
 }
 
-function stripComments(fileData)
+export function stripComments(fileData)
 {
 	var outData = "";
 	var inbComment = false; // for comments preceded by a curly bracket
@@ -475,7 +480,7 @@ function stripComments(fileData)
 	return outData;
 }
 
-function generatePBN(all)
+export function generatePBN(all)
 {
 	var str="";
 	var nboards = g_hands.boards.length;
@@ -535,6 +540,8 @@ function generatePBN(all)
 				var vulnerable;
 				var score;
 				var tmp;
+				var pos;
+				var trickdiff;
 
 				if (ContractResult.indexOf("XX") !=-1){
 					doubled="XX";
@@ -792,7 +799,7 @@ function generatePBN(all)
 	downloadFile(str, "text/pbn", "boards.pbn");
 }
 
-function pbnToJson(fileData)
+export function pbnToJson(fileData)
 {
 		// Make sure there is a defined "trim" function (needed for IE8 and earlier)
 	if(typeof String.prototype.trim !== 'function') {
@@ -1016,6 +1023,7 @@ function pbnToJson(fileData)
 
 						var n;
 						var a = auction[j];
+						var pos;
 
 						/*
 							If alerts contain the = character replace it with -
@@ -1187,4 +1195,30 @@ function pbnToJson(fileData)
 
 	outStr = outStr + "]}";//console.log(outStr);
 	return outStr;
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (js/bootstrap.js, js/import.js) can keep calling them unchanged.
+// Remove entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		identifyHonourCardSet,
+		convertToJQKA,
+		validateContract,
+		checkDeal,
+		checkForDuplicates,
+		validateBoard,
+		getPBNSegment,
+		getLineNotes,
+		getLineFull,
+		getLine,
+		evaluateTrickWinner,
+		reorderPlaySequence,
+		convertHand,
+		inferHand,
+		stripComments,
+		generatePBN,
+		pbnToJson,
+	});
 }

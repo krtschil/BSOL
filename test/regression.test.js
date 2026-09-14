@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 const fs = require("node:fs");
+const {pathToFileURL} = require("node:url");
 const {createContext, loadScript, root} = require("./test-helpers");
 
 test("converts a PBN file into valid board JSON", () => {
@@ -9,8 +10,8 @@ test("converts a PBN file into valid board JSON", () => {
 		g_hands: {boards: []},
 		g_title: "",
 	});
-	loadScript(context, "js/scoring.js");
-	loadScript(context, "js/pbn.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
 	const pbn = fs.readFileSync(`${root}/test/fixtures/sample-traveller.pbn`, "utf8");
 	const result = JSON.parse(context.pbnToJson(pbn));
 
@@ -18,6 +19,21 @@ test("converts a PBN file into valid board JSON", () => {
 	assert.equal(result.boards[0].Deal.length, 4);
 	assert.equal(result.boards[0].Deal.join(".").replace(/\./g, "").length, 52);
 	assert.equal(context.validateBoard(result.boards[0]), 1);
+});
+
+test("converts PBN auctions with alert notes", () => {
+	const context = createContext({
+		g_fullInfo: false,
+		g_hands: {boards: []},
+		g_title: "",
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
+	const pbn = fs.readFileSync(`${root}/hands/test2.pbn`, "utf8");
+	const result = JSON.parse(context.pbnToJson(pbn));
+
+	assert.ok(result.boards.length > 0);
+	assert.ok(result.boards.some((board) => (board.Bids || []).some((bid) => bid.includes("|"))));
 });
 
 test("keeps the Traveller JSON fixture available", () => {
@@ -34,8 +50,9 @@ test("converts a LIN board into valid board JSON", () => {
 		g_hands: {},
 		g_title: "",
 	});
-	loadScript(context, "js/pbn.js");
-	loadScript(context, "js/import.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
+	loadScript(context, "js/import.mjs");
 	const lin = fs.readFileSync(`${root}/hands/4399982054.lin`, "utf8");
 	const result = JSON.parse(context.linToJson(lin));
 
@@ -47,7 +64,7 @@ test("converts a LIN board into valid board JSON", () => {
 
 test("converts a DLM file into valid board JSON", () => {
 	const context = createContext({g_fullInfo: false});
-	loadScript(context, "js/import.js");
+	loadScript(context, "js/import.mjs");
 	const dlm = fs.readFileSync(`${root}/test/fixtures/Team2024.dlm`, "utf8");
 	const result = JSON.parse(context.dlmToJson(dlm));
 
@@ -59,7 +76,8 @@ test("converts a DLM file into valid board JSON", () => {
 
 test("validates contracts and converts honour-card alphabets", () => {
 	const context = createContext();
-	loadScript(context, "js/pbn.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
 
 	assert.equal(context.validateContract("4S"), true);
 	assert.equal(context.validateContract("8S"), false);
@@ -72,8 +90,9 @@ test("parses supported URL parameters into board and traveller settings", () => 
 		window: {location: {search: "?file=hands%2Fsample.pbn&xml=traveller.json&board=7&dealer=E&vul=NS"}},
 		changeLanguage: () => {},
 	});
-	loadScript(context, "js/pbn.js");
-	loadScript(context, "js/bootstrap.js");
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
+	loadScript(context, "js/bootstrap.mjs");
 	const result = context.extractParas();
 
 	assert.equal(result.file, "hands/sample.pbn");
@@ -101,7 +120,7 @@ test("resets import and Traveller state when building a new page", () => {
 		workerSupported: () => false,
 		reportBSOLNotSupported: () => {},
 	});
-	loadScript(context, "js/bootstrap.js");
+	loadScript(context, "js/bootstrap.mjs");
 	context.buildPage({}, "{}");
 
 	assert.equal(context.g_file, "");
@@ -128,7 +147,7 @@ test("switches localization labels between German and English", () => {
 			getElementById: (id) => labels[id] || {style: {}, textContent: "", value: "", innerHTML: ""},
 		},
 	});
-	loadScript(context, "js/localization.js");
+	loadScript(context, "js/localization.mjs");
 
 	context.changeLanguage("de");
 	assert.equal(labels.loadFile1.value, "Datei auswählen");
@@ -141,7 +160,7 @@ test("switches localization labels between German and English", () => {
 
 test("calculates representative bridge scores", () => {
 	const context = createContext();
-	loadScript(context, "js/scoring.js");
+	loadScript(context, "js/scoring.mjs");
 
 	assert.equal(context.calculateBridgeScore({
 		level: 4, suit: "H", doubled: "", declarerVulnerable: false, tricksTaken: 10
@@ -152,6 +171,76 @@ test("calculates representative bridge scores", () => {
 	assert.equal(context.calculateBridgeScore({
 		level: 4, suit: "S", doubled: "X", declarerVulnerable: false, tricksTaken: 8
 	}), -300);
+});
+
+test("builds accuracy cache keys and counts trick concessions", () => {
+	const context = createContext();
+	loadScript(context, "js/accuracy.mjs");
+
+	const board = {
+		PlayerNames: ["South", "West", "North", "East"],
+		Deal: ["AKQ.JT9.876.54", "2.345.9.AKQJT", "987.654.32.987", "JT65.2.AKQJT.3"],
+		Contract: "3NT",
+		Played: ["C2", "C3", "CK", "CA"],
+	};
+
+	assert.equal(context.makeAccKey(board), JSON.stringify({
+		names: board.PlayerNames,
+		deal: board.Deal,
+		trumps: "N",
+		cards: board.Played,
+	}));
+	assert.deepEqual(Array.from(context.tricksConceded({
+		tricksConceded: [0, 1, 0, 2, 1],
+		cardDirection: [0, 1, 2, 3, 1],
+	})), [0, 2, 0, 1]);
+});
+
+test("handles accuracy worker responses with explicit context", async () => {
+	const previous = {
+		document: globalThis.document,
+		$: globalThis.$,
+		DOMPurify: globalThis.DOMPurify,
+		g_timeout: globalThis.g_timeout,
+		g_timeoutID: globalThis.g_timeoutID,
+		language: globalThis.language,
+	};
+	const popup = {style: {}, innerHTML: ""};
+
+	try {
+		globalThis.document = {
+			getElementById: (id) => id=="popup_box" ? popup : {style: {}},
+		};
+		globalThis.$ = () => ({finish: () => {}, show: () => {}, hide: () => {}});
+		globalThis.DOMPurify = {sanitize: (value) => value};
+		globalThis.g_timeout = "";
+		globalThis.g_timeoutID = "";
+		globalThis.language = "en";
+
+		const accuracyUrl = pathToFileURL(`${root}/js/accuracy.mjs`).href + `?worker-load=${Date.now()}`;
+		const {load} = await import(accuracyUrl);
+		load(JSON.stringify({
+			sess: {
+				tricksConceded: [0, 1, 2],
+				cardDirection: [0, 1, 3],
+				declErr: 1,
+				deltaElapsed: 2,
+			}
+		}), null, null, {
+			names: ["South", "West", "North", "East"],
+			declarer: "N",
+			dest: 1,
+		});
+
+		assert.match(popup.innerHTML, /Accuracy of Play/);
+	} finally {
+		globalThis.document = previous.document;
+		globalThis.$ = previous.$;
+		globalThis.DOMPurify = previous.DOMPurify;
+		globalThis.g_timeout = previous.g_timeout;
+		globalThis.g_timeoutID = previous.g_timeoutID;
+		globalThis.language = previous.language;
+	}
 });
 
 test("does not set g_defaultContract when board has no replayable play data", () => {
@@ -220,13 +309,24 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		showMakeableContracts: () => {},
 		showCredits: () => {},
 		displayTraveller: () => {},
+		hideAllPopups: () => {},
+		hideRanking: () => {},
+		displayErrorAbsPosition: () => {},
+		setButtonColor: () => {},
+		getPlayerInfo: () => null,
+		played: () => true,
+		drawBar: () => "",
+		drawBoxedBar: () => "",
 	});
 
-	loadScript(context, "js/state.js");
+	loadScript(context, "js/state.mjs");
 	context.appState = context.window.appState;
-	loadScript(context, "js/traveller.js");
+	loadScript(context, "js/traveller.mjs");
 
 	context.setupTraveller(0, true);
+
+	context.setCurrentTrickCards(new Array(4));
+	assert.ok(context.window.g_currentTrickCards);
 
 	assert.equal(context.g_defaultContract, 0);
 	assert.equal(context.g_defaultContractIndex, -1);
@@ -237,5 +337,128 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	assert.equal(context.g_defaultContract, 1);
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+
+	// Verify showComparison runs without throwing ESM this-binding errors
+	context.g_hands.boards[0].OptimumScore = "N 3NT;+400";
+	assert.doesNotThrow(() => {
+		context.showComparison();
+	});
+
+	// Verify computeTravellerStatistics executes without strict-mode undeclared variable errors
+	context.g_currentTraveller = {
+		traveller_line: [
+			{ contract: "3NT", played_by: "N", ns_match_points: 100, ew_match_points: 0, crossImpsNS: 5, crossImpsEW: -5 }
+		]
+	};
+	const mockTable = {
+		deleteRow: () => {},
+		insertRow: () => {},
+		rows: [{ cells: [{}, {}, {}, { textContent: "" }] }]
+	};
+	mockTable.rows.push({
+		insertCell: () => {},
+		cells: Array.from({ length: 6 }, () => ({ style: {} }))
+	});
+	context.document.getElementById = (id) => (id === "contractTable" ? mockTable : { style: {}, replaceChildren: () => {} });
+
+	assert.doesNotThrow(() => {
+		context.computeTravellerStatistics(1);
+	});
 });
 
+test("calculates ranking info from traveller data", async () => {
+	const traveller = JSON.parse(
+		fs.readFileSync(`${root}/test/fixtures/sample-traveller.json`, "utf8")
+	);
+	const previous = {
+		g_travellers: globalThis.g_travellers,
+		g_sessInfo: globalThis.g_sessInfo,
+		g_eventType: globalThis.g_eventType,
+		g_scoring: globalThis.g_scoring,
+		g_validPercentageFields: globalThis.g_validPercentageFields,
+		g_rankInfo: globalThis.g_rankInfo,
+		g_maxImps: globalThis.g_maxImps,
+		g_title: globalThis.g_title,
+		g_uniquePairNumbers: globalThis.g_uniquePairNumbers,
+	};
+
+	try {
+		globalThis.g_travellers = traveller;
+		globalThis.g_sessInfo = null;
+		globalThis.g_rankInfo = null;
+		globalThis.g_uniquePairNumbers = "";
+		globalThis.g_eventType = "Paarturnier";
+		globalThis.g_scoring = "MatchPoints";
+		globalThis.g_validPercentageFields = true;
+		globalThis.g_maxImps = 0;
+
+		const rankingUrl = pathToFileURL(`${root}/js/ranking.mjs`).href + `?test=${Date.now()}`;
+		const { getRankingInfo } = await import(rankingUrl);
+		const rankInfo = getRankingInfo();
+
+		assert.ok(rankInfo.rankNS.length > 0);
+		assert.equal(rankInfo.sessInfo.singleWinner, true);
+	} finally {
+		Object.assign(globalThis, previous);
+	}
+});
+
+test("renders bidding table with dealer offset without error", () => {
+	const createCell = () => ({innerHTML: "", style: {}, textContent: ""});
+	const createTable = () => {
+		const rows = [];
+		return {
+			style: {},
+			rows,
+			insertRow: () => {
+				const cells = [];
+				const r = {
+					style: {},
+					cells,
+					insertCell: () => {
+						const c = createCell();
+						cells.push(c);
+						return c;
+					}
+				};
+				rows.push(r);
+				return r;
+			}
+		};
+	};
+	const createDiv = () => {
+		let children = [];
+		return {
+			style: {},
+			appendChild: (child) => { children.push(child); },
+			get innerHTML() {
+				return children.map((c) => `<table id="${c.id || ''}">${c.rows ? c.rows.map(r => `<tr>${r.cells.map(cell => `<td>${cell.innerHTML}</td>`).join('')}</tr>`).join('') : ''}</table>`).join('');
+			}
+		};
+	};
+	const context = createContext({
+		document: {
+			createElement: (tag) => {
+				if (tag === "table") return createTable();
+				if (tag === "div") return createDiv();
+				return {style: {}, appendChild: () => {}};
+			},
+		},
+		g_lastBindex: 0,
+		g_hands: {
+			boards: [{
+				Dealer: "E", // dealerIndex = 2 (W, N, E, S) -> 2 dashes inserted
+				Vulnerable: "None",
+				Bids: ["1H", "Pass", "2H", "Pass", "Pass", "Pass"],
+			}]
+		},
+		g_bidFontSize: "14px",
+		g_sectionHeight: 300,
+	});
+
+	loadScript(context, "js/board-renderer.mjs");
+	const html = context.showBidding();
+	assert.ok(typeof html === "string");
+	assert.ok(html.includes("biddingHeader"));
+	assert.ok(html.includes("biddingContent"));
+});

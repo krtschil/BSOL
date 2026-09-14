@@ -1,5 +1,5 @@
 /* UI localization */
-function changeLanguage(l) {
+export function changeLanguage(l) {
 	switch(l)
 	{
 		case "de":
@@ -224,3 +224,11 @@ function changeLanguage(l) {
 	}
 }
 
+
+// Window-bridge: expose this function as a global so legacy classic
+// scripts (bootstrap.js) can keep calling it unchanged. Remove this
+// once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, { changeLanguage });
+}

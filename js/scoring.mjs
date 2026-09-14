@@ -1,4 +1,4 @@
-function calculateBridgeScore({
+export function calculateBridgeScore({
 	level,
 	suit,
 	doubled,
@@ -50,7 +50,7 @@ function calculateBridgeScore({
 	return -penalty;
 }
 
-function validContract(contract)
+export function validContract(contract)
 {
 	var levels = "1234567";
 	var suits = "CDHSN";
@@ -64,7 +64,7 @@ function validContract(contract)
 	return true;
 }
 
-function convertParContract(str)
+export function convertParContract(str)
 {
 	if (str.length<=2) return str;
 
@@ -75,7 +75,7 @@ function convertParContract(str)
 	return str;
 }
 
-function convertParContractString(str)
+export function convertParContractString(str)
 {
 	var result="";
 	var idx = 0;
@@ -113,7 +113,7 @@ function convertParContractString(str)
 	return result;
 }
 
-function getContractType(contract)
+export function getContractType(contract)
 {
 	var result = {};
 	result.ctype = 0;	// assume part score
@@ -174,7 +174,7 @@ function getContractType(contract)
 	return result;	// Part Score;
 }
 
-function comparePairNumbers(a,b)
+export function comparePairNumbers(a,b)
 {
 	if ((!Number.isNaN(a))&&(!Number.isNaN(b)))	// The pair numbers are wholly numeric
 	{
@@ -231,7 +231,7 @@ function comparePairNumbers(a,b)
 	}
 }
 
-function makeColor(value)
+export function makeColor(value)
 {
 	var r = 64 + Math.round((1-value)*192);
 	var g = 64 + Math.round(value*192);
@@ -246,7 +246,7 @@ function makeColor(value)
 	return color;
 }
 
-function convertAdjustmentToCrossImps(tline,dir)
+export function convertAdjustmentToCrossImps(tline,dir)
 {
 	var nssc1 = tline.score;
 	var ewsc1 = tline.score;
@@ -271,7 +271,7 @@ function convertAdjustmentToCrossImps(tline,dir)
 	return 2*percent;
 }
 
-function isValidCrossImps(tline)
+export function isValidCrossImps(tline)
 {
 	var valid = true;
 
@@ -281,7 +281,7 @@ function isValidCrossImps(tline)
 	return valid;
 }
 
-function scoreContainsAdjustment(tline)
+export function scoreContainsAdjustment(tline)
 {
 
 	if (tline.ns_score == null) tline.ns_score = "";
@@ -293,7 +293,7 @@ function scoreContainsAdjustment(tline)
 		return false;
 }
 
-function convertScoreToImps(score1,score2)
+export function convertScoreToImps(score1,score2)
 {
 	var diff = Number(score1) - Number(score2);
 
@@ -316,7 +316,7 @@ function convertScoreToImps(score1,score2)
 	return null;
 }
 
-function returnPoints(tline,sign)
+export function returnPoints(tline,sign)
 {
 	var nspts = Number(tline.ns_match_points);
 	var ewpts = Number(tline.ew_match_points);
@@ -331,7 +331,7 @@ function returnPoints(tline,sign)
 	else return nspts;
 }
 
-function calcPercentage(tline,sign)
+export function calcPercentage(tline,sign)
 {
 	var nspts = Number(tline.ns_match_points);
 	var ewpts = Number(tline.ew_match_points);
@@ -344,7 +344,7 @@ function calcPercentage(tline,sign)
 	return Number(percent);
 }
 
-function substituteSuitSymbol(contract)
+export function substituteSuitSymbol(contract)
 {
 		// Adjust the contract string depending on the number of tricks actually made, e.g. 11 tricks in 3NT becomes 3NT+2
 		// Also inserts suit symbols in place of letters in the contract and specifies a monospaced font for displaying the contract.
@@ -374,7 +374,7 @@ function substituteSuitSymbol(contract)
 		return contract;
 }
 
-function calcScoreForMakeable(suit,tricks,vulnerable)
+export function calcScoreForMakeable(suit,tricks,vulnerable)
 {
 		// N.B This calculates basic score for a non-doubled contract.
 	var suits = "CDHSN";
@@ -425,12 +425,12 @@ function calcScoreForMakeable(suit,tricks,vulnerable)
 	return score;
 }
 
-function setCharAt(str,index,chr) {
+export function setCharAt(str,index,chr) {
     if(index > str.length-1) return str;
     return str.substring(0,index) + chr + str.substring(index+1);
 }
 
-function leadCard(lead)
+export function leadCard(lead)
 {
 	// lead card can be supplied as, for example, AS, or SA. This function returns the value of
 	// the lead card field in the AS format.
@@ -467,7 +467,7 @@ function leadCard(lead)
 	return pvalue.replace("T","10");
 }
 
-function displayLeadCard(lead)
+export function displayLeadCard(lead)
 {
 	var card = leadCard(lead);
 	var symbols = {
@@ -484,7 +484,7 @@ function displayLeadCard(lead)
 }
 
 
-function getLeadsIdx(contract,declarer)
+export function getLeadsIdx(contract,declarer)
 {
 	var decl = "WNES";
 	var suits = "NCDHS";
@@ -498,7 +498,7 @@ function getLeadsIdx(contract,declarer)
 	return idx;
 }
 
-function played(tline)
+export function played(tline)
 {
 	if ((tline.ns_score=="Bye")||(tline.ew_score=="Bye")) return false;
 
@@ -509,13 +509,13 @@ function played(tline)
 		return false;
 }
 
-function passed(tline)
+export function passed(tline)
 {
 	if (tline.contract=="Passed") return true;
 	else return false;
 }
 
-function compareScores(tlines,ourscore,pdirection)
+export function compareScores(tlines,ourscore,pdirection)
 {
 	var res = {};
 	res.adjusted = 0;
@@ -553,13 +553,13 @@ function compareScores(tlines,ourscore,pdirection)
 	return res;
 }
 
-function returnAccCount(acc,direction)
+export function returnAccCount(acc,direction)
 {
 	direction = (direction + 2) % 4;
 	return acc[direction];
 }
 
-function returnName(names,direction,firstNameOnly=true)
+export function returnName(names,direction,firstNameOnly=true)
 {
 		// Direction for names array starts with South rather than North
 	var namesDirection = (direction + 2) % 4;
@@ -570,7 +570,7 @@ function returnName(names,direction,firstNameOnly=true)
 		return names[namesDirection];
 }
 
-function getCardIndex(card)
+export function getCardIndex(card)
 {
 	if (card=="A")
 	{
@@ -598,7 +598,7 @@ function getCardIndex(card)
 	}
 }
 
-function calcMCTableIndex(suit,leadDirection)
+export function calcMCTableIndex(suit,leadDirection)
 {
 	var suits = "NSHDC";
 	var dir = "EWSN";
@@ -607,7 +607,7 @@ function calcMCTableIndex(suit,leadDirection)
 	return index;
 }
 
-function makeDealKey(dealstr,vul,leadstr)
+export function makeDealKey(dealstr,vul,leadstr)
 {
 	var vulArray = ["None","All","NS","EW"];
 	var idx = 0;
@@ -625,7 +625,7 @@ function makeDealKey(dealstr,vul,leadstr)
 }
 
 
-function makeBoardNameString(boardName)
+export function makeBoardNameString(boardName)
 {
 	boardName = boardName.split(".");
 	var result = boardName[0];
@@ -633,4 +633,41 @@ function makeBoardNameString(boardName)
 	if (boardName.length>1) result = result + "<br><span style=\"font-size:12px;\">" + boardName[1] + "</span>";
 
 	return result;
+}
+
+// Bridge for legacy classic (non-module) scripts that still call these
+// functions as plain globals (e.g. ranking.js, traveller.js, play.js).
+// Remove each entry here once its caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		calculateBridgeScore,
+		validContract,
+		convertParContract,
+		convertParContractString,
+		getContractType,
+		comparePairNumbers,
+		makeColor,
+		convertAdjustmentToCrossImps,
+		isValidCrossImps,
+		scoreContainsAdjustment,
+		convertScoreToImps,
+		returnPoints,
+		calcPercentage,
+		substituteSuitSymbol,
+		calcScoreForMakeable,
+		setCharAt,
+		leadCard,
+		displayLeadCard,
+		getLeadsIdx,
+		played,
+		passed,
+		compareScores,
+		returnAccCount,
+		returnName,
+		getCardIndex,
+		calcMCTableIndex,
+		makeDealKey,
+		makeBoardNameString,
+	});
 }

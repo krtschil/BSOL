@@ -1,4 +1,11 @@
-function updateUpperLeftQuadrant(boardIndex)
+import { checkBoardValid } from "./board-utils.mjs";
+import { lott } from "./makeable.mjs";
+import { hide, doPopupNoTimeout } from "./ui-popups.mjs";
+import { displayHands } from "./hand-renderer.mjs";
+import { convertParContractString, makeBoardNameString } from "./scoring.mjs";
+import { localStorageSupported } from "./storage.mjs";
+
+export function updateUpperLeftQuadrant(boardIndex)
 {
 	var btable;
 	var optFontSize = Math.floor(g_sectionHeight/7) + "px";
@@ -135,7 +142,7 @@ function updateUpperLeftQuadrant(boardIndex)
 	}
 }
 
-function redrawMCTable(large)
+export function redrawMCTable(large)
 {
 	var i,j,value;
 	switch(language)
@@ -247,7 +254,7 @@ function redrawMCTable(large)
 	}
 }
 
-function displayVulnerability(vul,dealer)
+export function displayVulnerability(vul,dealer)
 {
 	var vcolor = "#FF0000";
 	var nvcolor = "#00FF00";
@@ -269,7 +276,7 @@ function displayVulnerability(vul,dealer)
 	displayDealer(dealer,vul);
 }
 
-function displayDealer(dealer,vul)
+export function displayDealer(dealer,vul)
 {
         dealer = dealer.charAt(0);
 
@@ -288,7 +295,7 @@ function displayDealer(dealer,vul)
 			setDealerChar("South",vul);
 }
 
-function setDealerChar(dir,vul)
+export function setDealerChar(dir,vul)
 {
 		var dealerCharWhite = "<span id=dealerChar style=\"font-size:" + g_dealerFontSize + "px;color:white;\">&#9679</span>";
 		var dealerCharBlue = "<span id=dealerChar style=\"font-size:" + g_dealerFontSize + "px;color:#0088ff;\">&#9679</span>";
@@ -311,7 +318,7 @@ function setDealerChar(dir,vul)
 			document.getElementById("wvul").innerHTML = dealerChar;
 }
 
-function showBidding()
+export function showBidding()
 {
 	var vul = g_hands.boards[g_lastBindex].Vulnerable;
 	var red = "#FF0000";
@@ -380,7 +387,7 @@ function showBidding()
 			{
 				row.insertCell(-1);
 				row.cells[i].style.width="50px";
-				row.cells[i] = "-";
+				row.cells[i].innerHTML = "-";
 				i++;
 			}
 		}
@@ -433,7 +440,7 @@ function showBidding()
 	return "<div style=\"margin-left:35px;float:left;padding: 0; border:1px solid black; width: 200px;\">" + headerDiv.innerHTML + "</div><div id=biddingContent style=\"margin-left:35px; float:left; clear:both; padding: 0; border:1px solid black; width: 200px; height:" + boxHeight + "; overflow-y: auto;\">" + el.innerHTML + "</div>";
 }
 
-function showCredits()
+export function showCredits()
 {
 	if ((typeof g_hands.boards[g_lastBindex].Played)!="undefined")
 		if (g_hands.boards[g_lastBindex].Played.length>1) return;	// Board contains play data, so show bidding and replay controls instead of credits
@@ -454,7 +461,7 @@ function showCredits()
 	}
 }
 
-function updateParResults(data,pindex)
+export function updateParResults(data,pindex)
 {
 	var nsc = convertParContractString(data.contractsNS);
 	var ewc = convertParContractString(data.contractsEW);
@@ -540,7 +547,7 @@ function updateParResults(data,pindex)
 	if (pindex==g_lastBindex) updateUpperLeftQuadrant(pindex);
 }
 
-function showNewFeaturesNotice()
+export function showNewFeaturesNotice()
 {
 	if (!g_newFeatureNoticeShown) g_newFeatureNoticeShown = 1;
 
@@ -589,7 +596,7 @@ function showNewFeaturesNotice()
 	} catch (err) {};
 }
 
-function setDisplaySizing()
+export function setDisplaySizing()
 {
 	var dim = "800#480";
 	dim = dim.split("#");
@@ -778,10 +785,31 @@ function setDisplaySizing()
 	if (dlr!=null) dlr.style.minWidth = g_vulBarLength + "px";
 }
 
-function orientationChanged()
+export function orientationChanged()
 {
 	setDisplaySizing();
 	if (g_handEntryMode==0) document.getElementById("boardNumber").innerHTML = "<span style=\"font-size:" + Math.floor(g_boardNumberFontSize) + ";font-weight:normal;\">" + makeBoardNameString(g_hands.boards[g_lastBindex].board) + "</span>";
 	displayHands();
 	redrawMCTable(true);
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (traveller.js, play.js, bootstrap.js) can keep calling them
+// unchanged. Remove entries here once every caller has been migrated to
+// `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		updateUpperLeftQuadrant,
+		redrawMCTable,
+		displayVulnerability,
+		displayDealer,
+		setDealerChar,
+		showBidding,
+		showCredits,
+		updateParResults,
+		showNewFeaturesNotice,
+		setDisplaySizing,
+		orientationChanged,
+	});
 }

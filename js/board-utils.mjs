@@ -1,4 +1,6 @@
-function getBoardIndex(travindex)
+import { getPosition, doPopupNoTimeout } from "./ui-popups.mjs";
+
+export function getBoardIndex(travindex)
 {
 	// get board index, given index to a traveller.
 	var board = g_travellers.event.board[travindex].board_no;
@@ -16,7 +18,7 @@ function getBoardIndex(travindex)
 	return null;
 }
 
-function getTravIndex(boardindex)
+export function getTravIndex(boardindex)
 {
 	// get traveller index, given index to a board.
 	var board = g_hands.boards[boardindex].board;
@@ -34,7 +36,7 @@ function getTravIndex(boardindex)
 	return null;
 }
 
-function checkBoardValid(bindex)
+export function checkBoardValid(bindex)
 {
 	if ((typeof g_hands.boards[bindex].Deal)=="undefined") return false;
 
@@ -48,7 +50,7 @@ function checkBoardValid(bindex)
 	return true;
 }
 
-function getTindexByName(boards,boardName)
+export function getTindexByName(boards,boardName)
 {
 		// Find the index of the hand corresponding to a particular traveller in the boards array
 	var i;
@@ -64,7 +66,7 @@ function getTindexByName(boards,boardName)
 	return -1;
 }
 
-function getTindex(boards,traveller)
+export function getTindex(boards,traveller)
 {
 		// Find the index of the hand corresponding to a particular traveller in the boards array
 	var i;
@@ -80,7 +82,7 @@ function getTindex(boards,traveller)
 	return -1;
 }
 
-function getTravellerForBoard(bindex)
+export function getTravellerForBoard(bindex)
 {
 	var i;
 	var traveller = null;
@@ -100,13 +102,13 @@ function getTravellerForBoard(bindex)
 	return null;
 }
 
-function setCurrentTraveller()
+export function setCurrentTraveller()
 {
 	g_currentTraveller = getTravellerForBoard(g_lastBindex);
 	return g_currentTraveller;
 }
 
-function makeableContractRequestsOutstanding()
+export function makeableContractRequestsOutstanding()
 {
 	var mccount = 0;
 
@@ -119,7 +121,7 @@ function makeableContractRequestsOutstanding()
 	return mccount;
 }
 
-function countAllocated(index)
+export function countAllocated(index)
 {
 	var i,j;
 	var count = 0;
@@ -135,7 +137,7 @@ function countAllocated(index)
 	return count;
 }
 
-function countUnallocated()
+export function countUnallocated()
 {
 	var i,j;
 	var count = 0;
@@ -151,7 +153,7 @@ function countUnallocated()
 	return count;
 }
 
-function clearCardData()
+export function clearCardData()
 {
 	var i,j;
 
@@ -166,7 +168,7 @@ function clearCardData()
 	}
 }
 
-function newBoard(boardnum)
+export function newBoard(boardnum)
 {
         // Currently not used....
     var i;
@@ -229,7 +231,7 @@ function newBoard(boardnum)
 	g_hands.boards[g_hands.boards.length] = board;
 }
 
-function deleteBoard()
+export function deleteBoard()
 {
     var i;
     var tmp = [];
@@ -257,7 +259,7 @@ function deleteBoard()
     quitHandEntryMode();
 }
 
-function showDeleteConfirmation()
+export function showDeleteConfirmation()
 {
     var htmltext;
     var boardNam = g_hands.boards[g_lastBindex].board;
@@ -293,5 +295,30 @@ function showDeleteConfirmation()
 
 	var buttLoc = getPosition(document.getElementById("deleteBoard"));
 	doPopupNoTimeout(document.getElementById("deleteBoard"),htmltext,buttLoc.x - 20,buttLoc.y - 100);
+}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (ranking.js, traveller.js, board-renderer.js, hand-renderer.js,
+// makeable.js, hand-entry.js, import.js, scorecard.js, ui-popups.js,
+// accuracy.js, play.js, state.js) can keep calling them unchanged.
+// Remove entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		getBoardIndex,
+		getTravIndex,
+		checkBoardValid,
+		getTindexByName,
+		getTindex,
+		getTravellerForBoard,
+		setCurrentTraveller,
+		makeableContractRequestsOutstanding,
+		countAllocated,
+		countUnallocated,
+		clearCardData,
+		newBoard,
+		deleteBoard,
+		showDeleteConfirmation,
+	});
 }
 

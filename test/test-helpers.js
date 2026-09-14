@@ -32,7 +32,23 @@ function createContext(overrides = {})
 function loadScript(context, relativePath)
 {
 	const filename = path.join(root, relativePath);
-	vm.runInContext(fs.readFileSync(filename, "utf8"), context, {filename});
+	let source = fs.readFileSync(filename, "utf8");
+
+	// Files ending in .mjs are real ES modules (`export function foo(){}`).
+	// The regression tests run everything in a single shared vm context
+	// (matching the browser's shared global scope), so strip the `export`
+	// keyword rather than pulling in a full ES module loader.
+	if (filename.endsWith(".mjs"))
+	{
+		source = source.replace(/^export (async function|function|const|let|var)/gm, "$1");
+		// Strip static `import ... from "...";` statements: the tests load every
+		// script into one shared vm context (mirroring the browser's shared
+		// global scope), so imported functions are already plain identifiers
+		// there once their source file has been loaded via loadScript().
+		source = source.replace(/^import\s*\{[^}]*\}\s*from\s*["'][^"']*["'];?\s*$/gm, "");
+	}
+
+	vm.runInContext(source, context, {filename});
 }
 
 module.exports = {createContext, loadScript, root};

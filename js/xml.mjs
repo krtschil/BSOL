@@ -1,4 +1,4 @@
-function getAttribute(node,attributeName)
+export function getAttribute(node,attributeName)
 {
 	try {
 		var attributes = node.attributes;
@@ -8,7 +8,7 @@ function getAttribute(node,attributeName)
 	return txt;
 }
 
-function getNodeValue(node)
+export function getNodeValue(node)
 {
 	try {
 		var childNodes = node.childNodes;
@@ -18,7 +18,7 @@ function getNodeValue(node)
 	return txt;
 }
 
-function getNodeValueByName(node,name)
+export function getNodeValueByName(node,name)
 {
 	try {
 		var cnode = node.getElementsByTagName(name)[0];
@@ -29,7 +29,7 @@ function getNodeValueByName(node,name)
 	return txt;
 }
 
-function convertXML(data)
+export function convertXML(data)
 {
 	var bdindices = [];
 	var i,j;
@@ -240,3 +240,15 @@ function convertXML(data)
 	return JSON.stringify(data);
 }
 
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (traveller.js) can keep calling them unchanged. Remove
+// entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		getAttribute,
+		getNodeValue,
+		getNodeValueByName,
+		convertXML,
+	});
+}

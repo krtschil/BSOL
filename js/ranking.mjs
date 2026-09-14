@@ -1,4 +1,14 @@
-function comparePositions(a,b)
+import { getRowFromTraveller, setDefaultContracts, sortTravellerLines, showComparison, showPlayAnalysis, setButtonColor } from './traveller.mjs';
+import { log } from './network.mjs';
+import { getTindexByName, getTravIndex, getBoardIndex, setCurrentTraveller } from './board-utils.mjs';
+import { getMakeableTricksForContract, getMakeableTricksForLead } from './makeable.mjs';
+import { setBars, addSummarySection, mergeScorecardRows, setLeadForScorecardRow } from './scorecard.mjs';
+import { getCachedAcc } from './accuracy.mjs';
+import { getHands } from './import.mjs';
+import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps } from './scoring.mjs';
+import { hideAllPopups, showNames, hide } from './ui-popups.mjs';
+
+export function comparePositions(a,b)
 {
 	if (Number.isNaN(a)&&!Number.isNaN(b)) return 1;
 	if (Number.isNaN(b)&&!Number.isNaN(a)) return -1;
@@ -10,7 +20,7 @@ function comparePositions(a,b)
 	else return 0;
 }
 
-function getPairObject(pair,direction,rankNS,rankEW)
+export function getPairObject(pair,direction,rankNS,rankEW)
 {
 	var sessInfo = getSessionInfo();
 	var i;
@@ -30,11 +40,12 @@ function getPairObject(pair,direction,rankNS,rankEW)
 	return null;
 }
 
-function checkForUniquePairNumbers()
+export function checkForUniquePairNumbers()
 {
 		// N.B This function should only be called for Teams events
 
 	var pairs = g_travellers.event.participants.pair;
+	var i;
 
 	if (g_uniquePairNumbers==="")
 	{
@@ -57,7 +68,7 @@ function checkForUniquePairNumbers()
 			// If pair numbers are unique across NS&EW make sure the directions in the pairs array are all recorded as "N"
 			// (because the code relies on the fact that for single winner events all pair numbers are recorded as direction "N" in the json file)
 		if (singleWinner)
-			for (i=0;i<pairs[i].length;i++)
+			for (i=0;i<pairs.length;i++)
 				pairs[i].direction = "N";
 
 		g_uniquePairNumbers = singleWinner;
@@ -68,7 +79,7 @@ function checkForUniquePairNumbers()
 	return singleWinner;
 }
 
-function getSessionInfo()
+export function getSessionInfo()
 {
 	if (g_sessInfo!=null) return g_sessInfo;
 
@@ -133,7 +144,7 @@ function getSessionInfo()
 	return sessInfo;
 }
 
-function addRankPositions(data)
+export function addRankPositions(data)
 {
 	var i;
 
@@ -194,7 +205,7 @@ function addRankPositions(data)
 	}
 }
 
-function sortRanking(orderByRank)
+export function sortRanking(orderByRank)
 {
 		// This function sorts entries either by position in ranking, or by pair number order.
 	if (g_rankInfo==null) return;
@@ -263,7 +274,7 @@ function sortRanking(orderByRank)
 	}
 }
 
-function getRankingInfo()
+export function getRankingInfo()
 {
 	if (g_rankInfo!=null)
 		return g_rankInfo;
@@ -472,7 +483,7 @@ function getRankingInfo()
 	return rankInfo;
 }
 
-function getPlayerInfo(pair,direction)
+export function getPlayerInfo(pair,direction)
 {
 		// Gets player information for the current pair from the travellers record, using the information
 		// passed to index.html in the pair_number and direction fields.
@@ -526,7 +537,7 @@ function getPlayerInfo(pair,direction)
 	return info;
 }
 
-function checkInitialDirection(pair)
+export function checkInitialDirection(pair)
 {
 	var i;
 	var pairs = g_travellers.event.participants.pair;
@@ -555,7 +566,7 @@ function checkInitialDirection(pair)
 	return null;
 }
 
-function getTlineForPair(boardIndex,info)
+export function getTlineForPair(boardIndex,info)
 {
 		// Return traveller line containing data for this pair playing this board. Also returns direction in which
 		// the pair were sitting when playing the board. Returns null if the pair didn't play this board.
@@ -590,7 +601,7 @@ function getTlineForPair(boardIndex,info)
 	return null;
 }
 
-function showRanking()
+export function showRanking()
 {
 	var str = g_title;
 
@@ -606,7 +617,7 @@ function showRanking()
 	$("#rcheckdiv").show();
 }
 
-function hideRanking()
+export function hideRanking()
 {
 	const clean = DOMPurify.sanitize(g_title, { RETURN_DOM_FRAGMENT: true });
 	document.getElementById("titleText").replaceChildren(clean); //innerHTML = g_title;
@@ -615,7 +626,7 @@ function hideRanking()
 	$("#rcheckdiv").hide();
 }
 
-function changeCurrentPair(pair,direction)
+export function changeCurrentPair(pair,direction)
 {
 	getRankingInfo();
 
@@ -665,14 +676,14 @@ function changeCurrentPair(pair,direction)
 	}
 }
 
-function setClickFunctionForNames(cell,pair,direction)
+export function setClickFunctionForNames(cell,pair,direction)
 {
 	cell.onclick = function(){log("operation=selectScorecardForNamedPair");changeCurrentPair(pair,direction);setDefaultContracts();setupScorecard();};
 }
 
-function setupRankingTable(table,dir,rankInfo,winners)
+export function setupRankingTable(table,dir,rankInfo,winners)
 {
-	var i,j;
+	var i,j,pairs,cellOffset;
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
 	var rangeMax = -32767;
 	var rangeMin = 32767;
@@ -898,7 +909,7 @@ function setupRankingTable(table,dir,rankInfo,winners)
 	}
 }
 
-function ddComparisonAll()
+export function ddComparisonAll()
 {
 	var i,j,k;
 	var rankInfo = getRankingInfo();
@@ -1039,7 +1050,7 @@ function ddComparisonAll()
 	return rankInfo;
 }
 
-function checkHigherScoringPairs(traveller,prow,direction)
+export function checkHigherScoringPairs(traveller,prow,direction)
 {
 	var i,j;
 	var result = {};
@@ -1183,7 +1194,7 @@ function checkHigherScoringPairs(traveller,prow,direction)
 	return result;
 }
 
-function getPlayerAndRole(info,tline)
+export function getPlayerAndRole(info,tline)
 {
 	var prole = {};
 	var found = false;
@@ -1249,7 +1260,7 @@ function getPlayerAndRole(info,tline)
 	return prole;
 }
 
-function setupRanking(keepScrollSetting)
+export function setupRanking(keepScrollSetting)
 {
 	g_sessionMode = "ranking";
 	setButtonColor();
@@ -1269,6 +1280,7 @@ function setupRanking(keepScrollSetting)
 	var table = document.getElementById("rankingNS");
 	var rows = table.rows;
 	var winners = 2;
+	var colcount, cellOffset;
 
 	if (sessInfo.singleWinner) winners = 1;
 
@@ -1341,12 +1353,12 @@ function setupRanking(keepScrollSetting)
 	$("#checkListDiv").hide();
 }
 
-function makeScoreClickFunction(tline)
+export function makeScoreClickFunction(tline)
 {
 	return function(){var row=this.parentNode;var bd=row.cells[0].innerHTML;log('button=acc2');getCachedAcc(tline);};
 }
 
-function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards)
+export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards)
 {
 	var j,n;
 	var playedInRoleCombined = 0;
@@ -1827,7 +1839,7 @@ function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sortedBoards
 
 }
 
-function setupScorecard(keepScrollSetting)
+export function setupScorecard(keepScrollSetting)
 {
 	g_sessionMode = "scorecard";
 	setButtonColor();
@@ -1995,7 +2007,7 @@ function setupScorecard(keepScrollSetting)
 	$("#checkListDiv").hide();
 }
 
-function calculateCrossImps()
+export function calculateCrossImps()
 {
 	var boards = g_travellers.event.board;
 	var i;
@@ -2146,7 +2158,7 @@ function calculateCrossImps()
 	}
 }
 
-function calculateMaxImps()
+export function calculateMaxImps()
 {
 	if ((typeof g_travellers)!="undefined")
 	{
@@ -2185,3 +2197,33 @@ function calculateMaxImps()
 		g_maxImps = maxImps;
 	}
 }
+
+if (typeof window !== "undefined") {
+	Object.assign(window, {
+		comparePositions,
+		getPairObject,
+		checkForUniquePairNumbers,
+		getSessionInfo,
+		addRankPositions,
+		sortRanking,
+		getRankingInfo,
+		getPlayerInfo,
+		checkInitialDirection,
+		getTlineForPair,
+		showRanking,
+		hideRanking,
+		changeCurrentPair,
+		setClickFunctionForNames,
+		setupRankingTable,
+		ddComparisonAll,
+		checkHigherScoringPairs,
+		getPlayerAndRole,
+		setupRanking,
+		makeScoreClickFunction,
+		setupScorecard2,
+		setupScorecard,
+		calculateCrossImps,
+		calculateMaxImps,
+	});
+}
+

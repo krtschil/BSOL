@@ -1,4 +1,10 @@
-function clearMakeableOnInputBoard()
+import { setupTraveller, gotoTravellerByIndex } from "./traveller.mjs";
+import { log, requestPending } from "./network.mjs";
+import { show, hide, getPosition, doPopup, doPopupNoTimeout, showHelp, spinner, hideMenuItems } from "./ui-popups.mjs";
+import { createHandString } from "./hand-renderer.mjs";
+import { callddd, enterPlayMode, resetState } from "./play.mjs";
+
+export function clearMakeableOnInputBoard()
 {
     if (g_edited!=1)
     {
@@ -9,7 +15,7 @@ function clearMakeableOnInputBoard()
 	}
 }
 
-function setupHandEntryBoard()
+export function setupHandEntryBoard()
 {
 	var i,j,k;
 	var quadrant = ["northHand","eastHand","southHand","westHand"];
@@ -61,7 +67,7 @@ function setupHandEntryBoard()
 	processHandEntry();
 }
 
-function deselectCurrentDir(index)
+export function deselectCurrentDir(index)
 {
 	var cardIndex = ["2","3","4","5","6","7","8","9","T","J","Q","K","A"];
 	var i,j;
@@ -86,7 +92,7 @@ function deselectCurrentDir(index)
 	}
 }
 
-function initHandEntry()
+export function initHandEntry()
 {
 	var cardStr = "23456789TJQKA";
 	var currentCards = g_inputBoard.Deal[g_inputDir].split(".");
@@ -109,8 +115,9 @@ function initHandEntry()
 	processHandEntry();
 }
 
-function processHandEntry()
+export function processHandEntry()
 {
+	var npts, epts, spts, wpts;
 	var north = document.getElementById("northHand");
 	var handstr = createHandString(g_inputBoard,0);
 	north.innerHTML = handstr.text;
@@ -246,7 +253,7 @@ function processHandEntry()
 		ptsctl.style.display = "none";
 }
 
-function quitHandEntryMode()
+export function quitHandEntryMode()
 {
 	if (g_handEntryMode!=0)
 	{
@@ -271,7 +278,7 @@ function quitHandEntryMode()
 	}
 }
 
-function exitHandEntryMode()
+export function exitHandEntryMode()
 {
 	if (g_handEntryMode!=0)
 	{
@@ -316,7 +323,7 @@ function exitHandEntryMode()
 	}
 }
 
-function setVulnerability(vul)
+export function setVulnerability(vul)
 {
     clearMakeableOnInputBoard();
 	g_inputBoard.Vulnerable = vul;
@@ -324,7 +331,7 @@ function setVulnerability(vul)
 	displayVulnerability(vul,g_inputBoard.Dealer);
 }
 
-function setDealer(dealer)
+export function setDealer(dealer)
 {
     if (g_edited==0) g_edited = 2;   // Indicate Dealer modified (doesn't affect makeable contracts)
 
@@ -332,7 +339,7 @@ function setDealer(dealer)
     displayDealer(dealer,g_inputBoard.Vulnerable);
 }
 
-function deselectCard(pthis)
+export function deselectCard(pthis)
 {
 		// When a button is clicked on a playable card this function send the card played to the server which will
 		// then update the current position and return a json string containing it.
@@ -350,8 +357,10 @@ function deselectCard(pthis)
 	processHandEntry();
 }
 
-function showDealerKeypad()
+export function showDealerKeypad()
 {
+	var canonicalDlr = ["North","East","South","West"];
+
 	switch(language)
 	{
 		case "de":
@@ -367,7 +376,7 @@ function showDealerKeypad()
 
 	for (i=0;i<4;i++)
 	{
-		htmltext = htmltext + "<button onclick=\"setDealer(\'" + dlr[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">" + dlr[i] + "</button>";
+		htmltext = htmltext + "<button onclick=\"setDealer(\'" + canonicalDlr[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;font-size:14px;padding:1px;text-align:center\">" + dlr[i] + "</button>";
 		htmltext = htmltext + "<br>";
 	}
 
@@ -384,8 +393,10 @@ function showDealerKeypad()
 	doPopupNoTimeout(document.getElementById("setDealer"),htmltext,buttLoc.x - 20,buttLoc.y - 20);
 }
 
-function showVulnerabilityKeypad()
+export function showVulnerabilityKeypad()
 {
+	var canonicalVul = ["None","NS","EW","All"];
+
 	switch(language)
 	{
 		case "de":
@@ -401,7 +412,7 @@ function showVulnerabilityKeypad()
 
 	for (i=0;i<4;i++)
 	{
-		htmltext = htmltext + "<button onclick=\"setVulnerability(\'" + vul[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + vul[i] + "</button>";
+		htmltext = htmltext + "<button onclick=\"setVulnerability(\'" + canonicalVul[i] + "\');document.getElementById('popup_box').style.display='none';\" style=\"width:80px;cursor:pointer;font-size:14px;padding:1px;text-align:center\">" + vul[i] + "</button>";
 		htmltext = htmltext + "<br>";
 	}
 
@@ -420,7 +431,7 @@ function showVulnerabilityKeypad()
 	doPopupNoTimeout(document.getElementById("setVul"),htmltext,buttLoc.x - 20,buttLoc.y - 20);
 }
 
-function clear()
+export function clear()
 {
 	if (g_handEntryMode!=0)
 	{
@@ -433,7 +444,7 @@ function clear()
 	}
 }
 
-function edit()
+export function edit()
 {
 	if (g_handEntryMode==0)
 	{
@@ -520,7 +531,7 @@ function edit()
 	}
 }
 
-function selectQuadrant(index)
+export function selectQuadrant(index)
 {
 	if (g_stopPropagation!=0)
 	{
@@ -541,7 +552,7 @@ function selectQuadrant(index)
 
 }
 
-function handleHandEntryCardClick(suit,cd)
+export function handleHandEntryCardClick(suit,cd)
 	{
 		var count;
 
@@ -603,3 +614,30 @@ function handleHandEntryCardClick(suit,cd)
 
 		g_stopPropagation = 1;
 	}
+
+// Window-bridge: expose these functions as globals so legacy classic
+// scripts (board-utils.mjs, events.js, play.js, board-renderer.js,
+// hand-renderer.js, bootstrap.js, traveller.js, ui-popups.js, help.mjs,
+// accuracy.js, scorecard.js) can keep calling them unchanged. Remove
+// entries here once every caller has been migrated to `import`.
+if (typeof window !== "undefined")
+{
+	Object.assign(window, {
+		clearMakeableOnInputBoard,
+		setupHandEntryBoard,
+		deselectCurrentDir,
+		initHandEntry,
+		processHandEntry,
+		quitHandEntryMode,
+		exitHandEntryMode,
+		setVulnerability,
+		setDealer,
+		deselectCard,
+		showDealerKeypad,
+		showVulnerabilityKeypad,
+		clear,
+		edit,
+		selectQuadrant,
+		handleHandEntryCardClick,
+	});
+}

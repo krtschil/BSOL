@@ -1,4 +1,30 @@
-function findPlayedCardDir(bindex,card)
+/**********************************************************************************
+   -- Copyright (C) 2014-2025 by John Goacher - All Rights Reserved
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+***********************************************************************************/
+
+import { clearCardData } from "./board-utils.mjs";
+import { makeAccKey } from "./accuracy.mjs";
+import { validContract, substituteSuitSymbol } from "./scoring.mjs";
+import { requestPending, setRequestTimeout, resetTimeout, log } from "./network.mjs";
+import {
+	spinner,
+	hideSpinner,
+	displayError,
+	show,
+	hide,
+	hideAllPopups,
+	hideMenuItems,
+} from "./ui-popups.mjs";
+import { setupTraveller } from "./traveller.mjs";
+import { hideRanking } from "./ranking.mjs";
+import { showCredits } from "./board-renderer.mjs";
+import { displayHands } from "./hand-renderer.mjs";
+import { exitHandEntryMode } from "./hand-entry.mjs";
+
+export function findPlayedCardDir(bindex,card)
 {
 	var suits = "SHDC";
 	var curBoard = g_hands.boards[bindex];
@@ -21,15 +47,16 @@ function findPlayedCardDir(bindex,card)
 	return -1;
 }
 
-function calculateTricks(bindex)
+export function calculateTricks(bindex)
 {
 	var sequence = "23456789TJQKA";
-	var trumpSuit;
+	var trumpsuit;
 	var i,j;
 	var nstricks = 0;
 	var ewtricks = 0;
 	var tricks;
 	var tricksuit,card;
+	var trickdir,trickvalue,cardsuit,carddir;
 	var winnerDir = -1;
 	var contract = g_hands.boards[bindex].Contract;
 
@@ -105,7 +132,7 @@ function calculateTricks(bindex)
 	}
 }
 
-function playNextCard(pthis)
+export function playNextCard(pthis)
 {
 	if (g_showPlay)
 	{
@@ -151,8 +178,9 @@ function playNextCard(pthis)
 	}
 }
 
-function enterPlayMode()
+export function enterPlayMode()
 {
+	var i,j;
 	setMode(1);	// indicate page is in play g_mode
 	show("editHand");
 	hide("backPlay");
@@ -210,8 +238,9 @@ function enterPlayMode()
 	showCredits();
 }
 
-function stopPlay()
+export function stopPlay()
 {
+	var i,j;
 	terminateSession();	// Terminate current playing session if there is one in progress.
 	setMode(0);			// Not in play mode any more
 
@@ -230,7 +259,7 @@ function stopPlay()
 	showCredits();
 }
 
-function exitCardPlay()
+export function exitCardPlay()
 {
 	resetTimeout();
 	terminateSession();
@@ -240,10 +269,11 @@ function exitCardPlay()
 	document.getElementById("mctable").className = "";
 }
 
-function processPosition(hcards,para)
+export function processPosition(hcards,para)
 {
 		// Updates the card display while in 'play' mode from the json data received back from the web server after a card is played.
 		// hcards is a javascript object built from the json string received from the server.
+	var i,j,k;
 	var savehcards = hcards;
 
 	if (hcards.errno<0)
@@ -447,7 +477,7 @@ function processPosition(hcards,para)
 	displayHands();
 }
 
-function hideForwardPlay()
+export function hideForwardPlay()
 {
 		// Try/Catch in case using an older page version without this button
 	try {
@@ -455,7 +485,7 @@ function hideForwardPlay()
 	} catch (err) {};
 }
 
-function showForwardPlay()
+export function showForwardPlay()
 {
 		// Try/Catch in case using an older page version without this button
 	try {
@@ -464,7 +494,7 @@ function showForwardPlay()
 	} catch (err) {};
 }
 
-function handlePlayCardClick(pthis)
+export function handlePlayCardClick(pthis)
 {
 	var str = pthis.id.replace("button","");
 
@@ -477,7 +507,7 @@ function handlePlayCardClick(pthis)
 	callddd(str.substring(0,2));
 }
 
-function calldds(str)
+export function calldds(str)
 {
 	var board = g_hands.boards[g_lastBindex];
 	var deal = board.Deal;
@@ -509,17 +539,17 @@ function calldds(str)
 	g_worker.postMessage(msg);
 }
 
-function callddd(pstr)
+export function callddd(pstr)
 {
 	if (pstr!="q") calldds(pstr);
 }
 
-function dddquitfunc(data,statusText,jqXHR)
+export function dddquitfunc(data,statusText,jqXHR)
 {
 	// do nothing routine, supplied as a callback when user quits a play session
 }
 
-function resetState()
+export function resetState()
 {
 	stopPlay();
 
@@ -541,7 +571,7 @@ function resetState()
 	document.getElementById("popup_box").display = "none";
 }
 
-function terminateSession()
+export function terminateSession()
 {
 	hideSpinner();
 
@@ -555,7 +585,7 @@ function terminateSession()
 	exitHandEntryMode(); // In case hand editing is in progress.
 }
 
-function playLinContract(auto=false,dest=0)
+export function playLinContract(auto=false,dest=0)
 {
 	var declarerChars = "NESW";
 	var leaderChars = "ESWN";
@@ -574,14 +604,13 @@ function playLinContract(auto=false,dest=0)
 	playContract(board.Declarer,contract.charAt(1),contract,auto,dest);
 }
 
-function playContract(declarer,suitChar,contract,auto=false,dest=0)
+export function playContract(declarer,suitChar,contract,auto=false,dest=0)
 {
 	if (requestPending())
 		return;	// There is still a request outstanding.
 
 	var declCHARS = "NSEW";
 	var playedCards = "";
-	var names;
 
 	hideAllPopups();
 
@@ -599,17 +628,6 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	if (!Array.isArray(names) || names.length < 4) {
 		names = ["S", "W", "N", "E"];
 	}
-	/*
-	if ((typeof g_hands.boards[g_lastBindex])!="undefined")
-		names = g_hands.boards[g_lastBindex].PlayerNames;
-	else
-	{
-		names = [];
-		names[0] = "S";
-		names[1] = "W";
-		names[2] = "N";
-		names[3] = "E";
-	}*/
 
 	var context = {"names":names,"declarer":declarer,"dest":dest};
 
@@ -621,13 +639,14 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 
 	if ((deal[0].length==3)&&(deal[1].length==3)&&(deal[2].length==3)&&(deal[3].length==3))
 	{
+		var errormsg;
 		switch(language)
 		{
 			case "de":
-				var errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">Board empty - nothing to do.</span></div>";
+				errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">Board empty - nothing to do.</span></div>";
 				break;
 			default:
-				var errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">Leeres Board - es gibt nichts zu tun.</span></div>";
+				errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">Leeres Board - es gibt nichts zu tun.</span></div>";
 		}
 		displayError(document.getElementById("makeableContracts"),errormsg);
 		return;
@@ -637,13 +656,14 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	{
 		if (handlen!=deal[k].length)
 		{
+			var errormsg;
 			switch(language)
 			{
 				case "de":
-					var errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">All hands must start with the same number of cards.</span></div>";
+					errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">All hands must start with the same number of cards.</span></div>";
 					break;
 				default:
-					var errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">Alle Hände müssen zu Beginn mit derselben Anzahl Karten beginnen.</span></div>";
+					errormsg = "<div style=\"padding:10px;background-color:#FFEEEE;width:180px;\"><span style=\"font-size:16px;\">Alle Hände müssen zu Beginn mit derselben Anzahl Karten beginnen.</span></div>";
 			}
 			displayError(document.getElementById("makeableContracts"),errormsg);
 			return;
@@ -705,11 +725,11 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 
 	if (!auto)
 	{
-		var dealstr = "W:" + dealstr;
+		var fullDealstr = "W:" + dealstr;
 
 		var msg = {};
 		msg.request = "g";
-		msg.pbn = dealstr;
+		msg.pbn = fullDealstr;
 		msg.trumps = g_trumps;
 		msg.leader = g_leader;
 		msg.requesttoken = g_session;
@@ -745,11 +765,11 @@ function playContract(declarer,suitChar,contract,auto=false,dest=0)
 	}
 }
 
-function dddloadfunc(data,statusText,jqXHR,context)
+export function dddloadfunc(data,statusText,jqXHR,context)
 {
 		// Process the response from a ddd request
 	var ctx = this;
-	if (dddloadfunc.arguments.length>3) ctx = context;
+	if (arguments.length>3) ctx = context;
 
 	hideSpinner();
 	resetTimeout();
@@ -846,4 +866,27 @@ function dddloadfunc(data,statusText,jqXHR,context)
 			}
 		}
 	}
+}
+
+if (typeof window !== "undefined") {
+	Object.assign(window, {
+		findPlayedCardDir,
+		calculateTricks,
+		playNextCard,
+		enterPlayMode,
+		stopPlay,
+		exitCardPlay,
+		processPosition,
+		hideForwardPlay,
+		showForwardPlay,
+		handlePlayCardClick,
+		calldds,
+		callddd,
+		dddquitfunc,
+		resetState,
+		terminateSession,
+		playLinContract,
+		playContract,
+		dddloadfunc,
+	});
 }

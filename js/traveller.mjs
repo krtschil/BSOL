@@ -1,10 +1,24 @@
-function showTravellerRowButtons()
+import { getTindexByName, getTravellerForBoard, checkBoardValid } from './board-utils.mjs';
+import { getMakeableTricksForContract, calculateMakeableContracts, getMakeableTricksForLead, getRequestedLeads } from './makeable.mjs';
+import { getHands } from './import.mjs';
+import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo } from './ranking.mjs';
+import { validContract, played, passed, getLeadsIdx, getContractType, scoreContainsAdjustment, makeBoardNameString } from './scoring.mjs';
+import { hideMenuItems, showMainMenuItems, show, hideAllPopups, displayError, showNames } from './ui-popups.mjs';
+import { displayHands, drawMiniHand } from './hand-renderer.mjs';
+import { showCredits } from './board-renderer.mjs';
+import { requestPending, setRequestTimeout, doRequestHTMLasync, log } from './network.mjs';
+import { pbnToJson, inferHand, convertHand } from './pbn.mjs';
+import { restartBackgroundWorkers } from './workers.mjs';
+import { drawBar, drawBoxedBar } from './scorecard.mjs';
+import { exitHandEntryMode } from './hand-entry.mjs';
+
+export function showTravellerRowButtons()
 {
 	// should return true if g_xml!=="" ?
 	// return (g_showAllControls);
 }
 
-function setupTraveller(index,active)
+export function setupTraveller(index,active)
 {
 	var i,j,k;
 	var table = document.getElementById("traveller");
@@ -120,7 +134,7 @@ function setupTraveller(index,active)
 								var num = score.match(/\d+/);
 								score = num ? Number(num[0]) : null;
 								num = ewscore.match(/\d+/);
-								result = num ? Number(num[0]) : null;
+								var result = num ? Number(num[0]) : null;
 								ewscore = (-Number(result));
 							}
 
@@ -392,7 +406,7 @@ function setupTraveller(index,active)
 	}
 }
 
-function getRowFromTraveller(pair,direction)
+export function getRowFromTraveller(pair,direction)
 {
 	var i;
 	var info = getSessionInfo();
@@ -413,7 +427,7 @@ function getRowFromTraveller(pair,direction)
 	return -1;
 }
 
-function getInfoForSimilarContracts(lineIndex,direction)
+export function getInfoForSimilarContracts(lineIndex,direction)
 {
 	var i;
 	var traveller = g_currentTraveller.traveller_line;
@@ -470,7 +484,7 @@ function getInfoForSimilarContracts(lineIndex,direction)
 	return result;
 }
 
-function sortTravellerLines(lines,pdirection)
+export function sortTravellerLines(lines,pdirection)
 {
 	lines.sort(function(a,b) {
 			var sign = 1;
@@ -519,9 +533,9 @@ function sortTravellerLines(lines,pdirection)
 			});
 }
 
-function computeTravellerStatistics(pdirection)
+export function computeTravellerStatistics(pdirection)
 {
-	var i,j;
+	var i,j, percentLo, percentHi, g_MaxImps;
 	var result = [];
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
 
@@ -762,7 +776,7 @@ function computeTravellerStatistics(pdirection)
 	return result;
 }
 
-function displayTraveller(pdirection)
+export function displayTraveller(pdirection)
 {
 	var table = document.getElementById("travellerTable");
 	var rows = table.rows;
@@ -797,6 +811,7 @@ function displayTraveller(pdirection)
 	var optimum = g_hands.boards[g_lastBindex].OptimumScore;
 	var optscore = "";
 	var optcontract = "";
+	var optcontracts = [];
 
 	if ((typeof optimum)!="undefined")
 	{
@@ -808,9 +823,9 @@ function displayTraveller(pdirection)
 
 		for (k=0;k<optcontracts.length;k++)
 		{
-			var optcontract = optcontracts[k];
-			optcontract = optcontract.split(" ");
-			var contract = optcontract[1];
+			var currentOptcontract = optcontracts[k];
+			currentOptcontract = currentOptcontract.split(" ");
+			var contract = currentOptcontract[1];
 
 			if (contract.indexOf("+")!=-1)	// remove overtricks
 			{
@@ -821,7 +836,7 @@ function displayTraveller(pdirection)
 
 			contract = contract.replace("x","*");
 
-			var optdir = optcontract[0];
+			var optdir = currentOptcontract[0];
 
 			var ctricks = getMakeableTricksForContract(g_lastBindex,contract,optdir.charAt(0));
 
@@ -1178,7 +1193,7 @@ function displayTraveller(pdirection)
 	drawMiniHand();
 }
 
-function initTravRow(dir)
+export function initTravRow(dir)
 {
 	if (g_travellers!=null)
 	{
@@ -1212,12 +1227,12 @@ function initTravRow(dir)
 	}
 }
 
-function initPrevTravRow()
+export function initPrevTravRow()
 {
 	initTravRow(0);
 }
 
-function prevTravRow()
+export function prevTravRow()
 {
 	if (g_currentTraveller!=null)
 	{
@@ -1240,12 +1255,12 @@ function prevTravRow()
 	enterPlayMode();
 }
 
-function initNextTravRow()
+export function initNextTravRow()
 {
 	initTravRow(1);
 }
 
-function nextTravRow()
+export function nextTravRow()
 {
 	if (g_currentTraveller!=null)
 	{
@@ -1268,7 +1283,7 @@ function nextTravRow()
 	enterPlayMode();
 }
 
-function gotoTraveller(name)
+export function gotoTraveller(name)
 {
 	terminateSession();
 	setupTraveller(getTindexByName(g_hands.boards,name),true);
@@ -1279,19 +1294,19 @@ function gotoTraveller(name)
 	$("#popup_box").hide();
 }
 
-function gotoPrevTraveller()
+export function gotoPrevTraveller()
 {
 	var bindex = getNextOrPrevBindex(false);
 	gotoTravellerByIndex(bindex);
 }
 
-function gotoNextTraveller()
+export function gotoNextTraveller()
 {
 	var bindex = getNextOrPrevBindex(true);
 	gotoTravellerByIndex(bindex);
 }
 
-function getNextOrPrevBindex(forward)
+export function getNextOrPrevBindex(forward)
 {
 	var tindex = g_lastBindex;
 
@@ -1303,7 +1318,7 @@ function getNextOrPrevBindex(forward)
 	return tindex;
 }
 
-function gotoTravellerByIndex(index)
+export function gotoTravellerByIndex(index)
 {
 	var saveHandEntryMode = g_handEntryMode;
 
@@ -1318,7 +1333,7 @@ function gotoTravellerByIndex(index)
 	if (saveHandEntryMode!=0) edit();
 }
 
-function checkContract(bindex,trindex)
+export function checkContract(bindex,trindex)
 {
 	var decl="NESW";
 	var suits = "NSHDC";
@@ -1426,7 +1441,7 @@ function checkContract(bindex,trindex)
 		return result;
 }
 
-function setFieldsFromTravellerLine(bindex,tline)
+export function setFieldsFromTravellerLine(bindex,tline)
 {
 	g_hands.boards[bindex].Contract = tline.contract;
 	g_hands.boards[bindex].Declarer = tline.played_by;
@@ -1436,7 +1451,7 @@ function setFieldsFromTravellerLine(bindex,tline)
 	g_hands.boards[bindex].Bids = [];
 }
 
-function setHandRecordFromLin(bindex,tline)
+export function setHandRecordFromLin(bindex,tline)
 {
 	var curBoard;
 	var lin;
@@ -1469,7 +1484,7 @@ function setHandRecordFromLin(bindex,tline)
 	}
 }
 
-function showComparison()
+export function showComparison()
 {
 	g_sessionMode = "traveller";
 	setButtonColor();
@@ -1491,14 +1506,12 @@ function showComparison()
 			}
 			else	// No Hand Data available
 			{
-				this.bindex = g_lastBindex;
-				loadTraveller_2("","","");
+				loadTraveller_2("","","",g_lastBindex);
 			}
 		}
 		else
 		{
-			this.bindex = g_lastBindex;
-			loadTraveller_2("","","");
+			loadTraveller_2("","","",g_lastBindex);
 		}
 	}
 	else
@@ -1513,7 +1526,7 @@ function showComparison()
 	}
 }
 
-function showCurrentBoard()
+export function showCurrentBoard()
 {
 	log("button=PlayItAgain");
 
@@ -1536,9 +1549,10 @@ function showCurrentBoard()
 		displayErrorAbsPosition("Es gibt kein Handdiagramm für dieses Board",300,200);
 }
 
-function loadTraveller_2(data,statusText,jqXHR)
+export function loadTraveller_2(data,statusText,jqXHR,bindex)
 {
-	if (data!="") dddLoadMakeable(data,statusText,jqXHR,this.bindex);
+	var targetBindex = (typeof bindex !== "undefined") ? bindex : ((typeof this !== "undefined" && this && typeof this.bindex !== "undefined") ? this.bindex : g_lastBindex);
+	if (data!="") dddLoadMakeable(data,statusText,jqXHR,targetBindex);
 
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
 	var player1 = info.player1;
@@ -1548,6 +1562,7 @@ function loadTraveller_2(data,statusText,jqXHR)
 
 	var pairs = g_travellers.event.participants.pair;
 	var declarer_pair = false;
+	var declarer_name = "";
 
 	var tlines = g_currentTraveller.traveller_line;
 
@@ -1918,7 +1933,7 @@ function loadTraveller_2(data,statusText,jqXHR)
 	$("#abuttons").show();
 }
 
-function loadTraveller_1(data,statusText,jqXHR,context)
+export function loadTraveller_1(data,statusText,jqXHR,context)
 {
 /*	var players = new Array();*/
 
@@ -2037,7 +2052,7 @@ function loadTraveller_1(data,statusText,jqXHR,context)
 	context.callback(context);
 }
 
-function loadTraveller(data,statusText,jqXHR)
+export function loadTraveller(data,statusText,jqXHR)
 {
 	try {
 		localStorage.removeItem("bwjson");
@@ -2048,7 +2063,7 @@ function loadTraveller(data,statusText,jqXHR)
 	loadTraveller_1(data,statusText,jqXHR,this);
 }
 
-function travellersNotFound(jqXHR,textStatus,errorThrown)
+export function travellersNotFound(jqXHR,textStatus,errorThrown)
 {
 		// Travellers not found
 	clearTravellersLocalStorage();
@@ -2057,7 +2072,7 @@ function travellersNotFound(jqXHR,textStatus,errorThrown)
 	this.callback();
 }
 
-function getTraveller(context)
+export function getTraveller(context)
 {
 			// Get the traveller data
 		var turl = "";
@@ -2093,7 +2108,7 @@ function getTraveller(context)
 			loadTraveller_1("","","",context);
 }
 
-function showCheckTraveller()
+export function showCheckTraveller()
 {
 	drawMiniHand();
 	var cp = document.getElementById("minihand").cloneNode(true);
@@ -2140,7 +2155,7 @@ function showCheckTraveller()
 	$("#checkTravellerDiv").show();
 }
 
-function checkAllContracts()
+export function checkAllContracts()
 {
 	var suits = "NSHDC";
 	var i,j;
@@ -2268,7 +2283,7 @@ function checkAllContracts()
 	}
 }
 
-function reportBSOLNotSupported()
+export function reportBSOLNotSupported()
 {
 	switch(language)
 	{
@@ -2280,7 +2295,7 @@ function reportBSOLNotSupported()
 	}
 }
 
-function setButtonColor()
+export function setButtonColor()
 {
 	document.getElementById("ascorecard").style.backgroundColor = "";
 	document.getElementById("aranking").style.backgroundColor = "";
@@ -2293,7 +2308,7 @@ function setButtonColor()
 	else if (g_sessionMode=="check") document.getElementById("acheck").style.backgroundColor = "#BBBB88";
 }
 
-function showPlayAnalysis(bd)
+export function showPlayAnalysis(bd)
 {
 	var ctx = g_scorecardContext[bd];
 	var data=checkHigherScoringPairs(ctx.tlines,ctx.row,ctx.direction);
@@ -2313,11 +2328,11 @@ Array.prototype.remove = function(from, to) {
   return this.push.apply(this, rest);
 };
 
-function getDirectionForTline(tline,info)
+export function getDirectionForTline(tline,info)
 {
 }
 
-function setDefaultContracts()
+export function setDefaultContracts()
 {
 	var i,j;
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);
@@ -2384,7 +2399,7 @@ function setDefaultContracts()
 	}
 }
 
-function needToAnalyse()
+export function needToAnalyse()
 {
 	for (var i=0;i<g_hands.boards.length;i++)
 	{
@@ -2406,3 +2421,44 @@ function needToAnalyse()
 	}
 	return false;
 }
+
+if (typeof window !== "undefined") {
+	Object.assign(window, {
+		showTravellerRowButtons,
+		setupTraveller,
+		getRowFromTraveller,
+		getInfoForSimilarContracts,
+		sortTravellerLines,
+		computeTravellerStatistics,
+		displayTraveller,
+		initTravRow,
+		initPrevTravRow,
+		prevTravRow,
+		initNextTravRow,
+		nextTravRow,
+		gotoTraveller,
+		gotoPrevTraveller,
+		gotoNextTraveller,
+		getNextOrPrevBindex,
+		gotoTravellerByIndex,
+		checkContract,
+		setFieldsFromTravellerLine,
+		setHandRecordFromLin,
+		showComparison,
+		showCurrentBoard,
+		loadTraveller_2,
+		loadTraveller_1,
+		loadTraveller,
+		travellersNotFound,
+		getTraveller,
+		showCheckTraveller,
+		checkAllContracts,
+		reportBSOLNotSupported,
+		setButtonColor,
+		showPlayAnalysis,
+		getDirectionForTline,
+		setDefaultContracts,
+		needToAnalyse,
+	});
+}
+

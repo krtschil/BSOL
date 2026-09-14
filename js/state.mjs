@@ -139,81 +139,97 @@ window.appState = {
 export function setLastBoardIndex(index) {
     g_lastBindex = index;
     appState.lastBoardIndex = index;
+    if (typeof window !== "undefined") window.g_lastBindex = index;
 }
 
 export function setHands(hands) {
     g_hands = hands;
     appState.hands = hands;
+    if (typeof window !== "undefined") window.g_hands = hands;
 }
 
 export function setHandEntryMode(enabled) {
     g_handEntryMode = enabled ? 1 : 0;
     appState.handEntryMode = enabled;
+    if (typeof window !== "undefined") window.g_handEntryMode = g_handEntryMode;
 }
 
 export function setInputDirection(direction) {
     g_inputDir = direction;
     appState.inputDirection = direction;
+    if (typeof window !== "undefined") window.g_inputDir = direction;
 }
 
 export function setInputBoard(board) {
     g_inputBoard = board;
-    window.appState.inputBoard = board;
+    appState.inputBoard = board;
+    if (typeof window !== "undefined") window.g_inputBoard = board;
 }
 
 export function setSession(session) {
     g_session = session;
-    window.appState.session = session;
+    appState.session = session;
+    if (typeof window !== "undefined") window.g_session = session;
 }
 
 export function setMode(mode) {
     g_mode = mode;
-    window.appState.mode = mode;
+    appState.mode = mode;
+    if (typeof window !== "undefined") window.g_mode = mode;
 }
 
 export function setCurrentPlayer(player) {
     g_currentPlayer = player;
-    window.appState.currentPlayer = player;
+    appState.currentPlayer = player;
+    if (typeof window !== "undefined") window.g_currentPlayer = player;
 }
 
 export function setCurrentTrickCards(cards) {
     g_currentTrickCards = cards;
-    window.appState.currentTrickCards = cards;
+    appState.currentTrickCards = cards;
+    if (typeof window !== "undefined") window.g_currentTrickCards = cards;
 }
 
 export function setCurrentPlayIndex(index) {
     g_currentPlayIndex = index;
-    window.appState.currentPlayIndex = index;
+    appState.currentPlayIndex = index;
+    if (typeof window !== "undefined") window.g_currentPlayIndex = index;
 }
 
 export function setLastMatchedPlayIndex(index) {
     g_lastMatchedPlayIndex = index;
-    window.appState.lastMatchedPlayIndex = index;
+    appState.lastMatchedPlayIndex = index;
+    if (typeof window !== "undefined") window.g_lastMatchedPlayIndex = index;
 }
 
 export function setShowPlay(value) {
     g_showPlay = value;
-    window.appState.showPlay = value;
+    appState.showPlay = value;
+    if (typeof window !== "undefined") window.g_showPlay = value;
 }
 
 export function setPartialHand(value) {
     g_partialHand = value;
-    window.appState.partialHand = value;
+    appState.partialHand = value;
+    if (typeof window !== "undefined") window.g_partialHand = value;
 }
 
 export function setTrumps(trumps) {
     g_trumps = trumps;
-    window.appState.trumps = trumps;
+    appState.trumps = trumps;
+    if (typeof window !== "undefined") window.g_trumps = trumps;
 }
 
 export function setLeader(leader) {
     g_leader = leader;
-    window.appState.leader = leader;
+    appState.leader = leader;
+    if (typeof window !== "undefined") window.g_leader = leader;
 }
 
 export function setCurrentTraveller(traveller) {
     g_currentTraveller = traveller;
     appState.currentTraveller = traveller;
+    if (typeof window !== "undefined") window.g_currentTraveller = traveller;
 }
 if (typeof window !== "undefined") {
     Object.assign(window, {

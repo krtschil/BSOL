@@ -325,6 +325,9 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	context.setupTraveller(0, true);
 
+	context.setCurrentTrickCards(new Array(4));
+	assert.ok(context.window.g_currentTrickCards);
+
 	assert.equal(context.g_defaultContract, 0);
 	assert.equal(context.g_defaultContractIndex, -1);
 

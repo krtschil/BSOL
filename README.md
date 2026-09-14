@@ -3,21 +3,24 @@
 ## Bridge Solver Online
 This is a fork of the original Bridge Solver Online authored by John Goacher (https://mirgo2.co.uk/bridgesolver/)
 
-## Javascript 
-The application remains a static browser application, but its code is split into focused files:
+## JavaScript
+The application remains a static browser application, but its code is organized as
+native ES modules:
 
-- `js/startup.js` initializes the application.
-- `js/bootstrap.js` builds the page and parses URL parameters.
-- `js/events.js` wires the main user-interface events.
-- `js/import.js`, `js/pbn.js`, and `js/xml.js` handle supported input formats.
-- `js/board-renderer.js`, `js/hand-renderer.js`, and `js/play.js` render and play boards.
-- `js/scoring.js`, `js/scorecard.js`, `js/ranking.js`, and `js/traveller.js` handle results.
-- `js/workers.js` manages the main and background DDS workers.
+- `js/startup.mjs` initializes the application.
+- `js/bootstrap.mjs` builds the page and parses URL parameters.
+- `js/events.mjs` wires the main user-interface events.
+- `js/import.mjs`, `js/pbn.mjs`, and `js/xml.mjs` handle supported input formats.
+- `js/board-renderer.mjs`, `js/hand-renderer.mjs`, and `js/play.mjs` render and play boards.
+- `js/scoring.mjs`, `js/scorecard.mjs`, `js/ranking.mjs`, and `js/traveller.mjs` handle results.
+- `js/workers.mjs` manages the main and background DDS workers.
 - `js/worker/` contains the worker wrapper, DDS JavaScript runtime, and `dds.wasm`.
-- `js/ui-popups.js` contains shared popup, dialog, and spinner behavior.
+- `js/ui-popups.mjs` contains shared popup, dialog, and spinner behavior.
 
-The browser still loads classic global scripts rather than ES modules. Keep the script
-order in `html/head.html` unchanged unless all dependent globals are updated together.
+The modules use explicit imports and exports. Temporary `window` bridges preserve
+compatibility for remaining global call sites and should be removed only when all callers
+of a bridged API use imports. `js/shared/bridge-utils.js` intentionally remains a classic
+script because the classic DDS worker loads it with `importScripts()`.
 
 ## Language
 To allow text (help text and display text) to appear in other languages the following concept has been applied:
@@ -25,7 +28,7 @@ To allow text (help text and display text) to appear in other languages the foll
 - A language switcher has been created (`changeLanguage()`). Whereever possible displayed text is piped through this function
 - Added flags on the frontpage to allow the switch of language
 - Currently English and German are implemented
-- The default language is initialized in `js/startup.js` (e.g. `language="de"`). Language codes follow the 2-character code (e.g. en, de)
+- The default language is initialized in `js/startup.mjs` (e.g. `language="de"`). Language codes follow the 2-character code (e.g. en, de)
 
 ## Styles
 The main stylesheet is `ddummy.css`. It contains:
@@ -112,9 +115,10 @@ npm run build:html
 npm run validate:html
 ```
 
-The regression suite is in `test/regression.test.js`. The browser-only XML parser smoke
-test is `test/xml-smoke.html`. CI also checks JavaScript syntax, generated HTML freshness,
-HTML validity, and the XML smoke test.
+The regression suite is in `test/regression.test.js` and currently covers the migrated
+module behavior as well as important compatibility bridges. The browser-only XML parser
+smoke test is `test/xml-smoke.html`. CI also checks JavaScript syntax, generated HTML
+freshness, HTML validity, and the XML smoke test.
 
 ## AI support
 Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

@@ -2,8 +2,16 @@
 
 ## Updates
 
-### 2026-09 current intermediate state
+### 2026-09
 
+- Migrated the browser application from ordered classic scripts to native ES modules
+  (`.mjs`) with explicit imports and exports.
+- Added temporary `window` compatibility bridges for remaining global call sites and
+  synchronized exported state setters with those globals.
+- Kept `js/shared/bridge-utils.js` as a classic script because it is shared with the
+  classic DDS worker through `importScripts()`.
+- Fixed strict-mode issues exposed by the module migration, including undeclared
+  variables and missing cross-module dependencies.
 - Split the static page into source fragments under `html/`, with
   `scripts/build-html.js` generating the delivered `index.html`.
 - Added Node regression tests, HTML validation, generated-HTML checks, and the

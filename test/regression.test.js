@@ -313,7 +313,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	loadScript(context, "js/state.js");
 	context.appState = context.window.appState;
-	loadScript(context, "js/traveller.js");
+	loadScript(context, "js/traveller.mjs");
 
 	context.setupTraveller(0, true);
 

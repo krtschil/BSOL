@@ -6,6 +6,16 @@
 ***********************************************************************************/
 
 import {
+	reportBSOLNotSupported,
+	showComparison,
+	getNextOrPrevBindex,
+	showCurrentBoard,
+	gotoPrevTraveller,
+	gotoNextTraveller,
+	setupTraveller,
+	checkAllContracts,
+} from "./traveller.mjs";
+import {
 	hideRanking,
 	setupRanking,
 	setupScorecard,

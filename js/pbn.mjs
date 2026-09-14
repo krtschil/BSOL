@@ -540,6 +540,8 @@ export function generatePBN(all)
 				var vulnerable;
 				var score;
 				var tmp;
+				var pos;
+				var trickdiff;
 
 				if (ContractResult.indexOf("XX") !=-1){
 					doubled="XX";
@@ -1021,6 +1023,7 @@ export function pbnToJson(fileData)
 
 						var n;
 						var a = auction[j];
+						var pos;
 
 						/*
 							If alerts contain the = character replace it with -

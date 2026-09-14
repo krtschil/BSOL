@@ -20,6 +20,21 @@ test("converts a PBN file into valid board JSON", () => {
 	assert.equal(context.validateBoard(result.boards[0]), 1);
 });
 
+test("converts PBN auctions with alert notes", () => {
+	const context = createContext({
+		g_fullInfo: false,
+		g_hands: {boards: []},
+		g_title: "",
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
+	const pbn = fs.readFileSync(`${root}/hands/test2.pbn`, "utf8");
+	const result = JSON.parse(context.pbnToJson(pbn));
+
+	assert.ok(result.boards.length > 0);
+	assert.ok(result.boards.some((board) => (board.Bids || []).some((bid) => bid.includes("|"))));
+});
+
 test("keeps the Traveller JSON fixture available", () => {
 	const traveller = JSON.parse(
 		fs.readFileSync(`${root}/test/fixtures/sample-traveller.json`, "utf8")
@@ -301,5 +316,4 @@ test("renders bidding table with dealer offset without error", () => {
 	assert.ok(html.includes("biddingHeader"));
 	assert.ok(html.includes("biddingContent"));
 });
-
 

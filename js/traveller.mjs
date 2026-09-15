@@ -1904,8 +1904,16 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 
 	if (!found)
 	{
-		var str = "The currently selected pair (" + player1 + " & " + player2 + ") did not play this board.";
-		str = str + " Colour coding of table below is from point of view of NS pairs."
+		switch(language)
+		{
+			case "de":
+				var str = "Das momentan gewählte Paar (" + player1 + " & " + player2 + ") hat dieses Board nicht gespielt.";
+				str = str + " Farbmarkierungen in der Tabelle unten sind aus Sicht des NS-Paars.";
+				break;
+			default:
+				var str = "The currently selected pair (" + player1 + " & " + player2 + ") did not play this board.";
+				str = str + " Colour coding of table below is from point of view of NS pairs.";
+		}
 		document.getElementById("compSubHeading").innerHTML = str;
 		document.getElementById("percentValue").textContent = "";
 		$("#ourPercentage").hide();

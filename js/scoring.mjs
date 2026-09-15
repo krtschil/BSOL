@@ -477,10 +477,12 @@ export function displayLeadCard(lead)
 		S: "&#9824;"
 	};
 
-	if ((card.length!=2)||(typeof symbols[card.charAt(1)]=="undefined"))
+	// The rank part is either 1 character (2..9,J,Q,K,A) or 2 characters ("10"),
+	// the suit is always the last character.
+	if (((card.length!=2)&&(card.length!=3))||(typeof symbols[card.charAt(card.length-1)]=="undefined"))
 		return card;
 
-	return symbols[card.charAt(1)] + card.charAt(0);
+	return symbols[card.charAt(card.length-1)] + card.substring(0,card.length-1);
 }
 
 

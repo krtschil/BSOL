@@ -262,7 +262,7 @@ export function setLeadForScorecardRow(bnum,row,tline,declarer)
 						if (declarer)
 							row.cells[4].style.backgroundColor = "#00ff00";
 						else
-							row.cells[4].style.backgroundColor = "#ff0000";
+							row.cells[4].style.backgroundColor = "#ffa500";	// Orange instead of red, since red clashes with the red suit symbols (Hearts/Diamonds)
 
 						break;
 					}

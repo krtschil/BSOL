@@ -865,6 +865,7 @@ export function displayTraveller(pdirection)
 
 	var red = "#ff5555";
 	var green = "#55ff55";
+	var orange = "#ffa500";	// Used instead of red for the lead cell background, since red clashes with the red suit symbols (Hearts/Diamonds)
 
 	var maxover = 3;	// Maximum number of over/under tricks on this traveller (initially assume 3)
 
@@ -1015,7 +1016,7 @@ export function displayTraveller(pdirection)
 									if ((13-score)!=getMakeableTricksForContract(g_lastBindex,tline.contract,tline.played_by))
 									{
 										row.cells[7].innerHTML = (13-score) + "(" + getMakeableTricksForContract(g_lastBindex,tline.contract,tline.played_by) + ")";
-										row.cells[4].style.backgroundColor = colorplus;
+										row.cells[4].style.backgroundColor = (colorplus==red) ? orange : colorplus;
 										relDDLead = tline.tricks - (13-score);
 										if (relDDLead==0) relDDLead = "=";
 										else if (relDDLead>0) relDDLead = "+" + relDDLead;

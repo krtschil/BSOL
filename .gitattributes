@@ -1,0 +1,15 @@
+# Exclude developer/CI-only tooling and sample data from GitHub's
+# auto-generated release source archives (zip/tar.gz). These files remain
+# in the git history and working tree; only `git archive` (and therefore
+# GitHub's release download assets) skips them.
+/test export-ignore
+/scripts export-ignore
+/hands export-ignore
+/html export-ignore
+/.githooks export-ignore
+/.github/workflows export-ignore
+/.gitignore export-ignore
+/.htmlvalidate.json export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/.gitattributes export-ignore

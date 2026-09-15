@@ -26,6 +26,12 @@ The input files are:
 - `--results-dbf`: final ranking, points and percentages
 - `--output`: generated BSOL Traveller JSON
 
+Actual example:
+```sh
+./dbf-traveller-to-json.py  --pbn 20260804.pbn   --play-dbf play_2346.dbf   --participants-dbf tn_2346.dbf   --results-dbf res_2346a.dbf   --output ~/Downloads/20260804.json
+
+```
+
 Before running the script, edit `INPUT_DIRECTORIES` near the top of the Python
 file. Each input type can point to a different directory:
 

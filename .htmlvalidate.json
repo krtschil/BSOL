@@ -8,6 +8,7 @@
     "prefer-tbody": "off",
     "wcag/h63": "off",
     "no-implicit-input-type": "off",
-    "no-raw-characters": "off"
+    "no-raw-characters": "off",
+    "no-trailing-whitespace": "off"
   }
 }

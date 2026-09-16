@@ -68,7 +68,7 @@ Hands can be entered and analyzed in various ways:
 - Manual input of single hands by using the respective button on the frontpage
 - Loading a remote file via an URL parameter (e.g. `?file=https://example.com/tournament.pbn`). 
 The remote server has to allow loading data via HTTP header `Header set Access-Control-Allow-Origin *` or more specific `Header set Access-Control-Allow-Origin "https://thedomain.com"`.
-- Loading additional traveller data (if available) is possible through the URL parameter `xml`. (e.g. `?file=https://example.com/tournament.pbn&xml=https://example.com/tournament.json`). A live example can be found here: `https://krtschil.github.io/BSOL/?file=hands/sample-traveller.pbn&xml=hands/sample-traveller.json`.
+- Loading additional traveller data (if available) is possible through the URL parameter `xml`. (e.g. `?file=https://example.com/tournament.pbn&xml=https://example.com/tournament.json`). A live example can be found here: [Live example](https://krtschil.github.io/BSOL/?file=hands/sample-traveller.pbn&xml=hands/sample-traveller.json).
 - Board data can be provided completely with URL paramters
 - For an overview of all available URL parameters see the file `URL-Parameters.html`
 

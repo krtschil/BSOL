@@ -209,28 +209,22 @@ export function processHandEntry()
 
 	document.getElementById("setVul").onclick = showVulnerabilityKeypad;
 
-	document.getElementById("play").onclick = function(){
-//			if (g_defaultContract==0)
+	document.getElementById("play").onclick = function()
+	{	
+		if (!requestPending())
+		{
+			switch(language)
 			{
-				if (!requestPending())
-				{
-					switch(language)
-					{
-						case "de":
-							doPopup(this,"Klicke auf irgendeinen Eintrag (einschließlich leerer Einträge)<br>in der Tabelle der machbaren Kontrakte, um diesen Kontrakt zu spielen.");
-							break;
-						default:
-							doPopup(this,"Tap any of the entries (including blank entries)in the makeable<br>contracts table at any time to start playing that contract.");
-					}
-					document.getElementById("mctable").className = "shadow";
-					setTimeout(function(){document.getElementById("mctable").className = "";},4400); // same timeout as in doPopupAt function
-				}
+				case "de":
+					doPopup(this,"Klicke auf irgendeinen Eintrag (einschließlich leerer Einträge)<br>in der Tabelle der machbaren Kontrakte, um diesen Kontrakt zu spielen.");
+					break;
+				default:
+					doPopup(this,"Tap any of the entries (including blank entries)in the makeable<br>contracts table at any time to start playing that contract.");
 			}
-//		else
-//			{
-//				playLinContract();
-//			}
-		};
+			document.getElementById("mctable").className = "shadow";
+			setTimeout(function(){document.getElementById("mctable").className = "";},4400); // same timeout as in doPopupAt function
+		}		
+	};
 
 	document.getElementById("help").onclick = function()
 		{

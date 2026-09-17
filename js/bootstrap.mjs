@@ -777,7 +777,6 @@ export function extractParas()
 						pvalue = "<br>(" + pvalue +")";
 						const clean = DOMPurify.sanitize(pvalue, { RETURN_DOM_FRAGMENT: true });
 						fn.replaceChildren(clean);
-						//document.getElementById("filename").innerHTML="<br>(" + pvalue +")";
 					}
 				}
 				else if (pname=="xml")
@@ -883,7 +882,6 @@ export function extractParas()
 			}
 			else
 			{
-				//board = JSON.parse(jsonlin);
 				try {
 					board = JSON.parse(jsonlin);
 				} catch (error) {

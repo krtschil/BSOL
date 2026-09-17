@@ -884,23 +884,6 @@ export function pbnToJson(fileData)
 		scoreTable = scoreTable.replaceAll(/ NT /g," SA ");
 		scoreTable = scoreTable.replaceAll(/PAXX/g,"PASS");
 
-		/*
-		const fieldNames = ["Contract", "Declarer", "Tricks", "Score", "NS", "EW", "MP_NS", "MP_EW"];
-		const lines = scoreTable
-				.split("<br>")
-				.map(line => line.trim())
-				.filter(line => line.length > 0);
-
-		const scores = lines.map(line => {
-			const values = line.split(/\s+/);
-			const obj = {};
-			fieldNames.forEach((field, i) => {
-				obj[field] = values[i];
-				});
-			return obj;
-		});
-		*/
-
 		// Set title to the Event as given in the pbn file
 		if ((g_hands.Title == "") || (typeof g_hands.Title == 'undefined')){
 			if (getLine(data,"[Event ",true) !== null) {
@@ -912,18 +895,7 @@ export function pbnToJson(fileData)
 		if (auction !="") {
 			auction = auction.replace(/\t/g, ' ');
 			auction = auction.replace(/\s+/g, ' ');
-
-			/*var n;
-			if (notes != null){
-				for (var k=1;k<notes.length;k++){
-					n = notes[k];
-					n = n.trim();
-					auction = auction.replace(" =" + k + "= ","|" + n + " ");
-				}
-			}
-			*/
 			auction = auction.replace(/ =/g, '=');
-			//auction = auction.replace(/= /g, '=');
 			auction = auction.replace(/  /g, ' ');
 			auction = auction.trim();
 		}

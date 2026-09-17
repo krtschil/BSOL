@@ -292,15 +292,12 @@ export function linToJson(str)
 
 	str = str.replace(/[\"\[\]]/g,"");  // Filter out characters which won't survive conversion of the final json string to a json object
 
-//		try {
 		outStr += "{\"boards\":[";
 
 		// Remove all lines that start with %, which is a comment in LIN
 		if (str.startsWith('%')) {
 			str = str.replaceAll(/^%.*(?=\r?\n)/g, '');
-			//str = str.replace(/^%.*\n?/, '');
 		}
-		//
 
 		str = str.replace(/\n/g,"");
 		str = str.replace(/\r/g,"");
@@ -377,7 +374,6 @@ export function linToJson(str)
 					score = "";
 				}
 
-//						board = Integer.valueOf(boardStr);
 				boardStr = para;
 
 				if (boardStr.charAt(0)=='o')
@@ -504,32 +500,13 @@ export function linToJson(str)
 		}
 
 		outStr += "]";
-
-/*		if (playerNames.length>0)
-		{
-			outStr += ",\"PlayerNames\":[";
-
-			for (i=0;i<playerNames.length;i++)
-			{
-				if (i!=0) outStr += ",";
-				var pname = playerNames[i].trim();
-				if (pname.indexOf("~~")==0) pname = "Robot";
-				outStr += "\"" + pname + "\"";
-			}
-
-			outStr += "]";
-		}*/
-
 		outStr += "}";
-//		} catch (e) {alert("lin file conversion error");};
-		//console.log(outStr);
 	return outStr;
 }
 
 export function handsNotFound(jqXHR,textStatus,errorThrown)
 {
 	// Hands Not Found
-	/*var msg = "Hand Record file could not be retrieved"; **KK** */
 	switch(language)
 	{
 		case "de":

@@ -257,7 +257,6 @@ export function createHandString(hand,index)
 	var cardSymbolSize = Math.floor(0.8*(g_textBratio*g_sectionHeight/4)) + "px";
 	if (!g_isMobi) cardSymbolSize = Math.floor(0.6*(g_textBratio*g_sectionHeight/4)) + "px";
 
-	//**KK** var cardSymbols = ["<img height=" + cardSymbolSize + " src=\"pics/spade.gif\">","<img height=" + cardSymbolSize + " src=\"pics/heart.gif\">","<img height=" + cardSymbolSize + " src=\"pics/diamond.gif\">","<img height=" + cardSymbolSize + " src=\"pics/club.gif\">"];
 	var cardSymbols = ["<img alt=\"Spade\" style=\"height:" + cardSymbolSize + "\" src=\"pics/spade.gif\">","<img alt=\"Heart\" style=\"height:" + cardSymbolSize + "\" src=\"pics/heart.gif\">","<img alt=\"Diamond\" style=\"height:" + cardSymbolSize + "\" src=\"pics/diamond.gif\">","<img alt=\"Club\" style=\"height:" + cardSymbolSize + "\" src=\"pics/club.gif\">"];
 	var suitLetters = ["S","H","D","C"];
 	var cardLetters = ["2","3","4","5","6","7","8","9","T","J","Q","K","A"];

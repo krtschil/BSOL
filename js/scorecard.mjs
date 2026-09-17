@@ -143,11 +143,8 @@ export function drawBoxedBar(value,vmax,width,height,bcolor,leftBorder)
 
 	var str = "";
 
-//	if (Math.round(baseWidth)>0)
-	{
-		str = "<div style=\"display:inline-block;background-color:" + bcolor + ";height:" + hgt + ";min-height:" + hgt + ";border-left:" + lbd + ";border-top:1px solid grey;border-bottom:1px solid grey;border-right:1px solid grey;width:" + dwth + ";min-width:" + dwth + ";max-width:" + dwth + ";\">";
-		str = str + "</div>";
-	}
+	str = "<div style=\"display:inline-block;background-color:" + bcolor + ";height:" + hgt + ";min-height:" + hgt + ";border-left:" + lbd + ";border-top:1px solid grey;border-bottom:1px solid grey;border-right:1px solid grey;width:" + dwth + ";min-width:" + dwth + ";max-width:" + dwth + ";\">";
+	str = str + "</div>";
 
 	return str;
 }
@@ -268,8 +265,6 @@ export function setLeadForScorecardRow(bnum,row,tline,declarer)
 					}
 				}
 			}
-
-			//if (!validLeadCard) row.cells[4].style.backgroundColor = "#888888";
 		}
 	}
 }
@@ -430,7 +425,6 @@ export function setupResultReasons(ctx,result)
 			offsetStr = tricksOffset;
 	}
 
-//	tricksOffset = calculateTricks(bidx);
 	var contractPlayer = "";
 
 	if (tline.contract.toUpperCase().charAt(0)!=='P')

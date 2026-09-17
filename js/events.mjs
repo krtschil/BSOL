@@ -70,7 +70,6 @@ document.addEventListener('paste', (event) => {
 const Blank = document.getElementById("blankInput");
 Blank.addEventListener('click', function() {
 	createEmptyBoard();
-	//window.location.href = "?file=blank.pbn&lang=" + language;
 });
 
 // Read the clipboard

@@ -250,13 +250,11 @@ export function setupGeneralHelp()
 			help = help + "Boards können auf mehrere Arten eingegeben werden:<br><ul>";
 			help = help + "<li>Über 'Datei auswählen': <br>Dabei können mehrere Boards aus einer .pbn-Datei eingelesen und analysiert werden.</li>";
 			help = help + "<li>Über 'Hand manuell eingeben': <br>Eine einzelne Hand kann durch Auswahl der jeweiligen Karten für jede Position eingegeben werden.</li>";
-			//help = help + "<li>Über 'URL verwenden': wenn Sie einen Link zu einer .pbn-Datei haben, können Sie diese hier eingeben. Voraussetzung ist, dass der Webserver, von dem die .pbn geholt werden soll, dies auch erlaubt. Andernfalls erscheint eine Fehlermeldung.</li></ul>";
 			help = help + "<li>Über 'Hole Boards aus der Zwischenablage':<br>PBN-Daten aus anderen Quellen können hierüber durch Copy&Paste übergeben werden.</li>";
 			help = help + "<li>Mittels der Tastenkombination 'STRG-V / CMD-V' können PBN/LIN/DLM-Daten auch eingefügt werden.</li>";
 			help = help + "<li>Eine Datei mit PBN/LIN/DLM-Daten kann auch per Drag&amp;Drop eingefügt werden.</li>";
 			help = help + "</li></ul>Ein einzelnes Board kann auch über URL-Parameter eingegeben werden. <br>Folgende Parameter sind dazu erforderlich:<br> ";
 			help = help + "<ul><li><b>board</b>: die Boardnummer</li><li><b>dealer</b>: Teiler (N, E, S oder W)</li><li><b>vul</b>: Gefahrenlage (none, both, NS, EW)</li><li><b>north, east, south, west</b>: alle 4 Hände müssen übergeben werden. <br>Farben werden durch einen . getrennt. </li></ul>";
-			//	help = help + "Beispiel:<p>";
 			help = help + "<a href='?vul=none&board=1&east=9864.JT2.954.A72&south=AK2..KT762.QT643&west=J53.KQ876.AJ.K98&north=QT7.A9543.Q83.J5&dealer=n' target='_blank'>Beispiel</a>, <a href='URL-Parameters.html' target=_blank>Liste aller Parameter</a> <p>&nbsp;</p>";
 			help = help + "</div></div>";
 			help = help + "<div style=\"clear:both;\"><button id=hide_generalHelp style=\"cursor:pointer;\">Schließen</button></div>";
@@ -268,13 +266,11 @@ export function setupGeneralHelp()
 			help = help + "Boards can be entered in different ways:<br><ul>";
 			help = help + "<li>'Open file': <br>Files can contain more than one board which are read and analyzed all.</li>";
 			help = help + "<li>'Enter hand': <br>A single hand can be entered by selecting all cards for each position.</li>";
-			//help = help + "<li>Über 'URL verwenden': wenn Sie einen Link zu einer .pbn-Datei haben, können Sie diese hier eingeben. Voraussetzung ist, dass der Webserver, von dem die .pbn geholt werden soll, dies auch erlaubt. Andernfalls erscheint eine Fehlermeldung.</li></ul>";
 			help = help + "<li>'Get boards data from clipboard':<br>PBN data from other sources can be entered via copy & paste.</li>";
 			help = help + "<li>You can also paste PBN/LIN/DLM data using the keyboard shortcut 'CTRL-V / CMD-V'.</li>";
 			help = help + "<li>A file with PBN/LIN/DLM data can entered via drag&amp;drop.</li>";
 			help = help + "</li></ul>A single board can also be given via URL parameters. <br>The following parameters are required:<br> ";
 			help = help + "<ul><li><b>board</b>: board number</li><li><b>dealer</b>: dealer (N, E, S or W)</li><li><b>vul</b>: Vulnerability (none, both, NS, EW)</li><li><b>north, east, south, west</b>: all 4 hands must be provided. <br>Suits are separated by a dot. </li></ul>";
-			//	help = help + "Beispiel:<p>";
 			help = help + "<a href='?vul=none&board=1&east=9864.JT2.954.A72&south=AK2..KT762.QT643&west=J53.KQ876.AJ.K98&north=QT7.A9543.Q83.J5&dealer=n'>Example</a>, <a href='URL-Parameters.html' target=_blank>List of all parameters</a><p>&nbsp;</p>";
 			help = help + "</div></div>";
 			help = help + "<div style=\"clear:both;\"><button id=hide_generalHelp style=\"cursor:pointer;\">Close</button></div>";

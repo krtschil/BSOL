@@ -122,9 +122,13 @@ smoke test is `test/xml-smoke.html`. CI also checks JavaScript syntax, generated
 freshness, HTML validity, and the XML smoke test.
 
 ## ==TODO==
-Bidding display: 
+Board display: 
 - Upper right quadrant: for BBO tournaments the bidding shows `<` and `>` buttons that allow navigation to 
 the bidding of the next pair. For passed out hands the buttons are not visible. Must be corrected.
+
+Traveller display: 
+- Hover popup of opponent's pair number is always misplaced far above the table. Should be 
+more flexible just above or to the right of the hovered pair number
 
 ## AI support
 Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

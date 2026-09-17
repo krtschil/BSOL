@@ -4,7 +4,6 @@ export function changeLanguage(l) {
 	{
 		case "de":
 			document.getElementById("loadFile1").value = "Datei auswählen";
-			//document.getElementById("manuell").value = "Hand manuell eingeben";
 			document.getElementById("blankInput").textContent = "Hand manuell eingeben";
 			document.getElementById("showGeneralHelp").textContent = "Allgemeine Hilfe";
 			document.getElementById("aranking").textContent = "Alle Paare";
@@ -22,7 +21,6 @@ export function changeLanguage(l) {
 			document.getElementById("optionsClose").textContent = "Schließen";
 			document.getElementById("toolsSubMenuClose").innerHTML = "<span class=\"font-bold\">Schließen</span>";
 			document.getElementById("optionsSave").textContent = "Als Standard speichern";
-			//document.getElementById("input-manuell").action = "?file=blank.pbn&lang=" + language;
 			document.getElementById("clearHand").textContent = "Leeren";
 			document.getElementById("deleteBoard").textContent = "Löschen";
 			document.getElementById("newBoard").textContent = "Neu...";
@@ -53,8 +51,6 @@ export function changeLanguage(l) {
 			document.getElementById("settingsHide").textContent = "Schließen";
 			document.getElementById("showSettingsHelp").textContent = "Hilfe";
 			document.getElementById("settingsT").textContent = "URL verwenden:";
-			//document.getElementById("useURL").value = "URL verwenden";
-			//document.getElementById("useURLTooltip").title = "Bitte eine gültige URL eingeben";
 			document.getElementById("bsession").textContent = "Ergebnisanalyse";
 
 			document.getElementById("aboard").textContent = "Nochmal spielen";
@@ -115,7 +111,6 @@ export function changeLanguage(l) {
 			break;
 		default:
 			document.getElementById("loadFile1").value = "Open file";
-			//document.getElementById("manuell").value = "Enter hand";
 			document.getElementById("blankInput").textContent = "Enter hand";
 			document.getElementById("showGeneralHelp").textContent = "General help";
 			document.getElementById("aranking").textContent = "All Pairs";
@@ -132,7 +127,6 @@ export function changeLanguage(l) {
 			document.getElementById("optionsClose").textContent = "Close";
 			document.getElementById("toolsSubMenuClose").innerHTML = "<span  class=\"font-bold\">Close</span>";
 			document.getElementById("optionsSave").textContent = "Save As Default";
-			//document.getElementById("input-manuell").action = "?file=blank.pbn&lang=" + language;
 			document.getElementById("clearHand").textContent = "Clear";
 			document.getElementById("deleteBoard").textContent = "Delete";
 			document.getElementById("newBoard").textContent = "New...";
@@ -157,14 +151,11 @@ export function changeLanguage(l) {
 			document.getElementById("table_makeable").textContent = "Makeable Contracts Table:";
 			document.getElementById("nsshow_playable").textContent = "N/S Playable Card Display:";
 			document.getElementById("ewshow_playable").textContent = "E/W Playable Card Display:";
-			//document.getElementById("showGeneralHelp").style.display = "none";
 
 			document.getElementById("mkautolab1").textContent = "Auto-Analyse Entire Board Set";
 			document.getElementById("settingsHide").textContent = "Close";
 			document.getElementById("showSettingsHelp").textContent = "Help";
 			document.getElementById("settingsT").textContent = "Settings:";
-			//document.getElementById("useURL").value = "Enter URL";
-			//document.getElementById("useURLTooltip").title = "Please enter a valid URL";
 			document.getElementById("bsession").textContent = "Results Analysis";
 
 			document.getElementById("aboard").textContent = "Play It Again";

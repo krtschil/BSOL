@@ -479,7 +479,6 @@ export function getInfoForSimilarContracts(lineIndex,direction)
 	
 	const clean = DOMPurify.sanitize(document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>", { RETURN_DOM_FRAGMENT: true });
 	document.getElementById("comparisonText").replaceChildren(clean);
-	//document.getElementById("comparisonText").innerHTML = document.getElementById("comparisonText").innerHTML + "<span style=\"font-size:12px;\"><br><br><p>" + str + "</p></span>";
 
 	return result;
 }
@@ -1024,8 +1023,6 @@ export function displayTraveller(pdirection)
 									}
 								}
 							}
-
-							//if (!validLeadCard) row.cells[4].style.backgroundColor = "#888888";
 						}
 					}
 
@@ -1730,19 +1727,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							var ew = "EW";
 							var str2 = "";
 
-								// Temporarily disable this output.
-		/*
-							if (((pdirection==1)&&(ns.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1))|
-								((pdirection==2)&&(ew.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1)))
-							{
-									// we were declarer
-								// *** need to change this line if used: checkHigherScoringPairs(g_currentTraveller.traveller_line,g_currow,pdirection);
-
-							}*/
-
 							document.getElementById("comparisonText").innerHTML = "<span style=\"font-size:12px;\">" + str + str2 + "</span>";
-
-			//				getInfoForSimilarContracts(g_currow,g_hands.direction);
 							break;
 						default:
 							if (declarer_pair)
@@ -1882,20 +1867,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							var ew = "EW";
 							var str2 = "";
 
-								// Temporarily disable this output.
-		/*
-							if (((pdirection==1)&&(ns.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1))|
-								((pdirection==2)&&(ew.indexOf(g_hands.boards[g_lastBindex].Declarer)!=-1)))
-							{
-									// we were declarer
-								// *** need to change this line if used: checkHigherScoringPairs(g_currentTraveller.traveller_line,g_currow,pdirection);
-
-							}*/
-
 							document.getElementById("comparisonText").innerHTML = "<span style=\"font-size:12px;\">" + str + str2 + "</span>";
-
-			//				getInfoForSimilarContracts(g_currow,g_hands.direction);
-
 					}
 					break;
 				}
@@ -2028,25 +2000,6 @@ export function loadTraveller_1(data,statusText,jqXHR,context)
 							var lind = decodeURIComponent(tlines[j].lindata.replace(/\\'/g,"'"));
 							var tmp = eval("(" + linToJson(lind) + ")");
 							tlines[j].board = tmp.boards[0];
-
-/*							if ((typeof tmp.boards[0].PlayerNames)!=="undefined")
-							{
-								try {
-									if ((players.length>0)&&(players.length==tmp.boards[0].PlayerNames.length))
-									{
-										var found = true;
-
-										for (var k=0;k<players.length;k++)
-											if (players[k]!==tmp.boards[0].PlayerNames[k]) found = false;
-									}
-
-									if (found)
-									{
-										alert("found it: " + j);
-										g_currow = j;
-									}
-								} catch (e) {};
-							}*/
 						} catch (e) {
 							tlines[j].lindata = "";
 						};

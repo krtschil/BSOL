@@ -498,22 +498,6 @@ export function displayAcc(declName,declErrCount,leadName,leadErrCount,leadPartn
 	}
 	str += "</div></div>";
 
-//		str += "<br>Elapsed time: " + tmp.sess.deltaElapsed + "<br><br>";
-
-/*		var optCount = 0;
-	var subOptCount = 0;
-
-	for (var i=0;i<tmp.sess.optimumCount.length;i++)
-	{
-		if (tmp.sess.cardDirection[i]==0)
-		{
-			optCount += tmp.sess.optimumCount[i];
-			subOptCount += tmp.sess.subOptimumCount[i];
-		}
-	}
-
-	str += " ,optimumCardRatio: " + optCount/(optCount+subOptCount);*/
-
 	if (dest==0)
 		acc.innerHTML = "<span style=\"font-size:16px;color:blue;\">" + str + "</span>";
 	else

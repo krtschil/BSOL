@@ -564,7 +564,6 @@ export function resetState()
 	hideRanking();
 	$("#scores").hide();
 	$("#scoreandtraveller").hide();
-//	$("#mainTitle").hide();
 	$("").hide();
 	hideAllPopups();
 	$("#popup_box").finish();
@@ -778,7 +777,6 @@ export function dddloadfunc(data,statusText,jqXHR,context)
 	{
 		var tmp =data;
 		tmp = JSON.parse(tmp);
-//				alert(tmp.sess.deltaElapsed);
 
 		if ((tmp.sess.status<200)&&(tmp.sess.status!=0))
 		{

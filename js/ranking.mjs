@@ -897,15 +897,6 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		row.cells[5+cellOffset].style.minWidth = "100px";
 		row.cells[5+cellOffset].innerHTML = pbar;
 		row.cells[5+cellOffset].style.backgroundColor = "white";
-
-/*		row.insertCell(-1);
-
-		var str="";
-
-		str += getPlayerAcc(pairInfo.player1) + "/";
-		str += getPlayerAcc(pairInfo.player2);
-
-		row.cells[row.cells.length-1].innerHTML = str;*/
 	}
 }
 
@@ -1188,9 +1179,6 @@ export function checkHigherScoringPairs(traveller,prow,direction)
 			}
 		}
 	}
-
-//	var result = getHighestScoringMakeableContractForDirection(direction,g_hands.boards[g_lastBindex].Vulnerable);
-
 	return result;
 }
 
@@ -1332,8 +1320,6 @@ export function setupRanking(keepScrollSetting)
 	}
 
 	setupRankingTable(table,"NS",rankInfo,winners);
-
-	//var rankingHeader = document.getElementById("rankingHeader");
 
 	if ((winners!="1")&&(g_eventType!="Teams"))
 	{
@@ -1670,8 +1656,6 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 										var backColor = "white";
 
 										row.cells[4+g_ofs].innerHTML = tline.tricks;
-//										row.cells[4+g_ofs].style.backgroundColor = backColor;
-
 										row.cells[5+g_ofs].style.textAlign = "right";
 										row.cells[5+g_ofs].style.borderRight = "1px solid black";
 									}
@@ -1679,9 +1663,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									if (g_ofs==1)
 									{
 										setLeadForScorecardRow(j,row,tline,declarer_pair);
-//										row.cells[4].className = "myLink";
 										row.cells[4].style.textAlign = "right";
-//										row.cells[4].onclick = function(){var row=this.parentNode;var contract=row.cells[2].innerHTML;var declarer=row.cells[3].innerHTML;var idx = getLeadsIdx(contract,declarer);alert(JSON.stringify(g_hands.boards[getTindexByName(g_hands.boards,row.cells[0].innerHTML)].openingLeads[idx]))};
 									}
 
 									var hindex = getBoardIndex(j);

@@ -466,7 +466,6 @@ export function hideMenuItems()
 
 export function showMainMenuItems()
 {
-//	if ((typeof g_hands.lin)=="undefined")
 	if ((g_hands.boards.length>1)||(g_test==1)||(g_xml!=""))
 	{
 		show("prev");
@@ -484,8 +483,6 @@ export function showMainMenuItems()
 	{
 		if ((typeof g_hands.lin)!=="undefined")
 			if (document.getElementById("saveLIN")!=null) show("saveLIN");
-
-		//document.getElementById("saveBoards").innerHTML = "Speichern";	// **** Remove this assignment when html is no longer cached.
 		show("saveBoards");
 	}
 

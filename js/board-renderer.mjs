@@ -31,7 +31,6 @@ export function updateUpperLeftQuadrant(boardIndex)
 		}
 
 	}
-	//var lottStr = "<br><div style=\"margin-top:5px;\"><span id=lott style=\"font-size:" + lottFontSize + ";font-weight:bold;\">LoTT: " + lott() + "</span></div>";
 
 	btable = document.getElementById("board");
 
@@ -74,7 +73,7 @@ export function updateUpperLeftQuadrant(boardIndex)
 
 		ocell.style.verticalAlign = "top";
 		namstr += "</div>";
-		//ocell.replaceChildren(sanitizeExplanation(namstr)); //innerHTML = namstr + "</div>";
+
 		ocell.innerHTML = DOMPurify.sanitize(namstr);
 	}
 	else
@@ -94,9 +93,6 @@ export function updateUpperLeftQuadrant(boardIndex)
 
 	if ((typeof g_hands.boards[boardIndex].Explanation !="undefined") &&  g_hands.boards[boardIndex].Explanation != ""){
 		var exp = g_hands.boards[boardIndex].Explanation;
-		//exp = exp.replaceAll("\C","Treff");
-		//exp = exp.replaceAll("\D","Karo");
-		//exp = exp.replaceAll("\S","Pik");
 		exp = exp.replaceAll("}","");
 		exp = exp.replaceAll("{","");
 
@@ -129,10 +125,8 @@ export function updateUpperLeftQuadrant(boardIndex)
 		{
 			var stH = g_hands.boards[boardIndex].ScoreTableH;
 			const clean = DOMPurify.sanitize(stH+st, { RETURN_DOM_FRAGMENT: true });
-			//document.getElementById("output").replaceChildren(sanitizeExplanation(stH+st)); //innerHTML = stH + st;
 			document.getElementById("output").replaceChildren(clean);
 		} else {
-			//document.getElementById("output").replaceChildren(sanitizeExplanation("Kon AS St  Score  NS    EW  MP mp " + st)); //innerHTML = "Kon AS St  Score  NS    EW  MP mp " + st;
 			const clean = DOMPurify.sanitize("Kon AS St  Score  NS    EW  MP mp " + st, { RETURN_DOM_FRAGMENT: true });
 			document.getElementById("output").replaceChildren(clean);
 		}
@@ -202,17 +196,13 @@ export function redrawMCTable(large)
 	{
 		if (g_hands.boards[g_lastBindex].Contract === undefined)
 		{
-			//console.log("Undefined:: " + (g_hands.boards[g_lastBindex].Contract));
 			defSuit = "NP";
 		}
 		else
 		{
-			//console.log("Contract: " + g_hands.boards[g_lastBindex].Contract);
 			defSuit = suits.indexOf(g_hands.boards[g_lastBindex].Contract.charAt(1));
-
 		}
 		defDeclarer = directions.indexOf(g_hands.boards[g_lastBindex].Declarer);
-		//defSuit = suits.indexOf(g_hands.boards[g_lastBindex].Contract.charAt(1));
 	}
 
 	for (i=0;i<4;i++)
@@ -632,15 +622,6 @@ export function setDisplaySizing()
 			var ratio = width/height;
 
 			if (ratio<1.66) height = width/1.66
-
-	/*		if (ratio>1.666)	// If ratio is lower than 1.666 use default values for height and width
-			{
-				if (ratio>1.78)	// BSOL window won't look right at very high aspect ratio, so use defaults instead.
-				{
-					width=800;
-					height=450;
-				}
-			}*/
 
 			if (width>height)
 				height = ((800*height)/width) -17 - 80; // allow for table padding and buttons below

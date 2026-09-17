@@ -259,8 +259,6 @@ export function dddLoadMakeable(data,statusText,jqXHR,bindex)
 				board.openingLeads = tmp.openingLeads;
 			}
 
-// 			cacheMakeable(i,data); // **KK**
-
 			if (i==g_lastBindex) redrawMCTable(true);
 
 			if (g_allBoards==1)

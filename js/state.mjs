@@ -6,7 +6,6 @@ export var g_credits =	"";
 export var g_resultsFilename;
 export var g_handRecordsFilename;
 export var g_hands;
-// g_scoring initialized below					// Set to "IMP" for IMPs scoring.
 export var g_lastBindex = 0;
 export var g_currentDir;
 export var g_currentPair;

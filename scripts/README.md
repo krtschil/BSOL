@@ -50,6 +50,30 @@ rank-then-suit format, for example `4S` or `QD`.
 The generated JSON can be loaded in BSOL together with its PBN file using the normal
 `file` and `xml` URL parameters.
 
+## BBO Extractor CSV
+
+`bbo-csv-to-json.py` converts the CSV file downloaded by BBO Extractor directly
+to BSOL Traveller JSON:
+
+```sh
+python3 scripts/bbo-csv-to-json.py \
+  --csv 20260916-Mittag.csv \
+  --output 20260916-Mittag.json
+```
+
+Load the generated JSON together with the PBN file downloaded for the same
+tournament:
+
+```text
+index.html?file=20260916-Mittag.pbn&xml=20260916-Mittag.json
+```
+
+The converter reads the event ranking and the `#TravellerLines` section. It
+preserves BBO's encoded LIN play data, normalizes no-trump and doubled
+contracts, and handles passed-out boards and adjusted percentage scores such as
+`A5050`. It uses only the Python standard library; the accompanying PBN file is
+not needed during conversion.
+
 ## Team tournaments
 
 Team DBF exports use a separate conversion mode. The participant DBF groups two

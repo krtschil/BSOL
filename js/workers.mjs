@@ -236,10 +236,7 @@ export function webAssemblySupported()
 export function createBackgroundWorkers()
 {
 	var nworkers = 4;	// Make this the maximum number of concurrent worker threads for makeable contracts
-	/*
-	if (navigator.hardwareConcurrency<nworkers)
-		nworkers = navigator.hardwareConcurrency;
-	*/
+
 	if (navigator.hardwareConcurrency) {
 		nworkers = Math.floor(navigator.hardwareConcurrency/2);
 	}

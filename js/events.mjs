@@ -161,12 +161,6 @@ swGB.addEventListener('click', function() {
 const dropzone = document.getElementById("dropzone");
 const output = document.getElementById("output");
 
-// styling (optional but useful)
-/*dropzone.style.border = "2px dashed #888";
-dropzone.style.padding = "40px";
-//dropzone.style.textAlign = "center";
-dropzone.style.marginBottom = "20px";
-*/
 // allow drop
 dropzone.addEventListener("dragover", (e) => {
   e.preventDefault();

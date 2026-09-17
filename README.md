@@ -121,5 +121,10 @@ module behavior as well as important compatibility bridges. The browser-only XML
 smoke test is `test/xml-smoke.html`. CI also checks JavaScript syntax, generated HTML
 freshness, HTML validity, and the XML smoke test.
 
+## ==TODO==
+Bidding display: 
+- Upper right quadrant: for BBO tournaments the bidding shows `<` and `>` buttons that allow navigation to 
+the bidding of the next pair. For passed out hands the buttons are not visible. Must be corrected.
+
 ## AI support
 Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

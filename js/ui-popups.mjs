@@ -151,8 +151,6 @@ export function showOptions(pthis)
 				}
 			}
 
-			/*if (remoteState!==document.getElementById("mkuseremote").checked)
-				startStopMainWorker();*/
             $("#optionsSaveFeedback").show();
 		}
 

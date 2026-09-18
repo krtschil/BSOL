@@ -74,6 +74,11 @@ contracts, and handles passed-out boards and adjusted percentage scores such as
 `A5050`. It uses only the Python standard library; the accompanying PBN file is
 not needed during conversion.
 
+Both Match Points (`nsMpts`/`ewMpts` columns, `#ScoringType,MATCH_POINTS`) and
+Cross-IMPs pairs exports (`nsXimps`/`ewXimps` columns, `#ScoringType,CROSS_IMPS`)
+are supported; the converter detects which pair of columns is present and
+carries the scoring type through to the generated JSON.
+
 ## Team tournaments
 
 Team DBF exports use a separate conversion mode. The participant DBF groups two

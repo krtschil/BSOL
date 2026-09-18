@@ -1,0 +1,15 @@
+#ProgramName,BBO Extractor
+#Version,1.4.12
+#Title,Sample IMPs pairs tournament
+#BoardCount,2
+#ScoringType,CROSS_IMPS
+#Ranking,All Players,0,Both
+#Rank,Name,Score,pair,ID1,ID2,BBO Pts,Section
+1,North One+South One,12.50,1,,,,0
+2,East Two+West Two,-12.50,2,,,,0
+#TravellerLines
+#Board,North,South,East,West,Result,Contract,Declarer,Tricks,Lead,Score,Percent,nsXimps,ewXimps,calcPercent,nsPair,ewPair,section,playdata
+1,North One,South One,East Two,West Two,4SN=,4S,N,10,TC,420,6.50,6.50,-6.50,,1,2,,"qx||ah|Board%201|"
+2,East Two,West Two,North One,South One,PASS,PASS,,,,0,0.00,0.00,0.00,,2,1,,
+#Substitutions
+#Pair,Name1,Name2,Played

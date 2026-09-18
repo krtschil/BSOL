@@ -53,6 +53,8 @@ pre#output
   padding:10px;
   background-color:#ededed;
   border:1px solid black;
+  margin-left: auto;
+  margin-right: auto;
 }
 #explanation-legend {
   border:1px solid black;
@@ -1314,6 +1316,7 @@ textarea:focus-visible,
 fieldset#data {
   margin: 1.25rem 12px 0;
   padding: 0.5rem 0.75rem 0.75rem;
+  margin: auto;
 }
 
 fieldset#data > legend {

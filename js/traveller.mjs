@@ -1610,7 +1610,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							else
 								hstr = hstr + ", Vergleich für " + dirstr + " Paar " + g_hands.pair_number;
 
-							hstr = hstr + " (" + player1 + " und " + player2 + ")";
+							hstr = hstr + " (<i>" + player1 + "</i> und <i>" + player2 + "</i>)";
 
 							subHeading.innerHTML = "<span style=\"font-size:12px;\">" + hstr + "</span>";
 
@@ -1636,10 +1636,11 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 								str = "Kontrakt war " + g_hands.boards[g_lastBindex].Contract + " von " + g_hands.boards[g_lastBindex].Declarer + " ";
 
 								if (declarer_pair)
-									str = str + "(" + declarer_name + ")";
+									str = str + "(<i>" + declarer_name + "</i>)";
 								else
 								{
-									str = str + "(gegen " + player1.split(" ")[0] + " und " + player2.split(" ")[0] + ")";
+									//str = str + "(gegen " + player1.split(" ")[0] + " und " + player2.split(" ")[0] + ")";
+									str = str + "(gegen <i>" + player1 + "</i> und <i>" + player2 + "</i>)";
 								}
 
 								var contractLevel = Number(g_hands.boards[g_lastBindex].Contract.charAt(0));
@@ -1750,7 +1751,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							else
 								hstr = hstr + ", comparison for " + dirstr + " pair " + g_hands.pair_number;
 
-							hstr = hstr + " (" + player1 + " and " + player2 + ")";
+							hstr = hstr + " (<i>" + player1 + "</i> and <i>" + player2 + "</i>)";
 
 							subHeading.innerHTML = "<span style=\"font-size:12px;\">" + hstr + "</span>";
 
@@ -1776,10 +1777,11 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 								str = "Contract was " + g_hands.boards[g_lastBindex].Contract + " by " + g_hands.boards[g_lastBindex].Declarer + " ";
 
 								if (declarer_pair)
-									str = str + "(" + declarer_name + ")";
+									str = str + "(<i>" + declarer_name + "</i>)";
 								else
 								{
-									str = str + "(defended by " + player1.split(" ")[0] + " and " + player2.split(" ")[0] + ")";
+									//str = str + "(defended by " + player1.split(" ")[0] + " and " + player2.split(" ")[0] + ")";
+									str = str + "(defended by <i>" + player1 + "</i> and <i>" + player2 + "</i>)";
 								}
 
 								var contractLevel = Number(g_hands.boards[g_lastBindex].Contract.charAt(0));

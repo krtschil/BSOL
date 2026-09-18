@@ -129,8 +129,6 @@ the bidding of the next pair. For passed out hands the buttons are not visible. 
 Traveller display: 
 - Hover popup of opponent's pair number is always misplaced far above the table. Should be 
 more flexible just above or to the right of the hovered pair number
-- The table to display the results of a single board needs column separators for a better visual experience. 
-The separators should be placed according to the column layout of the first header row, after "Pairs", "Contract", etc.
 - "Contract was 4C": the suit name should be replaced by the respective symbol
 
 ## AI support

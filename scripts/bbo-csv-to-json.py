@@ -20,12 +20,16 @@ REQUIRED_TRAVELLER_FIELDS = {
     "Tricks",
     "Lead",
     "Score",
-    "nsMpts",
-    "ewMpts",
     "nsPair",
     "ewPair",
     "playdata",
 }
+
+# BBO Extractor names the per-line NS/EW scoring columns differently depending
+# on the event's scoring type: "nsMpts"/"ewMpts" for Match Points events, and
+# "nsXimps"/"ewXimps" for Cross-IMPs (IMPs Pairs) events. Exactly one of these
+# pairs is expected in the traveller header.
+SCORE_COLUMN_PAIRS = (("nsMpts", "ewMpts"), ("nsXimps", "ewXimps"))
 
 
 def number(value):
@@ -115,6 +119,13 @@ def parse_export(path):
         raise ValueError(
             "BBO Traveller header is missing: " + ", ".join(sorted(missing))
         )
+    if not any(
+        set(columns).issubset(traveller_header) for columns in SCORE_COLUMN_PAIRS
+    ):
+        raise ValueError(
+            "BBO Traveller header is missing NS/EW score columns "
+            "(expected nsMpts/ewMpts or nsXimps/ewXimps)"
+        )
 
     return (
         metadata,
@@ -161,7 +172,15 @@ def participants(ranking_rows, traveller_rows):
     return result
 
 
+def score_columns(row):
+    for ns_col, ew_col in SCORE_COLUMN_PAIRS:
+        if ns_col in row and ew_col in row:
+            return row[ns_col], row[ew_col]
+    raise ValueError("Traveller row has no NS/EW score columns")
+
+
 def traveller_line(row):
+    ns_points, ew_points = score_columns(row)
     score = number(row["Score"])
     adjustment = re.fullmatch(r"A(\d{2})(\d{2})", str(score).upper())
     if adjustment:
@@ -176,8 +195,8 @@ def traveller_line(row):
             "score": str(score).upper(),
             "ns_score": f"{number(ns_percentage)}%",
             "ew_score": f"{number(ew_percentage)}%",
-            "ns_match_points": number(row["nsMpts"]),
-            "ew_match_points": number(row["ewMpts"]),
+            "ns_match_points": number(ns_points),
+            "ew_match_points": number(ew_points),
             "lindata": row["playdata"].strip() or None,
         }
 
@@ -193,8 +212,8 @@ def traveller_line(row):
         "score": score,
         "ns_score": score,
         "ew_score": -score,
-        "ns_match_points": number(row["nsMpts"]),
-        "ew_match_points": number(row["ewMpts"]),
+        "ns_match_points": number(ns_points),
+        "ew_match_points": number(ew_points),
         "lindata": row["playdata"].strip() or None,
     }
 

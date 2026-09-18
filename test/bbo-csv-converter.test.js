@@ -57,3 +57,38 @@ test("BBO Extractor CSV converts to BSOL Traveller JSON", () => {
 	assert.equal(adjusted.ew_score, "50%");
 	assert.equal(adjusted.played_by, "");
 });
+
+test("BBO Extractor CSV with Cross-IMPs columns converts to BSOL Traveller JSON", () => {
+	const output = path.join(os.tmpdir(), `bsol-bbo-imps-${process.pid}.json`);
+	const result = spawnSync(
+		"python3",
+		[
+			path.join(root, "scripts", "bbo-csv-to-json.py"),
+			"--csv",
+			path.join(root, "test", "fixtures", "bbo-extractor-imps-sample.csv"),
+			"--output",
+			output,
+		],
+		{ encoding: "utf8" },
+	);
+
+	assert.equal(result.status, 0, result.stderr);
+	const converted = JSON.parse(fs.readFileSync(output, "utf8"));
+	fs.unlinkSync(output);
+
+	const event = converted.event;
+	assert.equal(event.event_type, "PAIRS");
+	assert.equal(event.board_scoring_method, "CROSS_IMPS");
+	assert.equal(event.board.length, 2);
+
+	const played = event.board[0].traveller_line[0];
+	assert.equal(played.contract, "4S");
+	assert.equal(played.score, 420);
+	assert.equal(played.ns_match_points, 6.5);
+	assert.equal(played.ew_match_points, -6.5);
+
+	const passed = event.board[1].traveller_line[0];
+	assert.equal(passed.contract, "Passed");
+	assert.equal(passed.ns_match_points, 0);
+	assert.equal(passed.ew_match_points, 0);
+});

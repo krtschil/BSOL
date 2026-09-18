@@ -925,7 +925,7 @@ export function displayTraveller(pdirection)
 					$("#popup_box").finish();
 				}
 			row.cells[1].style.textAlign="right";
-			row.cells[1].className = "myLink";
+			row.cells[1].className = "myLink divide";
 
 			if ((sign==-1)&&(tline.ew_pair_number==g_hands.pair_number))
 				row.cells[1].style.backgroundColor = "#bbbbff";
@@ -955,6 +955,7 @@ export function displayTraveller(pdirection)
 			{
 				row.cells[3].innerHTML = tline.played_by;
 				row.cells[4].innerHTML = displayLeadCard(tline.lead);
+				row.cells[4].className = "divide";
 				row.cells[5].innerHTML = tline.tricks;
 				row.cells[5].style.textAlign="right";
 
@@ -966,6 +967,7 @@ export function displayTraveller(pdirection)
 				else if (overtricks>0) overtstr = "+" + overtricks;
 
 				row.cells[6].innerHTML = overtstr;
+				row.cells[6].className = "divide";
 				row.cells[6].style.textAlign="right";
 
 				var colorplus  = green;
@@ -1066,12 +1068,14 @@ export function displayTraveller(pdirection)
 					pbar2 = pbar2 + ";background-color:" + colorplus + ";\"></div></div>";
 
 					row.cells[9].style.minWidth = "30px";
+					row.cells[9].className = "divide";
 					row.cells[9].innerHTML = pbar+pbar2;
 				}
 			}
 
 			row.cells[10].innerHTML = tline.score;
 			row.cells[10].style.textAlign="right";
+			row.cells[10].className = "divide";
 
 			if (tline.ns_pair_number!="")
 			{

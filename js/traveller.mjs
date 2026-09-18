@@ -925,7 +925,7 @@ export function displayTraveller(pdirection)
 					$("#popup_box").finish();
 				}
 			row.cells[1].style.textAlign="right";
-			row.cells[1].className = "myLink";
+			row.cells[1].className = "myLink divide";
 
 			if ((sign==-1)&&(tline.ew_pair_number==g_hands.pair_number))
 				row.cells[1].style.backgroundColor = "#bbbbff";
@@ -955,6 +955,7 @@ export function displayTraveller(pdirection)
 			{
 				row.cells[3].innerHTML = tline.played_by;
 				row.cells[4].innerHTML = displayLeadCard(tline.lead);
+				row.cells[4].className = "divide";
 				row.cells[5].innerHTML = tline.tricks;
 				row.cells[5].style.textAlign="right";
 
@@ -966,6 +967,7 @@ export function displayTraveller(pdirection)
 				else if (overtricks>0) overtstr = "+" + overtricks;
 
 				row.cells[6].innerHTML = overtstr;
+				row.cells[6].className = "divide";
 				row.cells[6].style.textAlign="right";
 
 				var colorplus  = green;
@@ -1066,12 +1068,14 @@ export function displayTraveller(pdirection)
 					pbar2 = pbar2 + ";background-color:" + colorplus + ";\"></div></div>";
 
 					row.cells[9].style.minWidth = "30px";
+					row.cells[9].className = "divide";
 					row.cells[9].innerHTML = pbar+pbar2;
 				}
 			}
 
 			row.cells[10].innerHTML = tline.score;
 			row.cells[10].style.textAlign="right";
+			row.cells[10].className = "divide";
 
 			if (tline.ns_pair_number!="")
 			{
@@ -1610,7 +1614,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							else
 								hstr = hstr + ", Vergleich für " + dirstr + " Paar " + g_hands.pair_number;
 
-							hstr = hstr + " (" + player1 + " und " + player2 + ")";
+							hstr = hstr + " (<i>" + player1 + "</i> und <i>" + player2 + "</i>)";
 
 							subHeading.innerHTML = "<span style=\"font-size:12px;\">" + hstr + "</span>";
 
@@ -1636,10 +1640,11 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 								str = "Kontrakt war " + g_hands.boards[g_lastBindex].Contract + " von " + g_hands.boards[g_lastBindex].Declarer + " ";
 
 								if (declarer_pair)
-									str = str + "(" + declarer_name + ")";
+									str = str + "(<i>" + declarer_name + "</i>)";
 								else
 								{
-									str = str + "(gegen " + player1.split(" ")[0] + " und " + player2.split(" ")[0] + ")";
+									//str = str + "(gegen " + player1.split(" ")[0] + " und " + player2.split(" ")[0] + ")";
+									str = str + "(gegen <i>" + player1 + "</i> und <i>" + player2 + "</i>)";
 								}
 
 								var contractLevel = Number(g_hands.boards[g_lastBindex].Contract.charAt(0));
@@ -1750,7 +1755,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							else
 								hstr = hstr + ", comparison for " + dirstr + " pair " + g_hands.pair_number;
 
-							hstr = hstr + " (" + player1 + " and " + player2 + ")";
+							hstr = hstr + " (<i>" + player1 + "</i> and <i>" + player2 + "</i>)";
 
 							subHeading.innerHTML = "<span style=\"font-size:12px;\">" + hstr + "</span>";
 
@@ -1776,10 +1781,11 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 								str = "Contract was " + g_hands.boards[g_lastBindex].Contract + " by " + g_hands.boards[g_lastBindex].Declarer + " ";
 
 								if (declarer_pair)
-									str = str + "(" + declarer_name + ")";
+									str = str + "(<i>" + declarer_name + "</i>)";
 								else
 								{
-									str = str + "(defended by " + player1.split(" ")[0] + " and " + player2.split(" ")[0] + ")";
+									//str = str + "(defended by " + player1.split(" ")[0] + " and " + player2.split(" ")[0] + ")";
+									str = str + "(defended by <i>" + player1 + "</i> and <i>" + player2 + "</i>)";
 								}
 
 								var contractLevel = Number(g_hands.boards[g_lastBindex].Contract.charAt(0));

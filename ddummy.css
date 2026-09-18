@@ -300,7 +300,7 @@ p { margin: 0px; }
 
 table.results H1{text-align:center;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;font-size:18px;color:blue;}
 table.results H2 {text-align:center;font-weight:bold; background-color:red;font-family:Verdana, Arial, Helvetica, sans-serif;line-height: 1.25;color:white}
-table.results {font-size:14px; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
+table.results {margin:auto;font-size:14px; border:0px; border-collapse:collapse; border-spacing:0px; padding:2px; background-color:white; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
 table.results th {font-size:10pt;border:2px ridge; color:white;font-style : italic;}
 table.results td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:14px; }
 

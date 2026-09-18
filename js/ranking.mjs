@@ -1517,10 +1517,13 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								oppInfo = getPlayerInfo(opp_pair,oppDir);
 
 								var p1 = oppInfo.player1.trim().split(" ");
+								p1 = p1[0] + " " + p1[1].charAt(0);
 								var p2 = oppInfo.player2.trim().split(" ");
+								p2 = p2[0] + " " + p2[1].charAt(0);
 
 								if (sortedBoards)
-									row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1[0] + " & " + p2[0] + ")";
+									//row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1[0] + " & " + p2[0] + ")";
+									row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1 + " & " + p2 + ")";
 								else
 								{
 									row.cells[1].innerHTML = opp_pair;

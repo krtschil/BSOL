@@ -125,9 +125,10 @@ freshness, HTML validity, and the XML smoke test.
 Board display: 
 - Upper right quadrant: for BBO tournaments the bidding shows `<` and `>` buttons that allow navigation to 
 the bidding of the next pair. For passed out hands the buttons are not visible. Must be corrected.
-- When a pbn file contains play data and a traveller is also supplied (via URL) the play functionality is turned off.
-The pbn file alone shows correct behaviour. Example: hands/10807.pbn & hands/10807.json
-Must be corrected.
+- When a pbn file contains play data and a traveller is also supplied (via URL) the play is shortly turned on 
+(contract in DD table appears yellow for a second) but more or less immediately turned off.
+After returnin from traveller view the contract appears yellow in DD table (the .json file contains lindata for play).
+Example: hands/10807.pbn & hands/10807.json. Maybe lindata from the .json file should be used as play data.
 
 Traveller display: 
 - Hover popup of opponent's pair number is always misplaced far above the table. Should be 

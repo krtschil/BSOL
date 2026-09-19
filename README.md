@@ -125,6 +125,9 @@ freshness, HTML validity, and the XML smoke test.
 Board display: 
 - Upper right quadrant: for BBO tournaments the bidding shows `<` and `>` buttons that allow navigation to 
 the bidding of the next pair. For passed out hands the buttons are not visible. Must be corrected.
+- When a pbn file contains play data and a traveller is also supplied (via URL) the play functionality is turned off.
+The pbn file alone shows correct behaviour. Example: hands/10807.pbn & hands/10807.json
+Must be corrected.
 
 Traveller display: 
 - Hover popup of opponent's pair number is always misplaced far above the table. Should be 

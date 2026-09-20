@@ -126,6 +126,11 @@ Board display:
 - Upper right quadrant: for BBO tournaments the bidding shows `<` and `>` buttons that allow navigation to 
 the bidding of the next pair. For passed out hands the buttons are not visible. Must be corrected.
 
+Saving board to pbn:
+- When saving a board to a .pbn file play that is present is saved in (played) sequential order rather than 
+placing played cards by position. Needs rework
+
+
 Traveller display: 
 - Hover popup of opponent's pair number is always misplaced far above the table. Should be 
 more flexible just above or to the right of the hovered pair number

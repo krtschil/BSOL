@@ -331,12 +331,63 @@ export function reorderPlaySequence(rawTokens,firstLeader,contract)
 	return result;
 }
 
-export function getPlaySequenceForPBN(board)
+export function convertPlaySequenceToPBN(chronologicalTokens,firstLeader,contract)
+{
+	var clockwise = "NESW";
+
+	if ((clockwise.indexOf(firstLeader)===-1) || !validContract(contract))
+		return chronologicalTokens;
+
+	var trumpSuit = contract.charAt(1);
+	var startPos = clockwise.indexOf(firstLeader);
+	var slotIdentities = [0,1,2,3].map(function(k){ return clockwise.charAt((startPos+k)%4); });
+	var result = [];
+	var currentLeader = firstLeader;
+
+	for (var t=0; t*4<chronologicalTokens.length; t++)
+	{
+		var chronoTrick = chronologicalTokens.slice(t*4,t*4+4);
+		var fixedTrick = ["-","-","-","-"];
+
+		for (var k=0;k<chronoTrick.length;k++)
+		{
+			var player = clockwise.charAt((clockwise.indexOf(currentLeader)+k)%4);
+			fixedTrick[slotIdentities.indexOf(player)] = chronoTrick[k];
+		}
+
+		result = result.concat(fixedTrick);
+
+		if (chronoTrick.length===4)
+		{
+			var winOffset = evaluateTrickWinner(chronoTrick,trumpSuit);
+			currentLeader = clockwise.charAt((clockwise.indexOf(currentLeader)+winOffset)%4);
+		}
+	}
+
+	return result;
+}
+
+export function getPlayLeaderForPBN(board)
+{
+	if ("NESW".indexOf(board.OriginalPlayLeader)!==-1)
+		return board.OriginalPlayLeader;
+
+	var declarerIndex = "NESW".indexOf(board.Declarer);
+	if (declarerIndex===-1)
+		return board.Declarer;
+
+	return "NESW".charAt((declarerIndex+1)%4);
+}
+
+export function getPlaySequenceForPBN(board,playLeader)
 {
 	if (Array.isArray(board.OriginalPlayed))
 		return board.OriginalPlayed;
 
-	return board.Played;
+	if (!Array.isArray(board.Played))
+		return board.Played;
+
+	return convertPlaySequenceToPBN(board.Played,playLeader,board.Contract);
 }
 
 export function convertHand(cards,hand)
@@ -758,15 +809,17 @@ export function generatePBN(all)
 					// Fake play for passed hand so that the pass bids are displayed
 
 					if (!passed){
-						var played = getPlaySequenceForPBN(g_hands.boards[i]);
+						var playLeader = getPlayLeaderForPBN(g_hands.boards[i]);
+						var played = getPlaySequenceForPBN(g_hands.boards[i],playLeader);
 					} else {
+						var playLeader = "N";
 						var played = [];
 						for (var k=0;k<52;k++){
 							played[k] = "CA";
 						}
 					}
 
-					str += "[Play \"" + g_hands.boards[i].Declarer + "\"]";
+					str += "[Play \"" + playLeader + "\"]";
 
 					if (typeof played != "undefined"){       // Auction present but Play is missing or empty
 						for (var j=0;j<played.length;j+=4){
@@ -1053,6 +1106,7 @@ export function pbnToJson(fileData)
 					play = play.split(" ");
 					var originalPlay = play.slice();
 					play = reorderPlaySequence(play,playLeader,contract);	// [KK] Re-derive true chronological play order from PBN's fixed-column layout
+					outStr = outStr + "\"OriginalPlayLeader\":\"" + playLeader + "\",";
 					outStr = outStr + "\"OriginalPlayed\":[";
 					for (var j=0;j<originalPlay.length;j++){
 						outStr = outStr + "\"" + originalPlay[j] + "\"";
@@ -1205,6 +1259,8 @@ if (typeof window !== "undefined")
 		getLine,
 		evaluateTrickWinner,
 		reorderPlaySequence,
+		convertPlaySequenceToPBN,
+		getPlayLeaderForPBN,
 		getPlaySequenceForPBN,
 		convertHand,
 		inferHand,

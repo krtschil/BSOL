@@ -71,23 +71,27 @@ test("preserves original PBN play order for export", () => {
 		Array.from(board.OriginalPlayed),
 		["SK", "SA", "S9", "S8", "DK", "DT", "D3", "DA"],
 	);
+	assert.equal(board.OriginalPlayLeader, "E");
 	assert.deepEqual(
 		Array.from(board.Played),
 		["SK", "SA", "S9", "S8", "DT", "D3", "DA", "DK"],
 	);
 	assert.deepEqual(
-		Array.from(context.getPlaySequenceForPBN(board)),
+		Array.from(context.getPlaySequenceForPBN(board, "E")),
 		Array.from(board.OriginalPlayed),
 	);
 	assert.deepEqual(
-		Array.from(context.getPlaySequenceForPBN({Played: board.Played})),
-		Array.from(board.Played),
+		Array.from(context.getPlaySequenceForPBN({
+			Contract: board.Contract,
+			Played: board.Played,
+		}, "E")),
+		Array.from(board.OriginalPlayed),
 	);
 
 	board.Bids = [];
 	context.g_hands = {boards: [board]};
 	context.generatePBN(true);
-	assert.match(savedPbn, /\[Play "N"\]\r\nSK SA S9 S8\r\nDK DT D3 DA\r\n/);
+	assert.match(savedPbn, /\[Play "E"\]\r\nSK SA S9 S8\r\nDK DT D3 DA\r\n/);
 });
 
 test("keeps the Traveller JSON fixture available", () => {
@@ -99,12 +103,19 @@ test("keeps the Traveller JSON fixture available", () => {
 });
 
 test("converts a LIN board into valid board JSON", () => {
+	let savedPbn = "";
 	const context = createContext({
 		g_accTrans: {},
 		g_hands: {},
 		g_title: "",
+		g_lastBindex: 0,
+		downloadFile: (data) => {
+			savedPbn = data;
+		},
+		log: () => {},
 	});
 	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/play.mjs");
 	loadScript(context, "js/pbn.mjs");
 	loadScript(context, "js/import.mjs");
 	const lin = fs.readFileSync(`${root}/hands/4399982054.lin`, "utf8");
@@ -114,6 +125,14 @@ test("converts a LIN board into valid board JSON", () => {
 	assert.ok(result.boards[0].board);
 	assert.ok(result.boards[0].Vulnerable);
 	assert.equal(result.boards[0].Deal.length, 4);
+
+	const originalPlayed = Array.from(result.boards[0].Played);
+	context.g_hands = {boards: [result.boards[0]]};
+	context.generatePBN(true);
+	assert.ok(savedPbn.includes("[Play "));
+
+	const roundTripped = JSON.parse(context.pbnToJson(savedPbn));
+	assert.deepEqual(Array.from(roundTripped.boards[0].Played), originalPlayed);
 });
 
 test("converts a DLM file into valid board JSON", () => {

@@ -2,7 +2,7 @@ import { getTindexByName, getTravellerForBoard, checkBoardValid } from './board-
 import { getMakeableTricksForContract, calculateMakeableContracts, getMakeableTricksForLead, getRequestedLeads } from './makeable.mjs';
 import { getHands } from './import.mjs';
 import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo } from './ranking.mjs';
-import { validContract, played, passed, getLeadsIdx, getContractType, scoreContainsAdjustment, makeBoardNameString } from './scoring.mjs';
+import { validContract, played, passed, getLeadsIdx, getContractType, scoreContainsAdjustment, makeBoardNameString, substituteSuitSymbol } from './scoring.mjs';
 import { hideMenuItems, showMainMenuItems, show, hideAllPopups, displayError, showNames } from './ui-popups.mjs';
 import { displayHands, drawMiniHand } from './hand-renderer.mjs';
 import { showCredits } from './board-renderer.mjs';
@@ -1670,7 +1670,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							}
 							else
 							{
-								str = "Kontrakt war " + g_hands.boards[g_lastBindex].Contract + " von " + g_hands.boards[g_lastBindex].Declarer + " ";
+								str = "Kontrakt war " + substituteSuitSymbol(g_hands.boards[g_lastBindex].Contract) + " von " + g_hands.boards[g_lastBindex].Declarer + " ";
 
 								if (declarer_pair)
 									str = str + "(<i>" + declarer_name + "</i>)";
@@ -1811,7 +1811,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							}
 							else
 							{
-								str = "Contract was " + g_hands.boards[g_lastBindex].Contract + " by " + g_hands.boards[g_lastBindex].Declarer + " ";
+								str = "Contract was " + substituteSuitSymbol(g_hands.boards[g_lastBindex].Contract) + " by " + g_hands.boards[g_lastBindex].Declarer + " ";
 
 								if (declarer_pair)
 									str = str + "(<i>" + declarer_name + "</i>)";

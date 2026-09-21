@@ -148,7 +148,7 @@ test("converts a DLM file into valid board JSON", () => {
 });
 
 test("validates contracts and converts honour-card alphabets", () => {
-	const context = createContext();
+	const context = createContext({g_sectionHeight: 400});
 	loadScript(context, "js/scoring.mjs");
 	loadScript(context, "js/pbn.mjs");
 
@@ -156,6 +156,8 @@ test("validates contracts and converts honour-card alphabets", () => {
 	assert.equal(context.validateContract("8S"), false);
 	assert.equal(context.identifyHonourCardSet("AKQJ"), "english");
 	assert.equal(context.convertToJQKA("AVD.R", "french"), "AJQ.K");
+	assert.match(context.substituteSuitSymbol("4C"), /4.*club\.gif/);
+	assert.match(context.substituteSuitSymbol("3DX"), /3.*diamond\.gif.*X/);
 });
 
 test("parses supported URL parameters into board and traveller settings", () => {

@@ -233,6 +233,25 @@ test("switches localization labels between German and English", () => {
 	assert.equal(labels.bsession.textContent, "Results Analysis");
 });
 
+test("positions pair-name popups near the hovered cell", () => {
+	const context = createContext();
+	loadScript(context, "js/ui-popups.mjs");
+
+	const above = context.calculateNearbyPopupPosition(
+		{left: 200, right: 240, top: 300, width: 40, height: 20},
+		160, 30, 800, 600,
+	);
+	assert.equal(above.left, 140);
+	assert.equal(above.top, 264);
+
+	const right = context.calculateNearbyPopupPosition(
+		{left: 20, right: 60, top: 10, width: 40, height: 20},
+		160, 30, 800, 600,
+	);
+	assert.equal(right.left, 66);
+	assert.equal(right.top, 5);
+});
+
 test("calculates representative bridge scores", () => {
 	const context = createContext();
 	loadScript(context, "js/scoring.mjs");

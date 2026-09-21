@@ -390,7 +390,7 @@ export function buildpage2()
 	setupSettingsHelp();
 	setupPlayMatchContractHelp();
 	showMainMenuItems();
-	if (g_file=="") setupTraveller(g_lastBindex,true);
+	if ((g_file=="")||(g_travellers!==null)) setupTraveller(g_lastBindex,true);
 	enterPlayMode();	// Large version of traveller with clickable contracts
 
 	g_playItAgain = true;

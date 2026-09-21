@@ -125,7 +125,6 @@ freshness, HTML validity, and the XML smoke test.
 Traveller display: 
 - Hover popup of opponent's pair number is always misplaced far above the table. Should be 
 more flexible just above or to the right of the hovered pair number
-- "Contract was 4C": the suit name should be replaced by the respective symbol
 
 ## AI support
 Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

@@ -36,6 +36,60 @@ test("converts PBN auctions with alert notes", () => {
 	assert.ok(result.boards.some((board) => (board.Bids || []).some((bid) => bid.includes("|"))));
 });
 
+test("preserves original PBN play order for export", () => {
+	let savedPbn = "";
+	const context = createContext({
+		g_fullInfo: false,
+		g_hands: {boards: []},
+		g_title: "",
+		g_lastBindex: 0,
+		downloadFile: (data) => {
+			savedPbn = data;
+		},
+		log: () => {},
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/play.mjs");
+	loadScript(context, "js/pbn.mjs");
+	const pbn = [
+		'[Event "Play order"]',
+		'[Board "1"]',
+		'[Dealer "N"]',
+		'[Vulnerable "None"]',
+		'[Deal "N:863.KQT93.A5.KJ5 KJT.854.KQJ2.864 AQ74.A.T986.A932 952.J762.743.QT7"]',
+		'[Contract "1NT"]',
+		'[Declarer "N"]',
+		'[Result "7"]',
+		'[Play "E"]',
+		"SK SA S9 S8",
+		"DK DT D3 DA",
+		"",
+	].join("\r\n");
+	const board = JSON.parse(context.pbnToJson(pbn)).boards[0];
+
+	assert.deepEqual(
+		Array.from(board.OriginalPlayed),
+		["SK", "SA", "S9", "S8", "DK", "DT", "D3", "DA"],
+	);
+	assert.deepEqual(
+		Array.from(board.Played),
+		["SK", "SA", "S9", "S8", "DT", "D3", "DA", "DK"],
+	);
+	assert.deepEqual(
+		Array.from(context.getPlaySequenceForPBN(board)),
+		Array.from(board.OriginalPlayed),
+	);
+	assert.deepEqual(
+		Array.from(context.getPlaySequenceForPBN({Played: board.Played})),
+		Array.from(board.Played),
+	);
+
+	board.Bids = [];
+	context.g_hands = {boards: [board]};
+	context.generatePBN(true);
+	assert.match(savedPbn, /\[Play "N"\]\r\nSK SA S9 S8\r\nDK DT D3 DA\r\n/);
+});
+
 test("keeps the Traveller JSON fixture available", () => {
 	const traveller = JSON.parse(
 		fs.readFileSync(`${root}/test/fixtures/sample-traveller.json`, "utf8")

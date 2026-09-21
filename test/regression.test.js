@@ -396,6 +396,12 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	context.appState = context.window.appState;
 	loadScript(context, "js/traveller.mjs");
 
+	const passedNavigation = context.passedOutNavigationHTML("");
+	assert.match(passedNavigation, /id=prevrow/);
+	assert.match(passedNavigation, /id=nextrow/);
+	assert.match(passedNavigation, /Durchgepasst/);
+	assert.match(passedNavigation, /id=linPlay[^>]*disabled/);
+
 	context.setupTraveller(0, true);
 
 	context.setCurrentTrickCards(new Array(4));

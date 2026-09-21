@@ -12,6 +12,15 @@ import { restartBackgroundWorkers } from './workers.mjs';
 import { drawBar, drawBoxedBar } from './scorecard.mjs';
 import { exitHandEntryMode } from './hand-entry.mjs';
 
+export function passedOutNavigationHTML(rowButtonsVisibility)
+{
+	var bckbutton = "<button id=prevrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"prevTravRow();\"><span id=prevRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\"><</span></button>&nbsp;";
+	var fwdbutton = "&nbsp;<button id=nextrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"nextTravRow();\"><span id=nextRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">></span></button>";
+	var passedText = language=="de" ? "Durchgepasst" : "Passed out";
+
+	return "<div style=\"margin-left:2px;margin-top:2px;clear:both;float:left;\">" + bckbutton + "<button id=linPlay class=\"menuButton\" style=\"min-width:130px;max-height:" + g_urqButtonHeight + ";\" disabled><span id=linPlayButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">" + passedText + "</span></button>" + fwdbutton + "</div>";
+}
+
 export function showTravellerRowButtons()
 {
 	// should return true if g_xml!=="" ?
@@ -166,6 +175,10 @@ export function setupTraveller(index,active)
 								pbutton = pbutton + accbutton + "<button id=matchContractHelp class=\"menuButton\" style=\"margin-left:2px;min-width:15px;max-width:15px;width:15px;max-height:" + g_urqButtonHeight + ";\"><span id=matchContractHelpButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">?</span></button>" + fwdbutton + "<br><span id=scoreSpan style=\"font-size:" + g_scoreFontSize + ";\">" + score + "</span></div>";
 						}
 					}
+					else if (curBoard.Contract=="Passed")
+					{
+						pbutton = passedOutNavigationHTML(rowButtonsVisibility);
+					}
 
 					var bidding = "";
 
@@ -200,7 +213,7 @@ export function setupTraveller(index,active)
 						}
 					}
 
-					if (pbutton!="")
+					if ((pbutton!="")&&validContract(curBoard.Contract))
 					{
 						document.getElementById("linPlay").onclick = function(){g_showOriginalContract = true;playLinContract();};
 						document.getElementById("matchContractHelp").onclick = function(){showHelp(this,"playMatchContractHelp");};

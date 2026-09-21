@@ -331,6 +331,14 @@ export function reorderPlaySequence(rawTokens,firstLeader,contract)
 	return result;
 }
 
+export function getPlaySequenceForPBN(board)
+{
+	if (Array.isArray(board.OriginalPlayed))
+		return board.OriginalPlayed;
+
+	return board.Played;
+}
+
 export function convertHand(cards,hand)
 {
 	var str = "";
@@ -750,7 +758,7 @@ export function generatePBN(all)
 					// Fake play for passed hand so that the pass bids are displayed
 
 					if (!passed){
-						var played = g_hands.boards[i].Played;
+						var played = getPlaySequenceForPBN(g_hands.boards[i]);
 					} else {
 						var played = [];
 						for (var k=0;k<52;k++){
@@ -1043,7 +1051,17 @@ export function pbnToJson(fileData)
 
 				if (play != ""){
 					play = play.split(" ");
+					var originalPlay = play.slice();
 					play = reorderPlaySequence(play,playLeader,contract);	// [KK] Re-derive true chronological play order from PBN's fixed-column layout
+					outStr = outStr + "\"OriginalPlayed\":[";
+					for (var j=0;j<originalPlay.length;j++){
+						outStr = outStr + "\"" + originalPlay[j] + "\"";
+						if (originalPlay.length == j+1){
+							outStr = outStr + "],";
+						} else {
+							outStr = outStr + ",";
+						}
+					}
 					outStr = outStr + "\"Played\":[";
 					for (var j=0;j<play.length;j++){
 						outStr = outStr + "\"" + play[j] + "\"";
@@ -1187,6 +1205,7 @@ if (typeof window !== "undefined")
 		getLine,
 		evaluateTrickWinner,
 		reorderPlaySequence,
+		getPlaySequenceForPBN,
 		convertHand,
 		inferHand,
 		stripComments,

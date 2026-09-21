@@ -283,6 +283,7 @@ export function exitHandEntryMode()
 		setHandEntryMode(false);
 		delete g_inputBoard.Bids;
 		delete g_inputBoard.Played;
+		delete g_inputBoard.OriginalPlayed;
 		delete g_inputBoard.Contract;
 		delete g_inputBoard.Claimed;
 		delete g_inputBoard.Declarer;
@@ -469,6 +470,7 @@ export function edit()
 		delete g_hands.boards[g_lastBindex].PlayerNames;
 		delete g_hands.boards[g_lastBindex].Bids;
 		delete g_hands.boards[g_lastBindex].Played;
+		delete g_hands.boards[g_lastBindex].OriginalPlayed;
 
 		resetState();
 		setupTraveller(g_lastBindex,true);

@@ -12,13 +12,21 @@ import { restartBackgroundWorkers } from './workers.mjs';
 import { drawBar, drawBoxedBar } from './scorecard.mjs';
 import { exitHandEntryMode } from './hand-entry.mjs';
 
-export function passedOutNavigationHTML(rowButtonsVisibility)
+export function passedOutNavigationHTML(rowButtonsVisibility,score)
 {
 	var bckbutton = "<button id=prevrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"prevTravRow();\"><span id=prevRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\"><</span></button>&nbsp;";
 	var fwdbutton = "&nbsp;<button id=nextrow class=menuButton style=\"min-width:20px;max-width:20px;width:20px;max-height:" + g_urqButtonHeight + ";" + rowButtonsVisibility + "\" onclick=\"nextTravRow();\"><span id=nextRowButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">></span></button>";
 	var passedText = language=="de" ? "Durchgepasst" : "Passed out";
+	var scoreText = "";
 
-	return "<div style=\"margin-left:2px;margin-top:2px;clear:both;float:left;\">" + bckbutton + "<button id=linPlay class=\"menuButton\" style=\"min-width:130px;max-height:" + g_urqButtonHeight + ";\" disabled><span id=linPlayButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">" + passedText + "</span></button>" + fwdbutton + "</div>";
+	if ((typeof score=="string")&&(score.indexOf("%")!=-1))
+	{
+		var nsScore = Number(score.replace("%","")).toFixed(2) + "%";
+		var ewScore = (100-Number(score.replace("%",""))).toFixed(2) + "%";
+		scoreText = " NS: " + nsScore + "&nbsp;&nbsp;&nbsp;EW: " + ewScore;
+	}
+
+	return "<div style=\"margin-left:2px;margin-top:2px;clear:both;float:left;\">" + bckbutton + "<button id=linPlay class=\"menuButton\" style=\"min-width:130px;max-height:" + g_urqButtonHeight + ";\" disabled><span id=linPlayButtFontSize style=\"font-weight:bold;font-size:" + g_urqButtFontSize + ";text-align:center;line-height:1em;\">" + passedText + "</span></button>" + fwdbutton + "<br><span id=scoreSpan style=\"font-size:" + g_scoreFontSize + ";\">" + scoreText + "</span></div>";
 }
 
 export function showTravellerRowButtons()
@@ -183,7 +191,7 @@ export function setupTraveller(index,active)
 					}
 					else if (curBoard.Contract=="Passed")
 					{
-						pbutton = passedOutNavigationHTML(rowButtonsVisibility);
+						pbutton = passedOutNavigationHTML(rowButtonsVisibility,curBoard.Score);
 					}
 
 					var bidding = "";

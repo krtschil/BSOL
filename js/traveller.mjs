@@ -81,7 +81,13 @@ export function setupTraveller(index,active)
 		{
 			if (g_currentTraveller.traveller_line.length>1) rowButtonsVisibility = "";
 
-			if (boardChanged) g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
+			if (boardChanged || g_currow==-1)
+			{
+				g_currow = getRowFromTraveller(g_hands.pair_number,g_hands.direction);
+
+				if ((g_currow==-1)&&(g_hands.pair_number=="")&&(g_currentTraveller.traveller_line.length>0))
+					g_currow = 0;
+			}
 
 			if (g_currow!=-1)
 			{

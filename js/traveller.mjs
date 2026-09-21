@@ -84,6 +84,7 @@ export function setupTraveller(index,active)
 				delete g_hands.boards[g_lastBindex].PlayerNames;
 				g_hands.boards[g_lastBindex].Played = [];
 				delete g_hands.boards[g_lastBindex].OriginalPlayed;
+				delete g_hands.boards[g_lastBindex].OriginalPlayLeader;
 				g_hands.boards[g_lastBindex].Bids = [];
 			}
 		}
@@ -1451,6 +1452,7 @@ export function setFieldsFromTravellerLine(bindex,tline)
 	g_hands.boards[bindex].PlayerNames = [];
 	g_hands.boards[bindex].Played = [];
 	delete g_hands.boards[bindex].OriginalPlayed;
+	delete g_hands.boards[bindex].OriginalPlayLeader;
 	g_hands.boards[bindex].Played[0] = tline.lead;
 	g_hands.boards[bindex].Bids = [];
 }
@@ -1472,9 +1474,15 @@ export function setHandRecordFromLin(bindex,tline)
 		curBoard.Bids = board.Bids;
 		curBoard.Played = board.Played;
 		if (Array.isArray(board.OriginalPlayed))
+		{
 			curBoard.OriginalPlayed = board.OriginalPlayed;
+			curBoard.OriginalPlayLeader = board.OriginalPlayLeader;
+		}
 		else
+		{
 			delete curBoard.OriginalPlayed;
+			delete curBoard.OriginalPlayLeader;
+		}
 		curBoard.Claimed = board.Claimed;
 		curBoard.Score = board.Score;
 		curBoard.Contract = board.Contract;
@@ -2357,6 +2365,7 @@ export function setDefaultContracts()
 						played[0] = lead;
 						g_hands.boards[j].Played = played;
 						delete g_hands.boards[j].OriginalPlayed;
+						delete g_hands.boards[j].OriginalPlayLeader;
 						g_hands.boards[j].Bids = [];
 					}
 

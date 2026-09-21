@@ -527,6 +527,30 @@ export function showBidAlert(pthis){
 	popup.style.left = (getPosition(pthis).x -  $(popup).width())  + "px";
 }
 
+export function calculateNearbyPopupPosition(anchorRect,popupWidth,popupHeight,viewportWidth,viewportHeight)
+{
+	var gap = 6;
+	var margin = 4;
+	var left;
+	var top;
+
+	if (anchorRect.top>=popupHeight+gap+margin)
+	{
+		left = anchorRect.left + ((anchorRect.width-popupWidth)/2);
+		top = anchorRect.top - popupHeight - gap;
+	}
+	else
+	{
+		left = anchorRect.right + gap;
+		top = anchorRect.top + ((anchorRect.height-popupHeight)/2);
+	}
+
+	left = Math.max(margin,Math.min(left,viewportWidth-popupWidth-margin));
+	top = Math.max(margin,Math.min(top,viewportHeight-popupHeight-margin));
+
+	return {left:left,top:top};
+}
+
 export function showNames(pthis,dir){
 		// Show popup with player names
 	if (pthis.innerHTML == "") return;
@@ -544,12 +568,20 @@ export function showNames(pthis,dir){
 
 	var popup = document.getElementById("popup_box");
 	popup.style.padding = "0px";
-	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
-	popup.style.left = getPosition(pthis).x  + "px";
 	const clean = DOMPurify.sanitize(text, { RETURN_DOM_FRAGMENT: true });
 	popup.replaceChildren(clean); //innerHTML = text;
 	$("#popup_box").finish();
-	popup.style.display="none";
+	popup.style.visibility = "hidden";
+	popup.style.display = "block";
+
+	var anchorRect = pthis.getBoundingClientRect();
+	var popupRect = popup.getBoundingClientRect();
+	var position = calculateNearbyPopupPosition(anchorRect,popupRect.width,popupRect.height,window.innerWidth,window.innerHeight);
+
+	popup.style.top = position.top + "px";
+	popup.style.left = position.left + "px";
+	popup.style.display = "none";
+	popup.style.visibility = "";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
 }
 
@@ -567,6 +599,6 @@ if (typeof window !== "undefined")
         largeSpinner, spinnerNoDelay, spinnerNoDelayAbs, spinner,
         showBoardKeypad, showNewBoardSelector, showTravellerKeypad,
         initSettings, setOptions, hideMenuItems, showMainMenuItems,
-        showEmptyProgressBar, showBidAlert, showNames
+        showEmptyProgressBar, showBidAlert, calculateNearbyPopupPosition, showNames
     });
 }

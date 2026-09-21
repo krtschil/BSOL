@@ -121,10 +121,5 @@ module behavior as well as important compatibility bridges. The browser-only XML
 smoke test is `test/xml-smoke.html`. CI also checks JavaScript syntax, generated HTML
 freshness, HTML validity, and the XML smoke test.
 
-## ==TODO==
-Traveller display: 
-- Hover popup of opponent's pair number is always misplaced far above the table. Should be 
-more flexible just above or to the right of the hovered pair number
-
 ## AI support
 Claude/Sonnet 5 and GitHub/Copilot helped in analyzing and fixing code where necessary.

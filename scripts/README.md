@@ -1,7 +1,8 @@
-# DBF/PBN Traveller converter
+# DBF Traveller converter
 
-This directory contains an internal conversion utility for importing the four-file
-export from the German bridge scoring application into BSOL Traveller JSON.
+This directory contains an internal conversion utility for importing the
+three-file DBF export from the German bridge scoring application into BSOL
+Traveller JSON.
 
 The utility is intentionally not part of the published application. Keep
 `dbf-traveller-to-json.py` and this README on the development branch only; do not
@@ -11,7 +12,6 @@ promote them to `main`.
 
 ```sh
 python3 scripts/dbf-traveller-to-json.py \
-  --pbn event.pbn \
   --play-dbf play_2251.DBF \
   --participants-dbf tn_2251.dbf \
   --results-dbf res_2251a.dbf \
@@ -20,8 +20,9 @@ python3 scripts/dbf-traveller-to-json.py \
 
 The input files are:
 
-- `--pbn`: board definitions and PBN `ScoreTable` data
-- `--play-dbf`: contracts, results, scores, matchpoints and opening leads
+- `--play-dbf`: contracts, results, scores, matchpoints and opening leads;
+  tricks and declarer are derived from this file's `CONTRACT`/`RESULT`/`NS_EW`
+  fields
 - `--participants-dbf`: pair numbers and player names
 - `--results-dbf`: final ranking, points and percentages
 - `--output`: generated BSOL Traveller JSON
@@ -37,7 +38,6 @@ file. Each input type can point to a different directory:
 
 ```python
 INPUT_DIRECTORIES = {
-    "pbn": Path("/data/turnier/pbn"),
     "play_dbf": Path("/data/turnier/play"),
     "participants_dbf": Path("/data/turnier/participants"),
     "results_dbf": Path("/data/turnier/results"),
@@ -48,13 +48,13 @@ The directory is prepended to the corresponding filename option. The output path
 is not changed.
 
 The converter uses only the Python standard library. It maps German suit and
-direction codes, converts German card ranks (`D`/`B`) to BSOL's `Q`/`J`, joins
-play rows with the PBN score tables to obtain declarers and tricks, and adds
-participant names and final ranking data. Opening leads are written in BSOL's
-rank-then-suit format, for example `4S` or `QD`.
+direction codes, converts German card ranks (`D`/`B`) to BSOL's `Q`/`J`, derives
+declarers and tricks from the play DBF, and adds participant names and final
+ranking data. Opening leads are written in BSOL's rank-then-suit format, for
+example `4S` or `QD`.
 
-The generated JSON can be loaded in BSOL together with its PBN file using the normal
-`file` and `xml` URL parameters.
+The generated JSON can be loaded in BSOL together with the tournament's PBN file
+using the normal `file` and `xml` URL parameters.
 
 ## BBO Extractor CSV
 
@@ -94,7 +94,6 @@ comparison-table game for one board:
 ```sh
 python3 scripts/dbf-traveller-to-json.py \
   --mode teams \
-  --pbn 20260903.pbn \
   --play-dbf play_2249.dbf \
   --participants-dbf tn_2249.dbf \
   --results-dbf res_2249a.dbf \

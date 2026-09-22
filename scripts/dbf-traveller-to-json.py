@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the DBF/PBN export of a bridge session to BSOL Traveller JSON.
+"""Convert the DBF export of a bridge session to BSOL Traveller JSON.
 
 The converter deliberately uses only the Python standard library.  It supports
 the Visual FoxPro field types used by the supplied play, participant and result
@@ -18,7 +18,6 @@ DECLARER = {"O": "E"}
 
 # Set these directories to the locations of the original export files.
 INPUT_DIRECTORIES = {
-    "pbn": Path("~/Downloads").expanduser(),
     "play_dbf": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
     "participants_dbf": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
     "results_dbf": Path("~/.wine/drive_c/users/Public/Topscore/turniere").expanduser(),
@@ -82,10 +81,25 @@ def normalize_contract(value):
     return f"{level}{SUITS[suit]}{doubling.replace('*', 'X')}"
 
 
-def normalize_pbn_contract(value):
-    text = str(value).strip().upper()
-    match = re.fullmatch(r"(\d)(NT|[SHDC])([X]{0,2})", text)
-    return text if match else normalize_contract(text)
+def tricks_from_result(contract, result):
+    """Derive the number of tricks made from a normalized contract and the
+    DBF RESULT field, which holds the result relative to the contract
+    (e.g. "=", "+1", "-2")."""
+    level_match = re.match(r"(\d)", str(contract))
+    if not level_match:
+        return ""
+    level = int(level_match.group(1))
+    text = str(result).strip().upper()
+    if text == "=":
+        return level + 6
+    if re.fullmatch(r"[+-]\d+", text):
+        return level + 6 + int(text)
+    return ""
+
+
+def declarer_from_direction(value):
+    direction = str(value).strip().upper()
+    return DECLARER.get(direction, direction)
 
 
 def normalize_card(value):
@@ -96,51 +110,6 @@ def normalize_card(value):
     rank = {"10": "T", "D": "Q", "B": "J"}.get(rank, rank)
     suit = {"P": "S", "C": "H", "K": "D", "T": "C"}.get(suit, suit)
     return rank + suit
-
-
-def parse_pbn(path):
-    boards = {}
-    current = {}
-    score_lines = False
-    for line in Path(path).read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            score_lines = False
-            continue
-        tag = re.fullmatch(r"\[([^ ]+) \"(.*)\"\]", line)
-        if tag:
-            name, value = tag.groups()
-            if name == "Board" and current.get("board_no") is not None:
-                boards[current["board_no"]] = current
-                current = {}
-            if name == "Board":
-                current["board_no"] = int(value)
-            elif name == "Deal":
-                current["deal"] = value
-            elif name == "Dealer":
-                current["dealer"] = value
-            elif name == "Vulnerable":
-                current["vulnerable"] = value
-            elif name == "ScoreTable":
-                score_lines = True
-            continue
-        if score_lines and current.get("board_no") is not None:
-            parts = line.split()
-            if len(parts) >= 8:
-                contract, declarer, tricks, score, ns, ew, ns_mp, ew_mp = parts[:8]
-                current.setdefault("scores", []).append({
-                    "contract": normalize_pbn_contract(contract),
-                    "played_by": DECLARER.get(declarer, declarer),
-                    "tricks": number(tricks),
-                    "score": number(score),
-                    "ns_pair_number": str(ns),
-                    "ew_pair_number": str(ew),
-                    "ns_match_points": number(ns_mp),
-                    "ew_match_points": number(ew_mp),
-                })
-    if current.get("board_no") is not None:
-        boards[current["board_no"]] = current
-    return boards
 
 
 def participant_map(path):
@@ -174,26 +143,22 @@ def enrich_participants(participants, path):
         })
 
 
-def play_line(row, pbn_scores):
+def play_line(row):
     ns = str(row.get("PAIRNS", "")).strip()
     ew = str(row.get("PAIREW", "")).strip()
     contract = normalize_contract(row.get("CONTRACT", ""))
     score = number(row.get("RESVAL_NS"))
-    candidates = [
-        item for item in pbn_scores
-        if item["ns_pair_number"] == ns
-        and item["ew_pair_number"] == ew
-        and item["contract"] == contract
-        and item["score"] == score
-    ]
-    reference = candidates[0] if candidates else {}
+    # Tricks and declarer are derived directly from the play DBF's CONTRACT,
+    # RESULT and NS_EW fields.
+    tricks = tricks_from_result(contract, row.get("RESULT", "")) if contract else ""
+    played_by = declarer_from_direction(row.get("NS_EW", "")) if contract else ""
     result = {
         "ns_pair_number": ns,
         "ew_pair_number": ew,
         "contract": contract or "Passed" if not contract and not row.get("RESULT") else contract,
-        "played_by": reference.get("played_by", DECLARER.get(str(row.get("NS_EW", "")).strip(), str(row.get("NS_EW", "")).strip())),
+        "played_by": played_by,
         "lead": normalize_card(row.get("LEADCARD", "")),
-        "tricks": reference.get("tricks", ""),
+        "tricks": tricks,
         "score": score,
         "ns_score": score,
         "ew_score": number(row.get("RESVAL_EW")),
@@ -208,26 +173,25 @@ def play_line(row, pbn_scores):
     return result
 
 
-def convert(pbn_path, play_path, participants_path, results_path):
-    pbn = parse_pbn(pbn_path)
+def convert(play_path, participants_path, results_path):
     participants = participant_map(participants_path)
     enrich_participants(participants, results_path)
+    all_boards = set()
     grouped = defaultdict(list)
     for row in read_dbf(play_path):
         board = int(row.get("BOARD") or 0)
-        if board and (row.get("PAIRNS") or row.get("PAIREW")) and (
+        if not board:
+            continue
+        all_boards.add(board)
+        if (row.get("PAIRNS") or row.get("PAIREW")) and (
             str(row.get("CONTRACT", "")).strip()
             or str(row.get("RESULT", "")).strip()
         ):
             grouped[board].append(row)
 
     boards = []
-    for board_no in sorted(pbn):
-        board = pbn[board_no]
-        lines = [
-            play_line(row, board.get("scores", []))
-            for row in grouped.get(board_no, [])
-        ]
+    for board_no in sorted(all_boards):
+        lines = [play_line(row) for row in grouped.get(board_no, [])]
         boards.append({"board_no": board_no, "traveller_line": lines})
 
     return {
@@ -282,19 +246,20 @@ def enrich_teams(teams, path):
             })
 
 
-def team_play_line(row, suffix, pbn_board):
+def team_play_line(row, suffix):
         ns = str(row.get(f"HOME_NS" if suffix == "H" else "VISIT_NS")).strip()
         ew = str(row.get(f"VISIT_EW" if suffix == "H" else "HOME_EW")).strip()
         contract = normalize_contract(row.get(f"CONTRACT_{suffix}", ""))
         score = number(row.get(f"RESVAL_{suffix}"))
         declarer = str(row.get(f"NS_EW_{suffix}", "")).strip()
+        tricks = tricks_from_result(contract, row.get(f"RESULT_{suffix}", "")) if contract else ""
         return {
             "ns_pair_number": ns,
             "ew_pair_number": ew,
             "contract": contract or "Passed",
             "played_by": DECLARER.get(declarer, declarer),
             "lead": normalize_card(row.get(f"LC_{suffix}", "")),
-            "tricks": "",
+            "tricks": tricks,
             "score": score,
             "ns_score": score if score >= 0 else "",
             "ew_score": -score if score < 0 else "",
@@ -304,22 +269,25 @@ def team_play_line(row, suffix, pbn_board):
         }
 
 
-def convert_teams(pbn_path, play_path, participants_path, results_path):
-    pbn = parse_pbn(pbn_path)
+def convert_teams(play_path, participants_path, results_path):
     teams = team_participant_map(participants_path)
     enrich_teams(teams, results_path)
+    all_boards = set()
     grouped = defaultdict(list)
     for row in read_dbf(play_path):
         board = int(row.get("BOARD") or 0)
-        if board and str(row.get("CONTRACT_H", "")).strip().lower() not in ("", "ok"):
+        if not board:
+            continue
+        all_boards.add(board)
+        if str(row.get("CONTRACT_H", "")).strip().lower() not in ("", "ok"):
             grouped[board].append(row)
 
     boards = []
-    for board_no in sorted(pbn):
+    for board_no in sorted(all_boards):
         lines = []
         for row in grouped.get(board_no, []):
-            lines.append(team_play_line(row, "H", pbn[board_no]))
-            lines.append(team_play_line(row, "V", pbn[board_no]))
+            lines.append(team_play_line(row, "H"))
+            lines.append(team_play_line(row, "V"))
         boards.append({"board_no": board_no, "traveller_line": lines})
 
     return {
@@ -339,7 +307,6 @@ def convert_teams(pbn_path, play_path, participants_path, results_path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pbn", required=True, help="PBN board file")
     parser.add_argument("--play-dbf", required=True, help="Traveller play DBF")
     parser.add_argument(
         "--participants-dbf", required=True, help="Participant/pair DBF"
@@ -355,7 +322,6 @@ def main():
     args = parser.parse_args()
     converter = convert_teams if args.mode == "teams" else convert
     result = converter(
-        INPUT_DIRECTORIES["pbn"] / args.pbn,
         INPUT_DIRECTORIES["play_dbf"] / args.play_dbf,
         INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
         INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,

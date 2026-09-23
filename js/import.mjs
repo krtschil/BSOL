@@ -1,5 +1,5 @@
 import { getTraveller, setupTraveller, loadTraveller_1 } from "./traveller.mjs";
-import { pbnToJson, convertHand, inferHand } from "./pbn.mjs";
+import { pbnToJson, convertHand, inferHand, validateBoard } from "./pbn.mjs";
 import { requestPending, setRequestTimeout, doRequestHTMLasync } from "./network.mjs";
 import { startup } from "./startup.mjs";
 import { hideRanking } from "./ranking.mjs";
@@ -572,10 +572,34 @@ export function loadHands_1(data,statusText,jqXHR,context)
 
 	hands = JSON.parse(hands);
 
+	if ((typeof hands.boards=="undefined") || (!Array.isArray(hands.boards)) || (hands.boards.length==0))
+	{
+		hideSpinner();
+		switch(language)
+		{
+			case "de":
+				alert("Die Datei enthält keine gültigen PBN-, DLM- oder LIN-Daten.");
+				break;
+			default:
+				alert("The file does not contain valid PBN, DLM, or LIN data.");
+		}
+
+		return;
+	}
+
     var saved_boards = g_hands.boards;
 
 	var i;
 	var board = {};
+
+	for (i=0;i<hands.boards.length;i++)	// Reject the whole file if any board is not internally consistent
+	{
+		if (validateBoard(hands.boards[i])==0)
+		{
+			hideSpinner();
+			return;
+		}
+	}
 
 	if (typeof g_hands.boards!=="undefined")
 		board = g_hands.boards[g_lastBindex].board;

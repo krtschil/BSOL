@@ -903,6 +903,7 @@ export function extractParas()
 
 export function processRequest()
 {
+	changeLanguage(language);
 	var result = extractParas();
 
 	if (result!="")

@@ -1,15 +1,14 @@
 /* CSS Document */
 html {margin:0px; padding:0px; overflow-y:scroll;}
 body {
-  margin:0px;
-  padding:0px;
-  margin-top:0px;
-  margin-left:0px;
-  margin-bottom:0px;
-  background-color : #DDFFDD;
-  font-family : Verdana, Arial, Helvetica, sans-serif;
-  font-size : 14px;
-  line-height:1.4;
+  margin: 0px;
+  padding: 0px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 button,
@@ -25,11 +24,10 @@ pre#output
 }
 #mklab1, #mklab2, #mkrad1, #mkrad2 {cursor:pointer;}
 #bdy {
-  background-color:white;
-  width:100%;
-  max-width:1000px;
-  margin:0;
-  box-sizing:border-box;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0;
+  box-sizing: border-box;
 }
 #showGeneralHelp {margin-left:20px;}
 
@@ -41,7 +39,6 @@ pre#output
 {
   display:inline;
 }
-
 
 #explanation {
   display:none;
@@ -61,7 +58,6 @@ pre#output
   background-color: white;
   padding:4px;
 }
-
 
 .clickable{
 	cursor: pointer;
@@ -97,28 +93,22 @@ table#traveller {
 }
 
 fieldset#data {
-    margin-left:12px;
-    margin-right:12px;
-    margin-top:2ex;
-    width:fit-content;
-    max-width:calc(100% - 24px);
-    min-width:0;
-    box-sizing:border-box;
-    border:1px solid #aaa;/* black;*/
-    /*border-radius: 10px;*/
+  margin-top: 2ex;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid #aaa;
 }
 
 fieldset#data > legend {
-    display:block;
-    width:100%;
-    border:1px solid black;
-    background-color:#ddffdd;
-    max-width:100%;
-    box-sizing:border-box;
-    white-space:normal;
-    overflow-wrap:anywhere;
-    /*border-radius: 10px;*/
-    padding:3px 3px 3px 3px;
+  display: block;
+  width: 100%;
+  border: 1px solid black;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 fieldset#data {
@@ -192,14 +182,13 @@ fieldset#data > button {
 }
 
 .title-bar {
-        font-family:  Verdana, Arial, Helvetica, sans-serif;
-	font-size: 16px;
-	font-weight: bold;
-	font-style: italic;
-        text-align:center;
-	color: white;
-        background-color: red; 
-        line-height: 20px;  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+  color: white;
+  line-height: 20px;
 }
 
 .month-heading {
@@ -212,13 +201,12 @@ fieldset#data > button {
 }
 
 .blue-bar {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 16px;
-	font-weight: bold;
-	color: white; 
-        text-align:center;
-        background-color:blue; 
-        line-height: 18px;  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  line-height: 18px;
 }
 
 /*
@@ -229,25 +217,14 @@ input[type=radio] {
     margin:10px;
 }
  
-/*
-  Change the look'n'feel of labels (which are adjacent to radiobuttons).
-  Add some margin, padding to label
-*/
 input[type=radio] + label {
-    display:inline-block;
-    margin:-2px;
-    padding: 4px 12px;
-    background-color: #ffffff;
-    border:1px solid black;
+  display: inline-block;
+  margin: -2px;
+  padding: 4px 12px;
+  border: 1px solid black;
 }
-/*
- Change background color for label next to checked radio button
- to make it look like highlighted button
-*/
-input[type=radio]:checked + label { 
-   background-image: none;
-   background-color:#888888;
-   color:white;
+input[type=radio]:checked + label {
+  background-image: none;
 }
 
 td, div {
@@ -296,7 +273,9 @@ a { font-weight: bold;}
 a:link { color: blue; text-decoration:none }
 a:visited { color: blue; text-decoration:none }
 a:active { color: blue; text-decoration:none }
-a:hover { color: red; text-decoration:none }
+a:hover {
+  text-decoration: none;
+}
 
 p { margin: 0px; }
 
@@ -311,7 +290,14 @@ table.results td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 .results_tr_grey {background-color:#EEEEFF; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
 
 table.ranking {font-size:14px; border:1px solid black; border-collapse:collapse; border-spacing:0px; padding:2px; color:black; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;}
-table.ranking th {font-size:9pt;border:2px ridge; padding-right:4px; padding-left:4px; color:white;font-style : normal;background-color:#6699FF;}
+table.ranking th {
+  font-size: 9pt;
+  border: 2px ridge;
+  padding-right: 4px;
+  padding-left: 4px;
+  color: white;
+  font-style: normal;
+}
 table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:12px;}
 
 .traveller_tr_alt {background-color:#EEEEEE; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
@@ -385,23 +371,47 @@ table.calendar th {font-weight: bold; color: blue;text-align: center;background-
    box-shadow: rgba(0,0,0,1) 0 1px 0;
 	height:40px; font-size:10pt; border-width:1px; border-color:black; border-spacing:0px;  padding-left:2px;padding-right:2px; background-color:#ffffdd; font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;cursor:pointer;}
 
-.sessionMenuButton {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#bbffbb;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -khtml-border-radius: 4px;
-    border-radius: 4px;
-   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
-   box-shadow: rgba(0,0,0,1) 0 1px 0;
-	font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;}
+.sessionMenuButton {
+  min-width: 75px;
+  height: 25px;
+  font-size: 14px;
+  line-height: 1.2;
+  border-width: 1px;
+  border-color: black;
+  border-spacing: 0px;
+  padding-left: 2px;
+  padding-right: 2px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+  box-shadow: rgba(0,0,0,1) 0 1px 0;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+}
 	
-.sessionMenuButton:active {min-width:75px; height:25px; font-size:14px; line-height:1.2; border-width:1px; border-color:black; border-spacing:0px; padding-left:2px;padding-right:2px; background-color:#448844;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -khtml-border-radius: 4px;
-    border-radius: 4px;
-   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
-   box-shadow: rgba(0,0,0,1) 0 1px 0;
-	font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;}
+.sessionMenuButton:active {
+  min-width: 75px;
+  height: 25px;
+  font-size: 14px;
+  line-height: 1.2;
+  border-width: 1px;
+  border-color: black;
+  border-spacing: 0px;
+  padding-left: 2px;
+  padding-right: 2px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+  box-shadow: rgba(0,0,0,1) 0 1px 0;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+}
 	
 .btn-circle {
   font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;cursor:pointer;
@@ -718,14 +728,9 @@ textarea:focus-visible,
   box-sizing:border-box;
 }
 
-#showSettingsHelp {
-  margin-left:20px;
-}
-
 #optionsBox > table {
-  width:500px;
-  border-collapse:collapse;
-  border-spacing:10px;
+  width: 500px;
+  border-collapse: collapse;
 }
 
 #toolsSubMenu {
@@ -1138,10 +1143,6 @@ textarea:focus-visible,
 
 #author-reference-i {
   background-color:#eeee00;
-}
-
-.color-red {
-  color:red;
 }
 
 .width-33 {

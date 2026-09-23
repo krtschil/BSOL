@@ -21,6 +21,35 @@ test("converts a PBN file into valid board JSON", () => {
 	assert.equal(context.validateBoard(result.boards[0]), 1);
 });
 
+test("rejects a CSV file masquerading as a PBN file", () => {
+	const alerts = [];
+	let spinnerHidden = false;
+	const context = createContext({
+		g_file: "invalid.pbn",
+		g_fullInfo: false,
+		g_hands: {boards: []},
+		g_lastBindex: 0,
+		alert: (message) => alerts.push(message),
+		hideSpinner: () => {
+			spinnerHidden = true;
+		},
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/pbn.mjs");
+	loadScript(context, "js/import.mjs");
+
+	context.loadHands_1(
+		"Board;Contract;Declarer;Result;NS;EW\n1;3NT;N;+1;430;0\n",
+		"success",
+		null,
+		{}
+	);
+
+	assert.equal(spinnerHidden, true);
+	assert.deepEqual(alerts, ["The file does not contain valid PBN, DLM, or LIN data."]);
+	assert.deepEqual(context.g_hands.boards, []);
+});
+
 test("converts PBN auctions with alert notes", () => {
 	const context = createContext({
 		g_fullInfo: false,

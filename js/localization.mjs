@@ -6,7 +6,7 @@ export function changeLanguage(l) {
 			document.getElementById("loadFile1").value = "Datei auswählen";
 			document.getElementById("blankInput").textContent = "Hand manuell eingeben";
 			document.getElementById("showGeneralHelp").textContent = "Allgemeine Hilfe";
-			document.getElementById("aranking").textContent = "Alle Paare";
+			document.getElementById("aranking").textContent = "Ergebnis";
 			document.getElementById("flegend").innerHTML = "<b>Analysiere Bridgehände (PBN/LIN/DLM): Datei/manuell eingeben/Paste/Drop</b>";
 			document.getElementById("gotoBoard").textContent = "Gehe zu";
 			document.getElementById("saveBoards").textContent = "Speichern";
@@ -95,25 +95,26 @@ export function changeLanguage(l) {
 			document.getElementById("contractTable4").textContent = "Durchschnitt %";
 
 			document.getElementById("ranking1").textContent = "Pos";
-			document.getElementById("ranking2").textContent = "Paar";
+			document.getElementById("ranking2").textContent = "Paar-Nr";
 			document.getElementById("ranking3").textContent = "N/S Spielernamen";
 			document.getElementById("rankingDD").textContent = "Dbl Dummy";
-			document.getElementById("rankcheck1").textContent = "Tabellen nach Paarnummer sortieren";
+			document.getElementById("rankcheck1").textContent = "Tabelle nach Paarnummer sortieren";
 
 			document.getElementById("scoring_summary1").textContent = "Zusammenfassung";
 
-			document.getElementById("ascorecard").textContent = "Persönlich";
+			document.getElementById("ascorecard").textContent = "Paaranalyse";
 
 			document.getElementById("video-i").textContent = "Erklärvideo";
 			document.getElementById("clipboard").textContent = "Hole Boards aus der Zwischenablage";
 			document.getElementById("optionsSaveFeedback").textContent = "Auswahl gespeichert";
+			document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 			break;
 		default:
 			document.getElementById("loadFile1").value = "Open file";
 			document.getElementById("blankInput").textContent = "Enter hand";
 			document.getElementById("showGeneralHelp").textContent = "General help";
-			document.getElementById("aranking").textContent = "All Pairs";
+			document.getElementById("aranking").textContent = "Result";
 			document.getElementById("flegend").innerHTML = "<b>Analyse Bridge hands (PBN/LIN/DLM): file/manual entry/paste/drop file</b>";
 			document.getElementById("gotoBoard").textContent = "Go To";
 			document.getElementById("saveBoards").textContent = "Save...";
@@ -199,18 +200,19 @@ export function changeLanguage(l) {
 			document.getElementById("contractTable4").textContent = "Average %";
 
 			document.getElementById("ranking1").textContent = "Pos";
-			document.getElementById("ranking2").textContent = "Pair";
+			document.getElementById("ranking2").textContent = "Pair no";
 			document.getElementById("ranking3").textContent = "N/S Playernames";
 			document.getElementById("rankingDD").textContent = "Dbl Dummy";
-			document.getElementById("rankcheck1").textContent = "Sort tables by pair number";
+			document.getElementById("rankcheck1").textContent = "Sort table by pair number";
 
 			document.getElementById("scoring_summary1").textContent = "Summary";
 
-			document.getElementById("ascorecard").textContent = "Personal";
+			document.getElementById("ascorecard").textContent = "Individual analysis";
 
 			document.getElementById("video-i").textContent = "Video";
 			document.getElementById("clipboard").textContent = "Get boards data from clipboard";
 			document.getElementById("optionsSaveFeedback").textContent = "Selection saved";
+			document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 	}
 }

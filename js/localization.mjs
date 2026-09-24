@@ -107,7 +107,7 @@ export function changeLanguage(l) {
 			document.getElementById("video-i").textContent = "Erklärvideo";
 			document.getElementById("clipboard").textContent = "Hole Boards aus der Zwischenablage";
 			document.getElementById("optionsSaveFeedback").textContent = "Auswahl gespeichert";
-			document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
+			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 			break;
 		default:
@@ -212,7 +212,7 @@ export function changeLanguage(l) {
 			document.getElementById("video-i").textContent = "Video";
 			document.getElementById("clipboard").textContent = "Get boards data from clipboard";
 			document.getElementById("optionsSaveFeedback").textContent = "Selection saved";
-			document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
+			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 	}
 }

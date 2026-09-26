@@ -85,7 +85,7 @@ showGeneralHelp.addEventListener('click', function() {
 // Open video
 const video = document.getElementById("video-i");
 video.addEventListener('click', function() {
-	window.open("https://training.krtschil.net/Video/DD-Video.mp4", "_blank");
+	window.open("Video/DD-Video.mp4", "_blank");
 });
 
 // Go to author's website

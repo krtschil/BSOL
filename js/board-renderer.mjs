@@ -557,7 +557,7 @@ export function showNewFeaturesNotice()
 			switch(language)
 			{
 				case "de":
-					var txt = "<ul><li>Bei den Optionen gibt es eine Auswahlbox, um die Kürzel für Figuren auswählen zu können (JQKA,BDKA,VDRA,or BVHA), Standard ist JQKA</li><br>";
+					var txt = "<ul><li>In der Anzeige für die Figurenpunkte links unten im Boarddiagramm gibt es jetzt die Option, das Ergebnis einer Kaplan-Rubens-Bewertung anzuzeigen. Klicken Sie auf das Fragezeichen, um weitere Informationen zu bekommen.</li>";
 					txt += "</ul>";
 					txt += "Detaillierte Informationen finden Sie in den  <a href=releaseNotes.htm target=_blank>Versionshinweisen.</a>";
 					break;

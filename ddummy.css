@@ -777,7 +777,7 @@ textarea:focus-visible,
 }
 
 #butlerTable {
-  width:100%;
+  width:auto;
 }
 
 #butlerHeading {

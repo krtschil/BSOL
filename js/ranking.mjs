@@ -871,6 +871,10 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 
 		var dd = pairs[i].dd;
 
+			// Teams count both tables per board, so scale by the counted results to keep the bars within 140px
+		var ddTotal = dd.ddOverH + dd.ddEqualsH + dd.ddUnderH + dd.ddUnknown;
+		if (ddTotal>0) nboards = ddTotal;
+
 		var backColor = "#00CC00";	// Green
 		var width = (140*dd.ddOverH)/(nboards);
 		width = width + "px";
@@ -1378,7 +1382,7 @@ export function setupButlerTable()
 		var row = body.insertRow(-1);
 		if (index%2==1) row.className = "results_tr_grey";
 
-		var names = (pair.player || []).map(function(p) { return p.player_name; }).filter(Boolean).join(" - ");
+		var names = (pair.player || []).map(function(p) { return p.player_name; }).filter(Boolean).join(" / ");
 		var direction = pair.direction=="NS" ? "NS" : (de ? "OW" : "EW");
 		var tied = pairs.filter(function(p) { return p.position==pair.position; }).length>1;
 		var position = (tied ? "=" : "") + pair.position;

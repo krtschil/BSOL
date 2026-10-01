@@ -1366,6 +1366,7 @@ export function setupTeamMatchTable()
 
 	var de = language=="de";
 	document.getElementById("teamMatchHeading").textContent = de ? "Kreuztabelle" : "Match results";
+	table.style.borderCollapse = "collapse";
 	var matchPoints = {};
 	matches.forEach(function(match)
 	{
@@ -1384,6 +1385,8 @@ export function setupTeamMatchTable()
 		th.textContent = "Team " + team.team_number;
 		th.title = (team.members || []).join("\n");
 		th.setAttribute("aria-label", "Team " + team.team_number + (team.members && team.members.length ? ": " + team.members.join("; ") : ""));
+		th.style.border = "1px solid black";
+		th.style.padding = "6px 8px";
 		return th;
 	}
 
@@ -1392,6 +1395,8 @@ export function setupTeamMatchTable()
 	var headerRow = head.insertRow(-1);
 	var corner = document.createElement("th");
 	corner.scope = "col";
+	corner.style.border = "1px solid black";
+	corner.style.padding = "6px 8px";
 	headerRow.appendChild(corner);
 	teams.forEach(function(team) { headerRow.appendChild(teamHeader(team, "col")); });
 
@@ -1407,6 +1412,9 @@ export function setupTeamMatchTable()
 			var cell = row.insertCell(-1);
 			cell.style.textAlign = "center";
 			cell.style.whiteSpace = "normal";
+			cell.style.border = "1px solid black";
+			cell.style.padding = "6px 8px";
+			cell.style.fontSize = "14px";
 			if (team.team_number==opponent.team_number)
 			{
 				cell.textContent = "-";
@@ -1417,10 +1425,11 @@ export function setupTeamMatchTable()
 			var victoryPoints = document.createElement("span");
 			victoryPoints.textContent = Number(scores[0]).toFixed(2) + " : " +
 				Number(scores[2]).toFixed(2);
+			victoryPoints.style.fontWeight = "bold";
 			cell.appendChild(victoryPoints);
 			if ((scores[1]!=="")&&(scores[3]!==""))
 			{
-				cell.appendChild(document.createTextNode(" "));
+				cell.appendChild(document.createElement("br"));
 				var imps = document.createElement("span");
 				imps.textContent = "(" + scores[1] + ":" + scores[3] + ")";
 				cell.appendChild(imps);

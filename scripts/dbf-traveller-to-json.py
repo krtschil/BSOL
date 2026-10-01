@@ -246,6 +246,68 @@ def enrich_teams(teams, path):
             })
 
 
+def team_match_table(result_rows, play_rows, teams, pair_names):
+    results = {}
+    for row in result_rows:
+        team = number(row.get("TEAM_NR"))
+        if team not in teams:
+            continue
+        for index in range(1, 100):
+            opponent_value = row.get(f"GEGNER{index}")
+            if opponent_value is None or not str(opponent_value).strip():
+                break
+            opponent = number(opponent_value)
+            if not opponent:
+                break
+            points = number(row.get(f"PUNKTE{index}"))
+            if opponent in teams and points != "":
+                results[(int(team), int(opponent))] = str(points)
+
+    imps_by_match = {}
+    for row in play_rows:
+        if int(row.get("BOARD") or 0):
+            continue
+        home_team = int(row.get("HOME_NS") or 0)
+        visiting_team = int(row.get("VISIT_EW") or 0)
+        if home_team in teams and visiting_team in teams:
+            imps_by_match[(home_team, visiting_team)] = (
+                number(row.get("IMPS_H")),
+                number(row.get("IMPS_V")),
+            )
+
+    team_data = []
+    for team in sorted(teams):
+        members = []
+        for direction in ("NS", "EW"):
+            names = pair_names.get((team, direction), [])
+            if names:
+                members.append(" / ".join(name for name in names if name))
+        team_data.append({
+            "team_number": team,
+            "members": members,
+        })
+
+    matches = []
+    for index, team1 in enumerate(sorted(teams)):
+        for team2 in sorted(teams)[index + 1:]:
+            matches.append({
+                "team1": team1,
+                "team2": team2,
+                "team1_points": results.get((team1, team2), ""),
+                "team2_points": results.get((team2, team1), ""),
+                "team1_imps": "",
+                "team2_imps": "",
+            })
+            imps = imps_by_match.get((team1, team2))
+            if imps is not None:
+                matches[-1]["team1_imps"], matches[-1]["team2_imps"] = imps
+            else:
+                imps = imps_by_match.get((team2, team1))
+                if imps is not None:
+                    matches[-1]["team2_imps"], matches[-1]["team1_imps"] = imps
+    return {"teams": team_data, "matches": matches}
+
+
 def team_play_line(row, suffix):
         ns = str(row.get(f"HOME_NS" if suffix == "H" else "VISIT_NS")).strip()
         ew = str(row.get(f"VISIT_EW" if suffix == "H" else "HOME_EW")).strip()
@@ -362,9 +424,13 @@ def convert_teams(play_path, participants_path, results_path):
     teams = team_participant_map(participants_path)
     enrich_teams(teams, results_path)
     play_rows = read_dbf(play_path)
+    pair_names = team_pair_names(participants_path)
     butler, datums = butler_results(
         [row for row in play_rows if int(row.get("BOARD") or 0)],
-        team_pair_names(participants_path),
+        pair_names,
+    )
+    cross_table = team_match_table(
+        read_dbf(results_path), play_rows, teams, pair_names
     )
     all_boards = set()
     grouped = defaultdict(list)
@@ -397,6 +463,7 @@ def convert_teams(play_path, participants_path, results_path):
             "participants": {"pair": [
                 teams[team] for team in sorted(teams)
             ]},
+            "cross_table": cross_table,
             "butler": butler,
             "board": boards,
         }

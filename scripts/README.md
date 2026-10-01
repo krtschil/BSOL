@@ -103,6 +103,10 @@ python3 scripts/dbf-traveller-to-json.py \
 The generated `TEAMS` JSON contains one participant per team and two Traveller
 lines per played board (`*_H` and `*_V`). BSOL counts the board once per team,
 while the ranking is taken from the team victory points in the result DBF.
+The result analysis also shows a match cross table between the ranking and
+Butler table. Cells contain both teams' victory-point scores and match IMP
+totals for each match; hovering over a team number shows the names of all four
+team members.
 Team conversion is experimental and remains development-only.
 
 The team JSON also contains a Butler ranking (`event.butler`), which BSOL shows

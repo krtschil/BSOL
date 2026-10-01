@@ -51,3 +51,28 @@ print(json.dumps({"butler": butler, "datums": datums}))`);
 	assert.equal(out.butler.pairs.reduce((sum, p) => sum + p.imps, 0), 0);
 	assert.equal(out.butler.pairs[0].position, 1);
 });
+
+test("match cross table includes reciprocal VP scores and team members", () => {
+	const out = runPython(loader + `
+rows = [
+  {"TEAM_NR": "1", "GEGNER1": "2", "PUNKTE1": "13.41", "GEGNER2": ""},
+  {"TEAM_NR": "2", "GEGNER1": "1", "PUNKTE1": "6.59", "GEGNER2": ""},
+  {"TEAM_NR": "3", "GEGNER1": "1", "PUNKTE1": "4.08", "GEGNER2": ""},
+]
+play_rows = [
+  {"BOARD": 0, "HOME_NS": 1, "VISIT_EW": 2, "IMPS_H": 10, "IMPS_V": 3},
+]
+teams = {1: {}, 2: {}, 3: {}}
+names = {(1, "NS"): ["North One", "South One"], (1, "EW"): ["East One", "West One"]}
+print(json.dumps(conv.team_match_table(rows, play_rows, teams, names)))`);
+
+	assert.deepEqual(out.teams[0], {
+		team_number: 1,
+		members: ["North One / South One", "East One / West One"],
+	});
+	assert.deepEqual(out.matches, [
+		{ team1: 1, team2: 2, team1_points: "13.41", team2_points: "6.59", team1_imps: 10, team2_imps: 3 },
+		{ team1: 1, team2: 3, team1_points: "", team2_points: "4.08", team1_imps: "", team2_imps: "" },
+		{ team1: 2, team2: 3, team1_points: "", team2_points: "", team1_imps: "", team2_imps: "" },
+	]);
+});

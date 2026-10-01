@@ -1338,11 +1338,106 @@ export function setupRanking(keepScrollSetting)
 		setupRankingTable(table,"EW",rankInfo,winners);
 	}
 
+	setupTeamMatchTable();
 	setupButlerTable();
 
 	showRanking();
 	$("#comparison").hide();
 	$("#checkListDiv").hide();
+}
+
+export function setupTeamMatchTable()
+{
+	var container = document.getElementById("teamMatchRanking");
+	var table = document.getElementById("teamMatchTable");
+	if (!container || !table) return;
+
+	var crossTable = g_travellers && g_travellers.event ? g_travellers.event.cross_table : undefined;
+	var teams = crossTable && Array.isArray(crossTable.teams) ? crossTable.teams : [];
+	var matches = crossTable && Array.isArray(crossTable.matches) ? crossTable.matches : [];
+
+	table.replaceChildren();
+
+	if ((g_eventType!="Teams")||(teams.length==0)||(matches.length==0))
+	{
+		container.style.display = "none";
+		return;
+	}
+
+	var de = language=="de";
+	document.getElementById("teamMatchHeading").textContent = de ? "Kreuztabelle" : "Match results";
+	table.style.borderCollapse = "collapse";
+	var matchPoints = {};
+	matches.forEach(function(match)
+	{
+		matchPoints[match.team1 + ":" + match.team2] = [
+			match.team1_points, match.team1_imps, match.team2_points, match.team2_imps
+		];
+		matchPoints[match.team2 + ":" + match.team1] = [
+			match.team2_points, match.team2_imps, match.team1_points, match.team1_imps
+		];
+	});
+
+	function teamHeader(team, scope)
+	{
+		var th = document.createElement("th");
+		th.scope = scope;
+		th.textContent = "Team " + team.team_number;
+		th.title = (team.members || []).join("\n");
+		th.setAttribute("aria-label", "Team " + team.team_number + (team.members && team.members.length ? ": " + team.members.join("; ") : ""));
+		th.style.border = "1px solid black";
+		th.style.padding = "6px 8px";
+		return th;
+	}
+
+	var head = table.createTHead();
+	head.className = "t-center";
+	var headerRow = head.insertRow(-1);
+	var corner = document.createElement("th");
+	corner.scope = "col";
+	corner.style.border = "1px solid black";
+	corner.style.padding = "6px 8px";
+	headerRow.appendChild(corner);
+	teams.forEach(function(team) { headerRow.appendChild(teamHeader(team, "col")); });
+
+	var body = table.createTBody();
+	teams.forEach(function(team, index)
+	{
+		var row = body.insertRow(-1);
+		if (index%2==1) row.className = "results_tr_grey";
+		row.appendChild(teamHeader(team, "row"));
+
+		teams.forEach(function(opponent)
+		{
+			var cell = row.insertCell(-1);
+			cell.style.textAlign = "center";
+			cell.style.whiteSpace = "normal";
+			cell.style.border = "1px solid black";
+			cell.style.padding = "6px 8px";
+			cell.style.fontSize = "14px";
+			if (team.team_number==opponent.team_number)
+			{
+				cell.textContent = "-";
+				return;
+			}
+			var scores = matchPoints[team.team_number + ":" + opponent.team_number];
+			if (!scores || (scores[0]==="") || (scores[1]==="")) return;
+			var victoryPoints = document.createElement("span");
+			victoryPoints.textContent = Number(scores[0]).toFixed(2) + " : " +
+				Number(scores[2]).toFixed(2);
+			victoryPoints.style.fontWeight = "bold";
+			cell.appendChild(victoryPoints);
+			if ((scores[1]!=="")&&(scores[3]!==""))
+			{
+				cell.appendChild(document.createElement("br"));
+				var imps = document.createElement("span");
+				imps.textContent = "(" + scores[1] + ":" + scores[3] + ")";
+				cell.appendChild(imps);
+			}
+		});
+	});
+
+	container.style.display = "";
 }
 
 export function setupButlerTable()
@@ -2285,4 +2380,3 @@ if (typeof window !== "undefined") {
 		calculateMaxImps,
 	});
 }
-

@@ -776,6 +776,14 @@ textarea:focus-visible,
   font-weight:normal;
 }
 
+#butlerTable {
+  width:100%;
+}
+
+#butlerHeading {
+  margin:1.5ex 0 0.5ex 0;
+}
+
 #scores {
   float:left;
   clear:both;

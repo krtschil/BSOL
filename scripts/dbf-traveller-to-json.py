@@ -269,12 +269,106 @@ def team_play_line(row, suffix):
         }
 
 
+IMP_THRESHOLDS = (
+    20, 50, 90, 130, 170, 220, 270, 320, 370, 430, 500, 600, 750, 900,
+    1100, 1300, 1500, 1750, 2000, 2250, 2500, 3000, 3500, 4000,
+)
+
+
+def imps(difference):
+    sign = -1 if difference < 0 else 1
+    return sign * sum(1 for limit in IMP_THRESHOLDS if abs(difference) >= limit)
+
+
+def butler_datum(scores):
+    """Average of all NS scores for a board, rounded to the nearest 10
+    (halves rounded away from zero)."""
+    mean = sum(scores) / len(scores)
+    sign = -1 if mean < 0 else 1
+    return sign * int(abs(mean) / 10 + 0.5) * 10
+
+
+def team_pair_names(path):
+    """Map (team, "NS"|"EW") to the two player names of that pair.  The
+    participant DBF marks the pair that sat North/South with NS = True."""
+    pairs = {}
+    for row in read_dbf(path):
+        team = number(row.get("P_NUMMER"))
+        name1 = str(row.get("NAME1", "")).strip()
+        name2 = str(row.get("NAME2", "")).strip()
+        if not team or not (name1 or name2):
+            continue
+        direction = "NS" if row.get("NS") is True else "EW"
+        pairs[(int(team), direction)] = [name1, name2]
+    return pairs
+
+
+def butler_results(rows, pair_names):
+    """Compute the Butler ranking from the team play rows.  Each board's
+    datum is the rounded average of all results; every NS pair scores the
+    IMPs of (score - datum), the opposing EW pair the negative value."""
+    tables = defaultdict(list)
+    for row in rows:
+        board = int(row.get("BOARD") or 0)
+        for suffix, ns_field, ew_field in (
+            ("H", "HOME_NS", "VISIT_EW"),
+            ("V", "VISIT_NS", "HOME_EW"),
+        ):
+            if str(row.get(f"CONTRACT_{suffix}", "")).strip().lower() in ("", "ok"):
+                continue
+            tables[board].append((
+                int(row.get(ns_field) or 0),
+                int(row.get(ew_field) or 0),
+                int(number(row.get(f"RESVAL_{suffix}")) or 0),
+            ))
+
+    totals = defaultdict(lambda: {"imps": 0, "boards": 0})
+    datums = {}
+    for board, results in tables.items():
+        datum = butler_datum([score for _, _, score in results])
+        datums[board] = datum
+        for ns_team, ew_team, score in results:
+            result = imps(score - datum)
+            totals[(ns_team, "NS")]["imps"] += result
+            totals[(ns_team, "NS")]["boards"] += 1
+            totals[(ew_team, "EW")]["imps"] -= result
+            totals[(ew_team, "EW")]["boards"] += 1
+
+    ranking = []
+    for (team, direction), total in totals.items():
+        names = pair_names.get((team, direction), ["", ""])
+        ranking.append({
+            "team_number": team,
+            "direction": direction,
+            "player": [{"player_name": name} for name in names],
+            "imps": total["imps"],
+            "boards": total["boards"],
+            "imps_per_board": round(total["imps"] / total["boards"], 2),
+        })
+    ranking.sort(key=lambda entry: (-entry["imps_per_board"], entry["team_number"]))
+
+    position = 0
+    previous = None
+    for index, entry in enumerate(ranking, start=1):
+        if entry["imps_per_board"] != previous:
+            position = index
+            previous = entry["imps_per_board"]
+        entry["position"] = position
+
+    return {"datum_method": "AVERAGE_ROUNDED_10", "pairs": ranking}, datums
+
+
 def convert_teams(play_path, participants_path, results_path):
     teams = team_participant_map(participants_path)
     enrich_teams(teams, results_path)
+    play_rows = read_dbf(play_path)
+    butler, datums = butler_results(
+        [row for row in play_rows if int(row.get("BOARD") or 0)],
+        team_pair_names(participants_path),
+    )
     all_boards = set()
     grouped = defaultdict(list)
-    for row in read_dbf(play_path):
+    for row in play_rows:
         board = int(row.get("BOARD") or 0)
         if not board:
             continue
@@ -288,7 +382,10 @@ def convert_teams(play_path, participants_path, results_path):
         for row in grouped.get(board_no, []):
             lines.append(team_play_line(row, "H"))
             lines.append(team_play_line(row, "V"))
-        boards.append({"board_no": board_no, "traveller_line": lines})
+        board = {"board_no": board_no, "traveller_line": lines}
+        if board_no in datums:
+            board["butler_datum"] = datums[board_no]
+        boards.append(board)
 
     return {
         "event": {
@@ -300,6 +397,7 @@ def convert_teams(play_path, participants_path, results_path):
             "participants": {"pair": [
                 teams[team] for team in sorted(teams)
             ]},
+            "butler": butler,
             "board": boards,
         }
     }

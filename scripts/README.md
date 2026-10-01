@@ -104,3 +104,11 @@ The generated `TEAMS` JSON contains one participant per team and two Traveller
 lines per played board (`*_H` and `*_V`). BSOL counts the board once per team,
 while the ranking is taken from the team victory points in the result DBF.
 Team conversion is experimental and remains development-only.
+
+The team JSON also contains a Butler ranking (`event.butler`), which BSOL shows
+below the result ranking under the heading "Butlerwertung". For every board the
+datum is the average of all table results (NS view), rounded to the nearest 10;
+each NS pair scores the IMPs of its result against the datum, the opposing EW
+pair the negative value. The pair that sat North/South is taken from the `NS`
+flag (`T`) in the participant DBF. Pairs are ranked by IMPs per board, and each
+board carries its datum in `butler_datum`.

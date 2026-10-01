@@ -871,6 +871,10 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 
 		var dd = pairs[i].dd;
 
+			// Teams count both tables per board, so scale by the counted results to keep the bars within 140px
+		var ddTotal = dd.ddOverH + dd.ddEqualsH + dd.ddUnderH + dd.ddUnknown;
+		if (ddTotal>0) nboards = ddTotal;
+
 		var backColor = "#00CC00";	// Green
 		var width = (140*dd.ddOverH)/(nboards);
 		width = width + "px";
@@ -1334,9 +1338,72 @@ export function setupRanking(keepScrollSetting)
 		setupRankingTable(table,"EW",rankInfo,winners);
 	}
 
+	setupButlerTable();
+
 	showRanking();
 	$("#comparison").hide();
 	$("#checkListDiv").hide();
+}
+
+export function setupButlerTable()
+{
+	var container = document.getElementById("butlerRanking");
+	var table = document.getElementById("butlerTable");
+	if (!container || !table) return;
+
+	var butler = g_travellers && g_travellers.event ? g_travellers.event.butler : undefined;
+	var pairs = butler && Array.isArray(butler.pairs) ? butler.pairs : [];
+
+	table.replaceChildren();
+
+	if ((g_eventType!="Teams")||(pairs.length==0))
+	{
+		container.style.display = "none";
+		return;
+	}
+
+	var de = language=="de";
+	document.getElementById("butlerHeading").textContent = de ? "Butlerwertung" : "Butler ranking";
+
+	var head = table.createTHead();
+	head.className = "t-center";
+	var hrow = head.insertRow(-1);
+	[ "Pos", "Team", de ? "Spieler" : "Players", "IMPs", "Bds", de ? "IMPs/Board" : "IMPs/board" ].forEach(function(text)
+	{
+		var th = document.createElement("th");
+		th.textContent = text;
+		hrow.appendChild(th);
+	});
+
+	var body = table.createTBody();
+
+	pairs.forEach(function(pair, index)
+	{
+		var row = body.insertRow(-1);
+		if (index%2==1) row.className = "results_tr_grey";
+
+		var names = (pair.player || []).map(function(p) { return p.player_name; }).filter(Boolean).join(" / ");
+		var direction = pair.direction=="NS" ? "NS" : (de ? "OW" : "EW");
+		var tied = pairs.filter(function(p) { return p.position==pair.position; }).length>1;
+		var position = (tied ? "=" : "") + pair.position;
+		var perBoard = Number(pair.imps_per_board);
+
+		[
+			position,
+			pair.team_number + " " + direction,
+			names,
+			String(pair.imps),
+			String(pair.boards),
+			Number.isFinite(perBoard) ? perBoard.toFixed(2) : ""
+		].forEach(function(text, col)
+		{
+			var cell = row.insertCell(-1);
+			cell.textContent = text;
+			if (col!=2) cell.style.textAlign = col==1 ? "center" : "right";
+		});
+	});
+
+	container.style.display = "";
 }
 
 export function makeScoreClickFunction(tline)

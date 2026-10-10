@@ -102,7 +102,7 @@ export function changeLanguage(l) {
 
 			document.getElementById("scoring_summary1").textContent = "Zusammenfassung";
 
-			document.getElementById("ascorecard").textContent = "Paaranalyse";
+			document.getElementById("ascorecard").textContent = typeof g_eventType!="undefined" && g_eventType=="Teams" ? "Einzelergebnisse" : "Paaranalyse";
 
 			document.getElementById("video-i").textContent = "Erklärvideo";
 			document.getElementById("clipboard").textContent = "Hole Boards aus der Zwischenablage";
@@ -207,7 +207,7 @@ export function changeLanguage(l) {
 
 			document.getElementById("scoring_summary1").textContent = "Summary";
 
-			document.getElementById("ascorecard").textContent = "Individual analysis";
+			document.getElementById("ascorecard").textContent = typeof g_eventType!="undefined" && g_eventType=="Teams" ? "Individual results" : "Individual analysis";
 
 			document.getElementById("video-i").textContent = "Video";
 			document.getElementById("clipboard").textContent = "Get boards data from clipboard";

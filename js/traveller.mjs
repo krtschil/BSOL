@@ -2016,6 +2016,9 @@ export function loadTraveller_1(data,statusText,jqXHR,context)
 			}
 
 			getSessionInfo();	// Set up details of session.
+			document.getElementById("ascorecard").textContent = g_eventType=="Teams" ?
+				(language=="de" ? "Einzelergebnisse" : "Individual results") :
+				(language=="de" ? "Paaranalyse" : "Individual analysis");
 
 			if (g_eventType=="Teams")
 			{

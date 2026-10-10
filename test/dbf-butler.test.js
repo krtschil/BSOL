@@ -29,6 +29,31 @@ print(json.dumps({
 	assert.deepEqual(out.datum, [100, 10, -10, -110]);
 });
 
+test("team conversion orders NS first and retains round and match summaries", () => {
+	const out = runPython(loader + `
+participants = [
+  {"P_NUMMER": 1, "NS": False, "NAME1": "East", "NAME2": "West"},
+  {"P_NUMMER": 1, "NS": True, "NAME1": "North", "NAME2": "South"},
+  {"P_NUMMER": 2, "NS": True, "NAME1": "Other N", "NAME2": "Other S"},
+  {"P_NUMMER": 2, "NS": False, "NAME1": "Other E", "NAME2": "Other W"},
+]
+results = [{"TEAM_NR": 1, "PLATZ": 1, "PUNKTE": 12}]
+play = [
+  {"BOARD": 1, "RUNDE": 3, "HOME_NS": 1, "HOME_EW": 1, "VISIT_NS": 2, "VISIT_EW": 2,
+   "CONTRACT_H": "1 SA", "CONTRACT_V": "1 SA", "RESVAL_H": 90, "RESVAL_V": -90},
+  {"BOARD": 0, "RUNDE": 3, "HOME_NS": 1, "VISIT_EW": 2, "IMPS_H": 5, "IMPS_V": 0},
+]
+conv.read_dbf = lambda path: {"participants": participants, "results": results, "play": play}[path]
+print(json.dumps(conv.convert_teams("play", "participants", "results")["event"]))`);
+	assert.deepEqual(out.participants.pair[0].player, [
+		{player_name: "North / South"}, {player_name: "East / West"},
+	]);
+	assert.equal(out.board[0].traveller_line[0].round, 3);
+	assert.deepEqual(out.team_matches, [
+		{round: 3, home_team: 1, visiting_team: 2, home_imps: 5, visiting_imps: 0},
+	]);
+});
+
 test("Butler ranking credits NS and EW pairs of both tables", () => {
 	const out = runPython(loader + `
 rows = [

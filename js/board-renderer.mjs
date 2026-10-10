@@ -1,6 +1,6 @@
 import { checkBoardValid } from "./board-utils.mjs";
 import { lott } from "./makeable.mjs";
-import { hide, doPopupNoTimeout } from "./ui-popups.mjs";
+import { doPopupNoTimeout } from "./ui-popups.mjs";
 import { displayHands } from "./hand-renderer.mjs";
 import { convertParContractString, makeBoardNameString } from "./scoring.mjs";
 import { localStorageSupported } from "./storage.mjs";

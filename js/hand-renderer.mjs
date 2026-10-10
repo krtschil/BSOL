@@ -1,5 +1,5 @@
 import { checkBoardValid } from "./board-utils.mjs";
-import { handleHandEntryCardClick, deselectCard } from "./hand-entry.mjs";
+import { handleHandEntryCardClick } from "./hand-entry.mjs";
 import { handlePlayCardClick } from "./play.mjs";
 
 export function roundSym(num,decPlaces) {

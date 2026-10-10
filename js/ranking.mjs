@@ -4,7 +4,7 @@ import { getTindexByName, getTravIndex, getBoardIndex, setCurrentTraveller } fro
 import { getMakeableTricksForContract, getMakeableTricksForLead } from './makeable.mjs';
 import { setBars, addSummarySection, mergeScorecardRows, setLeadForScorecardRow } from './scorecard.mjs';
 import { getCachedAcc } from './accuracy.mjs';
-import { getHands } from './import.mjs';
+import './import.mjs';
 import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps, substituteSuitSymbol } from './scoring.mjs';
 import { hideAllPopups, showNames, hide } from './ui-popups.mjs';
 

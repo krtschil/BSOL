@@ -1,16 +1,16 @@
 import { getTindexByName, getTravellerForBoard, checkBoardValid } from './board-utils.mjs';
-import { getMakeableTricksForContract, calculateMakeableContracts, getMakeableTricksForLead, getRequestedLeads } from './makeable.mjs';
+import { getMakeableTricksForContract, calculateMakeableContracts, getRequestedLeads } from './makeable.mjs';
 import { getHands } from './import.mjs';
 import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo } from './ranking.mjs';
-import { validContract, played, passed, getLeadsIdx, getContractType, scoreContainsAdjustment, makeBoardNameString, substituteSuitSymbol } from './scoring.mjs';
-import { hideMenuItems, showMainMenuItems, show, hideAllPopups, displayError, showNames } from './ui-popups.mjs';
-import { displayHands, drawMiniHand } from './hand-renderer.mjs';
-import { showCredits } from './board-renderer.mjs';
+import { validContract, played, passed, getLeadsIdx, makeBoardNameString, substituteSuitSymbol } from './scoring.mjs';
+import { hideMenuItems, showMainMenuItems, show, hideAllPopups, showNames } from './ui-popups.mjs';
+import { drawMiniHand } from './hand-renderer.mjs';
+import './board-renderer.mjs';
 import { requestPending, setRequestTimeout, doRequestHTMLasync, log } from './network.mjs';
-import { pbnToJson, inferHand, convertHand } from './pbn.mjs';
-import { restartBackgroundWorkers } from './workers.mjs';
+import './pbn.mjs';
+import './workers.mjs';
 import { drawBar, drawBoxedBar } from './scorecard.mjs';
-import { exitHandEntryMode } from './hand-entry.mjs';
+import './hand-entry.mjs';
 
 export function passedOutNavigationHTML(rowButtonsVisibility,score)
 {

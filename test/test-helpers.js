@@ -46,6 +46,7 @@ function loadScript(context, relativePath)
 		// global scope), so imported functions are already plain identifiers
 		// there once their source file has been loaded via loadScript().
 		source = source.replace(/^import\s*\{[^}]*\}\s*from\s*["'][^"']*["'];?\s*$/gm, "");
+		source = source.replace(/^import\s*["'][^"']*["'];?\s*$/gm, "");
 	}
 
 	vm.runInContext(source, context, {filename});

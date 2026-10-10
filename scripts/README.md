@@ -107,6 +107,11 @@ The result analysis also shows a match cross table between the ranking and
 Butler table. Cells contain both teams' victory-point scores and match IMP
 totals for each match; hovering over a team number shows the names of all four
 team members.
+Team individual results use one row per board with separate NS and EW contract,
+declarer, lead and score columns. They also show the score difference, match
+IMPs, datum and Butler IMPs for each pair, followed by the match result.
+The converter preserves round numbers in Traveller lines and match summaries
+(`event.team_matches`), and orders team participants with the NS pair first.
 Team conversion is experimental and remains development-only.
 
 The team JSON also contains a Butler ranking (`event.butler`), which BSOL shows

@@ -5,7 +5,7 @@ import { getMakeableTricksForContract, getMakeableTricksForLead } from './makeab
 import { setBars, addSummarySection, mergeScorecardRows, setLeadForScorecardRow } from './scorecard.mjs';
 import { getCachedAcc } from './accuracy.mjs';
 import { getHands } from './import.mjs';
-import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps } from './scoring.mjs';
+import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps, substituteSuitSymbol } from './scoring.mjs';
 import { hideAllPopups, showNames, hide } from './ui-popups.mjs';
 
 export function comparePositions(a,b)
@@ -1993,6 +1993,129 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 }
 
+export function getTeamBoardResults(event, team)
+{
+	var groups = new Map();
+	event.board.forEach(function(board)
+	{
+		var ns = board.traveller_line.find(function(line) { return String(line.ns_pair_number)==String(team); });
+		var ew = board.traveller_line.find(function(line) { return String(line.ew_pair_number)==String(team); });
+		if (!ns && !ew) return;
+		var opponent = ns ? ns.ew_pair_number : ew.ns_pair_number;
+		var round = (ns || ew).round;
+		var key = String(round) + ":" + opponent;
+		if (!groups.has(key)) groups.set(key, {round: round, opponent: opponent, boards: []});
+		var difference = ns && ew ? Number(ns.score) - Number(ew.score) : null;
+		var datum = board.butler_datum;
+		groups.get(key).boards.push({
+			board: board.board_no, ns: ns, ew: ew,
+			difference: difference,
+			imps: difference===null ? null : convertScoreToImps(difference, 0),
+			datum: datum,
+			butlerNS: ns && typeof datum=="number" ? convertScoreToImps(ns.score, datum) : null,
+			butlerEW: ew && typeof datum=="number" ? convertScoreToImps(datum, ew.score) : null
+		});
+	});
+	var result = Array.from(groups.values());
+	result.forEach(function(group)
+	{
+		group.boards.sort(function(a,b) { return Number(a.board)-Number(b.board); });
+		group.match = (event.team_matches || []).find(function(match)
+		{
+			return match.round==group.round &&
+				((match.home_team==team && match.visiting_team==group.opponent) ||
+				(match.visiting_team==team && match.home_team==group.opponent));
+		});
+	});
+	result.sort(function(a,b) { return Number(a.round || 0)-Number(b.round || 0) || Number(a.boards[0].board)-Number(b.boards[0].board); });
+	return result;
+}
+
+export function setupTeamScorecard()
+{
+	var de = language=="de";
+	var event = g_travellers.event;
+	var team = g_hands.pair_number;
+	var participant = event.participants.pair.find(function(pair) { return pair.pair_number==team; });
+	var table = document.getElementById("teamScoring");
+	table.replaceChildren();
+	var head = table.createTHead();
+	var title = head.insertRow(-1);
+	var titleCell = document.createElement("th");
+	titleCell.colSpan = 16;
+	titleCell.textContent = "Team " + team + " — " + (participant.player || []).map(function(player, index)
+	{
+		return (index==0 ? "NS: " : (de ? "OW: " : "EW: ")) + player.player_name;
+	}).join(" | ");
+	title.appendChild(titleCell);
+	var groupRow = head.insertRow(-1);
+	[["Board",1],["NS",5],[de ? "OW" : "EW",5],
+		[de ? "Differenz" : "Difference",1],["IMPs",1],[de ? "Datumsscore" : "Datum",1],["Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group)
+	{
+		var th = document.createElement("th");
+		th.colSpan = group[1];
+		th.textContent = group[0];
+		groupRow.appendChild(th);
+	});
+	var labels = head.insertRow(-1);
+	[""].concat([de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead","+ NS","− " + (de ? "OW" : "EW")],
+		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead","+ NS","− " + (de ? "OW" : "EW")],["","","","",""]).forEach(function(label)
+	{
+		var th = document.createElement("th");
+		th.textContent = label;
+		labels.appendChild(th);
+	});
+	var body = table.createTBody();
+	getTeamBoardResults(event, team).forEach(function(group)
+	{
+		group.boards.forEach(function(board, index)
+		{
+			var row = body.insertRow(-1);
+			if (index%2) row.className = "results_tr_grey";
+			function tableResult(line)
+			{
+				if (!line) return ["","","","",""];
+				return [line.contract,line.played_by,line.lead,
+					Number(line.score)>=0 ? line.score : "",Number(line.score)<0 ? -Number(line.score) : ""];
+			}
+			[board.board].concat(tableResult(board.ns),tableResult(board.ew),
+				[board.difference,board.imps,board.datum,board.butlerNS,board.butlerEW]).forEach(function(value, column)
+			{
+				var cell = row.insertCell(-1);
+				cell.textContent = value==null ? "" : value;
+				if ((column==1 || column==6) && value)
+					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(value), {RETURN_DOM_FRAGMENT: true}));
+				if ((column==3 || column==8) && value)
+				{
+					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(" " + value.charAt(1)), {RETURN_DOM_FRAGMENT: true}));
+					cell.appendChild(document.createTextNode(value.charAt(0)=="T" ? "10" : value.charAt(0)));
+				}
+				cell.style.textAlign = "center";
+			});
+			row.cells[0].className = "myLink";
+			row.cells[0].onclick = function()
+			{
+				log("operation=selectBoardFromScorecard");
+				setLastBoardIndex(getTindexByName(g_hands.boards, String(board.board)));
+				showComparison();
+			};
+		});
+		var summary = body.insertRow(-1);
+		var cell = summary.insertCell(-1);
+		cell.colSpan = 16;
+		summary.className = "team-match-summary";
+		cell.style.fontWeight = "bold";
+		var own = 0, other = 0;
+		group.boards.forEach(function(board) { if (board.imps>0) own += board.imps; else if (board.imps<0) other -= board.imps; });
+		if (group.match)
+		{
+			own = group.match.home_team==team ? group.match.home_imps : group.match.visiting_imps;
+			other = group.match.home_team==team ? group.match.visiting_imps : group.match.home_imps;
+		}
+		cell.textContent = (de ? "Kampfergebnis: " : "Match result: ") + "Team " + team + " : Team " + group.opponent + " — " + own + ":" + other + " IMPs";
+	});
+}
+
 export function setupScorecard(keepScrollSetting)
 {
 	g_sessionMode = "scorecard";
@@ -2021,6 +2144,22 @@ export function setupScorecard(keepScrollSetting)
 
 		changeCurrentPair(g_hands.pair_number,g_hands.direction);
 		setDefaultContracts();
+	}
+
+	document.getElementById("teamScoring").style.display = g_eventType=="Teams" ? "" : "none";
+	document.getElementById("scoring").parentElement.style.display = g_eventType=="Teams" ? "none" : "";
+	document.getElementById("scoring_summary").parentElement.style.display = g_eventType=="Teams" ? "none" : "";
+	document.getElementById("scores").style.maxWidth = g_eventType=="Teams" ? "calc(100vw - 4rem)" : "";
+	document.getElementById("scores").style.overflowX = g_eventType=="Teams" ? "auto" : "";
+	if (g_eventType=="Teams")
+	{
+		setupTeamScorecard();
+		$("#player_direction").hide();
+		$("#scores").show();
+		hideRanking();
+		$("#comparison").hide();
+		$("#checkListDiv").hide();
+		return;
 	}
 
 	var info = getPlayerInfo(g_hands.pair_number,g_hands.direction);

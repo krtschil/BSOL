@@ -328,6 +328,7 @@ def team_play_line(row, suffix):
             "ns_match_points": "",
             "ew_match_points": "",
             "lindata": None,
+            "round": int(row.get("RUNDE") or 0),
         }
 
 
@@ -425,6 +426,11 @@ def convert_teams(play_path, participants_path, results_path):
     enrich_teams(teams, results_path)
     play_rows = read_dbf(play_path)
     pair_names = team_pair_names(participants_path)
+    for team, participant in teams.items():
+        participant["player"] = [
+            {"player_name": " / ".join(pair_names.get((team, direction), []))}
+            for direction in ("NS", "EW")
+        ]
     butler, datums = butler_results(
         [row for row in play_rows if int(row.get("BOARD") or 0)],
         pair_names,
@@ -464,6 +470,16 @@ def convert_teams(play_path, participants_path, results_path):
                 teams[team] for team in sorted(teams)
             ]},
             "cross_table": cross_table,
+            "team_matches": [
+                {
+                    "round": int(row.get("RUNDE") or 0),
+                    "home_team": int(row.get("HOME_NS") or 0),
+                    "visiting_team": int(row.get("VISIT_EW") or 0),
+                    "home_imps": number(row.get("IMPS_H")),
+                    "visiting_imps": number(row.get("IMPS_V")),
+                }
+                for row in play_rows if not int(row.get("BOARD") or 0)
+            ],
             "butler": butler,
             "board": boards,
         }

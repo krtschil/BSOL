@@ -300,6 +300,56 @@ table.ranking th {
 }
 table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:12px;}
 
+#teamScoring td,
+#teamScoring th {
+  border-right: 1px solid #777;
+}
+
+#teamScoring {
+  margin-bottom: 2rem;
+}
+
+#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+2):nth-child(-n+6),
+#teamScoring thead tr:nth-child(3) th:nth-child(n+2):nth-child(-n+6) {
+  background: #e5f2ff;
+  color: black;
+}
+
+#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+7):nth-child(-n+11),
+#teamScoring thead tr:nth-child(3) th:nth-child(n+7):nth-child(-n+11) {
+  background: #f6eedf;
+  color: black;
+}
+
+#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+12),
+#teamScoring thead tr:nth-child(3) th:nth-child(n+12) {
+  background: #fff9d9;
+  color: black;
+}
+
+#teamScoring tbody td:nth-child(1),
+#teamScoring tbody td:nth-child(6),
+#teamScoring tbody td:nth-child(11),
+#teamScoring thead tr:nth-child(3) th:nth-child(1),
+#teamScoring thead tr:nth-child(3) th:nth-child(6),
+#teamScoring thead tr:nth-child(3) th:nth-child(11),
+#teamScoring thead tr:nth-child(2) th:nth-child(-n+3) {
+  border-right: 2px solid #555;
+}
+
+#teamScoring tbody td:nth-child(5),
+#teamScoring tbody td:nth-child(10),
+#teamScoring thead tr:nth-child(3) th:nth-child(5),
+#teamScoring thead tr:nth-child(3) th:nth-child(10) {
+  border-right: 1px dashed #777;
+}
+
+#teamScoring .team-match-summary td {
+  border-top: 1px solid #777;
+  border-bottom: 2px solid #555;
+  padding: 4px;
+}
+
 .traveller_tr_alt {background-color:#EEEEEE; border:0px solid #DDD;padding:2px;white-space: nowrap;font-size:14px;}
 
 table.traveller H1{text-align:center;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:bold;font-size:18px;color:blue;}

@@ -4,6 +4,42 @@ const fs = require("node:fs");
 const {pathToFileURL} = require("node:url");
 const {createContext, loadScript, root} = require("./test-helpers");
 
+test("team board results combine both tables and preserve rounds and Butler signs", () => {
+	const context = createContext();
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/ranking.mjs");
+	context.g_scoreToImps = [[0, 10, 0], [20, 40, 1], [50, 80, 2], [90, 120, 3], [130, 160, 4]];
+	const event = {
+		board: [
+			{board_no: 2, butler_datum: 100, traveller_line: [
+				{ns_pair_number: "1", ew_pair_number: "2", score: 110, round: 1},
+				{ns_pair_number: "2", ew_pair_number: "1", score: -50, round: 1},
+			]},
+			{board_no: 1, butler_datum: 0, traveller_line: [
+				{ns_pair_number: "1", ew_pair_number: "2", score: 50, round: 1},
+				{ns_pair_number: "2", ew_pair_number: "1", score: 50, round: 1},
+			]},
+			{board_no: 3, traveller_line: [
+				{ns_pair_number: "1", ew_pair_number: "2", score: 0, round: 2},
+				{ns_pair_number: "2", ew_pair_number: "1", score: 0, round: 2},
+			]},
+		],
+		team_matches: [{round: 1, home_team: 2, visiting_team: 1, home_imps: 0, visiting_imps: 4}],
+	};
+	const groups = context.getTeamBoardResults(event, "1");
+	assert.equal(groups.length, 2);
+	assert.equal(groups[0].boards[0].board, 1);
+	assert.equal(groups[0].boards[1].difference, 160);
+	assert.equal(groups[0].boards[1].imps, 4);
+	assert.equal(groups[0].boards[1].butlerNS, 0);
+	assert.equal(groups[0].boards[1].butlerEW, 4);
+	assert.equal(groups[0].match.visiting_imps, 4);
+	assert.equal(groups[1].boards[0].butlerNS, null);
+	const reverse = context.getTeamBoardResults(event, 2);
+	assert.equal(reverse[0].boards[1].difference, -160);
+	assert.equal(reverse[0].boards[1].imps, -4);
+});
+
 test("converts a PBN file into valid board JSON", () => {
 	const context = createContext({
 		g_fullInfo: false,

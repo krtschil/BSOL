@@ -2080,8 +2080,8 @@ export function setupTeamScorecard()
 	boardHeader.className = "team-scoring-header team-scoring-board-header";
 	groupRow.insertBefore(boardHeader, groupRow.firstChild);
 	var labels = head.insertRow(-1);
-	[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")].concat(
-		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")],
+	[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","NS","OW"].concat(
+		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","NS","OW"],
 		["NS","OW"]).forEach(function(label, index)
 	{
 		var th = document.createElement("th");

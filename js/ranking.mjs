@@ -2051,15 +2051,17 @@ export function setupTeamScorecard()
 	title.appendChild(titleCell);
 	var groupRow = head.insertRow(-1);
 	[["NS",6],[de ? "OW" : "EW",6],
-		[de ? "Diff." : "Diff.",1],["IMPs",2],[de ? "Datums-score" : "Datum-score",1],[de ? "Butler NS" : "Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group, index)
+		["Diff.",1],["IMPs",2],[de ? "Datums-score" : "Datum-score",1],[de ? "Butler NS" : "Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group, index)
 	{
 		var th = document.createElement("th");
 		th.colSpan = group[1];
-		if (index>=4)
+		if (index==2 || index>=4)
 		{
 			th.rowSpan = 2;
 			th.classList.add("team-scoring-rowspan-header");
 		}
+		if (index==2)
+			th.classList.add("team-scoring-group-end");
 		if (index==4)
 		{
 			th.appendChild(document.createTextNode(de ? "Datums-" : "Datum-"));

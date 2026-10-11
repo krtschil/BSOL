@@ -2042,27 +2042,59 @@ export function setupTeamScorecard()
 	var head = table.createTHead();
 	var title = head.insertRow(-1);
 	var titleCell = document.createElement("th");
-	titleCell.colSpan = 16;
+	titleCell.colSpan = 19;
+	titleCell.className = "team-scoring-title";
 	titleCell.textContent = "Team " + team + " — " + (participant.player || []).map(function(player, index)
 	{
 		return (index==0 ? "NS: " : (de ? "OW: " : "EW: ")) + player.player_name;
 	}).join(" | ");
 	title.appendChild(titleCell);
 	var groupRow = head.insertRow(-1);
-	[["Board",1],["NS",5],[de ? "OW" : "EW",5],
-		[de ? "Differenz" : "Difference",1],["IMPs",1],[de ? "Datumsscore" : "Datum",1],["Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group)
+	[["NS",6],[de ? "OW" : "EW",6],
+		["Diff.",1],["IMPs",2],[de ? "Datums-score" : "Datum-score",1],[de ? "Butler NS" : "Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group, index)
 	{
 		var th = document.createElement("th");
 		th.colSpan = group[1];
-		th.textContent = group[0];
+		if (index==2 || index>=4)
+		{
+			th.rowSpan = 2;
+			th.classList.add("team-scoring-rowspan-header");
+		}
+		if (index==2)
+			th.classList.add("team-scoring-group-end");
+		if (index==4)
+		{
+			th.appendChild(document.createTextNode(de ? "Datums-" : "Datum-"));
+			th.appendChild(document.createElement("br"));
+			th.appendChild(document.createTextNode(de ? "score" : "score"));
+		}
+		else if (index==5 || index==6)
+		{
+			th.appendChild(document.createTextNode("Butler"));
+			th.appendChild(document.createElement("br"));
+			th.appendChild(document.createTextNode(index==5 ? "NS" : (de ? "OW" : "EW")));
+		}
+		else
+			th.textContent = group[0];
+		th.className = "team-scoring-header team-scoring-group";
+		if (index<4 || index==4 || index==5) th.classList.add("team-scoring-group-end");
 		groupRow.appendChild(th);
 	});
+	var boardHeader = document.createElement("th");
+	boardHeader.rowSpan = 2;
+	boardHeader.textContent = "Board";
+	boardHeader.className = "team-scoring-header team-scoring-board-header";
+	groupRow.insertBefore(boardHeader, groupRow.firstChild);
 	var labels = head.insertRow(-1);
-	[""].concat([de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead","+ NS","− " + (de ? "OW" : "EW")],
-		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead","+ NS","− " + (de ? "OW" : "EW")],["","","","",""]).forEach(function(label)
+	[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","NS","OW"].concat(
+		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","NS","OW"],
+		["NS","OW"]).forEach(function(label, index)
 	{
 		var th = document.createElement("th");
 		th.textContent = label;
+		th.className = "team-scoring-header team-scoring-subheader";
+		if (index==5 || index==11 || index==12 || index==14 || index==15 || index==16) th.classList.add("team-scoring-group-end");
+		if (index==4 || index==10 || index==13 || index==16) th.classList.add("team-scoring-dashed");
 		labels.appendChild(th);
 	});
 	var body = table.createTBody();
@@ -2071,26 +2103,35 @@ export function setupTeamScorecard()
 		group.boards.forEach(function(board, index)
 		{
 			var row = body.insertRow(-1);
-			if (index%2) row.className = "results_tr_grey";
+			row.className = "team-board-row" + (index%2 ? " results_tr_grey" : "");
 			function tableResult(line)
 			{
-				if (!line) return ["","","","",""];
-				return [line.contract,line.played_by,line.lead,
+				if (!line) return ["","","","","",""];
+				var trickDifference = "";
+				if (validContract(line.contract) && line.tricks!=="")
+				{
+					trickDifference = Number(line.tricks) - (6 + Number(line.contract.charAt(0)));
+					if (trickDifference==0) trickDifference = "=";
+					else if (trickDifference>0) trickDifference = "+" + trickDifference;
+				}
+				return [line.contract,line.played_by,line.lead,trickDifference,
 					Number(line.score)>=0 ? line.score : "",Number(line.score)<0 ? -Number(line.score) : ""];
 			}
 			[board.board].concat(tableResult(board.ns),tableResult(board.ew),
-				[board.difference,board.imps,board.datum,board.butlerNS,board.butlerEW]).forEach(function(value, column)
+				[board.difference,board.imps>0 ? board.imps : "",board.imps<0 ? -board.imps : "",
+					board.datum,board.butlerNS,board.butlerEW]).forEach(function(value, column)
 			{
 				var cell = row.insertCell(-1);
 				cell.textContent = value==null ? "" : value;
-				if ((column==1 || column==6) && value)
+				if ((column==1 || column==7) && value)
 					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(value), {RETURN_DOM_FRAGMENT: true}));
-				if ((column==3 || column==8) && value)
+				if ((column==3 || column==9) && value)
 				{
 					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(" " + value.charAt(1)), {RETURN_DOM_FRAGMENT: true}));
 					cell.appendChild(document.createTextNode(value.charAt(0)=="T" ? "10" : value.charAt(0)));
 				}
-				cell.style.textAlign = "center";
+				cell.style.textAlign = column==0 || (column>=4 && column<=6) ||
+					(column>=10 && column<=18) ? "right" : "center";
 			});
 			row.cells[0].className = "myLink";
 			row.cells[0].onclick = function()
@@ -2102,7 +2143,7 @@ export function setupTeamScorecard()
 		});
 		var summary = body.insertRow(-1);
 		var cell = summary.insertCell(-1);
-		cell.colSpan = 16;
+		cell.colSpan = 19;
 		summary.className = "team-match-summary";
 		cell.style.fontWeight = "bold";
 		var own = 0, other = 0;
@@ -2112,7 +2153,24 @@ export function setupTeamScorecard()
 			own = group.match.home_team==team ? group.match.home_imps : group.match.visiting_imps;
 			other = group.match.home_team==team ? group.match.visiting_imps : group.match.home_imps;
 		}
-		cell.textContent = (de ? "Kampfergebnis: " : "Match result: ") + "Team " + team + " : Team " + group.opponent + " — " + own + ":" + other + " IMPs";
+		cell.textContent = (de ? "Kampfergebnis: " : "Match result: ") + "Team " + team + " : ";
+		var opponentLink = document.createElement("span");
+		opponentLink.textContent = "Team " + group.opponent;
+		opponentLink.className = "myLink";
+		opponentLink.style.fontWeight = "bold";
+		var opponent = event.participants.pair.find(function(pair) { return pair.pair_number==group.opponent; });
+		if (opponent)
+		{
+			opponentLink.title = (opponent.player || []).map(function(player) { return player.player_name; }).join("\n");
+		}
+		opponentLink.onclick = function()
+		{
+			changeCurrentPair(group.opponent, 1);
+			setDefaultContracts();
+			setupScorecard();
+		};
+		cell.appendChild(opponentLink);
+		cell.appendChild(document.createTextNode(" — " + own + ":" + other + " IMPs"));
 	});
 }
 

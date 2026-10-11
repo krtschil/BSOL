@@ -2055,6 +2055,11 @@ export function setupTeamScorecard()
 	{
 		var th = document.createElement("th");
 		th.colSpan = group[1];
+		if (index>=4)
+		{
+			th.rowSpan = 2;
+			th.classList.add("team-scoring-rowspan-header");
+		}
 		if (index==4)
 		{
 			th.appendChild(document.createTextNode(de ? "Datums-" : "Datum-"));
@@ -2075,7 +2080,7 @@ export function setupTeamScorecard()
 	var labels = head.insertRow(-1);
 	[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")].concat(
 		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")],
-		["","NS","OW","","",""]).forEach(function(label, index)
+		["NS","OW"]).forEach(function(label, index)
 	{
 		var th = document.createElement("th");
 		th.textContent = label;

@@ -328,6 +328,10 @@ table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
   vertical-align: bottom;
 }
 
+#teamScoring thead th.team-scoring-rowspan-header {
+  vertical-align: bottom;
+}
+
 #teamScoring thead th.team-scoring-group-end {
   border-right: 2px solid #555;
 }
@@ -337,19 +341,19 @@ table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 }
 
 #teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+2):nth-child(-n+7),
-#teamScoring thead tr:nth-child(3) th:nth-child(n+2):nth-child(-n+7) {
+#teamScoring thead tr:nth-child(3) th:nth-child(-n+6) {
   background: #e5f2ff;
   color: black;
 }
 
 #teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+8):nth-child(-n+13),
-#teamScoring thead tr:nth-child(3) th:nth-child(n+8):nth-child(-n+13) {
+#teamScoring thead tr:nth-child(3) th:nth-child(n+7):nth-child(-n+12) {
   background: #f6eedf;
   color: black;
 }
 
 #teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+14),
-#teamScoring thead tr:nth-child(3) th:nth-child(n+14) {
+#teamScoring thead tr:nth-child(n+3) th:nth-child(n+13) {
   background: #fff9d9;
   color: black;
 }

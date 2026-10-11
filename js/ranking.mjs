@@ -2068,6 +2068,12 @@ export function setupTeamScorecard()
 			th.appendChild(document.createElement("br"));
 			th.appendChild(document.createTextNode(de ? "score" : "score"));
 		}
+		else if (index==5 || index==6)
+		{
+			th.appendChild(document.createTextNode("Butler"));
+			th.appendChild(document.createElement("br"));
+			th.appendChild(document.createTextNode(index==5 ? "NS" : (de ? "OW" : "EW")));
+		}
 		else
 			th.textContent = group[0];
 		th.className = "team-scoring-header team-scoring-group";

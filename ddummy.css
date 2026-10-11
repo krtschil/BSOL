@@ -340,8 +340,12 @@ table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
 
 #teamScoring tbody td:nth-child(6),
 #teamScoring tbody td:nth-child(12),
+#teamScoring tbody td:nth-child(15),
+#teamScoring tbody td:nth-child(18),
 #teamScoring thead tr:nth-child(3) th:nth-child(6),
-#teamScoring thead tr:nth-child(3) th:nth-child(12) {
+#teamScoring thead tr:nth-child(3) th:nth-child(12),
+#teamScoring thead tr:nth-child(3) th:nth-child(15),
+#teamScoring thead tr:nth-child(3) th:nth-child(18) {
   border-right: 1px dashed #777;
 }
 

@@ -2043,27 +2043,45 @@ export function setupTeamScorecard()
 	var title = head.insertRow(-1);
 	var titleCell = document.createElement("th");
 	titleCell.colSpan = 19;
+	titleCell.className = "team-scoring-title";
 	titleCell.textContent = "Team " + team + " — " + (participant.player || []).map(function(player, index)
 	{
 		return (index==0 ? "NS: " : (de ? "OW: " : "EW: ")) + player.player_name;
 	}).join(" | ");
 	title.appendChild(titleCell);
 	var groupRow = head.insertRow(-1);
-	[["Board",1],["NS",6],[de ? "OW" : "EW",6],
-		[de ? "Differenz" : "Difference",1],["IMPs",2],[de ? "Datumsscore" : "Datum",1],["Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group)
+	[["NS",6],[de ? "OW" : "EW",6],
+		[de ? "Diff." : "Diff.",1],["IMPs",2],[de ? "Datums-score" : "Datum-score",1],[de ? "Butler NS" : "Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group, index)
 	{
 		var th = document.createElement("th");
 		th.colSpan = group[1];
-		th.textContent = group[0];
+		if (index==4)
+		{
+			th.appendChild(document.createTextNode(de ? "Datums-" : "Datum-"));
+			th.appendChild(document.createElement("br"));
+			th.appendChild(document.createTextNode(de ? "score" : "score"));
+		}
+		else
+			th.textContent = group[0];
+		th.className = "team-scoring-header team-scoring-group";
+		if (index<4 || index==4 || index==5) th.classList.add("team-scoring-group-end");
 		groupRow.appendChild(th);
 	});
+	var boardHeader = document.createElement("th");
+	boardHeader.rowSpan = 2;
+	boardHeader.textContent = "Board";
+	boardHeader.className = "team-scoring-header team-scoring-board-header";
+	groupRow.insertBefore(boardHeader, groupRow.firstChild);
 	var labels = head.insertRow(-1);
-	[""].concat([de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")],
+	[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")].concat(
 		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")],
-		["","NS","OW","","",""]).forEach(function(label)
+		["","NS","OW","","",""]).forEach(function(label, index)
 	{
 		var th = document.createElement("th");
 		th.textContent = label;
+		th.className = "team-scoring-header team-scoring-subheader";
+		if (index==5 || index==11 || index==12 || index==14 || index==15 || index==16) th.classList.add("team-scoring-group-end");
+		if (index==4 || index==10 || index==13 || index==16) th.classList.add("team-scoring-dashed");
 		labels.appendChild(th);
 	});
 	var body = table.createTBody();
@@ -2072,7 +2090,7 @@ export function setupTeamScorecard()
 		group.boards.forEach(function(board, index)
 		{
 			var row = body.insertRow(-1);
-			if (index%2) row.className = "results_tr_grey";
+			row.className = "team-board-row" + (index%2 ? " results_tr_grey" : "");
 			function tableResult(line)
 			{
 				if (!line) return ["","","","","",""];
@@ -2099,7 +2117,8 @@ export function setupTeamScorecard()
 					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(" " + value.charAt(1)), {RETURN_DOM_FRAGMENT: true}));
 					cell.appendChild(document.createTextNode(value.charAt(0)=="T" ? "10" : value.charAt(0)));
 				}
-				cell.style.textAlign = "center";
+				cell.style.textAlign = column==0 || (column>=4 && column<=6) ||
+					(column>=10 && column<=18) ? "right" : "center";
 			});
 			row.cells[0].className = "myLink";
 			row.cells[0].onclick = function()
@@ -2125,6 +2144,7 @@ export function setupTeamScorecard()
 		var opponentLink = document.createElement("span");
 		opponentLink.textContent = "Team " + group.opponent;
 		opponentLink.className = "myLink";
+		opponentLink.style.fontWeight = "bold";
 		var opponent = event.participants.pair.find(function(pair) { return pair.pair_number==group.opponent; });
 		if (opponent)
 		{

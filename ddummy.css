@@ -309,38 +309,39 @@ table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;paddi
   margin-bottom: 2rem;
 }
 
-#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+2):nth-child(-n+6),
-#teamScoring thead tr:nth-child(3) th:nth-child(n+2):nth-child(-n+6) {
+#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+2):nth-child(-n+7),
+#teamScoring thead tr:nth-child(3) th:nth-child(n+2):nth-child(-n+7) {
   background: #e5f2ff;
   color: black;
 }
 
-#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+7):nth-child(-n+11),
-#teamScoring thead tr:nth-child(3) th:nth-child(n+7):nth-child(-n+11) {
+#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+8):nth-child(-n+13),
+#teamScoring thead tr:nth-child(3) th:nth-child(n+8):nth-child(-n+13) {
   background: #f6eedf;
   color: black;
 }
 
-#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+12),
-#teamScoring thead tr:nth-child(3) th:nth-child(n+12) {
+#teamScoring tbody tr:not(.team-match-summary) td:nth-child(n+14),
+#teamScoring thead tr:nth-child(3) th:nth-child(n+14) {
   background: #fff9d9;
   color: black;
 }
 
 #teamScoring tbody td:nth-child(1),
-#teamScoring tbody td:nth-child(6),
-#teamScoring tbody td:nth-child(11),
+#teamScoring tbody td:nth-child(7),
+#teamScoring tbody td:nth-child(13),
+#teamScoring tbody td:nth-child(16),
 #teamScoring thead tr:nth-child(3) th:nth-child(1),
-#teamScoring thead tr:nth-child(3) th:nth-child(6),
-#teamScoring thead tr:nth-child(3) th:nth-child(11),
-#teamScoring thead tr:nth-child(2) th:nth-child(-n+3) {
+#teamScoring thead tr:nth-child(3) th:nth-child(7),
+#teamScoring thead tr:nth-child(3) th:nth-child(13),
+#teamScoring thead tr:nth-child(2) th:nth-child(-n+5) {
   border-right: 2px solid #555;
 }
 
-#teamScoring tbody td:nth-child(5),
-#teamScoring tbody td:nth-child(10),
-#teamScoring thead tr:nth-child(3) th:nth-child(5),
-#teamScoring thead tr:nth-child(3) th:nth-child(10) {
+#teamScoring tbody td:nth-child(6),
+#teamScoring tbody td:nth-child(12),
+#teamScoring thead tr:nth-child(3) th:nth-child(6),
+#teamScoring thead tr:nth-child(3) th:nth-child(12) {
   border-right: 1px dashed #777;
 }
 

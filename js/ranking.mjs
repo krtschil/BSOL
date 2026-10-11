@@ -2042,15 +2042,15 @@ export function setupTeamScorecard()
 	var head = table.createTHead();
 	var title = head.insertRow(-1);
 	var titleCell = document.createElement("th");
-	titleCell.colSpan = 16;
+	titleCell.colSpan = 19;
 	titleCell.textContent = "Team " + team + " — " + (participant.player || []).map(function(player, index)
 	{
 		return (index==0 ? "NS: " : (de ? "OW: " : "EW: ")) + player.player_name;
 	}).join(" | ");
 	title.appendChild(titleCell);
 	var groupRow = head.insertRow(-1);
-	[["Board",1],["NS",5],[de ? "OW" : "EW",5],
-		[de ? "Differenz" : "Difference",1],["IMPs",1],[de ? "Datumsscore" : "Datum",1],["Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group)
+	[["Board",1],["NS",6],[de ? "OW" : "EW",6],
+		[de ? "Differenz" : "Difference",1],["IMPs",2],[de ? "Datumsscore" : "Datum",1],["Butler NS",1],[de ? "Butler OW" : "Butler EW",1]].forEach(function(group)
 	{
 		var th = document.createElement("th");
 		th.colSpan = group[1];
@@ -2058,8 +2058,9 @@ export function setupTeamScorecard()
 		groupRow.appendChild(th);
 	});
 	var labels = head.insertRow(-1);
-	[""].concat([de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead","+ NS","− " + (de ? "OW" : "EW")],
-		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead","+ NS","− " + (de ? "OW" : "EW")],["","","","",""]).forEach(function(label)
+	[""].concat([de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")],
+		[de ? "Kontrakt" : "Contract",de ? "von" : "By",de ? "Ausspiel" : "Lead",de ? "Stiche" : "Tricks","+ NS","− " + (de ? "OW" : "EW")],
+		["","NS","OW","","",""]).forEach(function(label)
 	{
 		var th = document.createElement("th");
 		th.textContent = label;
@@ -2074,18 +2075,26 @@ export function setupTeamScorecard()
 			if (index%2) row.className = "results_tr_grey";
 			function tableResult(line)
 			{
-				if (!line) return ["","","","",""];
-				return [line.contract,line.played_by,line.lead,
+				if (!line) return ["","","","","",""];
+				var trickDifference = "";
+				if (validContract(line.contract) && line.tricks!=="")
+				{
+					trickDifference = Number(line.tricks) - (6 + Number(line.contract.charAt(0)));
+					if (trickDifference==0) trickDifference = "=";
+					else if (trickDifference>0) trickDifference = "+" + trickDifference;
+				}
+				return [line.contract,line.played_by,line.lead,trickDifference,
 					Number(line.score)>=0 ? line.score : "",Number(line.score)<0 ? -Number(line.score) : ""];
 			}
 			[board.board].concat(tableResult(board.ns),tableResult(board.ew),
-				[board.difference,board.imps,board.datum,board.butlerNS,board.butlerEW]).forEach(function(value, column)
+				[board.difference,board.imps>0 ? board.imps : "",board.imps<0 ? -board.imps : "",
+					board.datum,board.butlerNS,board.butlerEW]).forEach(function(value, column)
 			{
 				var cell = row.insertCell(-1);
 				cell.textContent = value==null ? "" : value;
-				if ((column==1 || column==6) && value)
+				if ((column==1 || column==7) && value)
 					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(value), {RETURN_DOM_FRAGMENT: true}));
-				if ((column==3 || column==8) && value)
+				if ((column==3 || column==9) && value)
 				{
 					cell.replaceChildren(DOMPurify.sanitize(substituteSuitSymbol(" " + value.charAt(1)), {RETURN_DOM_FRAGMENT: true}));
 					cell.appendChild(document.createTextNode(value.charAt(0)=="T" ? "10" : value.charAt(0)));
@@ -2102,7 +2111,7 @@ export function setupTeamScorecard()
 		});
 		var summary = body.insertRow(-1);
 		var cell = summary.insertCell(-1);
-		cell.colSpan = 16;
+		cell.colSpan = 19;
 		summary.className = "team-match-summary";
 		cell.style.fontWeight = "bold";
 		var own = 0, other = 0;
@@ -2112,7 +2121,23 @@ export function setupTeamScorecard()
 			own = group.match.home_team==team ? group.match.home_imps : group.match.visiting_imps;
 			other = group.match.home_team==team ? group.match.visiting_imps : group.match.home_imps;
 		}
-		cell.textContent = (de ? "Kampfergebnis: " : "Match result: ") + "Team " + team + " : Team " + group.opponent + " — " + own + ":" + other + " IMPs";
+		cell.textContent = (de ? "Kampfergebnis: " : "Match result: ") + "Team " + team + " : ";
+		var opponentLink = document.createElement("span");
+		opponentLink.textContent = "Team " + group.opponent;
+		opponentLink.className = "myLink";
+		var opponent = event.participants.pair.find(function(pair) { return pair.pair_number==group.opponent; });
+		if (opponent)
+		{
+			opponentLink.title = (opponent.player || []).map(function(player) { return player.player_name; }).join("\n");
+		}
+		opponentLink.onclick = function()
+		{
+			changeCurrentPair(group.opponent, 1);
+			setDefaultContracts();
+			setupScorecard();
+		};
+		cell.appendChild(opponentLink);
+		cell.appendChild(document.createTextNode(" — " + own + ":" + other + " IMPs"));
 	});
 }
 

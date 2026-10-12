@@ -739,7 +739,7 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		}
 	}
 
-	var cellOffset = 0;
+	var cellOffset = g_eventType!="Teams" && g_validPercentageFields ? 1 : 0;
 
 	if (g_eventType=="Teams")
 	{
@@ -816,7 +816,12 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		if (g_eventType!="Teams")
 		{
 			if (g_validPercentageFields)
-				row.cells[3+cellOffset].innerHTML = pairs[i].percentage;
+			{
+				row.cells[3].textContent = pairs[i].total_score;
+				row.cells[3].style.textAlign = "right";
+				row.cells[3+cellOffset].textContent = pairs[i].percentage==="" ? "" : Number(pairs[i].percentage).toFixed(1);
+				row.cells[3+cellOffset].style.textAlign = "right";
+			}
 			else
 				row.cells[3+cellOffset].innerHTML = Number(pairs[i].total_score).toFixed(2);
 		}
@@ -1280,11 +1285,6 @@ export function setupRanking(keepScrollSetting)
 
 	ddComparisonAll();
 
-	if (table.rows[0].cells.length==5)
-		colcount = 6;
-	else
-		colcount = 8;
-
 	switch(language)
 	{
 		case "de":
@@ -1294,9 +1294,12 @@ export function setupRanking(keepScrollSetting)
 			table.rows[0].cells[2].textContent = "Players";
 	}
 
-	if (g_eventType=="Teams") table.rows[0].cells[1].textContent = "Team";
+	table.rows[0].cells[1].textContent = g_eventType=="Teams" ? "Team" : (language=="de" ? "Paar" : "Pair");
 
 	while (rows.length>1) table.deleteRow(-1);
+	while (rows[0].cells.length>5) rows[0].deleteCell(3);
+	rows[0].cells[3].textContent = "%";
+	cellOffset = 0;
 
 	if (g_eventType=="Teams")
 	{
@@ -1311,6 +1314,14 @@ export function setupRanking(keepScrollSetting)
 		cellOffset = 2;	// Allow for extra column which has been inserted.
 		rows[0].cells[3 + cellOffset].textContent = "XImps/Board";
 	}
+	else if (g_validPercentageFields)
+	{
+		var mpHeader = document.createElement("th");
+		mpHeader.textContent = "MP";
+		rows[0].insertBefore(mpHeader, rows[0].cells[3]);
+		cellOffset = 1;
+	}
+	colcount = 6 + cellOffset;
 
 	if ((winners!="1")&&(g_eventType!="Teams"))
 	{

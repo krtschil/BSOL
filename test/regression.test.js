@@ -4,6 +4,95 @@ const fs = require("node:fs");
 const {pathToFileURL} = require("node:url");
 const {createContext, loadScript, root} = require("./test-helpers");
 
+test("pair ranking shows MP and one decimal percent without changing IMP or team columns", () => {
+	function cell() {
+		return {style: {}, textContent: "", innerHTML: "", colSpan: 1};
+	}
+	function row() {
+		return {
+			cells: [],
+			insertCell(index) {
+				const value = cell();
+				this.cells.splice(index<0 ? this.cells.length : index, 0, value);
+				return value;
+			},
+			deleteCell(index) { this.cells.splice(index, 1); },
+			appendChild(value) { this.cells.push(value); },
+			insertBefore(value, before) { this.cells.splice(this.cells.indexOf(before), 0, value); },
+		};
+	}
+	const table = {
+		rows: [row()],
+		insertRow() {
+			const value = row();
+			this.rows.push(value);
+			return value;
+		},
+		deleteRow(index) { this.rows.splice(index, 1); },
+	};
+	for (let i=0; i<5; i++) table.rows[0].insertCell(-1);
+	const pairs = [
+		{pair: 1, direction: 1, boardsPlayed: 12, percentage: "55.6789", percent: 55.6789, total_score: "123.5",
+			samePosition: "", position: 1, crossImpsBoardsPlayed: 24, crossImpsPerBoard: 1,
+			dd: {ddOverH: 0, ddEqualsH: 0, ddUnderH: 0, ddUnknown: 12}},
+		{pair: 2, direction: 2, boardsPlayed: 12, percentage: "50", percent: 50, total_score: "100",
+			samePosition: "", position: 2, crossImpsBoardsPlayed: 24, crossImpsPerBoard: 0,
+			dd: {ddOverH: 0, ddEqualsH: 0, ddUnderH: 0, ddUnknown: 12}},
+	];
+	const context = createContext({
+		g_hands: {pair_number: 1, direction: 1},
+		g_eventType: "Paarturnier", g_scoring: "MatchPoints", g_validPercentageFields: true,
+		g_travellers: {event: {participants: {pair: pairs}}},
+		document: {
+			getElementById: (id) => id==="rankingNS" ? table : null,
+			createElement: () => cell(),
+		},
+		$: () => ({hide() {}, show() {}}),
+	});
+	loadScript(context, "js/ranking.mjs");
+	Object.assign(context, {
+		getSessionInfo: () => ({singleWinner: false}),
+		getRankingInfo: () => ({rankNS: [pairs[0]], rankEW: [pairs[1]], rankCombined: pairs}),
+		getPlayerInfo: () => ({pair_number: 1, direction: 1, player1: "A", player2: "B"}),
+		ddComparisonAll() {}, setButtonColor() {}, hideAllPopups() {}, setCurrentTraveller() {},
+		showRanking() {},
+	});
+	for (let i=0; i<2; i++) {
+		context.setupRanking(true);
+		assert.equal(table.rows[0].cells.length, 6);
+		assert.equal(table.rows[0].cells[3].textContent, "MP");
+		assert.equal(table.rows[0].cells[4].textContent, "%");
+		assert.equal(table.rows[1].cells[0].colSpan, 7);
+		assert.equal(table.rows[2].cells.length, 7);
+		assert.equal(table.rows[2].cells[3].textContent, "123.5");
+		assert.equal(table.rows[2].cells[4].textContent, "55.7");
+		assert.equal(table.rows[3].cells[0].colSpan, 7);
+		assert.equal(table.rows[4].cells[4].textContent, "50.0");
+		assert.match(table.rows[4].cells[6].innerHTML, /width:141px/);
+	}
+	context.g_validPercentageFields = false;
+	context.g_scoring = "IMP";
+	context.setupRanking(true);
+	assert.equal(table.rows[0].cells.length, 5);
+	assert.equal(table.rows[0].cells[3].textContent, "Points");
+	assert.equal(table.rows[2].cells.length, 6);
+	assert.equal(table.rows[2].cells[3].innerHTML, "123.50");
+	context.g_eventType = "Teams";
+	context.g_scoring = "VP";
+	context.setupRanking(true);
+	assert.equal(table.rows[0].cells.length, 7);
+	assert.equal(table.rows[0].cells[3].textContent, "Victory points");
+	assert.equal(table.rows[1].cells.length, 8);
+	assert.equal(table.rows[1].cells[3].innerHTML, "123.50");
+	context.g_eventType = "Paarturnier";
+	context.g_scoring = "MatchPoints";
+	context.g_validPercentageFields = true;
+	context.setupRanking(true);
+	assert.equal(table.rows[0].cells.length, 6);
+	assert.equal(table.rows[0].cells[1].textContent, "Pair");
+	assert.equal(table.rows[2].cells[4].textContent, "55.7");
+});
+
 test("team board results combine both tables and preserve rounds and Butler signs", () => {
 	const context = createContext();
 	loadScript(context, "js/scoring.mjs");

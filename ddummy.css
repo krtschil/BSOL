@@ -300,6 +300,10 @@ table.ranking th {
 }
 table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:12px;}
 
+#rankingNS td:not(:last-child) {
+  border-right: 1px solid #aaa;
+}
+
 #teamScoring td,
 #teamScoring th {
   border-right: 1px solid #777;

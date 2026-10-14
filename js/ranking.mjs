@@ -818,7 +818,7 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		{
 			if (g_validPercentageFields)
 			{
-				row.cells[3].textContent = pairs[i].total_score==="" ? "" : Number(pairs[i].total_score).toFixed(1);
+				row.cells[3].textContent = Number(pairs[i].plusMpts).toFixed(1);
 				row.cells[3].style.textAlign = "right";
 				row.cells[3+cellOffset].textContent = pairs[i].percentage==="" ? "" : Number(pairs[i].percentage).toFixed(1);
 				row.cells[3+cellOffset].style.textAlign = "right";
@@ -1537,6 +1537,9 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 	var rows = table.rows;
 	var srows = stable.rows;
 	while (rows.length>2) table.deleteRow(-1);
+	var showMatchPoints = g_eventType!="Teams" && g_scoring!="IMP";
+	document.getElementById("scoring9").style.display = showMatchPoints ? "" : "none";
+	document.getElementById("scoring9").style.borderRight = "1px solid #aaa";
 
 	var upperLimit;
 
@@ -1604,7 +1607,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 							table.insertRow(-1);
 							var row = table.rows[table.rows.length-1];
 							row.insertCell(-1);
-							row.cells[0].colSpan = 13;
+							row.cells[0].colSpan = 14;
 							row.cells[0].style.backgroundColor = "#FFFF88";
 							row.cells[0].style.borderRight = "1px solid #cccccc";
 
@@ -1670,7 +1673,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var k;
 
-								for (k=0;k<12+g_ofs;k++)
+								for (k=0;k<13+g_ofs;k++)
 								{
 									row.insertCell(-1);
 								}
@@ -1736,6 +1739,10 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var nspts = Number(tline.ns_match_points);
 								var ewpts = Number(tline.ew_match_points);
+								var resultColumn = 10+g_ofs;
+								row.cells[9+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts).toFixed(1) : "";
+								row.cells[9+g_ofs].style.display = showMatchPoints ? "" : "none";
+								row.cells[9+g_ofs].style.borderRight = "1px solid #aaa";
 
 								if (g_scoring!="IMP")
 									value = 100*(nspts/(nspts + ewpts));
@@ -1759,7 +1766,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								if (g_scoring!="IMP")
 								{
 									value = parseFloat(Math.round(value * 100) / 100).toFixed(0);
-									row.cells[9+g_ofs].innerHTML = value + "%";
+									row.cells[resultColumn].innerHTML = value + "%";
 								}
 								else
 								{
@@ -1769,13 +1776,13 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									{
 										if (tdirection==1)
 										{
-											row.cells[9+g_ofs].innerHTML = nspts;
+											row.cells[resultColumn].innerHTML = nspts;
 											sumOfCrossImps += nspts;	// Add to this total for summary section in case cross imp or aggregate scoring used
 											crossImpBoards++;
 										}
 										else
 										{
-											row.cells[9+g_ofs].innerHTML = ewpts;	// Add to this total for summary section in case cross imp or aggregate scoring used
+											row.cells[resultColumn].innerHTML = ewpts;	// Add to this total for summary section in case cross imp or aggregate scoring used
 											sumOfCrossImps += ewpts;
 											crossImpBoards++;
 										}
@@ -1784,7 +1791,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									{
 										if (tdirection==1)
 										{
-											row.cells[9+g_ofs].innerHTML = tline.crossImpsNS;
+											row.cells[resultColumn].innerHTML = tline.crossImpsNS;
 											sumOfCrossImps += Number(tline.crossImpsNS);
 
 											if (tline.crossImpsNS!=="")
@@ -1792,7 +1799,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 										}
 										else
 										{
-											row.cells[9+g_ofs].innerHTML = tline.crossImpsEW;
+											row.cells[resultColumn].innerHTML = tline.crossImpsEW;
 											sumOfCrossImps += Number(tline.crossImpsEW);
 
 											if (tline.crossImpsEW!=="")
@@ -1801,13 +1808,13 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									}
 								}
 
-								row.cells[9+g_ofs].style.textAlign = "right";
+								row.cells[resultColumn].style.textAlign = "right";
 
 								try {
 									if ((typeof tline.board)!="undefined")
 									{
-										row.cells[9+g_ofs].onclick = function(){var row=this.parentNode;var bd=row.cells[0].innerHTML;log('button=acc2');showPlayAnalysis(bd);};
-										row.cells[9+g_ofs].className = "myLink";
+										row.cells[resultColumn].onclick = function(){var row=this.parentNode;var bd=row.cells[0].innerHTML;log('button=acc2');showPlayAnalysis(bd);};
+										row.cells[resultColumn].className = "myLink";
 									}
 								} catch (err) {};
 
@@ -1815,7 +1822,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var width = (100*value)/100;
 
-								setBars(row.cells,100-width,10+g_ofs,100,"#FF0000","#00FF00",50);
+								setBars(row.cells,100-width,11+g_ofs,100,"#FF0000","#00FF00",50);
 
 								if (validContract(tline.contract))
 								{
@@ -1990,7 +1997,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 	table.insertRow(-1);
 	row = table.rows[table.rows.length-1];
 	row.insertCell(-1);
-	row.cells[0].colSpan=12+g_ofs;
+	row.cells[0].colSpan=13+g_ofs;
 	row.cells[0].style.whiteSpace = "normal";
 	row.cells[0].style.borderTop = "1px solid black";
 	row.cells[0].style.borderRight = "1px solid #cccccc";

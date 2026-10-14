@@ -975,6 +975,29 @@ textarea:focus-visible,
   margin-bottom:1em;
 }
 
+#travellerTable td:nth-child(1),
+#travellerTable td:nth-child(3),
+#travellerTable td:nth-child(4),
+#travellerTable td:nth-child(6),
+#travellerTable td:nth-child(8),
+#travellerTable td:nth-child(9),
+#travellerTable td:nth-child(12),
+#travellerTable td:nth-child(14),
+#travellerTable td:nth-child(15) {
+  border-right:1px dashed #777;
+}
+
+#travellerTable tr:nth-child(2) th:nth-child(1),
+#travellerTable tr:nth-child(2) th:nth-child(3),
+#travellerTable tr:nth-child(2) th:nth-child(4),
+#travellerTable tr:nth-child(2) th:nth-child(6),
+#travellerTable tr:nth-child(2) th:nth-child(8),
+#travellerTable tr:nth-child(2) th:nth-child(12),
+#travellerTable tr:nth-child(2) th:nth-child(14),
+#travellerTable tr:nth-child(2) th:nth-child(15) {
+  border-right:1px dashed #777;
+}
+
 #minihand {
   border:1px solid black;
   border-radius:10px;

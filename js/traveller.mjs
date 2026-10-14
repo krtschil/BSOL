@@ -822,6 +822,11 @@ export function displayTraveller(pdirection)
 		else
 			rows[0].cells[5].textContent = "Cross Imps";
 	}
+	var showMatchPoints = g_scoring!="IMP";
+	["travellerTable19","travellerTable20","travellerTable21"].forEach(function(id)
+	{
+		document.getElementById(id).style.display = showMatchPoints ? "" : "none";
+	});
 
 	if (pdirection==2)
 	{
@@ -928,7 +933,7 @@ export function displayTraveller(pdirection)
 
 			var m;
 
-			for (m=0;m<14;m++)
+			for (m=0;m<16;m++)
 				row.insertCell(-1);
 
 			row.cells[0].innerHTML = tline.ns_pair_number;
@@ -1105,6 +1110,12 @@ export function displayTraveller(pdirection)
 			row.cells[10].innerHTML = tline.score;
 			row.cells[10].style.textAlign="right";
 			row.cells[10].className = "divide";
+			row.cells[11].textContent = showMatchPoints && tline.ns_match_points!=null ? tline.ns_match_points : "";
+			row.cells[11].style.textAlign = "right";
+			row.cells[11].style.display = showMatchPoints ? "" : "none";
+			row.cells[12].textContent = showMatchPoints && tline.ew_match_points!=null ? tline.ew_match_points : "";
+			row.cells[12].style.textAlign = "right";
+			row.cells[12].style.display = showMatchPoints ? "" : "none";
 
 			if (tline.ns_pair_number!="")
 			{
@@ -1137,15 +1148,15 @@ export function displayTraveller(pdirection)
 					}
 				}
 
-				if (g_scoring!="IMP") row.cells[11].innerHTML = percentNS + "%";
+				if (g_scoring!="IMP") row.cells[13].innerHTML = percentNS + "%";
 				else if (g_eventType!="Teams")
-					row.cells[11].innerHTML = tline.ns_match_points;
+					row.cells[13].innerHTML = tline.ns_match_points;
 				else
 				{
-					row.cells[11].innerHTML = tline.crossImpsNS;
+					row.cells[13].innerHTML = tline.crossImpsNS;
 				}
 
-				row.cells[11].style.textAlign="right";
+				row.cells[13].style.textAlign="right";
 
 				var colorNS  = green;
 				var colorEW = red;
@@ -1166,22 +1177,22 @@ export function displayTraveller(pdirection)
 				var pbar2 = "<div style=\"float:left;width:50px;min-width;50px;max-width:50px;height:16px;border:none;border-left:0px;background-color:" + backColor + ";\"><div style=\"float:left;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width;
 				pbar2 = pbar2 + ";background-color:" + colorEW + ";\"></div></div>";
 
-				row.cells[12].style.minWidth = "104px";
-				row.cells[12].innerHTML = pbar+pbar2;
+				row.cells[14].style.minWidth = "104px";
+				row.cells[14].innerHTML = pbar+pbar2;
 
-				if (g_scoring!="IMP") row.cells[13].innerHTML = percentEW + "%";
+				if (g_scoring!="IMP") row.cells[15].innerHTML = percentEW + "%";
 				else if (g_eventType!="Teams")
-					row.cells[13].innerHTML = tline.ew_match_points;
+					row.cells[15].innerHTML = tline.ew_match_points;
 				else
 				{
-					row.cells[13].innerHTML = (tline.crossImpsEW);
+					row.cells[15].innerHTML = (tline.crossImpsEW);
 				}
 
-				row.cells[13].style.textAlign="right";
+				row.cells[15].style.textAlign="right";
 			}
 			else
 			{
-				row.cells[11].colSpan=3;
+				row.cells[11].colSpan=5;
 				row.cells[11].style.textAlign = "center";
 				switch(language)
 				{
@@ -1191,6 +1202,8 @@ export function displayTraveller(pdirection)
 					default:
 						row.cells[11].textContent = "--- Optimum Contract ---";
 				}
+				row.deleteCell(15);
+				row.deleteCell(14);
 				row.deleteCell(13);
 				row.deleteCell(12);
 			}

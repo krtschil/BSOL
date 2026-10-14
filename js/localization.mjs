@@ -74,6 +74,7 @@ export function changeLanguage(l) {
 			document.getElementById("travellerTable3").textContent = "Zu erfüllen";
 			document.getElementById("travellerTable4").textContent = "Double Dummy";
 			document.getElementById("travellerTable5").textContent = "Anschrift";
+			document.getElementById("travellerTable19").textContent = "MP";
 			document.getElementById("travellerTable6").textContent = "Prozent";
 
 			document.getElementById("travellerTable7").textContent = "NS";
@@ -86,6 +87,8 @@ export function changeLanguage(l) {
 			document.getElementById("travellerTable14").textContent = "Ziel";
 			document.getElementById("travellerTable15").textContent = "Erfüllt";
 			document.getElementById("travellerTable16").textContent = "(NS)";
+			document.getElementById("travellerTable20").textContent = "NS";
+			document.getElementById("travellerTable21").textContent = "OW";
 			document.getElementById("travellerTable17").textContent = "NS";
 			document.getElementById("travellerTable18").textContent = "OW";
 
@@ -180,6 +183,7 @@ export function changeLanguage(l) {
 			document.getElementById("travellerTable3").textContent = "Making";
 			document.getElementById("travellerTable4").textContent = "Double Dummy";
 			document.getElementById("travellerTable5").textContent = "Score";
+			document.getElementById("travellerTable19").textContent = "MP";
 			document.getElementById("travellerTable6").textContent = "Percentage";
 			document.getElementById("travellerTable7").textContent = "NS";
 			document.getElementById("travellerTable8").textContent = "EW";
@@ -191,6 +195,8 @@ export function changeLanguage(l) {
 			document.getElementById("travellerTable14").textContent = "Target";
 			document.getElementById("travellerTable15").textContent = "Made";
 			document.getElementById("travellerTable16").textContent = "(NS)";
+			document.getElementById("travellerTable20").textContent = "NS";
+			document.getElementById("travellerTable21").textContent = "EW";
 			document.getElementById("travellerTable17").textContent = "NS";
 			document.getElementById("travellerTable18").textContent = "EW";
 

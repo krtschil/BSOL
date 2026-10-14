@@ -798,6 +798,7 @@ textarea:focus-visible,
 #travellerDIV {
   max-width:100%;
   overflow-x:auto;
+  padding-bottom:1em;
 }
 
 #abuttons, #runremote, #scoreandtraveller, #loadFile, #forwardPlay {

@@ -818,7 +818,7 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		{
 			if (g_validPercentageFields)
 			{
-				row.cells[3].textContent = pairs[i].total_score==="" ? "" : Number(pairs[i].total_score).toFixed(1);
+				row.cells[3].textContent = Number(pairs[i].plusMpts).toFixed(1);
 				row.cells[3].style.textAlign = "right";
 				row.cells[3+cellOffset].textContent = pairs[i].percentage==="" ? "" : Number(pairs[i].percentage).toFixed(1);
 				row.cells[3+cellOffset].style.textAlign = "right";

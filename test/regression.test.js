@@ -32,10 +32,10 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	};
 	for (let i=0; i<5; i++) table.rows[0].insertCell(-1);
 	const pairs = [
-		{pair: 1, direction: 1, boardsPlayed: 12, percentage: "55.6789", percent: 55.6789, total_score: "123.5",
+		{pair: 1, direction: 1, boardsPlayed: 12, percentage: "55.6789", percent: 55.6789, total_score: "123.5", plusMpts: 74.5,
 			samePosition: "", position: 1, crossImpsBoardsPlayed: 24, crossImpsPerBoard: 1,
 			dd: {ddOverH: 0, ddEqualsH: 0, ddUnderH: 0, ddUnknown: 12}},
-		{pair: 2, direction: 2, boardsPlayed: 12, percentage: "50", percent: 50, total_score: "100",
+		{pair: 2, direction: 2, boardsPlayed: 12, percentage: "50", percent: 50, total_score: "100", plusMpts: 60,
 			samePosition: "", position: 2, crossImpsBoardsPlayed: 24, crossImpsPerBoard: 0,
 			dd: {ddOverH: 0, ddEqualsH: 0, ddUnderH: 0, ddUnknown: 12}},
 	];
@@ -65,10 +65,10 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 		assert.equal(table.rows[1].cells[0].colSpan, 7);
 		assert.equal(table.rows[2].cells.length, 7);
 		assert.equal(table.rows[2].cells[1].style.textAlign, "right");
-		assert.equal(table.rows[2].cells[3].textContent, "123.5");
+		assert.equal(table.rows[2].cells[3].textContent, "74.5");
 		assert.equal(table.rows[2].cells[4].textContent, "55.7");
 		assert.equal(table.rows[3].cells[0].colSpan, 7);
-		assert.equal(table.rows[4].cells[3].textContent, "100.0");
+		assert.equal(table.rows[4].cells[3].textContent, "60.0");
 		assert.equal(table.rows[4].cells[4].textContent, "50.0");
 		assert.match(table.rows[4].cells[6].innerHTML, /width:141px/);
 	}

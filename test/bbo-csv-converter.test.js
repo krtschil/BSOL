@@ -41,6 +41,8 @@ test("BBO Extractor CSV converts to BSOL Traveller JSON", () => {
 	assert.equal(played.lead, "TC");
 	assert.equal(played.tricks, 10);
 	assert.equal(played.score, 420);
+	assert.equal(played.ns_match_points, 6);
+	assert.equal(played.ew_match_points, 4);
 	assert.equal(played.ew_score, -420);
 	assert.equal(played.lindata, "qx||ah|Board%201|");
 

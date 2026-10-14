@@ -1109,10 +1109,10 @@ export function displayTraveller(pdirection)
 			row.cells[10].innerHTML = tline.score;
 			row.cells[10].style.textAlign="right";
 			row.cells[10].className = "divide";
-			row.cells[11].textContent = showMatchPoints && tline.ns_match_points!=null ? tline.ns_match_points : "";
+			row.cells[11].textContent = showMatchPoints && tline.ns_match_points!=null && tline.ns_match_points!=="" ? Number(tline.ns_match_points).toFixed(1) : "";
 			row.cells[11].style.textAlign = "right";
 			row.cells[11].style.display = showMatchPoints ? "" : "none";
-			row.cells[12].textContent = showMatchPoints && tline.ew_match_points!=null ? tline.ew_match_points : "";
+			row.cells[12].textContent = showMatchPoints && tline.ew_match_points!=null && tline.ew_match_points!=="" ? Number(tline.ew_match_points).toFixed(1) : "";
 			row.cells[12].style.textAlign = "right";
 			row.cells[12].style.display = showMatchPoints ? "" : "none";
 			row.cells[12].style.borderRight = "1px solid #aaa";

@@ -1740,7 +1740,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								var nspts = Number(tline.ns_match_points);
 								var ewpts = Number(tline.ew_match_points);
 								var resultColumn = 10+g_ofs;
-								row.cells[9+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts) : "";
+								row.cells[9+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts).toFixed(1) : "";
 								row.cells[9+g_ofs].style.display = showMatchPoints ? "" : "none";
 								row.cells[9+g_ofs].style.borderRight = "1px solid #aaa";
 

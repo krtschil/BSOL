@@ -96,6 +96,10 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 });
 
 test("pair board scorecard shows own matchpoints before percentage in both sort modes", () => {
+	const scorecardHtml = fs.readFileSync(`${root}/html/overlays.html`, "utf8");
+	assert.match(scorecardHtml, /<th id="scoring9">MP<\/th>/);
+	assert.doesNotMatch(scorecardHtml, /<th id="scoring9" rowspan=/);
+
 	function createRow() {
 		return {
 			cells: [],
@@ -150,7 +154,7 @@ test("pair board scorecard shows own matchpoints before percentage in both sort 
 		mergeScorecardRows() {},
 	});
 	const line = {
-		ns_pair_number: 1, ew_pair_number: 2, ns_match_points: 6.5, ew_match_points: 3.5,
+		ns_pair_number: 1, ew_pair_number: 2, ns_match_points: 6.567, ew_match_points: 3.433,
 		score: 100, contract: "1NT", tricks: 7,
 	};
 	const info = {player1: "Player One", player2: "Player Two", pair_found: true};
@@ -159,17 +163,17 @@ test("pair board scorecard shows own matchpoints before percentage in both sort 
 	const roleSortedRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(roleSortedRow);
 	assert.equal(roleSortedRow.cells.length, 14);
-	assert.equal(Number(roleSortedRow.cells[10].textContent), 3.5);
-	assert.equal(roleSortedRow.cells[11].innerHTML, "35%");
+	assert.equal(roleSortedRow.cells[10].textContent, "3.4");
+	assert.equal(roleSortedRow.cells[11].innerHTML, "34%");
 
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
 	const resultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(resultRow);
 	assert.equal(matchPointsHeader.style.display, "");
 	assert.equal(resultRow.cells.length, 14);
-	assert.equal(Number(resultRow.cells[10].textContent), 3.5);
+	assert.equal(resultRow.cells[10].textContent, "3.4");
 	assert.equal(resultRow.cells[10].style.borderRight, "1px solid #aaa");
-	assert.equal(resultRow.cells[11].innerHTML, "35%");
+	assert.equal(resultRow.cells[11].innerHTML, "34%");
 	assert.equal(barsColumn, 12);
 
 	context.g_scoring = "IMP";
@@ -177,7 +181,7 @@ test("pair board scorecard shows own matchpoints before percentage in both sort 
 	const impResultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.equal(matchPointsHeader.style.display, "none");
 	assert.equal(impResultRow.cells[10].style.display, "none");
-	assert.equal(Number(impResultRow.cells[11].innerHTML), 3.5);
+	assert.equal(Number(impResultRow.cells[11].innerHTML), 3.433);
 });
 
 test("team board results combine both tables and preserve rounds and Butler signs", () => {

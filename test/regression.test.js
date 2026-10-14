@@ -95,6 +95,91 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	assert.equal(table.rows[2].cells[4].textContent, "55.7");
 });
 
+test("pair board scorecard shows own matchpoints before percentage in both sort modes", () => {
+	function createRow() {
+		return {
+			cells: [],
+			style: {},
+			insertCell() {
+				const value = {style: {}, textContent: "", innerHTML: ""};
+				this.cells.push(value);
+				return value;
+			},
+		};
+	}
+	function createTable() {
+		return {
+			rows: [createRow(), createRow()],
+			insertRow() {
+				const value = createRow();
+				this.rows.push(value);
+				return value;
+			},
+			deleteRow(index) { this.rows.splice(index, 1); },
+		};
+	}
+	const table = createTable();
+	const stable = createTable();
+	const matchPointsHeader = {style: {}};
+	let barsColumn;
+	const context = createContext({
+		g_eventType: "Paarturnier",
+		g_scoring: "MatchPoints",
+		g_maxImps: 20,
+		g_ofs: 1,
+		g_currentTraveller: null,
+		g_scorecardContext: [],
+		g_hands: {direction: 2, boards: []},
+		document: {
+			getElementById: (id) => id==="scoring9" ? matchPointsHeader : null,
+		},
+	});
+	loadScript(context, "js/ranking.mjs");
+	Object.assign(context, {
+		g_scorecardContext: [],
+		setBars(cells, value, column) {
+			barsColumn = column;
+		},
+		sortTravellerLines() {},
+		getPlayerAndRole: () => ({found: true, tdirection: 2, declarer_pair: false, first: true, opp_pair: 2}),
+		getPlayerInfo: () => ({player1: "Player One", player2: "Player Two"}),
+		validContract: () => false,
+		played: () => true,
+		passed: () => false,
+		addSummarySection() {},
+		mergeScorecardRows() {},
+	});
+	const line = {
+		ns_pair_number: 1, ew_pair_number: 2, ns_match_points: 6.5, ew_match_points: 3.5,
+		score: 100, contract: "1NT", tricks: 7,
+	};
+	const info = {player1: "Player One", player2: "Player Two", pair_found: true};
+	const session = {singleWinner: false};
+	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, false);
+	const roleSortedRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
+	assert.ok(roleSortedRow);
+	assert.equal(roleSortedRow.cells.length, 14);
+	assert.equal(Number(roleSortedRow.cells[10].textContent), 3.5);
+	assert.equal(roleSortedRow.cells[11].innerHTML, "35%");
+
+	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
+	const resultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
+	assert.ok(resultRow);
+	assert.equal(matchPointsHeader.style.display, "");
+	assert.equal(resultRow.cells.length, 14);
+	assert.equal(Number(resultRow.cells[10].textContent), 3.5);
+	assert.equal(resultRow.cells[10].style.borderRight, "1px solid #aaa");
+	assert.equal(resultRow.cells[11].innerHTML, "35%");
+	assert.equal(barsColumn, 12);
+
+	context.g_scoring = "IMP";
+	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
+	const impResultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
+	assert.equal(matchPointsHeader.style.display, "none");
+	assert.equal(impResultRow.cells[10].style.display, "none");
+	assert.equal(Number(impResultRow.cells[11].innerHTML), 3.5);
+});
+
 test("team board results combine both tables and preserve rounds and Butler signs", () => {
 	const context = createContext();
 	loadScript(context, "js/scoring.mjs");

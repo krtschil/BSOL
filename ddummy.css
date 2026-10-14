@@ -1791,3 +1791,7 @@ table.ranking td.divide
 {
   border-right:1px solid black;
 }
+
+#travellerTable21 {
+  border-right: 1px solid #aaa;
+}

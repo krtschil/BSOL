@@ -827,7 +827,6 @@ export function displayTraveller(pdirection)
 	{
 		document.getElementById(id).style.display = showMatchPoints ? "" : "none";
 	});
-
 	if (pdirection==2)
 	{
 		sign = -1;
@@ -1116,7 +1115,7 @@ export function displayTraveller(pdirection)
 			row.cells[12].textContent = showMatchPoints && tline.ew_match_points!=null ? tline.ew_match_points : "";
 			row.cells[12].style.textAlign = "right";
 			row.cells[12].style.display = showMatchPoints ? "" : "none";
-
+			row.cells[12].style.borderRight = "1px solid #aaa";
 			if (tline.ns_pair_number!="")
 			{
 				var percentNS,percentEW;

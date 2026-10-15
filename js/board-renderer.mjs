@@ -2,7 +2,7 @@ import { checkBoardValid } from "./board-utils.mjs";
 import { lott } from "./makeable.mjs";
 import { doPopupNoTimeout } from "./ui-popups.mjs";
 import { displayHands } from "./hand-renderer.mjs";
-import { convertParContractString, makeBoardNameString } from "./scoring.mjs";
+import { convertParContractString, makeBoardNameString, validContract } from "./scoring.mjs";
 import { localStorageSupported } from "./storage.mjs";
 
 export function updateUpperLeftQuadrant(boardIndex)
@@ -466,6 +466,30 @@ export function updateParResults(data,pindex)
 
 	index = ews.indexOf("-");
 	if (index==-1) ews = "+" + ews;
+
+	var optimumContracts = [];
+	var seenOptimumContracts = {};
+	[
+		{contracts: nsc, score: Number(data.scoreNS.substring(3))},
+		{contracts: ewc, score: -Number(data.scoreEW.substring(3))},
+	].forEach(function(result)
+	{
+		var direction = "";
+		var contracts = result.contracts.substring(3);
+		var pattern = /(?:(NS|EW|N|S|E|W)\s+)?([1-7](?:NT|[CDHSN])(?:X{1,2})?(?:[+-]\d+)?)/gi;
+		for (var match of contracts.matchAll(pattern))
+		{
+			if (match[1]) direction = match[1].toUpperCase();
+			var contract = match[2].replace(/[+-]\d+$/,"").replace(/^([1-7])N(?!T)/,"$1NT").replace(/[xX]/g,"*");
+			var key = direction + ":" + contract + ":" + result.score;
+			if (direction && validContract(contract)&&!seenOptimumContracts[key])
+			{
+				seenOptimumContracts[key] = true;
+				optimumContracts.push({direction: direction, contract: contract, score: String(result.score)});
+			}
+		}
+	});
+	g_hands.boards[pindex].OptimumContracts = optimumContracts;
 
 	nsc = nsc.substring(3).trim();
 	ewc = ewc.substring(3).trim();

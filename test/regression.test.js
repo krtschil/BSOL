@@ -4,6 +4,124 @@ const fs = require("node:fs");
 const {pathToFileURL} = require("node:url");
 const {createContext, loadScript, root} = require("./test-helpers");
 
+test("parses only valid entries from OptimumScore", () => {
+	const context = createContext();
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/traveller.mjs");
+
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore(""))), []);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N 3N+1,; +430"))), [
+		{direction: "N", contract: "3NT", score: "+430"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N 3NT; +430"))), [
+		{direction: "N", contract: "3NT", score: "+430"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,EW 3N; -420"))), [
+		{direction: "NS", contract: "4H", score: "-420"},
+		{direction: "EW", contract: "3NT", score: "-420"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 3NT; +400<br>EW 3NT; -400"))), [
+		{direction: "NS", contract: "3NT", score: "+400"},
+		{direction: "EW", contract: "3NT", score: "-400"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4<span style='color:red'>&#9829;</span>x, NS 4&#9824;x; +500"))), [
+		{direction: "NS", contract: "4H*", score: "+500"},
+		{direction: "NS", contract: "4S*", score: "+500"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,NS 4S; +420<br>EW 3N; -400"))), [
+		{direction: "NS", contract: "4H", score: "+420"},
+		{direction: "NS", contract: "4S", score: "+420"},
+		{direction: "EW", contract: "3NT", score: "-400"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N/A; 0"))), []);
+});
+
+test("sorts optimal contracts together after played traveller rows", () => {
+	const context = createContext({
+		returnPoints: () => 0,
+		comparePairNumbers: (a, b) => String(a).localeCompare(String(b)),
+	});
+	loadScript(context, "js/traveller.mjs");
+	const playedOne = {ns_pair_number: "1", ew_pair_number: "2", contract: "4H", played_by: "N"};
+	const optimumOne = {ns_pair_number: "", ew_pair_number: "", contract: "4S", played_by: "NS"};
+	const playedTwo = {ns_pair_number: "3", ew_pair_number: "4", contract: "3NT", played_by: "E"};
+	const optimumTwo = {ns_pair_number: "", ew_pair_number: "", contract: "4H", played_by: "NS"};
+	const lines = [playedOne, optimumOne, playedTwo, optimumTwo];
+
+	context.sortTravellerLines(lines, 1);
+
+	assert.deepEqual(lines.slice(-2).map((line) => line.contract).sort(), ["4H", "4S"]);
+	assert.ok(lines.slice(0, -2).every((line) => line.ns_pair_number!==""));
+});
+
+test("Board sorting puts optimal contracts first and orders scores from their direction", () => {
+	const context = createContext({
+		returnPoints: () => 0,
+		comparePairNumbers: (a, b) => String(a).localeCompare(String(b)),
+	});
+	loadScript(context, "js/traveller.mjs");
+	const playedRows = [
+		{ns_pair_number: "1", ew_pair_number: "2", contract: "7NT", played_by: "N", score: "-100"},
+		{ns_pair_number: "3", ew_pair_number: "4", contract: "1C", played_by: "S", score: "400"},
+		{ns_pair_number: "5", ew_pair_number: "6", contract: "4H", played_by: "E", score: "140"},
+		{ns_pair_number: "7", ew_pair_number: "8", contract: "NP", played_by: "", score: "60%"},
+	];
+	const optimum = [
+		{ns_pair_number: "", ew_pair_number: "", contract: "4S", played_by: "NS", score: "420"},
+		{ns_pair_number: "", ew_pair_number: "", contract: "4H", played_by: "NS", score: "420"},
+	];
+	for (const direction of [1, 2]) {
+		const lines = [playedRows[0], optimum[0], ...playedRows.slice(1), optimum[1]];
+		context.sortTravellerLines(lines, 3-direction, direction);
+		assert.ok(lines.slice(0, 2).every((line) => line.ns_pair_number===""));
+		assert.deepEqual(lines.slice(2).map((line) => line.score),
+			direction===1 ? ["400", "140", "-100", "60%"] : ["-100", "140", "400", "60%"]);
+	}
+});
+
+test("solver results preserve optimal contracts and directions for the Board view", () => {
+	const context = createContext({
+		g_hands: {boards: [{OptimumScore: ""}]},
+		g_lastBindex: -1,
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/board-renderer.mjs");
+	loadScript(context, "js/traveller.mjs");
+
+	context.updateParResults({
+		contractsNS: "NS:NS 3C+1, NS 3D",
+		contractsEW: "EW:EW 4H",
+		scoreNS: "NS 130",
+		scoreEW: "EW 420",
+	}, 0);
+
+	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
+		{direction: "NS", contract: "3C", score: "130"},
+		{direction: "NS", contract: "3D", score: "130"},
+		{direction: "EW", contract: "4H", score: "-420"},
+	]);
+	context.updateParResults({
+		contractsNS: "NS:EW 3N",
+		contractsEW: "EW:EW 3N",
+		scoreNS: "NS -400",
+		scoreEW: "EW 400",
+	}, 0);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
+		{direction: "EW", contract: "3NT", score: "-400"},
+	]);
+	context.updateParResults({
+		contractsNS: "NS:NS 5Hx, NS 5Cx",
+		contractsEW: "EW:NS 5Hx, NS 5Cx",
+		scoreNS: "NS -300",
+		scoreEW: "EW 300",
+	}, 0);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
+		{direction: "NS", contract: "5H*", score: "-300"},
+		{direction: "NS", contract: "5C*", score: "-300"},
+	]);
+	assert.equal(JSON.parse(JSON.stringify(context.parseOptimumScore("3&#9827;; +130"))).length, 0);
+});
+
 test("pair ranking shows MP and one decimal percent without changing IMP or team columns", () => {
 	function cell() {
 		return {style: {}, textContent: "", innerHTML: "", colSpan: 1};

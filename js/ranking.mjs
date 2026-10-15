@@ -1758,6 +1758,8 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								row.cells[12+g_ofs].style.display = showMatchPoints ? "" : "none";
 								row.cells[12+g_ofs].style.textAlign = "right";
 								row.cells[12+g_ofs].style.borderRight = "1px solid #aaa";
+								if (showMatchPoints)
+									row.cells[(tdirection==1 ? 11 : 12)+g_ofs].style.backgroundColor = "#b8f5a2";
 
 								if (g_scoring!="IMP")
 									value = 100*(nspts/(nspts + ewpts));

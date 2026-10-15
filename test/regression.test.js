@@ -287,6 +287,8 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	assert.equal(roleSortedRow.cells[11].textContent, "");
 	assert.equal(roleSortedRow.cells[12].textContent, "6.6");
 	assert.equal(roleSortedRow.cells[13].textContent, "3.4");
+	assert.equal(roleSortedRow.cells[13].style.backgroundColor, "#b8f5a2");
+	assert.equal(roleSortedRow.cells[12].style.backgroundColor, undefined);
 	assert.equal(roleSortedRow.cells[14].innerHTML, "34%");
 
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
@@ -299,6 +301,8 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	assert.equal(resultRow.cells[11].style.borderRight, "1px solid #aaa");
 	assert.equal(resultRow.cells[12].textContent, "6.6");
 	assert.equal(resultRow.cells[13].textContent, "3.4");
+	assert.equal(resultRow.cells[13].style.backgroundColor, "#b8f5a2");
+	assert.equal(resultRow.cells[12].style.backgroundColor, undefined);
 	assert.equal(resultRow.cells[14].innerHTML, "34%");
 	assert.equal(barsColumn, 15);
 	assert.equal(matchPointsNSHeader.style.display, "");
@@ -314,7 +318,10 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	assert.equal(matchPointsNSHeader.style.display, "none");
 	assert.equal(matchPointsEWHeader.style.display, "none");
 	assert.equal(Number(impResultRow.cells[14].innerHTML), 3.433);
+	assert.equal(impResultRow.cells[12].style.backgroundColor, undefined);
+	assert.equal(impResultRow.cells[13].style.backgroundColor, undefined);
 
+	context.g_scoring = "MatchPoints";
 	for (const direction of [1, 2]) {
 		context.getPlayerAndRole = () => ({found: true, tdirection: direction, declarer_pair: false, first: true, opp_pair: 2});
 		for (const score of [100, -400, 0, "", undefined, "60%"]) {
@@ -323,6 +330,8 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 			const scoreRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 			assert.equal(String(scoreRow.cells[10].textContent), score===-400 ? "" : String(score ?? ""));
 			assert.equal(scoreRow.cells[11].textContent, score===-400 ? "400" : "");
+			assert.equal(scoreRow.cells[direction==1 ? 12 : 13].style.backgroundColor, "#b8f5a2");
+			assert.equal(scoreRow.cells[direction==1 ? 13 : 12].style.backgroundColor, undefined);
 		}
 	}
 });

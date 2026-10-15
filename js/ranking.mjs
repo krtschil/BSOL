@@ -1536,7 +1536,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 	var rows = table.rows;
 	var srows = stable.rows;
-	while (rows.length>2) table.deleteRow(-1);
+	while (rows.length>3) table.deleteRow(-1);
 	var showMatchPoints = g_eventType!="Teams" && g_scoring!="IMP";
 	document.getElementById("scoring9").style.display = showMatchPoints ? "" : "none";
 	document.getElementById("scoring9").style.borderRight = "1px solid #aaa";
@@ -1607,7 +1607,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 							table.insertRow(-1);
 							var row = table.rows[table.rows.length-1];
 							row.insertCell(-1);
-							row.cells[0].colSpan = 15;
+							row.cells[0].colSpan = 16;
 							row.cells[0].style.backgroundColor = "#FFFF88";
 							row.cells[0].style.borderRight = "1px solid #cccccc";
 
@@ -1673,7 +1673,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var k;
 
-								for (k=0;k<14+g_ofs;k++)
+								for (k=0;k<15+g_ofs;k++)
 								{
 									row.insertCell(-1);
 								}
@@ -1740,15 +1740,17 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								var nspts = Number(tline.ns_match_points);
 								var ewpts = Number(tline.ew_match_points);
 								var score = tline.score;
-								row.cells[9+g_ofs].textContent = score!=null && String(score).trim()!=="" && Number.isFinite(Number(score))
-									? (Number(score)>0 ? "+" + Number(score) : String(Number(score)))
-									: (score ?? "");
+								var numericScore = score!=null && String(score).trim()!=="" && Number.isFinite(Number(score));
+								row.cells[9+g_ofs].textContent = numericScore ? (Number(score)>=0 ? String(Number(score)) : "") : (score ?? "");
+								row.cells[10+g_ofs].textContent = numericScore && Number(score)<0 ? String(-Number(score)) : "";
 								row.cells[9+g_ofs].style.textAlign = "right";
-								row.cells[9+g_ofs].style.borderRight = "1px solid #aaa";
-								var resultColumn = 11+g_ofs;
-								row.cells[10+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts).toFixed(1) : "";
-								row.cells[10+g_ofs].style.display = showMatchPoints ? "" : "none";
+								row.cells[9+g_ofs].style.borderRight = "1px dashed #aaa";
+								row.cells[10+g_ofs].style.textAlign = "right";
 								row.cells[10+g_ofs].style.borderRight = "1px solid #aaa";
+								var resultColumn = 12+g_ofs;
+								row.cells[11+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts).toFixed(1) : "";
+								row.cells[11+g_ofs].style.display = showMatchPoints ? "" : "none";
+								row.cells[11+g_ofs].style.borderRight = "1px solid #aaa";
 
 								if (g_scoring!="IMP")
 									value = 100*(nspts/(nspts + ewpts));
@@ -1828,7 +1830,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var width = (100*value)/100;
 
-								setBars(row.cells,100-width,12+g_ofs,100,"#FF0000","#00FF00",50);
+								setBars(row.cells,100-width,13+g_ofs,100,"#FF0000","#00FF00",50);
 
 								if (validContract(tline.contract))
 								{
@@ -1998,7 +2000,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 		addSummarySection(stable,playedInRoleCombined,sumOfPercentCombined,sumOfCrossImpsCombined,crossImpBoardsCombined,etfAchievedCombined,etfBoardsCombined,etfTotalCombined);
 	}
 
-	if (sortedBoards) mergeScorecardRows(table,table.rows.length-2,1);
+	if (sortedBoards) mergeScorecardRows(table,table.rows.length-3,1);
 
 	table.insertRow(-1);
 	row = table.rows[table.rows.length-1];

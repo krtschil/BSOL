@@ -61,8 +61,29 @@ test("board statistics enforces the greater-than-ten threshold", () => {
 			createElement: () => note,
 		},
 	});
+
 	loadScript(ctx, "js/board-statistics.mjs");
 	ctx.showBoardStatistics();
 	assert.equal(panel.hidden, false);
 	assert.match(note.textContent, /mehr als 10/);
+});
+
+test("entering result analysis hides board statistics for every analysis view", () => {
+	const panel = {hidden:false};
+	const ctx = createContext({
+		document: {getElementById: () => panel},
+		log() {},
+		getHands() {},
+		setupRanking() {},
+		setupScorecard() {},
+		checkAllContracts() {},
+		showComparison() {},
+	});
+	loadScript(ctx, "js/session.mjs");
+	for (const mode of ["ranking","scorecard","check","traveller"]) {
+		panel.hidden = false;
+		ctx.g_sessionMode = mode;
+		ctx.gotoSession();
+		assert.equal(panel.hidden, true);
+	}
 });

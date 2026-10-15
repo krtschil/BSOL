@@ -215,7 +215,7 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 
 test("pair board scorecard splits unsigned NS and EW scores before matchpoints in both sort modes", () => {
 	const scorecardHtml = fs.readFileSync(`${root}/html/overlays.html`, "utf8");
-	assert.match(scorecardHtml, /<th id="scoring9" rowspan="2">MP<\/th>/);
+	assert.match(scorecardHtml, /<th id="scoring9" colspan="2">MP<\/th>/);
 	assert.match(scorecardHtml, /<th id="scoring10" colspan="2">Anschrift<\/th>/);
 
 	function createRow() {
@@ -243,6 +243,8 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	const table = createTable();
 	const stable = createTable();
 	const matchPointsHeader = {style: {}};
+	const matchPointsNSHeader = {style: {}};
+	const matchPointsEWHeader = {style: {}};
 	let barsColumn;
 	const context = createContext({
 		g_eventType: "Paarturnier",
@@ -253,7 +255,7 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 		g_scorecardContext: [],
 		g_hands: {direction: 2, boards: []},
 		document: {
-			getElementById: (id) => id==="scoring9" ? matchPointsHeader : null,
+			getElementById: (id) => ({scoring9: matchPointsHeader, scoring12: matchPointsNSHeader, scoring13: matchPointsEWHeader})[id] ?? null,
 		},
 	});
 	loadScript(context, "js/ranking.mjs");
@@ -280,23 +282,27 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, false);
 	const roleSortedRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(roleSortedRow);
-	assert.equal(roleSortedRow.cells.length, 16);
+	assert.equal(roleSortedRow.cells.length, 17);
 	assert.equal(roleSortedRow.cells[10].textContent, "100");
 	assert.equal(roleSortedRow.cells[11].textContent, "");
-	assert.equal(roleSortedRow.cells[12].textContent, "3.4");
-	assert.equal(roleSortedRow.cells[13].innerHTML, "34%");
+	assert.equal(roleSortedRow.cells[12].textContent, "6.6");
+	assert.equal(roleSortedRow.cells[13].textContent, "3.4");
+	assert.equal(roleSortedRow.cells[14].innerHTML, "34%");
 
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
 	const resultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(resultRow);
 	assert.equal(matchPointsHeader.style.display, "");
-	assert.equal(resultRow.cells.length, 16);
+	assert.equal(resultRow.cells.length, 17);
 	assert.equal(resultRow.cells[10].textContent, "100");
 	assert.equal(resultRow.cells[11].textContent, "");
 	assert.equal(resultRow.cells[11].style.borderRight, "1px solid #aaa");
-	assert.equal(resultRow.cells[12].textContent, "3.4");
-	assert.equal(resultRow.cells[13].innerHTML, "34%");
-	assert.equal(barsColumn, 14);
+	assert.equal(resultRow.cells[12].textContent, "6.6");
+	assert.equal(resultRow.cells[13].textContent, "3.4");
+	assert.equal(resultRow.cells[14].innerHTML, "34%");
+	assert.equal(barsColumn, 15);
+	assert.equal(matchPointsNSHeader.style.display, "");
+	assert.equal(matchPointsEWHeader.style.display, "");
 
 	context.g_scoring = "IMP";
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
@@ -304,7 +310,10 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	assert.equal(matchPointsHeader.style.display, "none");
 	assert.equal(impResultRow.cells[10].textContent, "100");
 	assert.equal(impResultRow.cells[12].style.display, "none");
-	assert.equal(Number(impResultRow.cells[13].innerHTML), 3.433);
+	assert.equal(impResultRow.cells[13].style.display, "none");
+	assert.equal(matchPointsNSHeader.style.display, "none");
+	assert.equal(matchPointsEWHeader.style.display, "none");
+	assert.equal(Number(impResultRow.cells[14].innerHTML), 3.433);
 
 	for (const direction of [1, 2]) {
 		context.getPlayerAndRole = () => ({found: true, tdirection: direction, declarer_pair: false, first: true, opp_pair: 2});

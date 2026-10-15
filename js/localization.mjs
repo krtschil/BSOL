@@ -1,4 +1,6 @@
 /* UI localization */
+import { showBoardStatistics } from "./board-statistics.mjs";
+
 export function changeLanguage(l) {
 	switch(l)
 	{
@@ -231,6 +233,9 @@ export function changeLanguage(l) {
 			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 	}
+	document.getElementById("closeBoardStatistics").textContent = l=="de" ? "Schließen" : "Close";
+	if (document.getElementById("boardStatistics").hidden===false)
+		showBoardStatistics(l);
 }
 
 

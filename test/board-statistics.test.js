@@ -10,6 +10,29 @@ function context() {
 
 const deal = ["AKQJT98765432...", ".AKQJT98765432..", "..AKQJT98765432.", "...AKQJT98765432"];
 
+test("language switches refresh visible statistics without opening hidden statistics", () => {
+	const elements = new Map();
+	const calls = [];
+	const ctx = createContext({
+		document: {getElementById(id) {
+			if (!elements.has(id)) elements.set(id, {style: {}});
+			return elements.get(id);
+		}},
+		showBoardStatistics: language => calls.push(language),
+	});
+	loadScript(ctx, "js/localization.mjs");
+	ctx.document.getElementById("boardStatistics").hidden = false;
+	ctx.changeLanguage("en");
+	assert.deepEqual(calls, ["en"]);
+	assert.equal(elements.get("closeBoardStatistics").textContent, "Close");
+	ctx.changeLanguage("de");
+	assert.deepEqual(calls, ["en","de"]);
+	assert.equal(elements.get("closeBoardStatistics").textContent, "Schließen");
+	elements.get("boardStatistics").hidden = true;
+	ctx.changeLanguage("en");
+	assert.deepEqual(calls, ["en","de"]);
+});
+
 test("board statistics enumerate all shapes with normalized theoretical probabilities", () => {
 	const stats = context().calculateBoardStatistics([]);
 	assert.equal(stats.distributions.length, 39);

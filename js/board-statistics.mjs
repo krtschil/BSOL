@@ -76,11 +76,12 @@ export function calculateBoardStatistics(boards)
 	};
 }
 
-export function showBoardStatistics()
+export function showBoardStatistics(displayLanguage = language)
 {
 	var panel = document.getElementById("boardStatistics");
 	var content = document.getElementById("boardStatisticsContent");
-	var de = language=="de";
+	var de = displayLanguage=="de";
+	document.getElementById("closeBoardStatistics").textContent = de ? "Schließen" : "Close";
 	content.replaceChildren();
 	var note = document.createElement("p");
 	content.appendChild(note);
@@ -136,6 +137,5 @@ export function showBoardStatistics()
 	table(de ? "Aufteilung der Figurenpunkte" : "High-card point distribution",
 		[["","N",de ? "O" : "E","S","W","NS",de ? "OW" : "EW"].map(text => ({text}))],
 		[[de ? "Figurenpunkte" : "High-card points",...stats.points,percent(stats.nsPercent),percent(stats.ewPercent)]]);
-	document.getElementById("closeBoardStatistics").textContent = de ? "Schließen" : "Close";
 	panel.hidden = false;
 }

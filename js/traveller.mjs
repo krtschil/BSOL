@@ -561,6 +561,48 @@ export function sortTravellerLines(lines,pdirection)
 			});
 }
 
+export function parseOptimumScore(optimum)
+{
+	if ((typeof optimum)!="string") return [];
+
+	var result = [];
+	var rows = optimum.split(/<br\s*\/?>|\r?\n/i);
+
+	for (var row=0;row<rows.length;row++)
+	{
+		var separator = rows[row].indexOf(";");
+		if (separator==-1) continue;
+
+		var score = rows[row].substring(separator+1).trim();
+		var contracts = rows[row].substring(0,separator).split(",");
+		var direction = "";
+
+		for (var i=0;i<contracts.length;i++)
+		{
+			var entry = contracts[i].trim()
+				.replace(/&#9827;|&clubs;/gi,"C")
+				.replace(/&#9830;|&diams;/gi,"D")
+				.replace(/&#9829;|&hearts;/gi,"H")
+				.replace(/&#9824;|&spades;/gi,"S");
+			var parts = entry.split(/\s+/);
+
+			if (/^(N|S|E|W|NS|EW)$/.test(parts[0])) direction = parts.shift();
+			if (!/^(N|S|E|W|NS|EW)$/.test(direction)||!parts[0]) continue;
+
+			var contract = parts[0];
+			var overtrickIndex = contract.indexOf("+");
+			if (overtrickIndex!=-1) contract = contract.substring(0,overtrickIndex);
+
+			contract = contract.replace(/^([1-7])N/,"$1NT").replace(/[xX]/g,"*");
+			if (!validContract(contract)) continue;
+
+			result.push({direction: direction, contract: contract, score: score});
+		}
+	}
+
+	return result;
+}
+
 export function computeTravellerStatistics(pdirection)
 {
 	var i,j, percentLo, percentHi, g_MaxImps;
@@ -840,49 +882,26 @@ export function displayTraveller(pdirection)
 
 	var lines = g_currentTraveller.traveller_line;
 
-	var optimum = g_hands.boards[g_lastBindex].OptimumScore;
-	var optscore = "";
-	var optcontract = "";
-	var optcontracts = [];
+	var board = g_hands.boards[g_lastBindex];
+	var optimumLines = parseOptimumScore(board.OptimumScore);
+	if (optimumLines.length==0 && Array.isArray(board.OptimumContracts))
+		optimumLines = board.OptimumContracts;
 
-	if ((typeof optimum)!="undefined")
+	for (var k=0;k<optimumLines.length;k++)
 	{
-		optimum = optimum.split(";");
-		optscore = optimum[1];
-		optcontracts = optimum[0].split(",");
+		var optimumLine = optimumLines[k];
+		var ctricks = getMakeableTricksForContract(g_lastBindex,optimumLine.contract,optimumLine.direction.charAt(0));
 
-		var k;
+		var line = {};
+		line.ns_pair_number = "";
+		line.ew_pair_number = "";
+		line.contract = optimumLine.contract;
+		line.played_by = optimumLine.direction;
+		line.tricks = ctricks;
+		line.lead = "";
+		line.score = optimumLine.score.replace("+","");
 
-		for (k=0;k<optcontracts.length;k++)
-		{
-			var currentOptcontract = optcontracts[k];
-			currentOptcontract = currentOptcontract.split(" ");
-			var contract = currentOptcontract[1];
-
-			if (contract.indexOf("+")!=-1)	// remove overtricks
-			{
-				contract = contract.substring(0,2);
-			}
-
-			if (contract.indexOf("N")!=-1) contract=contract.replace("N","NT");
-
-			contract = contract.replace("x","*");
-
-			var optdir = currentOptcontract[0];
-
-			var ctricks = getMakeableTricksForContract(g_lastBindex,contract,optdir.charAt(0));
-
-			var line = {};
-			line.ns_pair_number = "";
-			line.ew_pair_number = "";
-			line.contract = contract;
-			line.played_by = optdir;
-			line.tricks = ctricks;
-			line.lead = "";
-			line.score = optscore.replace("+","");
-
-			lines[lines.length] = line;
-		}
+		lines[lines.length] = line;
 	}
 
 	sortTravellerLines(lines,pdirection);
@@ -1551,9 +1570,13 @@ export function showComparison()
 
 	if (g_currentTraveller!=null)
 	{
-		if (((typeof g_hands.boards[g_lastBindex].openingLeads)=="undefined")&&!g_backgroundFetchCompleted)
+		var board = g_hands.boards[g_lastBindex];
+		var hasOptimumContract = parseOptimumScore(board.OptimumScore).length>0 || Array.isArray(board.OptimumContracts);
+		var needsMakeableAnalysis = !hasOptimumContract || (((typeof board.openingLeads)=="undefined")&&!g_backgroundFetchCompleted);
+
+		if (needsMakeableAnalysis)
 		{
-			if ((typeof g_hands.boards[g_lastBindex].Deal)!="undefined")
+			if ((typeof board.Deal)!="undefined")
 			{
 				var leadstr = getRequestedLeads(g_lastBindex);
 

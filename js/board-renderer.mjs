@@ -2,7 +2,7 @@ import { checkBoardValid } from "./board-utils.mjs";
 import { lott } from "./makeable.mjs";
 import { doPopupNoTimeout } from "./ui-popups.mjs";
 import { displayHands } from "./hand-renderer.mjs";
-import { convertParContractString, makeBoardNameString } from "./scoring.mjs";
+import { convertParContractString, makeBoardNameString, validContract } from "./scoring.mjs";
 import { localStorageSupported } from "./storage.mjs";
 
 export function updateUpperLeftQuadrant(boardIndex)
@@ -466,6 +466,22 @@ export function updateParResults(data,pindex)
 
 	index = ews.indexOf("-");
 	if (index==-1) ews = "+" + ews;
+
+	var optimumContracts = [];
+	[
+		{contracts: data.contractsNS, direction: "NS", score: nss},
+		{contracts: data.contractsEW, direction: "EW", score: ews},
+	].forEach(function(result)
+	{
+		var matches = String(result.contracts || "").match(/[1-7][CDHSN](?:T)?(?:X{1,2})?(?:[+-]\d+)?/gi) || [];
+		matches.forEach(function(match)
+		{
+			var contract = match.replace(/[+-]\d+$/,"").replace(/^([1-7])N/,"$1NT").replace(/[xX]/g,"*");
+			if (validContract(contract))
+				optimumContracts.push({direction: result.direction, contract: contract, score: result.score.replace("+","")});
+		});
+	});
+	g_hands.boards[pindex].OptimumContracts = optimumContracts;
 
 	nsc = nsc.substring(3).trim();
 	ewc = ewc.substring(3).trim();

@@ -534,7 +534,11 @@ export function calculateMakeableContracts(pfunc,pleadstr,bindex)
 		var dealerChars = "ewsn";	// Dealer is one place to the right of declarer
 
 		vul = g_hands.boards[bindex].Vulnerable;
-		if (g_allBoards==0) g_hands.boards[bindex].OptimumScore = "";
+		if (g_allBoards==0)
+		{
+			g_hands.boards[bindex].OptimumScore = "";
+			delete g_hands.boards[bindex].OptimumContracts;
+		}
 		if (bindex==g_lastBindex) updateUpperLeftQuadrant(bindex);
 
 		var contracts;

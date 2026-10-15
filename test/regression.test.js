@@ -4,6 +4,51 @@ const fs = require("node:fs");
 const {pathToFileURL} = require("node:url");
 const {createContext, loadScript, root} = require("./test-helpers");
 
+test("parses only valid entries from OptimumScore", () => {
+	const context = createContext();
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/traveller.mjs");
+
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore(""))), []);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N 3N+1,; +430"))), [
+		{direction: "N", contract: "3NT", score: "+430"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,EW 3N; -420"))), [
+		{direction: "NS", contract: "4H", score: "-420"},
+		{direction: "EW", contract: "3NT", score: "-420"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,NS 4S; +420<br>EW 3N; -400"))), [
+		{direction: "NS", contract: "4H", score: "+420"},
+		{direction: "NS", contract: "4S", score: "+420"},
+		{direction: "EW", contract: "3NT", score: "-400"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N/A; 0"))), []);
+});
+
+test("solver results preserve optimal contracts and directions for the Board view", () => {
+	const context = createContext({
+		g_hands: {boards: [{OptimumScore: ""}]},
+		g_lastBindex: -1,
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/board-renderer.mjs");
+	loadScript(context, "js/traveller.mjs");
+
+	context.updateParResults({
+		contractsNS: "NS 3C+1, NS 3D",
+		contractsEW: "EW 4H",
+		scoreNS: "NS 130",
+		scoreEW: "EW -420",
+	}, 0);
+
+	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
+		{direction: "NS", contract: "3C", score: "130"},
+		{direction: "NS", contract: "3D", score: "130"},
+		{direction: "EW", contract: "4H", score: "-420"},
+	]);
+	assert.equal(JSON.parse(JSON.stringify(context.parseOptimumScore("3&#9827;; +130"))).length, 0);
+});
+
 test("pair ranking shows MP and one decimal percent without changing IMP or team columns", () => {
 	function cell() {
 		return {style: {}, textContent: "", innerHTML: "", colSpan: 1};

@@ -171,7 +171,7 @@ export function mergeScorecardRows(table,nrows,col)
 {
 		// Merge column cells in adjacent rows of scorecard when pair number and names are shared, and
 		// apply alternate shading to groups of rows.
-	var headerRows = table.tHead.rows.length;
+	var headerRows = table.rows.length - nrows;
 	if (nrows==0) return;
 	var pair = table.rows[headerRows].cells[col].innerHTML;
 	var first = 0;
@@ -191,6 +191,7 @@ export function mergeScorecardRows(table,nrows,col)
 				if  ((1 + last - first)>0)
 				{
 					table.rows[headerRows+first].cells[col].rowSpan = 1 + last - first;
+					table.rows[headerRows+first].cells[col].style.verticalAlign = "middle";
 				}
 
 				if (shaded!=0)

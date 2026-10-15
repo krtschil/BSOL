@@ -213,10 +213,10 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	assert.equal(table.rows[2].cells[4].textContent, "55.7");
 });
 
-test("pair board scorecard shows own matchpoints before percentage in both sort modes", () => {
+test("pair board scorecard splits unsigned NS and EW scores before matchpoints in both sort modes", () => {
 	const scorecardHtml = fs.readFileSync(`${root}/html/overlays.html`, "utf8");
-	assert.match(scorecardHtml, /<th id="scoring9">MP<\/th>/);
-	assert.doesNotMatch(scorecardHtml, /<th id="scoring9" rowspan=/);
+	assert.match(scorecardHtml, /<th id="scoring9" rowspan="2">MP<\/th>/);
+	assert.match(scorecardHtml, /<th id="scoring10" colspan="2">Anschrift<\/th>/);
 
 	function createRow() {
 		return {
@@ -231,7 +231,7 @@ test("pair board scorecard shows own matchpoints before percentage in both sort 
 	}
 	function createTable() {
 		return {
-			rows: [createRow(), createRow()],
+			rows: [createRow(), createRow(), createRow()],
 			insertRow() {
 				const value = createRow();
 				this.rows.push(value);
@@ -280,26 +280,61 @@ test("pair board scorecard shows own matchpoints before percentage in both sort 
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, false);
 	const roleSortedRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(roleSortedRow);
-	assert.equal(roleSortedRow.cells.length, 14);
-	assert.equal(roleSortedRow.cells[10].textContent, "3.4");
-	assert.equal(roleSortedRow.cells[11].innerHTML, "34%");
+	assert.equal(roleSortedRow.cells.length, 16);
+	assert.equal(roleSortedRow.cells[10].textContent, "100");
+	assert.equal(roleSortedRow.cells[11].textContent, "");
+	assert.equal(roleSortedRow.cells[12].textContent, "3.4");
+	assert.equal(roleSortedRow.cells[13].innerHTML, "34%");
 
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
 	const resultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(resultRow);
 	assert.equal(matchPointsHeader.style.display, "");
-	assert.equal(resultRow.cells.length, 14);
-	assert.equal(resultRow.cells[10].textContent, "3.4");
-	assert.equal(resultRow.cells[10].style.borderRight, "1px solid #aaa");
-	assert.equal(resultRow.cells[11].innerHTML, "34%");
-	assert.equal(barsColumn, 12);
+	assert.equal(resultRow.cells.length, 16);
+	assert.equal(resultRow.cells[10].textContent, "100");
+	assert.equal(resultRow.cells[11].textContent, "");
+	assert.equal(resultRow.cells[11].style.borderRight, "1px solid #aaa");
+	assert.equal(resultRow.cells[12].textContent, "3.4");
+	assert.equal(resultRow.cells[13].innerHTML, "34%");
+	assert.equal(barsColumn, 14);
 
 	context.g_scoring = "IMP";
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
 	const impResultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.equal(matchPointsHeader.style.display, "none");
-	assert.equal(impResultRow.cells[10].style.display, "none");
-	assert.equal(Number(impResultRow.cells[11].innerHTML), 3.433);
+	assert.equal(impResultRow.cells[10].textContent, "100");
+	assert.equal(impResultRow.cells[12].style.display, "none");
+	assert.equal(Number(impResultRow.cells[13].innerHTML), 3.433);
+
+	for (const direction of [1, 2]) {
+		context.getPlayerAndRole = () => ({found: true, tdirection: direction, declarer_pair: false, first: true, opp_pair: 2});
+		for (const score of [100, -400, 0, "", undefined, "60%"]) {
+			line.score = score;
+			context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
+			const scoreRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
+			assert.equal(String(scoreRow.cells[10].textContent), score===-400 ? "" : String(score ?? ""));
+			assert.equal(scoreRow.cells[11].textContent, score===-400 ? "400" : "");
+		}
+	}
+});
+
+test("scorecard merges opponent groups below all header rows", () => {
+	const context = createContext();
+	loadScript(context, "js/scorecard.mjs");
+	function row(pair) {
+		return {
+			cells: [{innerHTML: "1"}, {innerHTML: pair}],
+			deleteCell(index) { this.cells.splice(index, 1); },
+		};
+	}
+	const headers = [row("header"), row("header"), row("header")];
+	const table = {tHead: {rows: headers}, rows: [...headers, row("2"), row("2"), row("3")]};
+	context.mergeScorecardRows(table, 3, 1);
+	assert.equal(table.rows[3].cells[1].rowSpan, 2);
+	assert.equal(table.rows[4].cells.length, 1);
+	assert.equal(table.rows[5].cells[1].innerHTML, "3");
+	assert.ok(headers.every((header) => header.cells.length===2));
+	context.mergeScorecardRows({tHead: {rows: headers}, rows: headers}, 0, 1);
 });
 
 test("team board results combine both tables and preserve rounds and Butler signs", () => {

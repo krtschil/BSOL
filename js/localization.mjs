@@ -68,6 +68,8 @@ export function changeLanguage(l) {
 			document.getElementById("scoring6").textContent = "Stiche";
 			document.getElementById("scoring7").textContent = "DD Stiche (ETF)";
 			document.getElementById("scoring8").textContent = "Prozent";
+			document.getElementById("scoring10").textContent = "Anschrift";
+			document.getElementById("scoring11").textContent = "OW";
 
 			document.getElementById("travellerTable1").textContent = "Paare";
 			document.getElementById("travellerTable2").textContent = "Kontrakt";
@@ -177,6 +179,8 @@ export function changeLanguage(l) {
 			document.getElementById("scoring6").textContent = "Tricks";
 			document.getElementById("scoring7").textContent = "DD Tricks (ETF)";
 			document.getElementById("scoring8").textContent = "Percentage";
+			document.getElementById("scoring10").textContent = "Score";
+			document.getElementById("scoring11").textContent = "EW";
 
 			document.getElementById("travellerTable1").textContent = "Pairs";
 			document.getElementById("travellerTable2").textContent = "Contract";

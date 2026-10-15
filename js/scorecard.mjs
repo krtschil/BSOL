@@ -171,7 +171,9 @@ export function mergeScorecardRows(table,nrows,col)
 {
 		// Merge column cells in adjacent rows of scorecard when pair number and names are shared, and
 		// apply alternate shading to groups of rows.
-	var pair = table.rows[1].cells[col].innerHTML;
+	var headerRows = table.tHead.rows.length;
+	if (nrows==0) return;
+	var pair = table.rows[headerRows].cells[col].innerHTML;
 	var first = 0;
 	var last = 0;
 	var alt = 0;
@@ -182,29 +184,26 @@ export function mergeScorecardRows(table,nrows,col)
 	{
 		for (last=first;last<=nrows;last++)
 		{
-			if ((table.rows[1+last].cells[col].innerHTML!=pair)||(last==nrows))
+			if ((last==nrows)||(table.rows[headerRows+last].cells[col].innerHTML!=pair))
 			{
-				if ((table.rows[1+last].cells[col].innerHTML!=pair))
-				{
-					last--;
-				}
+				last--;
 
 				if  ((1 + last - first)>0)
 				{
-					table.rows[1+first].cells[col].rowSpan = 1 + last - first;
+					table.rows[headerRows+first].cells[col].rowSpan = 1 + last - first;
 				}
 
 				if (shaded!=0)
 				{
-					table.rows[1+first].className = "results_tr_grey";
+					table.rows[headerRows+first].className = "results_tr_grey";
 				}
 
 				for (j=first+1;j<=last;j++)
 				{
-					table.rows[1+j].deleteCell(col);
+					table.rows[headerRows+j].deleteCell(col);
 
 					if (shaded!=0)
-						table.rows[1+j].className = "results_tr_grey";
+						table.rows[headerRows+j].className = "results_tr_grey";
 				}
 
 				if (shaded == 0)
@@ -216,7 +215,7 @@ export function mergeScorecardRows(table,nrows,col)
 
 				if (first<nrows)
 				{
-					pair = table.rows[1+first].cells[col].innerHTML;
+					pair = table.rows[headerRows+first].cells[col].innerHTML;
 				}
 
 				break;

@@ -47,6 +47,20 @@ The main stylesheet is `ddummy.css`. It contains:
 - HTML is validated with `npm run validate:html`.
 
 ## Functionality
+### Board statistics
+The top-level **Boardstatistik / Board statistics** button is enabled for more than
+10 loaded boards. Its panel appears below the board and stays visible when navigating
+between boards; it can be closed explicitly and is hidden when entering result
+analysis or loading a new file.
+It shows all possible unordered hand shapes, sorted by their
+theoretical probability, with observed counts and percentages over all four hands
+of each complete deal. Theoretical probabilities assume a random 13-card hand
+from a standard 52-card deck; suit permutations of the same shape are combined.
+
+A second table totals high-card points (A=4, K=3, Q=2, J=1) for N/E/S/W and shows
+the NS/EW share of all points. Incomplete or invalid deals are excluded from both
+tables and their count is reported in the panel.
+
 ### Layout and buttons
 The layout is fluid up to a 1000px content width. Import and navigation controls wrap
 inside their fieldsets when necessary. Wide board and Traveller content scrolls within

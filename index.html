@@ -60,9 +60,10 @@
         </form>
 
         <!-- Buttons are handled by event triggers (see events.js)-->
-        <button id="blankInput"         type="button">Hand manuell eingeben</button>
-        <button id="clipboard"          type="button">Hole Boards aus der Zwischenablage</button>
-        <button id="showGeneralHelp"    type="button">Allgemeine Hilfe</button>
+        <button id="blankInput"         type="button">Manuelle Eingabe</button>
+        <button id="clipboard"          type="button">Boards aus Zwischenablage</button>
+        <button id="showGeneralHelp"    type="button">Hilfe</button>
+        <button id="showBoardStatistics" type="button" disabled>Boardstatistik</button>
         <button id="video-i"            type="button">Erklärvideo</button>
         <button id="author-reference-i" type="button">BSOL (John Goacher)</button>
 
@@ -261,6 +262,11 @@
         </td>
     </tr>
 </table>
+<section id="boardStatistics" aria-labelledby="boardStatisticsTitle" hidden>
+    <h2 id="boardStatisticsTitle">Boardstatistik</h2>
+    <button id="closeBoardStatistics" type="button">Schließen</button>
+    <div id="boardStatisticsContent"></div>
+</section>
 
 <div id="allBoards">
 	<div id="scrollDiv">

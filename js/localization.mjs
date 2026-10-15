@@ -1,11 +1,13 @@
 /* UI localization */
+import { showBoardStatistics } from "./board-statistics.mjs";
+
 export function changeLanguage(l) {
 	switch(l)
 	{
 		case "de":
 			document.getElementById("loadFile1").value = "Datei auswählen";
-			document.getElementById("blankInput").textContent = "Hand manuell eingeben";
-			document.getElementById("showGeneralHelp").textContent = "Allgemeine Hilfe";
+			document.getElementById("blankInput").textContent = "Manuelle Eingabe";
+			document.getElementById("showGeneralHelp").textContent = "Hilfe";
 			document.getElementById("aranking").textContent = "Ergebnis";
 			document.getElementById("flegend").innerHTML = "<b>Analysiere Bridgehände (PBN/LIN/DLM): Datei/manuell eingeben/Paste/Drop</b>";
 			document.getElementById("gotoBoard").textContent = "Gehe zu";
@@ -71,6 +73,8 @@ export function changeLanguage(l) {
 			document.getElementById("scoring10").textContent = "Anschrift";
 			document.getElementById("scoring11").textContent = "OW";
 			document.getElementById("scoring13").textContent = "OW";
+			document.getElementById("showBoardStatistics").textContent = "Boardstatistik";
+			document.getElementById("boardStatisticsTitle").textContent = "Boardstatistik";
 
 			document.getElementById("travellerTable1").textContent = "Paare";
 			document.getElementById("travellerTable2").textContent = "Kontrakt";
@@ -111,7 +115,7 @@ export function changeLanguage(l) {
 			document.getElementById("ascorecard").textContent = typeof g_eventType!="undefined" && g_eventType=="Teams" ? "Einzelergebnisse" : "Paaranalyse";
 
 			document.getElementById("video-i").textContent = "Erklärvideo";
-			document.getElementById("clipboard").textContent = "Hole Boards aus der Zwischenablage";
+			document.getElementById("clipboard").textContent = "Boards aus Zwischenablage";
 			document.getElementById("optionsSaveFeedback").textContent = "Auswahl gespeichert";
 			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
@@ -183,6 +187,8 @@ export function changeLanguage(l) {
 			document.getElementById("scoring10").textContent = "Score";
 			document.getElementById("scoring11").textContent = "EW";
 			document.getElementById("scoring13").textContent = "EW";
+			document.getElementById("showBoardStatistics").textContent = "Board statistics";
+			document.getElementById("boardStatisticsTitle").textContent = "Board statistics";
 
 			document.getElementById("travellerTable1").textContent = "Pairs";
 			document.getElementById("travellerTable2").textContent = "Contract";
@@ -227,6 +233,9 @@ export function changeLanguage(l) {
 			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 	}
+	document.getElementById("closeBoardStatistics").textContent = l=="de" ? "Schließen" : "Close";
+	if (document.getElementById("boardStatistics").hidden===false)
+		showBoardStatistics(l);
 }
 
 

@@ -12,6 +12,7 @@ export function callAnalysisFunction(index)
 
 export function gotoSession()
 {
+	document.getElementById("boardStatistics").hidden = true;
 	g_playItAgain = false;
 	log("button=session");
 	if (g_sessionMode=="ranking") getHands({callback:setupRanking});

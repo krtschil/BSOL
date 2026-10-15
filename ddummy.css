@@ -300,6 +300,55 @@ table.ranking th {
 }
 table.ranking td {border:0px solid #DDD;padding-left:4px;padding-right:4px;padding-top:1px;padding-bottom:1px;white-space: nowrap;font-size:14px;}
 
+#boardStatistics {
+  max-width: 100%;
+  overflow: auto;
+  background: white;
+  color: black;
+  border: 1px solid #aaa;
+  padding: 20px;
+  margin: 16px;
+}
+
+.board-statistics-tables {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+#boardStatistics td:first-child {
+  text-align: left;
+}
+
+#boardStatistics td {
+  text-align: right;
+  padding: 4px 8px;
+}
+
+#boardStatistics th {
+  background: #376b73;
+  padding: 4px 8px;
+}
+
+#boardStatistics .board-statistics-tables section:nth-child(2) thead th:first-child {
+  background: transparent;
+}
+
+#boardStatistics table.ranking td,
+#boardStatistics table.ranking th {
+  border: 1px solid #aaa;
+}
+
+#boardStatistics .board-statistics-tables section:first-child tbody td:nth-child(2),
+#boardStatistics .board-statistics-tables section:first-child thead tr:last-child th:first-child {
+  border-right-style: dashed;
+}
+
+#boardStatistics .board-statistics-tables section:first-child tbody td:nth-child(3),
+#boardStatistics .board-statistics-tables section:first-child thead tr:last-child th:last-child {
+  border-left-style: dashed;
+}
+
 #rankingNS td:not(:last-child) {
   border-right: 1px solid #aaa;
 }

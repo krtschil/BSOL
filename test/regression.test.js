@@ -53,6 +53,31 @@ test("sorts optimal contracts together after played traveller rows", () => {
 	assert.ok(lines.slice(0, -2).every((line) => line.ns_pair_number!==""));
 });
 
+test("Board sorting puts optimal contracts first and orders scores from their direction", () => {
+	const context = createContext({
+		returnPoints: () => 0,
+		comparePairNumbers: (a, b) => String(a).localeCompare(String(b)),
+	});
+	loadScript(context, "js/traveller.mjs");
+	const playedRows = [
+		{ns_pair_number: "1", ew_pair_number: "2", contract: "7NT", played_by: "N", score: "-100"},
+		{ns_pair_number: "3", ew_pair_number: "4", contract: "1C", played_by: "S", score: "400"},
+		{ns_pair_number: "5", ew_pair_number: "6", contract: "4H", played_by: "E", score: "140"},
+		{ns_pair_number: "7", ew_pair_number: "8", contract: "NP", played_by: "", score: "60%"},
+	];
+	const optimum = [
+		{ns_pair_number: "", ew_pair_number: "", contract: "4S", played_by: "NS", score: "420"},
+		{ns_pair_number: "", ew_pair_number: "", contract: "4H", played_by: "NS", score: "420"},
+	];
+	for (const direction of [1, 2]) {
+		const lines = [playedRows[0], optimum[0], ...playedRows.slice(1), optimum[1]];
+		context.sortTravellerLines(lines, 3-direction, direction);
+		assert.ok(lines.slice(0, 2).every((line) => line.ns_pair_number===""));
+		assert.deepEqual(lines.slice(2).map((line) => line.score),
+			direction===1 ? ["400", "140", "-100", "60%"] : ["-100", "140", "400", "60%"]);
+	}
+});
+
 test("solver results preserve optimal contracts and directions for the Board view", () => {
 	const context = createContext({
 		g_hands: {boards: [{OptimumScore: ""}]},

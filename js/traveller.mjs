@@ -512,14 +512,23 @@ export function getInfoForSimilarContracts(lineIndex,direction)
 	return result;
 }
 
-export function sortTravellerLines(lines,pdirection)
+export function sortTravellerLines(lines,pdirection,scoreDirection)
 {
 	lines.sort(function(a,b) {
 			var sign = 1;
 			var aIsOptimum = (a.ns_pair_number=="")&&(a.ew_pair_number=="");
 			var bIsOptimum = (b.ns_pair_number=="")&&(b.ew_pair_number=="");
 
-			if (aIsOptimum!=bIsOptimum) return aIsOptimum ? 1 : -1;
+			if (aIsOptimum!=bIsOptimum) return aIsOptimum ? (scoreDirection ? -1 : 1) : (scoreDirection ? 1 : -1);
+
+			if (scoreDirection && !aIsOptimum)
+			{
+				var scoreA = a.score==null || String(a.score).trim()==="" ? NaN : Number(a.score);
+				var scoreB = b.score==null || String(b.score).trim()==="" ? NaN : Number(b.score);
+				if (Number.isFinite(scoreA)!=Number.isFinite(scoreB)) return Number.isFinite(scoreA) ? -1 : 1;
+				if (Number.isFinite(scoreA) && scoreA!=scoreB)
+					return scoreDirection==2 ? scoreA-scoreB : scoreB-scoreA;
+			}
 
 			if (pdirection==2) sign = -1;
 
@@ -917,7 +926,9 @@ export function displayTraveller(pdirection)
 		lines[lines.length] = line;
 	}
 
-	sortTravellerLines(lines,pdirection);
+	var optimumDirection = optimumLines.length>0 ?
+		("NS".includes(optimumLines[0].direction.charAt(0)) ? 1 : 2) : pdirection;
+	sortTravellerLines(lines,pdirection,optimumDirection);
 
 	var j = 0;
 

@@ -128,7 +128,7 @@ export function showBoardStatistics()
 		});
 		section.appendChild(element);
 	}
-	var percent = value => value.toLocaleString(de ? "de-DE" : "en-GB", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
+	var percent = value => value.toLocaleString(de ? "de-DE" : "en-GB", {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " %";
 	table(de ? "Verteilungen" : "Distributions", [
 		[{text: de ? "Verteilung" : "Shape", rows:2}, {text: de ? "Häufigkeit" : "Frequency", cols:2}, {text: de ? "Theoretisch" : "Theoretical", rows:2}],
 		[{text: de ? "Absolut" : "Count"}, {text:"%"}],

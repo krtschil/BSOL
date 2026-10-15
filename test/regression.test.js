@@ -323,14 +323,16 @@ test("scorecard merges opponent groups below all header rows", () => {
 	loadScript(context, "js/scorecard.mjs");
 	function row(pair) {
 		return {
-			cells: [{innerHTML: "1"}, {innerHTML: pair}],
+			cells: [{innerHTML: "1"}, {innerHTML: pair, style: {}}],
 			deleteCell(index) { this.cells.splice(index, 1); },
 		};
 	}
 	const headers = [row("header"), row("header"), row("header")];
-	const table = {tHead: {rows: headers}, rows: [...headers, row("2"), row("2"), row("3")]};
+	const rows = [...headers, row("2"), row("2"), row("3")];
+	const table = {tHead: {rows}, rows};
 	context.mergeScorecardRows(table, 3, 1);
 	assert.equal(table.rows[3].cells[1].rowSpan, 2);
+	assert.equal(table.rows[3].cells[1].style.verticalAlign, "middle");
 	assert.equal(table.rows[4].cells.length, 1);
 	assert.equal(table.rows[5].cells[1].innerHTML, "3");
 	assert.ok(headers.every((header) => header.cells.length===2));

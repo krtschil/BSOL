@@ -71,6 +71,8 @@ export function changeLanguage(l) {
 			document.getElementById("scoring10").textContent = "Anschrift";
 			document.getElementById("scoring11").textContent = "OW";
 			document.getElementById("scoring13").textContent = "OW";
+			document.getElementById("showBoardStatistics").textContent = "Boardstatistik";
+			document.getElementById("boardStatisticsTitle").textContent = "Boardstatistik";
 
 			document.getElementById("travellerTable1").textContent = "Paare";
 			document.getElementById("travellerTable2").textContent = "Kontrakt";
@@ -183,6 +185,8 @@ export function changeLanguage(l) {
 			document.getElementById("scoring10").textContent = "Score";
 			document.getElementById("scoring11").textContent = "EW";
 			document.getElementById("scoring13").textContent = "EW";
+			document.getElementById("showBoardStatistics").textContent = "Board statistics";
+			document.getElementById("boardStatisticsTitle").textContent = "Board statistics";
 
 			document.getElementById("travellerTable1").textContent = "Pairs";
 			document.getElementById("travellerTable2").textContent = "Contract";

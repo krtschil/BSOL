@@ -84,6 +84,7 @@ import {
 	setupGeneralHelp,
 } from "./help.mjs";
 import { changeLanguage } from "./localization.mjs";
+import { showBoardStatistics } from "./board-statistics.mjs";
 
 export function buildPage(data,options)
 {
@@ -144,6 +145,8 @@ export function buildPage1(data,options)
 	hideRanking();
 	hide("scores");
 	hide("abuttons");	// Hide stale "Ergebnisanalyse" toolbar buttons/state from a previous file/paste.
+	document.getElementById("showBoardStatistics").disabled = true;
+	document.getElementById("boardStatistics").hidden = true;
 
 	document.getElementById("northHand").style.whiteSpace = "nowrap";
 	document.getElementById("eastHand").style.whiteSpace = "nowrap";
@@ -258,6 +261,8 @@ export function buildPage1(data,options)
 //	document.getElementById("saveSingleBoard").onclick = function() {generatePBN(false);$("#toolsSubMenu").hide();};
 //	document.getElementById("closetoolsSubMenu").onclick = function(){$("#toolsSubMenu").hide();};
 	document.getElementById("aranking").onclick = function() {log("button=AllPairs");setupRanking();};
+	document.getElementById("showBoardStatistics").onclick = function() {getHands({callback:showBoardStatistics});};
+	document.getElementById("closeBoardStatistics").onclick = function() {document.getElementById("boardStatistics").hidden = true;};
 	document.getElementById("ascorecard").onclick = function() {log("button=Personal");setupScorecard();};
 	document.getElementById("aacc").onclick = function() {log("button=showAccMatrix");callGetIndexedAcc();};
 	document.getElementById("atraveller").onclick = function() {log("button=Traveller");showComparison();};

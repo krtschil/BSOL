@@ -13,9 +13,15 @@ test("parses only valid entries from OptimumScore", () => {
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N 3N+1,; +430"))), [
 		{direction: "N", contract: "3NT", score: "+430"},
 	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N 3NT; +430"))), [
+		{direction: "N", contract: "3NT", score: "+430"},
+	]);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,EW 3N; -420"))), [
 		{direction: "NS", contract: "4H", score: "-420"},
 		{direction: "EW", contract: "3NT", score: "-420"},
+	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 3NT; +400<br>EW 3NT; -400"))), [
+		{direction: "NS", contract: "3NT", score: "+400"},
 	]);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,NS 4S; +420<br>EW 3N; -400"))), [
 		{direction: "NS", contract: "4H", score: "+420"},
@@ -45,6 +51,15 @@ test("solver results preserve optimal contracts and directions for the Board vie
 		{direction: "NS", contract: "3C", score: "130"},
 		{direction: "NS", contract: "3D", score: "130"},
 		{direction: "EW", contract: "4H", score: "-420"},
+	]);
+	context.updateParResults({
+		contractsNS: "NS 3NT",
+		contractsEW: "EW 3NT",
+		scoreNS: "NS 400",
+		scoreEW: "EW -400",
+	}, 0);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
+		{direction: "NS", contract: "3NT", score: "400"},
 	]);
 	assert.equal(JSON.parse(JSON.stringify(context.parseOptimumScore("3&#9827;; +130"))).length, 0);
 });

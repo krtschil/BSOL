@@ -566,6 +566,7 @@ export function parseOptimumScore(optimum)
 	if ((typeof optimum)!="string") return [];
 
 	var result = [];
+	var seenContracts = {};
 	var rows = optimum.split(/<br\s*\/?>|\r?\n/i);
 
 	for (var row=0;row<rows.length;row++)
@@ -593,10 +594,14 @@ export function parseOptimumScore(optimum)
 			var overtrickIndex = contract.indexOf("+");
 			if (overtrickIndex!=-1) contract = contract.substring(0,overtrickIndex);
 
-			contract = contract.replace(/^([1-7])N/,"$1NT").replace(/[xX]/g,"*");
+			contract = contract.replace(/^([1-7])N(?!T)/,"$1NT").replace(/[xX]/g,"*");
 			if (!validContract(contract)) continue;
 
-			result.push({direction: direction, contract: contract, score: score});
+			if (!seenContracts[contract])
+			{
+				seenContracts[contract] = true;
+				result.push({direction: direction, contract: contract, score: score});
+			}
 		}
 	}
 

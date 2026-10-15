@@ -468,6 +468,7 @@ export function updateParResults(data,pindex)
 	if (index==-1) ews = "+" + ews;
 
 	var optimumContracts = [];
+	var seenOptimumContracts = {};
 	[
 		{contracts: data.contractsNS, direction: "NS", score: nss},
 		{contracts: data.contractsEW, direction: "EW", score: ews},
@@ -476,9 +477,12 @@ export function updateParResults(data,pindex)
 		var matches = String(result.contracts || "").match(/[1-7][CDHSN](?:T)?(?:X{1,2})?(?:[+-]\d+)?/gi) || [];
 		matches.forEach(function(match)
 		{
-			var contract = match.replace(/[+-]\d+$/,"").replace(/^([1-7])N/,"$1NT").replace(/[xX]/g,"*");
-			if (validContract(contract))
+			var contract = match.replace(/[+-]\d+$/,"").replace(/^([1-7])N(?!T)/,"$1NT").replace(/[xX]/g,"*");
+			if (validContract(contract)&&!seenOptimumContracts[contract])
+			{
+				seenOptimumContracts[contract] = true;
 				optimumContracts.push({direction: result.direction, contract: contract, score: result.score.replace("+","")});
+			}
 		});
 	});
 	g_hands.boards[pindex].OptimumContracts = optimumContracts;

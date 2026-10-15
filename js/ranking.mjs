@@ -1741,7 +1741,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								var ewpts = Number(tline.ew_match_points);
 								var score = tline.score;
 								row.cells[9+g_ofs].textContent = score!=null && String(score).trim()!=="" && Number.isFinite(Number(score))
-									? (tdirection==1 ? Number(score) : -Number(score))
+									? (Number(score)>0 ? "+" + Number(score) : String(Number(score)))
 									: (score ?? "");
 								row.cells[9+g_ofs].style.textAlign = "right";
 								row.cells[9+g_ofs].style.borderRight = "1px solid #aaa";

@@ -213,7 +213,7 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	assert.equal(table.rows[2].cells[4].textContent, "55.7");
 });
 
-test("pair board scorecard shows own score and matchpoints before percentage in both sort modes", () => {
+test("pair board scorecard shows NS score and own matchpoints before percentage in both sort modes", () => {
 	const scorecardHtml = fs.readFileSync(`${root}/html/overlays.html`, "utf8");
 	assert.match(scorecardHtml, /<th id="scoring9">MP<\/th>/);
 	assert.doesNotMatch(scorecardHtml, /<th id="scoring9" rowspan=/);
@@ -282,7 +282,7 @@ test("pair board scorecard shows own score and matchpoints before percentage in 
 	const roleSortedRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.ok(roleSortedRow);
 	assert.equal(roleSortedRow.cells.length, 15);
-	assert.equal(Number(roleSortedRow.cells[10].textContent), -100);
+	assert.equal(roleSortedRow.cells[10].textContent, "+100");
 	assert.equal(roleSortedRow.cells[11].textContent, "3.4");
 	assert.equal(roleSortedRow.cells[12].innerHTML, "34%");
 
@@ -291,7 +291,7 @@ test("pair board scorecard shows own score and matchpoints before percentage in 
 	assert.ok(resultRow);
 	assert.equal(matchPointsHeader.style.display, "");
 	assert.equal(resultRow.cells.length, 15);
-	assert.equal(Number(resultRow.cells[10].textContent), -100);
+	assert.equal(resultRow.cells[10].textContent, "+100");
 	assert.equal(resultRow.cells[10].style.borderRight, "1px solid #aaa");
 	assert.equal(resultRow.cells[11].textContent, "3.4");
 	assert.equal(resultRow.cells[12].innerHTML, "34%");
@@ -301,16 +301,18 @@ test("pair board scorecard shows own score and matchpoints before percentage in 
 	context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
 	const impResultRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
 	assert.equal(matchPointsHeader.style.display, "none");
-	assert.equal(Number(impResultRow.cells[10].textContent), -100);
+	assert.equal(impResultRow.cells[10].textContent, "+100");
 	assert.equal(impResultRow.cells[11].style.display, "none");
 	assert.equal(Number(impResultRow.cells[12].innerHTML), 3.433);
 
-	context.getPlayerAndRole = () => ({found: true, tdirection: 1, declarer_pair: false, first: true, opp_pair: 2});
-	for (const score of [100, -400, 0, "", undefined, "60%"]) {
-		line.score = score;
-		context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
-		const scoreRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
-		assert.equal(String(scoreRow.cells[10].textContent), String(score ?? ""));
+	for (const direction of [1, 2]) {
+		context.getPlayerAndRole = () => ({found: true, tdirection: direction, declarer_pair: false, first: true, opp_pair: 2});
+		for (const score of [100, -400, 0, "", undefined, "60%"]) {
+			line.score = score;
+			context.setupScorecard2(table, stable, [{board_no: 1, traveller_line: [line]}], info, session, 4, true);
+			const scoreRow = table.rows.find((row) => row.cells[0] && String(row.cells[0].innerHTML)==="1");
+			assert.equal(String(scoreRow.cells[10].textContent), score===100 ? "+100" : String(score ?? ""));
+		}
 	}
 });
 

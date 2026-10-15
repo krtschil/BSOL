@@ -249,8 +249,8 @@ export function setupGeneralHelp()
 			help = help + "<i>LoTT:</i> Law of total tricks: Gesetz von der Gesamtzahl der Stiche. Dies gibt an, ob und um wieviele Stiche die aktuelle Hand von diesem Gesetz abweicht (siehe <a href='https://en.wikipedia.org/wiki/Law_of_total_tricks' target='_blank'>englischer Artikel in der Wikipedia</a>).<p>&nbsp;</p>	";
 			help = help + "Boards können auf mehrere Arten eingegeben werden:<br><ul>";
 			help = help + "<li>Über 'Datei auswählen': <br>Dabei können mehrere Boards aus einer .pbn-Datei eingelesen und analysiert werden.</li>";
-			help = help + "<li>Über 'Hand manuell eingeben': <br>Eine einzelne Hand kann durch Auswahl der jeweiligen Karten für jede Position eingegeben werden.</li>";
-			help = help + "<li>Über 'Hole Boards aus der Zwischenablage':<br>PBN-Daten aus anderen Quellen können hierüber durch Copy&Paste übergeben werden.</li>";
+			help = help + "<li>Über 'Manuelle Eingabe': <br>Eine einzelne Hand kann durch Auswahl der jeweiligen Karten für jede Position eingegeben werden.</li>";
+			help = help + "<li>Über 'Boards aus Zwischenablage':<br>PBN-Daten aus anderen Quellen können hierüber durch Copy&Paste übergeben werden.</li>";
 			help = help + "<li>Mittels der Tastenkombination 'STRG-V / CMD-V' können PBN/LIN/DLM-Daten auch eingefügt werden.</li>";
 			help = help + "<li>Eine Datei mit PBN/LIN/DLM-Daten kann auch per Drag&amp;Drop eingefügt werden.</li>";
 			help = help + "</li></ul>Ein einzelnes Board kann auch über URL-Parameter eingegeben werden. <br>Folgende Parameter sind dazu erforderlich:<br> ";

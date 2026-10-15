@@ -4,8 +4,8 @@ export function changeLanguage(l) {
 	{
 		case "de":
 			document.getElementById("loadFile1").value = "Datei auswählen";
-			document.getElementById("blankInput").textContent = "Hand manuell eingeben";
-			document.getElementById("showGeneralHelp").textContent = "Allgemeine Hilfe";
+			document.getElementById("blankInput").textContent = "Manuelle Eingabe";
+			document.getElementById("showGeneralHelp").textContent = "Hilfe";
 			document.getElementById("aranking").textContent = "Ergebnis";
 			document.getElementById("flegend").innerHTML = "<b>Analysiere Bridgehände (PBN/LIN/DLM): Datei/manuell eingeben/Paste/Drop</b>";
 			document.getElementById("gotoBoard").textContent = "Gehe zu";
@@ -113,7 +113,7 @@ export function changeLanguage(l) {
 			document.getElementById("ascorecard").textContent = typeof g_eventType!="undefined" && g_eventType=="Teams" ? "Einzelergebnisse" : "Paaranalyse";
 
 			document.getElementById("video-i").textContent = "Erklärvideo";
-			document.getElementById("clipboard").textContent = "Hole Boards aus der Zwischenablage";
+			document.getElementById("clipboard").textContent = "Boards aus Zwischenablage";
 			document.getElementById("optionsSaveFeedback").textContent = "Auswahl gespeichert";
 			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 

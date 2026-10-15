@@ -1,6 +1,8 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 const {createContext, loadScript} = require("./test-helpers");
+const fs = require("node:fs");
+const {root} = require("./test-helpers");
 
 function context() {
 	const result = createContext();
@@ -9,6 +11,18 @@ function context() {
 }
 
 const deal = ["AKQJT98765432...", ".AKQJT98765432..", "..AKQJT98765432.", "...AKQJT98765432"];
+
+test("statistics button does not forward the loader context as a language", () => {
+	const source = fs.readFileSync(`${root}/js/bootstrap.mjs`, "utf8");
+	const handler = source.match(/document\.getElementById\("showBoardStatistics"\)\.onclick = (function\(\) \{[^\n]+\});/)[1];
+	let args;
+	const ctx = createContext({
+		getHands(context) { context.callback(context); },
+		showBoardStatistics(...values) { args = values; },
+	});
+	require("node:vm").runInContext(`(${handler})()`, ctx);
+	assert.deepEqual(args, []);
+});
 
 test("language switches refresh visible statistics without opening hidden statistics", () => {
 	const elements = new Map();

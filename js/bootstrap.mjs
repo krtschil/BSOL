@@ -261,7 +261,7 @@ export function buildPage1(data,options)
 //	document.getElementById("saveSingleBoard").onclick = function() {generatePBN(false);$("#toolsSubMenu").hide();};
 //	document.getElementById("closetoolsSubMenu").onclick = function(){$("#toolsSubMenu").hide();};
 	document.getElementById("aranking").onclick = function() {log("button=AllPairs");setupRanking();};
-	document.getElementById("showBoardStatistics").onclick = function() {getHands({callback:showBoardStatistics});};
+	document.getElementById("showBoardStatistics").onclick = function() {getHands({callback:() => showBoardStatistics()});};
 	document.getElementById("closeBoardStatistics").onclick = function() {document.getElementById("boardStatistics").hidden = true;};
 	document.getElementById("ascorecard").onclick = function() {log("button=Personal");setupScorecard();};
 	document.getElementById("aacc").onclick = function() {log("button=showAccMatrix");callGetIndexedAcc();};

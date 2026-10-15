@@ -23,12 +23,34 @@ test("parses only valid entries from OptimumScore", () => {
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 3NT; +400<br>EW 3NT; -400"))), [
 		{direction: "NS", contract: "3NT", score: "+400"},
 	]);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4<span style='color:red'>&#9829;</span>x, NS 4&#9824;x; +500"))), [
+		{direction: "NS", contract: "4H*", score: "+500"},
+		{direction: "NS", contract: "4S*", score: "+500"},
+	]);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4H,NS 4S; +420<br>EW 3N; -400"))), [
 		{direction: "NS", contract: "4H", score: "+420"},
 		{direction: "NS", contract: "4S", score: "+420"},
 		{direction: "EW", contract: "3NT", score: "-400"},
 	]);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("N/A; 0"))), []);
+});
+
+test("sorts optimal contracts together after played traveller rows", () => {
+	const context = createContext({
+		returnPoints: () => 0,
+		comparePairNumbers: (a, b) => String(a).localeCompare(String(b)),
+	});
+	loadScript(context, "js/traveller.mjs");
+	const playedOne = {ns_pair_number: "1", ew_pair_number: "2", contract: "4H", played_by: "N"};
+	const optimumOne = {ns_pair_number: "", ew_pair_number: "", contract: "4S", played_by: "NS"};
+	const playedTwo = {ns_pair_number: "3", ew_pair_number: "4", contract: "3NT", played_by: "E"};
+	const optimumTwo = {ns_pair_number: "", ew_pair_number: "", contract: "4H", played_by: "NS"};
+	const lines = [playedOne, optimumOne, playedTwo, optimumTwo];
+
+	context.sortTravellerLines(lines, 1);
+
+	assert.deepEqual(lines.slice(-2).map((line) => line.contract).sort(), ["4H", "4S"]);
+	assert.ok(lines.slice(0, -2).every((line) => line.ns_pair_number!==""));
 });
 
 test("solver results preserve optimal contracts and directions for the Board view", () => {

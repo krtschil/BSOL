@@ -516,6 +516,10 @@ export function sortTravellerLines(lines,pdirection)
 {
 	lines.sort(function(a,b) {
 			var sign = 1;
+			var aIsOptimum = (a.ns_pair_number=="")&&(a.ew_pair_number=="");
+			var bIsOptimum = (b.ns_pair_number=="")&&(b.ew_pair_number=="");
+
+			if (aIsOptimum!=bIsOptimum) return aIsOptimum ? 1 : -1;
 
 			if (pdirection==2) sign = -1;
 
@@ -571,7 +575,7 @@ export function parseOptimumScore(optimum)
 
 	for (var row=0;row<rows.length;row++)
 	{
-		var separator = rows[row].indexOf(";");
+		var separator = rows[row].lastIndexOf(";");
 		if (separator==-1) continue;
 
 		var score = rows[row].substring(separator+1).trim();
@@ -581,10 +585,15 @@ export function parseOptimumScore(optimum)
 		for (var i=0;i<contracts.length;i++)
 		{
 			var entry = contracts[i].trim()
+				.replace(/<[^>]*>/g,"")
 				.replace(/&#9827;|&clubs;/gi,"C")
 				.replace(/&#9830;|&diams;/gi,"D")
 				.replace(/&#9829;|&hearts;/gi,"H")
-				.replace(/&#9824;|&spades;/gi,"S");
+				.replace(/&#9824;|&spades;/gi,"S")
+				.replace(/♣/g,"C")
+				.replace(/♦/g,"D")
+				.replace(/♥/g,"H")
+				.replace(/♠/g,"S");
 			var parts = entry.split(/\s+/);
 
 			if (/^(N|S|E|W|NS|EW)$/.test(parts[0])) direction = parts.shift();
@@ -888,9 +897,8 @@ export function displayTraveller(pdirection)
 	var lines = g_currentTraveller.traveller_line;
 
 	var board = g_hands.boards[g_lastBindex];
-	var optimumLines = parseOptimumScore(board.OptimumScore);
-	if (optimumLines.length==0 && Array.isArray(board.OptimumContracts))
-		optimumLines = board.OptimumContracts;
+	var optimumLines = Array.isArray(board.OptimumContracts) ?
+		board.OptimumContracts : parseOptimumScore(board.OptimumScore);
 
 	for (var k=0;k<optimumLines.length;k++)
 	{

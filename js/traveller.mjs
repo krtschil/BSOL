@@ -997,7 +997,7 @@ export function displayTraveller(pdirection)
 
 			if (validContract(tline.contract))
 			{
-				row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+				row.cells[2].innerHTML = tline.contract.replaceAll(/\*/g,"X").replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
 			}
 			else
 			{

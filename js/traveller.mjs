@@ -1136,12 +1136,12 @@ export function displayTraveller(pdirection)
 
 					var width = Math.round((ddoverminus*13)/maxover);
 					width = width + "px";
-					var pbar = "<div style=\"float:left;align:left;width:13px;min-width;13px;max-width:13px;height:16px;border:none;background-color:" + backColor + ";\"><div style=\"float:right;position:absolute:top:0px;right:80px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width;
+					var pbar = "<div style=\"float:left;align:left;width:13px;min-width;13px;max-width:13px;height:16px;border:none;background-color:transparent;\"><div style=\"float:right;position:absolute:top:0px;right:80px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width;
 					pbar = pbar + ";background-color:" + colorminus + ";\"></div></div>";
 
 					var width = Math.round((ddoverplus*13)/maxover);
 					width = width + "px";
-					var pbar2 = "<div style=\"float:left;width:13px;min-width;13px;max-width:13px;height:16px;border:none;border-left:0px;background-color:" + backColor + ";\"><div style=\"float:left;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width;
+					var pbar2 = "<div style=\"float:left;width:13px;min-width;13px;max-width:13px;height:16px;border:none;border-left:0px;background-color:transparent;\"><div style=\"float:left;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width;
 					pbar2 = pbar2 + ";background-color:" + colorplus + ";\"></div></div>";
 
 					row.cells[9].style.minWidth = "30px";

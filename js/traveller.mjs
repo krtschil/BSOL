@@ -615,9 +615,10 @@ export function parseOptimumScore(optimum)
 			contract = contract.replace(/^([1-7])N(?!T)/,"$1NT").replace(/[xX]/g,"*");
 			if (!validContract(contract)) continue;
 
-			if (!seenContracts[contract])
+			var key = direction + ":" + contract + ":" + Number(score);
+			if (!seenContracts[key])
 			{
-				seenContracts[contract] = true;
+				seenContracts[key] = true;
 				result.push({direction: direction, contract: contract, score: score});
 			}
 		}

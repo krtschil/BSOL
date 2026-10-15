@@ -22,6 +22,7 @@ test("parses only valid entries from OptimumScore", () => {
 	]);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 3NT; +400<br>EW 3NT; -400"))), [
 		{direction: "NS", contract: "3NT", score: "+400"},
+		{direction: "EW", contract: "3NT", score: "-400"},
 	]);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.parseOptimumScore("NS 4<span style='color:red'>&#9829;</span>x, NS 4&#9824;x; +500"))), [
 		{direction: "NS", contract: "4H*", score: "+500"},
@@ -88,10 +89,10 @@ test("solver results preserve optimal contracts and directions for the Board vie
 	loadScript(context, "js/traveller.mjs");
 
 	context.updateParResults({
-		contractsNS: "NS 3C+1, NS 3D",
-		contractsEW: "EW 4H",
+		contractsNS: "NS:NS 3C+1, NS 3D",
+		contractsEW: "EW:EW 4H",
 		scoreNS: "NS 130",
-		scoreEW: "EW -420",
+		scoreEW: "EW 420",
 	}, 0);
 
 	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
@@ -100,13 +101,23 @@ test("solver results preserve optimal contracts and directions for the Board vie
 		{direction: "EW", contract: "4H", score: "-420"},
 	]);
 	context.updateParResults({
-		contractsNS: "NS 3NT",
-		contractsEW: "EW 3NT",
-		scoreNS: "NS 400",
-		scoreEW: "EW -400",
+		contractsNS: "NS:EW 3N",
+		contractsEW: "EW:EW 3N",
+		scoreNS: "NS -400",
+		scoreEW: "EW 400",
 	}, 0);
 	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
-		{direction: "NS", contract: "3NT", score: "400"},
+		{direction: "EW", contract: "3NT", score: "-400"},
+	]);
+	context.updateParResults({
+		contractsNS: "NS:NS 5Hx, NS 5Cx",
+		contractsEW: "EW:NS 5Hx, NS 5Cx",
+		scoreNS: "NS -300",
+		scoreEW: "EW 300",
+	}, 0);
+	assert.deepEqual(JSON.parse(JSON.stringify(context.g_hands.boards[0].OptimumContracts)), [
+		{direction: "NS", contract: "5H*", score: "-300"},
+		{direction: "NS", contract: "5C*", score: "-300"},
 	]);
 	assert.equal(JSON.parse(JSON.stringify(context.parseOptimumScore("3&#9827;; +130"))).length, 0);
 });

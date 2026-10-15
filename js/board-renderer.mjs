@@ -470,20 +470,24 @@ export function updateParResults(data,pindex)
 	var optimumContracts = [];
 	var seenOptimumContracts = {};
 	[
-		{contracts: data.contractsNS, direction: "NS", score: nss},
-		{contracts: data.contractsEW, direction: "EW", score: ews},
+		{contracts: nsc, score: Number(data.scoreNS.substring(3))},
+		{contracts: ewc, score: -Number(data.scoreEW.substring(3))},
 	].forEach(function(result)
 	{
-		var matches = String(result.contracts || "").match(/[1-7][CDHSN](?:T)?(?:X{1,2})?(?:[+-]\d+)?/gi) || [];
-		matches.forEach(function(match)
+		var direction = "";
+		var contracts = result.contracts.substring(3);
+		var pattern = /(?:(NS|EW|N|S|E|W)\s+)?([1-7](?:NT|[CDHSN])(?:X{1,2})?(?:[+-]\d+)?)/gi;
+		for (var match of contracts.matchAll(pattern))
 		{
-			var contract = match.replace(/[+-]\d+$/,"").replace(/^([1-7])N(?!T)/,"$1NT").replace(/[xX]/g,"*");
-			if (validContract(contract)&&!seenOptimumContracts[contract])
+			if (match[1]) direction = match[1].toUpperCase();
+			var contract = match[2].replace(/[+-]\d+$/,"").replace(/^([1-7])N(?!T)/,"$1NT").replace(/[xX]/g,"*");
+			var key = direction + ":" + contract + ":" + result.score;
+			if (direction && validContract(contract)&&!seenOptimumContracts[key])
 			{
-				seenOptimumContracts[contract] = true;
-				optimumContracts.push({direction: result.direction, contract: contract, score: result.score.replace("+","")});
+				seenOptimumContracts[key] = true;
+				optimumContracts.push({direction: direction, contract: contract, score: String(result.score)});
 			}
-		});
+		}
 	});
 	g_hands.boards[pindex].OptimumContracts = optimumContracts;
 

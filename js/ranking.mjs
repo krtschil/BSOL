@@ -1607,7 +1607,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 							table.insertRow(-1);
 							var row = table.rows[table.rows.length-1];
 							row.insertCell(-1);
-							row.cells[0].colSpan = 14;
+							row.cells[0].colSpan = 15;
 							row.cells[0].style.backgroundColor = "#FFFF88";
 							row.cells[0].style.borderRight = "1px solid #cccccc";
 
@@ -1673,7 +1673,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var k;
 
-								for (k=0;k<13+g_ofs;k++)
+								for (k=0;k<14+g_ofs;k++)
 								{
 									row.insertCell(-1);
 								}
@@ -1739,10 +1739,16 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var nspts = Number(tline.ns_match_points);
 								var ewpts = Number(tline.ew_match_points);
-								var resultColumn = 10+g_ofs;
-								row.cells[9+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts).toFixed(1) : "";
-								row.cells[9+g_ofs].style.display = showMatchPoints ? "" : "none";
+								var score = tline.score;
+								row.cells[9+g_ofs].textContent = score!=null && String(score).trim()!=="" && Number.isFinite(Number(score))
+									? (tdirection==1 ? Number(score) : -Number(score))
+									: (score ?? "");
+								row.cells[9+g_ofs].style.textAlign = "right";
 								row.cells[9+g_ofs].style.borderRight = "1px solid #aaa";
+								var resultColumn = 11+g_ofs;
+								row.cells[10+g_ofs].textContent = showMatchPoints ? (tdirection==1 ? nspts : ewpts).toFixed(1) : "";
+								row.cells[10+g_ofs].style.display = showMatchPoints ? "" : "none";
+								row.cells[10+g_ofs].style.borderRight = "1px solid #aaa";
 
 								if (g_scoring!="IMP")
 									value = 100*(nspts/(nspts + ewpts));
@@ -1822,7 +1828,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								var width = (100*value)/100;
 
-								setBars(row.cells,100-width,11+g_ofs,100,"#FF0000","#00FF00",50);
+								setBars(row.cells,100-width,12+g_ofs,100,"#FF0000","#00FF00",50);
 
 								if (validContract(tline.contract))
 								{

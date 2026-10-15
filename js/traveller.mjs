@@ -1251,7 +1251,7 @@ export function displayTraveller(pdirection)
 				row.deleteCell(12);
 			}
 
-			row.style.backgroundColor = backColor;
+			row.style.backgroundColor = (tline.ns_pair_number=="" && tline.ew_pair_number=="") ? "#e6f4e6" : backColor;
 
 			for (j=0;j<row.cells.length;j++)
 			{

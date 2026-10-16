@@ -88,21 +88,29 @@ test("board statistics explicitly exclude missing, partial and duplicated cards"
 
 test("board statistics enforces the greater-than-ten threshold", () => {
 	const panel = {hidden:true};
-	const content = {replaceChildren() {}, appendChild() {}};
-	const note = {};
+	const button = {};
+	let message;
 	const ctx = createContext({
 		language:"de",
 		g_hands:{boards:Array.from({length:10}, () => ({Deal:deal}))},
+		displayError(element, text) {
+			assert.equal(element, button);
+			message = text;
+		},
 		document:{
-			getElementById: id => id==="boardStatistics" ? panel : content,
-			createElement: () => note,
+			getElementById: id => id==="boardStatistics" ? panel : button,
 		},
 	});
 
 	loadScript(ctx, "js/board-statistics.mjs");
-	ctx.showBoardStatistics();
-	assert.equal(panel.hidden, false);
-	assert.match(note.textContent, /mehr als 10/);
+	for (const count of [0,1,10]) {
+		ctx.g_hands.boards = Array.from({length:count}, () => ({Deal:deal}));
+		ctx.showBoardStatistics();
+		assert.equal(panel.hidden, true);
+		assert.match(message, /nur bei mehr als 10 Boards/);
+		ctx.showBoardStatistics("en");
+		assert.match(message, /only calculated for more than 10 boards/);
+	}
 });
 
 test("entering result analysis hides board statistics for every analysis view", () => {

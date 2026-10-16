@@ -464,7 +464,7 @@ export function hideMenuItems()
 
 export function showMainMenuItems()
 {
-	document.getElementById("showBoardStatistics").disabled = g_hands.boards.length<=10;
+	document.getElementById("showBoardStatistics").disabled = false;
 	if ((g_hands.boards.length>1)||(g_test==1)||(g_xml!=""))
 	{
 		show("prev");

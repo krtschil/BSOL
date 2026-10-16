@@ -1,3 +1,5 @@
+import { displayError } from "./ui-popups.mjs";
+
 export function calculateBoardStatistics(boards)
 {
 	function choose(n, k)
@@ -81,16 +83,18 @@ export function showBoardStatistics(displayLanguage = language)
 	var panel = document.getElementById("boardStatistics");
 	var content = document.getElementById("boardStatisticsContent");
 	var de = displayLanguage=="de";
+	if (g_hands.boards.length<=10)
+	{
+		panel.hidden = true;
+		displayError(document.getElementById("showBoardStatistics"), de
+			? "Die Boardstatistik wird nur bei mehr als 10 Boards ermittelt."
+			: "Board statistics are only calculated for more than 10 boards.");
+		return;
+	}
 	document.getElementById("closeBoardStatistics").textContent = de ? "Schließen" : "Close";
 	content.replaceChildren();
 	var note = document.createElement("p");
 	content.appendChild(note);
-	if (g_hands.boards.length<=10)
-	{
-		note.textContent = de ? "Boardstatistik benötigt mehr als 10 Boards." : "Board statistics require more than 10 boards.";
-		panel.hidden = false;
-		return;
-	}
 	var stats = calculateBoardStatistics(g_hands.boards);
 	note.textContent = de
 		? stats.validBoards + " vollständige Boards, " + stats.hands + " Hände. Ausgeschlossene unvollständige/ungültige Boards: " + stats.excludedBoards

@@ -49,7 +49,7 @@ The main stylesheet is `ddummy.css`. It contains:
 ## Functionality
 ### Board statistics
 The top-level **Boardstatistik / Board statistics** button shows an explanatory popup
-for 10 or fewer loaded boards. Statistics are calculated only for more than 10 boards.
+for 10 or more loaded boards. Statistics are calculated only for more than 10 boards.
 Its panel appears below the board and stays visible when navigating
 between boards; it can be closed explicitly and is hidden when entering result
 analysis or loading a new file.

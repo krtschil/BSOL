@@ -37,40 +37,6 @@ W  H  2
 W  D  2
 W  C  1
 W NT  2
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    14   1NT   W 10
-10   19   4S    S  9
-11   21   6C    E 11
-12   23   3H    E  7
-13   25   5C    S  8
-16   2    PASS  N  -
-18   3    5D    S 13
-27   40   3Sx   N  8
-30   46   4D    W 10
-31   48   5S    N 10
-32   50   7Dxx  W 12
-33   52   3Hx   N 13
-34   41   4S    W  7
-35   43   4NT   N  9
-36   45   2S    N  8
-37   47   3NTx  S  6
-38   49   2Dx   W  7
-39   51   2H    S  8
-4    20   3Hx   W 11
-42   28   3S    S 11
-44   29   6Sx   E 13
-5    22   3C    W  8
-53   56   1C    E  9
-54   55   2Hx   E  9
-59   61   4D    S  8
-6    24   2NT   W  9
-60   65   6H    S 11
-62   58   2Dx   E  7
-64   57   4C    N 12
-66   63   1D    N  3
-7    26   3Cx   W 10
-8    15   1D    N  6
-9    17   1C    S  7
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -110,40 +76,6 @@ W  H  4
 W  D  5
 W  C  3
 W NT  4
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    14   6D    W 12
-10   19   3H    W  7
-11   21   4D    E 10
-12   23   -     N  -
-13   25   5C    S 13
-16   2    2NTxx S  9
-18   3    3D    S 10
-27   40   4NT   N  9
-30   46   3D    W 10
-31   48   4Cx   N  8
-32   50   2Cx   N 10
-33   52   4S    E 10
-34   41   3NT   N  8
-35   43   2NT   E  6
-36   45   4D    S  6
-37   47   7D    S 13
-38   49   5S    S 12
-39   51   3C    E  7
-4    20   5NT   W 12
-42   28   6NT   S  9
-44   29   4C    N 10
-5    22   3NTx  N  9
-53   56   4H    E  9
-54   55   4S    N  7
-59   61   3S    S 11
-6    24   6NT   W 11
-60   65   4H    W  9
-62   58   3NT   N 10
-64   57   3H    N  8
-66   63   5D    E 10
-7    26   1H    S  7
-8    15   PASS  N  -
-9    17   7D    W 12
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -183,40 +115,6 @@ W  H 11
 W  D 11
 W  C  7
 W NT  7
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    26   3C    E  7
-10   18   7Dx   W 13
-11   20   4C    S  8
-12   22   6NT   W 10
-13   24   1NT   W 11
-17   3    1S    E  8
-19   4    6S    W 11
-2    15   1S    N  6
-27   52   PASS  N  -
-28   41   -     N  -
-31   47   6Sx   N 11
-32   49   4NT   E  8
-33   51   4C    S  3
-34   40   6NTx  E 10
-35   42   4NTx  W 10
-36   44   PASS  N  -
-37   46   6H    S 11
-38   48   3C    S  7
-39   50   4S    N 10
-43   29   2NT   N 10
-45   30   2H    W  8
-5    21   4H    S  9
-54   57   5NT   N 10
-55   56   2Sxx  S 10
-6    23   7S    N 13
-60   62   2Dx   E  9
-61   53   4D    E  9
-63   59   6H    S 12
-65   58   3NT   S  7
-66   64   6S    N 13
-7    25   5Cxx  S 11
-8    14   1NT   W  8
-9    16   2Cxx  E  6
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -256,40 +154,6 @@ W  H  3
 W  D  4
 W  C  7
 W NT  4
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    26   1Cx   S  6
-10   18   6Hx   W  8
-11   20   4NTx  E  6
-12   22   3S    E  6
-13   24   3Dx   S 10
-17   3    1NT   E  7
-19   4    4NT   N 10
-2    15   1C    W  6
-27   52   2S    E  8
-28   41   6D    E 10
-31   47   3Hx   W  7
-32   49   PASS  N  -
-33   51   PASS  W  -
-34   40   1C    E  3
-35   42   2S    S  7
-36   44   4S    W 10
-37   46   3NTx  S  9
-38   48   6H    S 12
-39   50   2C    W  6
-43   29   4C    N 11
-45   30   7NT   W 12
-5    21   1Sx   E  7
-54   57   4NTx  E 10
-55   56   6S    S  8
-6    23   6C    W 12
-60   62   1NT   S  9
-61   53   2Dx   S  7
-63   59   3NT   S 10
-65   58   6D    S 12
-66   64   4D    E 10
-7    25   4D    S 12
-8    14   4D    W 10
-9    16   5H    E 12
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -329,40 +193,6 @@ W  H  6
 W  D  8
 W  C  4
 W NT  6
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    25   4NT   W  8
-10   17   2C    E  8
-11   19   6NT   S 13
-12   21   PASS  W  -
-13   23   3S    W  9
-18   4    7D    N 13
-2    14   5Cx   S 10
-20   5    5D    E  9
-27   51   5NT   S  4
-28   40   3C    E  8
-29   42   2NT   E  6
-3    16   3Hx   W 11
-32   48   1Sx   N  8
-33   50   PASS  W  -
-34   52   2S    N  7
-35   41   5NT   S 10
-36   43   3D    W 10
-37   45   PASS  W  -
-38   47   5Cx   S 11
-39   49   3S    E  8
-44   30   3H    E  6
-46   31   -     N  -
-53   59   2D    W  8
-55   58   3NT   E  9
-56   57   1S    W  9
-6    22   2H    S  9
-61   63   1D    S  8
-62   54   6Dxx  W 12
-64   60   1NT   S  8
-66   65   4D    S 11
-7    24   2D    N 10
-8    26   PASS  N  -
-9    15   3S    N  8
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -402,40 +232,6 @@ W  H  4
 W  D  8
 W  C  7
 W NT  5
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    25   3NT   W  9
-10   17   5H    E  9
-11   19   5C    S 10
-12   21   3C    S 10
-13   23   2S    W 10
-18   4    6H    N 10
-2    14   4C    S 10
-20   5    4D    S 10
-27   51   2Cx   S  7
-28   40   4D    E  9
-29   42   4C    E 10
-3    16   3D    N 10
-32   48   5S    N  9
-33   50   5C    N  8
-34   52   4C    N 12
-35   41   PASS  S  -
-36   43   PASS  N  -
-37   45   3NT   N  7
-38   47   2H    S  9
-39   49   5NT   E 13
-44   30   6S    N 11
-46   31   4D    S  9
-53   59   5C    S 11
-55   58   1S    E  7
-56   57   4C    W  9
-6    22   3S    S  7
-61   63   4Dx   S  8
-62   54   4S    W  8
-64   60   3Dx   S  7
-66   65   3S    E  9
-7    24   2S    W 10
-8    26   3H    E  8
-9    15   3D    E  7
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -475,40 +271,6 @@ W  H  3
 W  D  3
 W  C  6
 W NT  4
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    24   4NT   S 10
-10   16   1D    S  8
-11   18   2NT   W  7
-12   20   3H    W  7
-13   22   1NT   N  9
-19   5    2H    E 10
-2    26   1D    N  7
-21   6    PASS  S  -
-27   50   4NT   N 11
-28   52   4Hx   S  8
-29   41   4Cx   E  9
-3    15   1C    E  6
-30   43   2H    E  8
-33   49   1C    W  8
-34   51   7S    N 13
-35   40   1C    E  4
-36   42   3S    W  6
-37   44   2H    N  6
-38   46   3Sx   E  9
-39   48   2D    S  7
-4    17   1S    S  7
-45   31   PASS  E  -
-47   32   3C    S  5
-54   60   3Dx   W 11
-56   59   3C    N  9
-57   58   2Sx   E 10
-62   64   4D    S 11
-63   55   2H    E 10
-65   61   3S    E  7
-66   53   2H    N  6
-7    23   3D    E  9
-8    25   2H    N 11
-9    14   3Dxx  S  8
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -548,40 +310,6 @@ W  H 10
 W  D 11
 W  C  6
 W NT  7
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    24   3NT   W 11
-10   16   4S    S 10
-11   18   PASS  W  -
-12   20   3S    W 11
-13   22   3S    N  8
-19   5    1S    S  6
-2    26   5D    N 12
-21   6    4C    S  8
-27   50   2Hx   W  9
-28   52   2S    S  8
-29   41   6D    E 11
-3    15   5Cxx  S 13
-30   43   4S    E 12
-33   49   4C    N  8
-34   51   3C    N 11
-35   40   3D    E  8
-36   42   6Sx   N  9
-37   44   1NT   W  4
-38   46   2C    N  8
-39   48   4S    S 12
-4    17   7D    S 13
-45   31   6D    W 10
-47   32   3H    E 10
-54   60   1S    S  6
-56   59   2H    W  6
-57   58   5C    N 10
-62   64   2Dx   S  9
-63   55   4NT   E 11
-65   61   2NTx  S  7
-66   53   4D    W  8
-7    23   6H    E 13
-8    25   2D    E  9
-9    14   3Sx   E  8
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -621,40 +349,6 @@ W  H  8
 W  D 12
 W  C 12
 W NT  8
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    23   1S    N  5
-10   15   1D    E  5
-11   17   PASS  S  -
-12   19   4NT   S  8
-13   21   2Cx   W  6
-2    25   1D    S  5
-20   6    5S    N 11
-22   7    5C    N 13
-27   49   3NT   E 11
-28   51   PASS  E  -
-29   40   4S    E  9
-3    14   3NT   W  9
-30   42   1S    W  6
-31   44   -     N  -
-34   50   1S    E 10
-35   52   6NTx  S 10
-36   41   2NT   S  8
-37   43   2C    N 10
-38   45   4D    S  9
-39   47   3Cx   W 11
-4    16   1C    W  6
-46   32   5S    N 11
-48   33   PASS  W  -
-5    18   -     N  -
-53   62   2Cx   E  6
-55   61   3Dx   N 12
-57   60   1C    E  8
-58   59   3D    W  7
-63   65   5NTxx W 11
-64   56   2D    N  9
-66   54   4D    W  9
-8    24   4D    W 10
-9    26   5Dx   W 11
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -694,40 +388,6 @@ W  H  2
 W  D  5
 W  C  6
 W NT  2
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    23   3C    N  8
-10   15   7S    E 12
-11   17   4S    S  9
-12   19   4C    W 12
-13   21   2Dx   N 10
-2    25   5D    S 11
-20   6    -     N  -
-22   7    6NT   E  8
-27   49   PASS  S  -
-28   51   5D    E 12
-29   40   1NT   E  7
-3    14   2Cx   N 10
-30   42   2NT   W  7
-31   44   2NT   W  6
-34   50   5NTxx S 12
-35   52   2D    E  7
-36   41   3D    S 10
-37   43   4NT   E 12
-38   45   3NT   S  7
-39   47   3S    S 13
-4    16   4S    S  9
-46   32   3C    W  6
-48   33   5Dx   S 10
-5    18   4C    E 12
-53   62   6Hx   N 13
-55   61   2Sx   N  7
-57   60   4S    S 10
-58   59   2D    N  7
-63   65   3D    W 10
-64   56   PASS  N  -
-66   54   1NT   S  1
-8    24   2H    W  9
-9    26   4NT   W 10
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]
@@ -767,40 +427,6 @@ W  H 10
 W  D 10
 W  C 10
 W NT 10
-[ScoreTable "PairId_NS\4R;PairId_EW\4R;Contract\5L;Declarer\1R;Result\2R"]
-1    22   3NT   W  8
-10   14   2C    W 10
-11   16   3H    E  8
-12   18   2Sx   E 10
-13   20   3C    W  8
-2    24   4S    N 10
-21   7    7Cx   N 13
-23   8    5D    N 11
-27   48   2Dx   N  9
-28   50   4H    N  9
-29   52   PASS  N  -
-3    26   3D    S  8
-30   41   4C    E 10
-31   43   3S    E 11
-32   45   1H    E  1
-35   51   3H    N  9
-36   40   1H    S  8
-37   42   4H    N 12
-38   44   1H    N  8
-39   46   5S    N 13
-4    15   2S    S  9
-47   33   5S    N 12
-49   34   5C    W 12
-5    17   4D    W  9
-54   63   4H    W 12
-56   62   2D    W  9
-58   61   2NTx  E  8
-59   60   3C    W 10
-6    19   2S    E  7
-64   53   3S    N 11
-65   57   2NT   W 10
-66   55   1NT   S  7
-9    25   7Cx   S 12
 [Scoring "MP"]
 [Declarer "?"]
 [Contract "?"]

@@ -1037,4 +1037,6 @@ test("renders bidding table with dealer offset without error", () => {
 	assert.ok(typeof html === "string");
 	assert.ok(html.includes("biddingHeader"));
 	assert.ok(html.includes("biddingContent"));
+	assert.match(html, /display:inline-block/);
+	assert.doesNotMatch(html, /margin-left:35px|float:left/);
 });

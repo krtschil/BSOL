@@ -828,7 +828,10 @@ export function computeTravellerStatistics(pdirection)
 		}
 
 		var cells = crow.cells;
-		cells[0].innerHTML = curobj.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+		if (validContract(curobj.contract))
+			cells[0].innerHTML = curobj.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
+		else
+			cells[0].textContent = curobj.contract;
 		cells[1].innerHTML = curobj.played_by;
 		cells[2].innerHTML = curobj.tcount;
 

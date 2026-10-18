@@ -844,7 +844,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		g_scoreFontSize: "12px",
 		language: "de",
 		appState: {},
-		validContract: (c) => typeof c === "string" && c.length >= 2,
+		validContract: (c) => typeof c === "string" && /^[1-7][CDHSN]/.test(c),
 		setMode: () => {},
 		setLastBoardIndex: (i) => { context.g_lastBindex = i; },
 		hideMenuItems: () => {},
@@ -877,6 +877,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		setButtonColor: () => {},
 		getPlayerInfo: () => null,
 		played: () => true,
+		passed: (tline) => tline.contract==="Passed",
 		drawBar: () => "",
 		drawBoxedBar: () => "",
 	});
@@ -923,23 +924,31 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	// Verify computeTravellerStatistics executes without strict-mode undeclared variable errors
 	context.g_currentTraveller = {
 		traveller_line: [
-			{ contract: "3NT", played_by: "N", ns_match_points: 100, ew_match_points: 0, crossImpsNS: 5, crossImpsEW: -5 }
+			{ contract: "3NT", played_by: "N", ns_match_points: 100, ew_match_points: 0, crossImpsNS: 5, crossImpsEW: -5 },
+			{ contract: "Passed", played_by: "", ns_match_points: 50, ew_match_points: 50, crossImpsNS: 0, crossImpsEW: 0 }
 		]
 	};
 	const mockTable = {
-		deleteRow: () => {},
-		insertRow: () => {},
+		deleteRow: () => { mockTable.rows.pop(); },
+		insertRow: () => {
+			const row = {cells: [], insertCell: () => {
+				const cell = {style: {}, innerHTML: "", textContent: ""};
+				row.cells.push(cell);
+				return cell;
+			}};
+			mockTable.rows.push(row);
+			return row;
+		},
 		rows: [{ cells: [{}, {}, {}, { textContent: "" }] }]
 	};
-	mockTable.rows.push({
-		insertCell: () => {},
-		cells: Array.from({ length: 6 }, () => ({ style: {} }))
-	});
 	context.document.getElementById = (id) => (id === "contractTable" ? mockTable : { style: {}, replaceChildren: () => {} });
 
 	assert.doesNotThrow(() => {
 		context.computeTravellerStatistics(1);
 	});
+	const passedRow = mockTable.rows.find((row) => row.cells[0]?.textContent==="Durchgepasst");
+	assert.ok(passedRow);
+	assert.equal(passedRow.cells[0].innerHTML, "");
 });
 
 test("calculates ranking info from traveller data", async () => {

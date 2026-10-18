@@ -700,6 +700,21 @@ test("positions bid-alert popups near the hovered bid", () => {
 	assert.equal(popup.style.visibility, "");
 });
 
+test("calculates declarer trick differences from the contract", () => {
+	const board = {Contract: "4H", Claimed: 10, Played: []};
+	const context = createContext({
+		g_hands: {boards: [board]},
+		validContract: () => true,
+	});
+	loadScript(context, "js/play.mjs");
+
+	assert.equal(context.calculateTricks(0), "");
+	board.Claimed = 11;
+	assert.equal(context.calculateTricks(0), "+1");
+	board.Claimed = 9;
+	assert.equal(context.calculateTricks(0), -1);
+});
+
 test("calculates representative bridge scores", () => {
 	const context = createContext();
 	loadScript(context, "js/scoring.mjs");
@@ -816,6 +831,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 				Contract: "3NT",
 				Declarer: "N",
 				Played: ["C2"], // only opening lead, no play sequence
+				Claimed: "",
 				Bids: [],
 				Deal: ["AK.QJ.T9.8765", "23.45.67.89TJQ", "45.67.89.AKQJT", "98.76.54.32"],
 			}]
@@ -845,7 +861,11 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		redrawMCTable: () => {},
 		updateUpperLeftQuadrant: () => {},
 		edit: () => {},
-		calculateTricks: () => 0,
+		calculateTricks: (index) => {
+			const board = context.g_hands.boards[index];
+			const offset = Number(board.Claimed) - Number(board.Contract.charAt(0)) - 6;
+			return offset===0 ? "" : offset>0 ? "+" + offset : offset;
+		},
 		showBidding: () => "",
 		displayVulnerability: () => {},
 		showMakeableContracts: () => {},
@@ -882,10 +902,17 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	// When play data exists, default contract should be set
 	context.g_hands.boards[0].Played = ["C2", "C3", "CK", "CA"];
+	context.g_hands.boards[0].Claimed = 10;
 	context.setupTraveller(0, true);
 
 	assert.equal(context.g_defaultContract, 1);
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+	assert.match(elements.currentPosition.innerHTML, /id=linPlay[^>]*min-width:110px/);
+	assert.match(elements.currentPosition.innerHTML, /3SA\+1 von N/);
+	assert.doesNotMatch(elements.currentPosition.innerHTML, /Kontr:/);
+	context.g_hands.boards[0].Claimed = 9;
+	context.setupTraveller(0, true);
+	assert.match(elements.currentPosition.innerHTML, /3SA= von N/);
 
 	// Verify showComparison runs without throwing ESM this-binding errors
 	context.g_hands.boards[0].OptimumScore = "N 3NT;+400";
@@ -1010,4 +1037,6 @@ test("renders bidding table with dealer offset without error", () => {
 	assert.ok(typeof html === "string");
 	assert.ok(html.includes("biddingHeader"));
 	assert.ok(html.includes("biddingContent"));
+	assert.match(html, /display:inline-block/);
+	assert.doesNotMatch(html, /margin-left:35px|float:left/);
 });

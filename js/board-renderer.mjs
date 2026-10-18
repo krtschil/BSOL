@@ -427,7 +427,7 @@ export function showBidding()
 
 	var boxHeight = Math.floor(3*g_sectionHeight/5) + "px";
 
-	return "<div style=\"margin-left:35px;float:left;padding: 0; border:1px solid black; width: 200px;\">" + headerDiv.innerHTML + "</div><div id=biddingContent style=\"margin-left:35px; float:left; clear:both; padding: 0; border:1px solid black; width: 200px; height:" + boxHeight + "; overflow-y: auto;\">" + el.innerHTML + "</div>";
+	return "<div style=\"display:inline-block;padding:0;border:1px solid black;width:200px;\">" + headerDiv.innerHTML + "</div><div id=biddingContent style=\"display:block;margin:0 auto;padding:0;border:1px solid black;width:200px;height:" + boxHeight + ";overflow-y:auto;\">" + el.innerHTML + "</div>";
 }
 
 export function showCredits()

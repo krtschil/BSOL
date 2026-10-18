@@ -670,6 +670,36 @@ test("positions pair-name popups near the hovered cell", () => {
 	assert.equal(right.top, 5);
 });
 
+test("positions bid-alert popups near the hovered bid", () => {
+	const popup = {
+		style: {},
+		replaceChildren: () => {},
+		getBoundingClientRect: () => ({width: 120, height: 30}),
+	};
+	const context = createContext({
+		g_hands: {boards: [{Bids: ["1C|Forcing"]}]},
+		g_lastBindex: 0,
+		document: {getElementById: () => popup},
+		window: {innerWidth: 800, innerHeight: 600, location: {search: ""}},
+		$: () => ({
+			finish() { return this; },
+			delay() { return this; },
+			fadeIn() { return this; },
+			fadeOut() { return this; },
+		}),
+	});
+	loadScript(context, "js/ui-popups.mjs");
+
+	context.showBidAlert({
+		id: "bidIdx0",
+		getBoundingClientRect: () => ({left: 200, right: 240, top: 300, width: 40, height: 20}),
+	});
+
+	assert.equal(popup.style.top, "264px");
+	assert.equal(popup.style.left, "160px");
+	assert.equal(popup.style.visibility, "");
+});
+
 test("calculates representative bridge scores", () => {
 	const context = createContext();
 	loadScript(context, "js/scoring.mjs");

@@ -907,6 +907,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 
 	assert.equal(context.g_defaultContract, 1);
 	assert.equal(context.g_defaultContractIndex, 4); // Declarer N (0 * 5) + suit NT (4) = 4
+	assert.match(elements.currentPosition.innerHTML, /id=linPlay[^>]*min-width:110px/);
 	assert.match(elements.currentPosition.innerHTML, /3SA\+1 von N/);
 	assert.doesNotMatch(elements.currentPosition.innerHTML, /Kontr:/);
 	context.g_hands.boards[0].Claimed = 9;

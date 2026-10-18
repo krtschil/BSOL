@@ -519,13 +519,19 @@ export function showBidAlert(pthis){
 	var popup = document.getElementById("popup_box");
 	popup.style.padding = "2px";
 	popup.style.backgroundColor = "yellow";
-	popup.style.top = ((getPosition(pthis).y) - 20 - $(this).scrollTop()) + "px";
 	const clean = DOMPurify.sanitize("<span style='font-weight:bold;'>" + msg + "</span>", { RETURN_DOM_FRAGMENT: true });
 	popup.replaceChildren(clean); //innerHTML = "<span style='font-weight:bold;'>" + msg + "</span>";
 	$("#popup_box").finish();
+	popup.style.visibility = "hidden";
+	popup.style.display = "block";
+	var anchorRect = pthis.getBoundingClientRect();
+	var popupRect = popup.getBoundingClientRect();
+	var position = calculateNearbyPopupPosition(anchorRect,popupRect.width,popupRect.height,window.innerWidth,window.innerHeight);
+	popup.style.top = position.top + "px";
+	popup.style.left = position.left + "px";
 	popup.style.display="none";
+	popup.style.visibility = "";
 	$("#popup_box").delay(100).fadeIn(200).delay(4000).fadeOut(100);
-	popup.style.left = (getPosition(pthis).x -  $(popup).width())  + "px";
 }
 
 export function calculateNearbyPopupPosition(anchorRect,popupWidth,popupHeight,viewportWidth,viewportHeight)

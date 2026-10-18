@@ -2345,7 +2345,7 @@ export function setupScorecard(keepScrollSetting)
 
 	var boards = g_travellers.event.board;
 
-	document.getElementById("scPlayerNames2").innerHTML = info.player1 + " & " + info.player2 + " - " + dirStr + g_hands.pair_number;
+	document.getElementById("scPlayerNames2").textContent = info.player1 + " & " + info.player2 + " - " + dirStr + g_hands.pair_number;
 
 	var etfRange = 0;
 

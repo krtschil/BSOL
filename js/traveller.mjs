@@ -1,7 +1,7 @@
 import { getTindexByName, getTravellerForBoard, checkBoardValid } from './board-utils.mjs';
 import { getMakeableTricksForContract, calculateMakeableContracts, getRequestedLeads } from './makeable.mjs';
 import { getHands } from './import.mjs';
-import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo } from './ranking.mjs';
+import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo, setClickFunctionForNames } from './ranking.mjs';
 import { validContract, played, passed, getLeadsIdx, makeBoardNameString, substituteSuitSymbol } from './scoring.mjs';
 import { hideMenuItems, showMainMenuItems, show, hideAllPopups, showNames } from './ui-popups.mjs';
 import { drawMiniHand } from './hand-renderer.mjs';
@@ -980,7 +980,9 @@ export function displayTraveller(pdirection)
 				row.insertCell(-1);
 
 			row.cells[0].innerHTML = tline.ns_pair_number;
-			row.cells[0].onclick = row.cells[0].onmouseover = function(){showNames(this,1);};
+			row.cells[0].onmouseover = function(){showNames(this,1);};
+			if (tline.ns_pair_number!="")
+				setClickFunctionForNames(row.cells[0],tline.ns_pair_number,1);
 			row.cells[0].onmouseout = function(){
 					var popup = document.getElementById("popup_box");
 					popup.textContent = "";
@@ -994,7 +996,9 @@ export function displayTraveller(pdirection)
 				row.cells[0].style.backgroundColor = "#bbbbff";
 
 			row.cells[1].innerHTML = tline.ew_pair_number;
-			row.cells[1].onclick = row.cells[1].onmouseover = function(){showNames(this,2);};
+			row.cells[1].onmouseover = function(){showNames(this,2);};
+			if (tline.ew_pair_number!="")
+				setClickFunctionForNames(row.cells[1],tline.ew_pair_number,2);
 			row.cells[1].onmouseout = function(){
 					var popup = document.getElementById("popup_box");
 					popup.textContent = "";

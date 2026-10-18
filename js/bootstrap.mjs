@@ -293,10 +293,10 @@ export function buildPage1(data,options)
 	switch(language)
 	{
 		case "de":
-			cell.innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
+			cell.innerHTML = "<div class='scorecard-heading-controls'><select id='sortMode' name='sortMode'><option value=0>Nach Rolle sortieren</option><option value=1>Nach Board sortieren</option></select></div><span id='scPlayerNames2' class='scorecard-pair-name'></span>";
 			break;
 		default:
-			cell.innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
+			cell.innerHTML = "<div class='scorecard-heading-controls'><select id='sortMode' name='sortMode'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><span id='scPlayerNames2' class='scorecard-pair-name'></span>";
 	}
 
 	document.getElementById("sortMode").onchange = function(){log("operation=sortMode:"+this.selectedIndex);setupScorecard(true);};

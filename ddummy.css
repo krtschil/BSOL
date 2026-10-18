@@ -1664,6 +1664,29 @@ a:hover {
   background-color: var(--primary-dark);
 }
 
+#scPlayerNames {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--primary-dark);
+  color: #ffffff;
+}
+
+.scorecard-heading-controls {
+  display: inline-block;
+  margin-right: 0.75rem;
+}
+
+.scorecard-heading-controls select {
+  background-color: var(--action-surface);
+  color: var(--text);
+}
+
+.scorecard-pair-name {
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
 .blue-bar {
   background-color: var(--primary);
 }

@@ -194,7 +194,7 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	context.g_scoring = "IMP";
 	context.setupRanking(true);
 	assert.equal(table.rows[0].cells.length, 5);
-	assert.equal(table.rows[0].cells[3].textContent, "Points");
+	assert.equal(table.rows[0].cells[3].textContent, "IMPs");
 	assert.equal(table.rows[2].cells.length, 6);
 	assert.equal(table.rows[2].cells[3].innerHTML, "123.50");
 	context.g_eventType = "Teams";
@@ -668,6 +668,31 @@ test("positions pair-name popups near the hovered cell", () => {
 	);
 	assert.equal(right.left, 66);
 	assert.equal(right.top, 5);
+});
+
+test("IMP pair headings survive language changes and reset for matchpoints", () => {
+	const elements = {};
+	const context = createContext({
+		g_scoring: "IMP",
+		g_eventType: "Pairs",
+		document: {
+			getElementById: (id) => elements[id] ||= {style: {}, hidden: true},
+		},
+	});
+	loadScript(context, "js/localization.mjs");
+
+	for (const language of ["de", "en"]) {
+		context.changeLanguage(language);
+		assert.equal(elements.scoring8.textContent, "IMPs");
+		assert.equal(elements.travellerTable6.textContent, "IMPs");
+	}
+	context.g_scoring = "MatchPoints";
+	context.changeLanguage("de");
+	assert.equal(elements.scoring8.textContent, "Prozent");
+	assert.equal(elements.travellerTable6.textContent, "Prozent");
+	context.changeLanguage("en");
+	assert.equal(elements.scoring8.textContent, "Percentage");
+	assert.equal(elements.travellerTable6.textContent, "Percentage");
 });
 
 test("positions bid-alert popups near the hovered bid", () => {

@@ -761,7 +761,7 @@ export function computeTravellerStatistics(pdirection)
 			}
 			else
 			{
-				var tailEnd = "Punkte";
+				var tailEnd = "IMPs";
 
 				if (g_eventType=="Teams") tailEnd = "Cross Imps";
 
@@ -781,7 +781,7 @@ export function computeTravellerStatistics(pdirection)
 			}
 			else
 			{
-				var tailEnd = "Points";
+				var tailEnd = "IMPs";
 
 				if (g_eventType=="Teams") tailEnd = "Cross Imps";
 
@@ -890,13 +890,9 @@ export function displayTraveller(pdirection)
 
 	window.scroll(0,0);
 
-	if (g_scoring=="IMP")
-	{
-		if (g_eventType!="Teams")
-			rows[0].cells[5].textContent = "Punkte";
-		else
-			rows[0].cells[5].textContent = "Cross Imps";
-	}
+	document.getElementById("travellerTable6").textContent = g_scoring=="IMP"
+		? (g_eventType=="Teams" ? "Cross Imps" : "IMPs")
+		: (language=="de" ? "Prozent" : "Percentage");
 	var showMatchPoints = g_scoring!="IMP";
 	["travellerTable19","travellerTable20","travellerTable21"].forEach(function(id)
 	{

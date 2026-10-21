@@ -711,10 +711,10 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		switch(language)
 		{
 			case "de":
-				rows[0].cells[3].textContent = "Punkte";
+				rows[0].cells[3].textContent = g_scoring=="IMP" ? "IMPs" : "Punkte";
 				break;
 			default:
-				rows[0].cells[3].textContent = "Points";
+				rows[0].cells[3].textContent = g_scoring=="IMP" ? "IMPs" : "Points";
 		}
 
 		for (i=0;i<g_travellers.event.participants.pair.length;i++)
@@ -2332,16 +2332,8 @@ export function setupScorecard(keepScrollSetting)
 
 	while (srows.length>1) stable.deleteRow(-1);
 
-	switch(language)
-	{
-		case "de":
-			if (g_scoring=="IMP") rows[1].cells[6+g_ofs].textContent = "Punkte";
-			if (g_eventType=="Teams") rows[1].cells[6+g_ofs].textContent = "Cross Imps";
-			break;
-		default:
-			if (g_scoring=="IMP") rows[1].cells[6+g_ofs].textContent = "Points";
-			if (g_eventType=="Teams") rows[1].cells[6+g_ofs].textContent = "Cross Imps";
-	}
+	document.getElementById("scoring8").textContent = g_scoring=="IMP"
+		? "IMPs" : (language=="de" ? "Prozent" : "Percentage");
 
 	var boards = g_travellers.event.board;
 

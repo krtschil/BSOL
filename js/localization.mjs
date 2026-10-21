@@ -233,6 +233,12 @@ export function changeLanguage(l) {
 			//document.getElementById("scPlayerNames").innerHTML = "<div style='float:left;'><select id='sortMode' name='sortMode' style='background-color:yellow;'><option value=0>Sort By Role</option><option value=1>Sort by Board</option></select></div><div style='float:left;vertical-align:middle;margin-left:10px;'><span id='scPlayerNames2' style='color:white;'></span></div>";
 
 	}
+	if (typeof g_scoring!="undefined" && g_scoring=="IMP")
+	{
+		document.getElementById("scoring8").textContent = "IMPs";
+		document.getElementById("travellerTable6").textContent =
+			typeof g_eventType!="undefined" && g_eventType=="Teams" ? "Cross Imps" : "IMPs";
+	}
 	document.getElementById("closeBoardStatistics").textContent = l=="de" ? "Schließen" : "Close";
 	if (document.getElementById("boardStatistics").hidden===false)
 		showBoardStatistics(l);

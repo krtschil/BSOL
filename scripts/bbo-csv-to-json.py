@@ -7,6 +7,7 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 
 REQUIRED_TRAVELLER_FIELDS = {
@@ -179,6 +180,31 @@ def score_columns(row):
     raise ValueError("Traveller row has no NS/EW score columns")
 
 
+def normalize_lin_encoding(value):
+    def repair(match):
+        encoded = match.group()
+        try:
+            text = unquote(encoded, encoding="utf-8", errors="strict")
+        except UnicodeDecodeError:
+            return encoded
+
+        original = text
+        while True:
+            for encoding in ("latin-1", "cp1252"):
+                try:
+                    repaired = text.encode(encoding).decode("utf-8")
+                except (UnicodeEncodeError, UnicodeDecodeError):
+                    continue
+                if repaired != text:
+                    text = repaired
+                    break
+            else:
+                break
+        return quote(text, safe="") if text != original else encoded
+
+    return re.sub(r"(?:%[0-9A-Fa-f]{2})+", repair, value.strip()) or None
+
+
 def traveller_line(row):
     ns_points, ew_points = score_columns(row)
     score = number(row["Score"])
@@ -197,7 +223,7 @@ def traveller_line(row):
             "ew_score": f"{number(ew_percentage)}%",
             "ns_match_points": number(ns_points),
             "ew_match_points": number(ew_points),
-            "lindata": row["playdata"].strip() or None,
+            "lindata": normalize_lin_encoding(row["playdata"]),
         }
 
     contract = normalize_contract(row["Contract"])
@@ -214,7 +240,7 @@ def traveller_line(row):
         "ew_score": -score,
         "ns_match_points": number(ns_points),
         "ew_match_points": number(ew_points),
-        "lindata": row["playdata"].strip() or None,
+        "lindata": normalize_lin_encoding(row["playdata"]),
     }
 
 

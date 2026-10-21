@@ -7,6 +7,28 @@ const test = require("node:test");
 
 const root = path.resolve(__dirname, "..");
 
+test("BBO conversion repairs re-encoded UTF-8 without decoding LIN separators", () => {
+	const directory = fs.mkdtempSync(path.join(os.tmpdir(), "bsol-bbo-encoding-"));
+	try {
+		const input = path.join(directory, "input.csv");
+		const output = path.join(directory, "output.json");
+		const lin = "qx||an|K%C3%83%C2%BC|an|Gr%C3%BC%C3%9Fe|an|%C3%A2%E2%82%AC%E2%80%9C|an|100%25%20%7C%20fit|";
+		const fixture = fs.readFileSync(path.join(root, "test/fixtures/bbo-extractor-sample.csv"), "utf8");
+		fs.writeFileSync(input, fixture.replace("qx||ah|Board%201|", lin));
+		const result = spawnSync("python3", [
+			path.join(root, "scripts/bbo-csv-to-json.py"),
+			"--csv", input, "--output", output,
+		], {encoding: "utf8"});
+		assert.equal(result.status, 0, result.stderr);
+		const converted = JSON.parse(fs.readFileSync(output, "utf8"));
+		const actual = converted.event.board[0].traveller_line[0].lindata;
+		assert.equal(actual, "qx||an|K%C3%BC|an|Gr%C3%BC%C3%9Fe|an|%E2%80%93|an|100%25%20%7C%20fit|");
+		assert.equal(decodeURIComponent(actual), "qx||an|Kü|an|Grüße|an|–|an|100% | fit|");
+	} finally {
+		fs.rmSync(directory, {recursive: true});
+	}
+});
+
 test("BBO Extractor CSV converts to BSOL Traveller JSON", () => {
 	const output = path.join(os.tmpdir(), `bsol-bbo-${process.pid}.json`);
 	const result = spawnSync(

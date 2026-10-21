@@ -75,7 +75,9 @@ index.html?file=20260916-Mittag.pbn&xml=20260916-Mittag.json
 ```
 
 The converter reads the event ranking and the `#TravellerLines` section. It
-preserves BBO's encoded LIN play data, normalizes no-trump and doubled
+preserves BBO's encoded LIN play data while repairing UTF-8 text that was
+mistakenly re-encoded via Latin-1 or Windows-1252 (for example, `KÃ¼` becomes
+`Kü` in alert explanations), normalizes no-trump and doubled
 contracts, and handles passed-out boards and adjusted percentage scores such as
 `A5050`. It uses only the Python standard library; the accompanying PBN file is
 not needed during conversion.

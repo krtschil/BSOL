@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Convert a BBO Extractor CSV export to BSOL Traveller JSON."""
+"""Convert a BBO Extractor CSV export to BSOL JSON and USEBIO XML."""
 
 import argparse
 import csv
-import json
 import re
 from collections import defaultdict
+from datetime import date
 from pathlib import Path
 from urllib.parse import quote, unquote
+from usebio import write_outputs
 
 
 REQUIRED_TRAVELLER_FIELDS = {
@@ -259,7 +260,7 @@ def convert(path):
             f"CSV declares {expected_boards} boards but contains {len(grouped)}"
         )
 
-    return {
+    result = {
         "event": {
             "match_scoring_method": "IMPS",
             "event_type": "PAIRS",
@@ -279,21 +280,25 @@ def convert(path):
             ],
         }
     }
+    event_date = (metadata.get("Date") or [""])[0].strip()
+    if event_date:
+        result["event"]["date"] = date.fromisoformat(event_date).isoformat()
+    return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", required=True, help="BBO Extractor CSV file")
-    parser.add_argument("-o", "--output", required=True, help="Output JSON file")
+    parser.add_argument(
+        "-o", "--output", required=True,
+        help="Output JSON file (also writes sibling .xml)",
+    )
     args = parser.parse_args()
 
     result = convert(args.csv)
-    Path(args.output).write_text(
-        json.dumps(result, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    xml_output = write_outputs(result, args.output)
     print(
-        f"wrote {args.output}: {len(result['event']['board'])} boards, "
+        f"wrote {args.output} and {xml_output}: {len(result['event']['board'])} boards, "
         f"{len(result['event']['participants']['pair'])} pairs"
     )
 

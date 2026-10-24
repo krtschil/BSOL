@@ -25,7 +25,8 @@ The input files are:
   fields
 - `--participants-dbf`: pair numbers and player names
 - `--results-dbf`: final ranking, points and percentages
-- `--output`: generated BSOL Traveller JSON
+- `--output`: generated BSOL Traveller JSON; also writes a sibling USEBIO XML
+  file with the same basename (for example `traveller.json` and `traveller.xml`)
 
 Before running the script, edit `INPUT_DIRECTORIES` near the top of the Python
 file. Each input type can point to a different directory:
@@ -50,10 +51,41 @@ example `4S` or `QD`.
 The generated JSON can be loaded in BSOL together with the tournament's PBN file
 using the normal `file` and `xml` URL parameters.
 
+## USEBIO XML output
+
+Both converters always write two files: the existing BSOL JSON and a UTF-8 XML
+file beside it, replacing the output filename's suffix with `.xml`. Continue
+passing the JSON filename to `--output`. Both files can be loaded in BSOL, for
+example `index.html?file=traveller.pbn&xml=traveller.xml`.
+
+The JSON is BSOL's internal representation, inspired by USEBIO, not an official
+USEBIO JSON standard. The XML export follows the
+[USEBIO 1.2 structure and DTD](https://www.usebio.org/usebio-1.2.html):
+`USEBIO Version="1.2"`, an `EVENT_TYPE` attribute, nested `PLAYER` elements,
+`BOARD_NUMBER`, and scoring-specific traveller fields (`NS_MATCH_POINTS`,
+`NS_CROSS_IMP_POINTS` or `NS_BUTLER_POINTS`, and their EW equivalents).
+Teams are exported as `TEAM` participants with boards grouped under `MATCH`
+elements, including direction, round, board IMPs and available match VPs.
+
+BSOL-specific data (LIN play data, separate display scores, round information,
+Butler ranking/datums and match cross tables) is preserved as JSON prefixed with
+`BSOL:` inside standard `NOTES` elements. BSOL reads these notes back; other
+USEBIO consumers may ignore them. The non-standard `LIN_DATA` element remains
+supported on import for older files, but is not written.
+
+This is a traveller/results export, not a guaranteed complete federation
+submission. BBO's `#Date` field is retained as ISO date (`YYYY-MM-DD`) in
+`event.date` and exported as USEBIO `DATE` (`DD/MM/YYYY`). Missing dates are
+omitted; invalid dates cause conversion to fail. DBF exports currently provide
+no event date. The converters do not invent dates, federation IDs or master-point information.
+DTD-valid structure alone does not guarantee acceptance by every USEBIO service.
+The BSOL importer also remains a reader for supported results structures, not
+an implementation of every USEBIO feature or version.
+
 ## BBO Extractor CSV
 
 `bbo-csv-to-json.py` converts the CSV file downloaded by BBO Extractor directly
-to BSOL Traveller JSON:
+to BSOL Traveller JSON and a corresponding USEBIO XML file:
 
 ```sh
 python3 scripts/bbo-csv-to-json.py \

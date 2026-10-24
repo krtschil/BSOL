@@ -46,6 +46,7 @@ test("BBO Extractor CSV converts to BSOL Traveller JSON", () => {
 	assert.equal(result.status, 0, result.stderr);
 	const converted = JSON.parse(fs.readFileSync(output, "utf8"));
 	fs.unlinkSync(output);
+	fs.unlinkSync(output.replace(/\.json$/, ".xml"));
 
 	const event = converted.event;
 	assert.equal(event.event_type, "PAIRS");
@@ -99,6 +100,7 @@ test("BBO Extractor CSV with Cross-IMPs columns converts to BSOL Traveller JSON"
 	assert.equal(result.status, 0, result.stderr);
 	const converted = JSON.parse(fs.readFileSync(output, "utf8"));
 	fs.unlinkSync(output);
+	fs.unlinkSync(output.replace(/\.json$/, ".xml"));
 
 	const event = converted.event;
 	assert.equal(event.event_type, "PAIRS");

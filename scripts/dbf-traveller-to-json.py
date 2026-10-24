@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the DBF export of a bridge session to BSOL Traveller JSON.
+"""Convert the DBF export of a bridge session to BSOL JSON and USEBIO XML.
 
 The converter deliberately uses only the Python standard library.  It supports
 the Visual FoxPro field types used by the supplied play, participant and result
@@ -7,10 +7,10 @@ tables, including little-endian binary integer fields.
 """
 
 import argparse
-import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from usebio import imps, write_outputs
 
 
 SUITS = {"P": "S", "C": "H", "K": "D", "T": "C", "SA": "NT"}
@@ -332,17 +332,6 @@ def team_play_line(row, suffix):
         }
 
 
-IMP_THRESHOLDS = (
-    20, 50, 90, 130, 170, 220, 270, 320, 370, 430, 500, 600, 750, 900,
-    1100, 1300, 1500, 1750, 2000, 2250, 2500, 3000, 3500, 4000,
-)
-
-
-def imps(difference):
-    sign = -1 if difference < 0 else 1
-    return sign * sum(1 for limit in IMP_THRESHOLDS if abs(difference) >= limit)
-
-
 def butler_datum(scores):
     """Average of all NS scores for a board, rounded to the nearest 10
     (halves rounded away from zero)."""
@@ -499,7 +488,10 @@ def main():
         "--mode", choices=("pairs", "teams"), default="pairs",
         help="Tournament format (default: pairs)",
     )
-    parser.add_argument("-o", "--output", required=True)
+    parser.add_argument(
+        "-o", "--output", required=True,
+        help="Output JSON file (also writes sibling .xml)",
+    )
     args = parser.parse_args()
     converter = convert_teams if args.mode == "teams" else convert
     result = converter(
@@ -507,11 +499,8 @@ def main():
         INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
         INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,
     )
-    Path(args.output).write_text(
-        json.dumps(result, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    print(f"wrote {args.output}: {len(result['event']['board'])} boards, "
+    xml_output = write_outputs(result, args.output)
+    print(f"wrote {args.output} and {xml_output}: {len(result['event']['board'])} boards, "
           f"{len(result['event']['participants']['pair'])} "
           f"{'teams' if args.mode == 'teams' else 'pairs'}")
 

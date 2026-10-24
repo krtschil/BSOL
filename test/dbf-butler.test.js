@@ -14,6 +14,7 @@ function runPython(code) {
 const loader = `
 import importlib.util, json, sys
 sys.dont_write_bytecode = True
+sys.path.insert(0, ${JSON.stringify(path.dirname(script))})
 spec = importlib.util.spec_from_file_location("conv", ${JSON.stringify(script)})
 conv = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(conv)

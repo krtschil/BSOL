@@ -29,6 +29,19 @@ export function getNodeValueByName(node,name)
 	return txt;
 }
 
+function readBsolNotes(node, target, keys)
+{
+	for (var child of node.childNodes)
+	{
+		if (child.nodeName !== "NOTES" || !child.textContent.startsWith("BSOL:"))
+			continue;
+		var extra = JSON.parse(child.textContent.slice(5));
+		for (var key of keys)
+			if (Object.prototype.hasOwnProperty.call(extra, key))
+				target[key] = extra[key];
+	}
+}
+
 export function convertXML(data)
 {
 	var bdindices = [];
@@ -36,12 +49,22 @@ export function convertXML(data)
 	var tximps = false; // true if cross imp fields present for teams events
 	var parser = new DOMParser();
 	var xmlDoc = parser.parseFromString(data,"text/xml");
+	if (xmlDoc.getElementsByTagName("parsererror").length)
+		throw new Error("Invalid USEBIO XML");
 	var evNode = xmlDoc.getElementsByTagName("EVENT")[0];
+	if (!evNode)
+		throw new Error("USEBIO XML contains no EVENT");
 	
 	var txt = getNodeValue(evNode);
 	
 	var json = {};
 	json.event = {};
+	var eventDate = getNodeValueByName(evNode,"DATE");
+	if (eventDate)
+	{
+		var dateParts = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(eventDate);
+		json.event.date = dateParts ? dateParts[3] + "-" + dateParts[2] + "-" + dateParts[1] : eventDate;
+	}
 	
 	json.event.event_type = getAttribute(evNode,"EVENT_TYPE");
 	
@@ -51,6 +74,15 @@ export function convertXML(data)
 		json.event.event_type = "Swiss_Teams";
 	else
 		json.event.event_type = "Pairs";
+	var teams = (json.event.event_type=="Teams")||(json.event.event_type=="Swiss_Teams");
+	readBsolNotes(evNode, json.event, ["ranking_method", "cross_table", "team_matches", "butler"]);
+	var boardMetadata = {};
+	readBsolNotes(evNode, boardMetadata, ["board_datums"]);
+	var match_scoring_method = getNodeValueByName(evNode,"MATCH_SCORING_METHOD");
+	if (match_scoring_method)
+		json.event.match_scoring_method = match_scoring_method;
+	if (teams && match_scoring_method=="VPS")
+		json.event.ranking_method = "VICTORY_POINTS";
 		
 	if ((json.event.event_type=="Teams")||(json.event.event_type=="Swiss_Teams"))
 	{
@@ -96,7 +128,9 @@ export function convertXML(data)
 	participants.pair = pair;
 	
 	var participants = evNode.getElementsByTagName("PARTICIPANTS")[0];
-	var pnodes = participants.getElementsByTagName("PAIR");
+	var pnodes = participants.getElementsByTagName(teams ? "TEAM" : "PAIR");
+	if (teams && pnodes.length==0)
+		pnodes = participants.getElementsByTagName("PAIR");
 	
 	for (i=0;i<pnodes.length;i++)
 	{
@@ -116,7 +150,8 @@ export function convertXML(data)
 			}
 		}
 		
-		cpair.pair_number = getNodeValueByName(cpnode,"PAIR_NUMBER");
+		cpair.pair_number = teams && cpnode.nodeName=="TEAM" ?
+			getAttribute(cpnode,"TEAM_ID") : getNodeValueByName(cpnode,"PAIR_NUMBER");
 		cpair.place = getNodeValueByName(cpnode,"PLACE").replace("=","");
 		cpair.percentage = getNodeValueByName(cpnode,"PERCENTAGE");
 		if (cpair.percentage=="") cpair.percentage = "-";	// As used by Scorebridge to indicate percentage N/A
@@ -129,6 +164,9 @@ export function convertXML(data)
 		players[1] = {};
 		players[1].player_name = getNodeValue(playerNodes[1]);
 		cpair.player = players;
+		readBsolNotes(cpnode, cpair, ["player", "team_points"]);
+		if (teams && !Object.prototype.hasOwnProperty.call(cpair, "team_points"))
+			cpair.team_points = cpair.total_score;
 		pair.push(cpair);
 	}
 	
@@ -158,6 +196,9 @@ export function convertXML(data)
 			cboard.traveller_line = tlines;
 			board.push(cboard);
 		}
+		if (boardMetadata.board_datums &&
+			Object.prototype.hasOwnProperty.call(boardMetadata.board_datums, boardno))
+			cboard.butler_datum = boardMetadata.board_datums[boardno];
 		
 		var nodeTlines = cnode.getElementsByTagName("TRAVELLER_LINE");
 		
@@ -182,7 +223,13 @@ export function convertXML(data)
 			
 			tline.score = score;
 			
-			if (score>0)
+			var adjusted = /^A(\d{2})(\d{2})$/i.exec(score);
+			if (adjusted)
+			{
+				tline.ns_score = adjusted[1] + "%";
+				tline.ew_score = adjusted[2] + "%";
+			}
+			else if (score>0)
 			{
 				tline.ns_score = score;
 				tline.ew_score = "";
@@ -220,6 +267,18 @@ export function convertXML(data)
 			tline.played_by = getNodeValueByName(cnTline,"PLAYED_BY");
 			tline.tricks = getNodeValueByName(cnTline,"TRICKS");
 			tline.ew_pair_number = getNodeValueByName(cnTline,"EW_PAIR_NUMBER")
+			if (teams && cnode.parentNode.nodeName=="MATCH")
+			{
+				var match = cnode.parentNode;
+				var home = getNodeValueByName(match,"TEAM");
+				var away = getNodeValueByName(match,"OPPOSING_TEAM");
+				var homeNS = getNodeValueByName(cnTline,"DIRECTION")=="NS";
+				tline.ns_pair_number = homeNS ? home : away;
+				tline.ew_pair_number = homeNS ? away : home;
+				tline.round = Number(getNodeValueByName(match,"ROUND_NUMBER"));
+			}
+			readBsolNotes(cnTline, tline, ["lindata", "ns_score", "ew_score", "round",
+				"ns_pair_number", "ew_pair_number", "ns_match_points", "ew_match_points"]);
 			tlines.push(tline);
 		}
 	}

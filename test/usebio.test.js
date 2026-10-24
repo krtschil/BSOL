@@ -75,12 +75,20 @@ for (const [fixture, scoring, pointsTag] of [
 			assert.deepEqual(restored.participants.pair,
 				original.participants.pair.map((pair) => ({...pair, pair_number: String(pair.pair_number)})));
 			assert.equal(restored.board.length, original.board.length);
+			let linLines = 0;
 			for (let i = 0; i < original.board.length; i++) {
-				const before = original.board[i].traveller_line[0];
-				const after = restored.board[i].traveller_line[0];
-				for (const key of Object.keys(before))
-					assert.equal(String(after[key]), String(before[key]), `${i}: ${key}`);
+				assert.equal(restored.board[i].traveller_line.length, original.board[i].traveller_line.length);
+				original.board[i].traveller_line.forEach((before, j) => {
+					const after = restored.board[i].traveller_line[j];
+					for (const key of Object.keys(before))
+						assert.equal(String(after[key]), String(before[key]), `${i}/${j}: ${key}`);
+					if (before.lindata) {
+						linLines++;
+						assert.equal(after.lindata, before.lindata);
+					}
+				});
 			}
+			assert.ok(linLines > 0, "fixture must contain LIN data");
 		} finally {
 			fs.rmSync(directory, {recursive: true});
 		}

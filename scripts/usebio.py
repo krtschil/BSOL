@@ -40,6 +40,8 @@ def traveller(parent, line, scoring, teams=False, direction=None):
             element(node, f"{side.upper()}_PAIR_NUMBER", line[f"{side}_pair_number"])
     for key in ("contract", "played_by", "lead", "tricks", "score"):
         element(node, key.upper(), line.get(key, ""))
+    if line.get("lindata"):
+        element(node, "LIN_DATA", line["lindata"])
     if not teams:
         suffix = {
             "MATCH_POINTS": "MATCH_POINTS",
@@ -171,9 +173,11 @@ def to_xml(result):
                 bnode = ET.SubElement(node, "BOARD")
                 element(bnode, "BOARD_NUMBER", board["board_no"])
     ET.indent(root, space="  ")
-    return ET.tostring(root, encoding="unicode", xml_declaration=True).replace(
-        "encoding='utf-8'", "encoding='UTF-8'"
-    ) + "\n"
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<!DOCTYPE USEBIO SYSTEM "https://www.ebu.co.uk/usebio/usebio_v1_2_ext.dtd">\n'
+        + ET.tostring(root, encoding="unicode") + "\n"
+    )
 
 
 def write_outputs(result, output):

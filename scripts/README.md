@@ -70,14 +70,19 @@ USEBIO JSON standard. The XML export follows the
 `USEBIO Version="1.2"`, an `EVENT_TYPE` attribute, nested `PLAYER` elements,
 `BOARD_NUMBER`, and scoring-specific traveller fields (`NS_MATCH_POINTS`,
 `NS_CROSS_IMP_POINTS` or `NS_BUTLER_POINTS`, and their EW equivalents).
+The XML declaration is followed by the same external DTD reference used by
+Bridgewebs: `<!DOCTYPE USEBIO SYSTEM "https://www.ebu.co.uk/usebio/usebio_v1_2_ext.dtd">`.
 Teams are exported as `TEAM` participants with boards grouped under `MATCH`
 elements, including direction, round, board IMPs and available match VPs.
 
-BSOL-specific data (LIN play data, separate display scores, round information,
-Butler ranking/datums and match cross tables) is preserved as JSON prefixed with
-`BSOL:` inside standard `NOTES` elements. BSOL reads these notes back; other
-USEBIO consumers may ignore them. The non-standard `LIN_DATA` element remains
-supported on import for older files, but is not written.
+LIN play data is written to the standard USEBIO `LIN_DATA` element and also
+preserved in BSOL's `NOTES` extension for compatibility with the JSON
+round-trip. Separate display scores, round information, Butler ranking/datums
+and match cross tables are preserved as JSON prefixed with `BSOL:` inside
+standard `NOTES` elements. BSOL reads these additional values back, but imports
+LIN play data exclusively from `LIN_DATA`, never from `NOTES`. Older XML files
+containing LIN data only in `NOTES` must be regenerated to retain play records.
+Other USEBIO consumers may ignore the notes.
 
 This is a traveller/results export, not a guaranteed complete federation
 submission. BBO's `#Date` field is retained as ISO date (`YYYY-MM-DD`) in

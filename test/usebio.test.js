@@ -103,6 +103,21 @@ print(json.dumps([node.text for node in root.findall(".//TRAVELLER_LINE/LIN_DATA
 `, xml));
 			assert.deepEqual(xmlLindata, original.board.flatMap((board) =>
 				board.traveller_line.map((line) => line.lindata).filter(Boolean)));
+			const adjustedLines = JSON.parse(python(`
+import json, re, sys, xml.etree.ElementTree as ET
+root = ET.fromstring(sys.stdin.read())
+print(json.dumps([
+    {"contract": line.findtext("CONTRACT"), "score": line.findtext("SCORE")}
+    for line in root.findall(".//TRAVELLER_LINE")
+    if re.fullmatch(r"A\\d{4}", line.findtext("SCORE", ""))
+]))
+`, xml));
+			if (scoring === "MatchPoints")
+				assert.ok(adjustedLines.length > 0, "fixture must contain an artificial adjusted score");
+			for (const line of adjustedLines) {
+				assert.equal(line.contract, null, "omit adjusted contracts as Bridgewebs does");
+				assert.equal(line.score, "A5050");
+			}
 			const restored = importXml(xml);
 			assert.equal(restored.board_scoring_method, scoring);
 			assert.deepEqual(restored.participants.pair,

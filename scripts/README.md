@@ -72,6 +72,10 @@ USEBIO JSON standard. The XML export follows the
 `NS_CROSS_IMP_POINTS` or `NS_BUTLER_POINTS`, and their EW equivalents).
 The XML declaration is followed by the same external DTD reference used by
 Bridgewebs: `<!DOCTYPE USEBIO SYSTEM "https://www.ebu.co.uk/usebio/usebio_v1_2_ext.dtd">`.
+Artificial adjusted scores such as `A5050` are exported without `CONTRACT`,
+matching Bridgewebs. Writing `NP` there triggers a null-score error in the
+legacy Bridgewebs "All pairs" analysis. BSOL restores its internal `NP` marker
+when importing these adjusted results.
 Teams are exported as `TEAM` participants with boards grouped under `MATCH`
 elements, including direction, round, board IMPs and available match VPs.
 

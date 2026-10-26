@@ -88,6 +88,9 @@ for (const [fixture, scoring, pointsTag] of [
 			assert.equal(converted.status, 0, converted.stderr);
 			const original = JSON.parse(fs.readFileSync(output, "utf8")).event;
 			const xml = fs.readFileSync(path.join(directory, "traveller.xml"), "utf8");
+			assert.ok(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n' +
+				'<!DOCTYPE USEBIO SYSTEM "https://www.ebu.co.uk/usebio/usebio_v1_2_ext.dtd">\n' +
+				'<USEBIO Version="1.2">'));
 			assert.match(xml, /<USEBIO Version="1.2">/);
 			assert.match(xml, new RegExp(`<${pointsTag}>`));
 			assert.match(xml, /<PLAYER>\s*<PLAYER_NAME>/);

@@ -173,9 +173,11 @@ def to_xml(result):
                 bnode = ET.SubElement(node, "BOARD")
                 element(bnode, "BOARD_NUMBER", board["board_no"])
     ET.indent(root, space="  ")
-    return ET.tostring(root, encoding="unicode", xml_declaration=True).replace(
-        "encoding='utf-8'", "encoding='UTF-8'"
-    ) + "\n"
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<!DOCTYPE USEBIO SYSTEM "https://www.ebu.co.uk/usebio/usebio_v1_2_ext.dtd">\n'
+        + ET.tostring(root, encoding="unicode") + "\n"
+    )
 
 
 def write_outputs(result, output):

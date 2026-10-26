@@ -64,6 +64,8 @@ USEBIO JSON standard. The XML export follows the
 `USEBIO Version="1.2"`, an `EVENT_TYPE` attribute, nested `PLAYER` elements,
 `BOARD_NUMBER`, and scoring-specific traveller fields (`NS_MATCH_POINTS`,
 `NS_CROSS_IMP_POINTS` or `NS_BUTLER_POINTS`, and their EW equivalents).
+The XML declaration is followed by the same external DTD reference used by
+Bridgewebs: `<!DOCTYPE USEBIO SYSTEM "https://www.ebu.co.uk/usebio/usebio_v1_2_ext.dtd">`.
 Teams are exported as `TEAM` participants with boards grouped under `MATCH`
 elements, including direction, round, board IMPs and available match VPs.
 

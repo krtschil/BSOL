@@ -226,6 +226,8 @@ export function convertXML(data)
 			var adjusted = /^A(\d{2})(\d{2})$/i.exec(score);
 			if (adjusted)
 			{
+				if (tline.contract=="")
+					tline.contract = "NP";
 				tline.ns_score = adjusted[1] + "%";
 				tline.ew_score = adjusted[2] + "%";
 			}

@@ -1,6 +1,7 @@
 """Shared USEBIO 1.2 traveller export for the BSOL converters."""
 
 import json
+import re
 from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
@@ -39,6 +40,9 @@ def traveller(parent, line, scoring, teams=False, direction=None):
         for side in ("ns", "ew"):
             element(node, f"{side.upper()}_PAIR_NUMBER", line[f"{side}_pair_number"])
     for key in ("contract", "played_by", "lead", "tricks", "score"):
+        # Bridgewebs leaves the contract absent for artificial adjusted scores.
+        if key == "contract" and re.fullmatch(r"A\d{4}", str(line.get("score", "")), re.IGNORECASE):
+            continue
         element(node, key.upper(), line.get(key, ""))
     if line.get("lindata"):
         element(node, "LIN_DATA", line["lindata"])

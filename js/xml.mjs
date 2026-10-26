@@ -277,7 +277,7 @@ export function convertXML(data)
 				tline.ew_pair_number = homeNS ? away : home;
 				tline.round = Number(getNodeValueByName(match,"ROUND_NUMBER"));
 			}
-			readBsolNotes(cnTline, tline, ["lindata", "ns_score", "ew_score", "round",
+			readBsolNotes(cnTline, tline, ["ns_score", "ew_score", "round",
 				"ns_pair_number", "ew_pair_number", "ns_match_points", "ew_match_points"]);
 			tlines.push(tline);
 		}

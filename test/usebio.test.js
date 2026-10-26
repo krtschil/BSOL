@@ -53,6 +53,28 @@ function importXml(xml) {
 	return JSON.parse(context.convertXML(xml)).event;
 }
 
+test("XML imports LIN data exclusively from LIN_DATA, not NOTES", () => {
+	for (const linElement of ["<LIN_DATA>qx|1|</LIN_DATA>", "<LIN_DATA />", ""]) {
+		const xml = `<USEBIO Version="1.2">
+			<EVENT EVENT_TYPE="PAIRS">
+				<BOARD_SCORING_METHOD>MATCH_POINTS</BOARD_SCORING_METHOD>
+				<PARTICIPANTS />
+				<BOARD><BOARD_NUMBER>1</BOARD_NUMBER>
+					<TRAVELLER_LINE>
+						<SCORE>90</SCORE>
+						${linElement}
+						<NOTES>BSOL:{"lindata":"qx|2|","ns_score":"custom","round":3}</NOTES>
+					</TRAVELLER_LINE>
+				</BOARD>
+			</EVENT>
+		</USEBIO>`;
+		const line = importXml(xml).board[0].traveller_line[0];
+		assert.equal(line.lindata, linElement.includes("qx|1|") ? "qx|1|" : "");
+		assert.equal(line.ns_score, "custom");
+		assert.equal(line.round, 3);
+	}
+});
+
 for (const [fixture, scoring, pointsTag] of [
 	["bbo-extractor-sample.csv", "MatchPoints", "NS_MATCH_POINTS"],
 	["bbo-extractor-imps-sample.csv", "IMP", "NS_CROSS_IMP_POINTS"],
@@ -69,7 +91,15 @@ for (const [fixture, scoring, pointsTag] of [
 			assert.match(xml, /<USEBIO Version="1.2">/);
 			assert.match(xml, new RegExp(`<${pointsTag}>`));
 			assert.match(xml, /<PLAYER>\s*<PLAYER_NAME>/);
-			assert.doesNotMatch(xml, /<LIN_DATA>/);
+			assert.match(xml, /<LIN_DATA>/);
+			assert.match(xml, /<NOTES>BSOL:\{"lindata":/);
+			const xmlLindata = JSON.parse(python(`
+import json, sys, xml.etree.ElementTree as ET
+root = ET.fromstring(sys.stdin.read())
+print(json.dumps([node.text for node in root.findall(".//TRAVELLER_LINE/LIN_DATA")]))
+`, xml));
+			assert.deepEqual(xmlLindata, original.board.flatMap((board) =>
+				board.traveller_line.map((line) => line.lindata).filter(Boolean)));
 			const restored = importXml(xml);
 			assert.equal(restored.board_scoring_method, scoring);
 			assert.deepEqual(restored.participants.pair,
@@ -81,7 +111,8 @@ for (const [fixture, scoring, pointsTag] of [
 				original.board[i].traveller_line.forEach((before, j) => {
 					const after = restored.board[i].traveller_line[j];
 					for (const key of Object.keys(before))
-						assert.equal(String(after[key]), String(before[key]), `${i}/${j}: ${key}`);
+						assert.equal(String(after[key]), String(key === "lindata" ? before[key] ?? "" : before[key]),
+							`${i}/${j}: ${key}`);
 					if (before.lindata) {
 						linLines++;
 						assert.equal(after.lindata, before.lindata);
@@ -143,7 +174,8 @@ conv.main()
 				original.participants.pair.map((pair) => pair.player));
 			for (let i = 0; i < original.board[0].traveller_line.length; i++) {
 				for (const [key, value] of Object.entries(original.board[0].traveller_line[i]))
-					assert.equal(String(restored.board[0].traveller_line[i][key]), String(value), key);
+					assert.equal(String(restored.board[0].traveller_line[i][key]),
+						String(key === "lindata" ? value ?? "" : value), key);
 			}
 			if (mode === "teams") {
 				assert.match(xml, /<TEAM TEAM_ID="1">/);

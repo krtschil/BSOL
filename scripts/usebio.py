@@ -40,6 +40,8 @@ def traveller(parent, line, scoring, teams=False, direction=None):
             element(node, f"{side.upper()}_PAIR_NUMBER", line[f"{side}_pair_number"])
     for key in ("contract", "played_by", "lead", "tricks", "score"):
         element(node, key.upper(), line.get(key, ""))
+    if line.get("lindata"):
+        element(node, "LIN_DATA", line["lindata"])
     if not teams:
         suffix = {
             "MATCH_POINTS": "MATCH_POINTS",

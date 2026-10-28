@@ -2153,8 +2153,54 @@ export function travellersNotFound(jqXHR,textStatus,errorThrown)
 	this.callback();
 }
 
+export function getAssociatedTravellerUrls(file)
+{
+	if (typeof file !== "string")
+		return [];
+	const suffixIndex = file.search(/[?#]/);
+	const path = suffixIndex < 0 ? file : file.slice(0, suffixIndex);
+	const suffix = suffixIndex < 0 ? "" : file.slice(suffixIndex);
+	if (!/\.pbn$/i.test(path))
+		return [];
+	return [".xml", ".json"].map(extension => path.slice(0, -4) + extension + suffix);
+}
+
 export function getTraveller(context)
 {
+		if (g_travellers==null && g_xml=="" && g_test!=1)
+		{
+			const urls = getAssociatedTravellerUrls(g_file);
+			if (urls.length)
+			{
+				largeSpinner();
+				const tryNext = () => {
+					const url = urls.shift();
+					doRequestHTMLasync(url, function(data, statusText, jqXHR) {
+						g_xml = url;
+						loadTraveller.call(context, data, statusText, jqXHR);
+					}, function(jqXHR, textStatus, errorThrown) {
+						const missing = jqXHR.status==404 || jqXHR.status==410;
+						if (missing && urls.length)
+							tryNext();
+						else
+						{
+							if (!missing)
+							{
+								console.error("Could not load associated traveller:", url, textStatus, errorThrown);
+								alert(language=="de"
+									? "Die zugehörige Travellerdatei konnte nicht geladen werden: " + url +
+										"\nBitte URL, Server und CORS-Freigabe prüfen."
+									: "Could not load the associated traveller file: " + url +
+										"\nPlease check the URL, server and CORS permissions.");
+							}
+							travellersNotFound.call(context, jqXHR, textStatus, errorThrown);
+						}
+					}, context);
+				};
+				tryNext();
+				return;
+			}
+		}
 			// Get the traveller data
 		var turl = "";
 		var data = "";

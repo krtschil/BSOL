@@ -56,7 +56,7 @@
         <form id="input-file" method="post" action="." enctype="multipart/form-data"><!-- label for="loadFile1">Datei ausw&auml;hlen:</label -->
             <label for="loadFile" id="loadFileLabel">Datei auswählen</label>
             <input type="button" id="loadFile1" value="Datei auswählen" aria-label="Datei auswählen"/>
-            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm" id="loadFile" name="loadfiles[]" aria-label="Bridge-Datei auswählen"/>
+            <input title="File chooser" type="file" accept=".pbn,.lin,.dlm,.xml,.json" multiple id="loadFile" name="loadfiles[]" aria-label="Bridge-Dateien auswählen"/>
         </form>
 
         <!-- Buttons are handled by event triggers (see events.js)-->

@@ -1,4 +1,4 @@
-import { getTraveller, setupTraveller, loadTraveller_1 } from "./traveller.mjs";
+import { getTraveller, getAssociatedTravellerUrls, setupTraveller, loadTraveller_1 } from "./traveller.mjs";
 import { pbnToJson, convertHand, inferHand, validateBoard } from "./pbn.mjs";
 import { requestPending, setRequestTimeout, doRequestHTMLasync } from "./network.mjs";
 import { startup } from "./startup.mjs";
@@ -544,11 +544,12 @@ export function loadHands_1(data,statusText,jqXHR,context)
 
 	if (g_file!==1)	// If pbn data not supplied as string
 	{
-		if ((g_file=='')||(g_file.toUpperCase().endsWith('PBN')))
+		var filePath = g_file.split(/[?#]/)[0].toUpperCase();
+		if ((g_file=='')||(filePath.endsWith('.PBN')))
 			hands = pbnToJson(data);
-		else if (g_file.toUpperCase().endsWith('DLM'))
+		else if (filePath.endsWith('.DLM'))
 			hands = dlmToJson(data);
-		else if (g_file.toUpperCase().endsWith('LIN'))
+		else if (filePath.endsWith('.LIN'))
 			hands = linToJson(data);
 		else	// if pbn string was not supplied as explicit parameter
 		{
@@ -629,7 +630,7 @@ export function loadHands_1(data,statusText,jqXHR,context)
     if ((typeof board.board)!="undefined")
 		index = getTindexByName(g_hands.boards,board.board);
 
-	if ((g_file=='')||(g_xml!="")) // If request is from Bridgewebs, or if xml filename or xml string has been explicitly supplied
+	if ((g_file=='')||(g_xml!="")||getAssociatedTravellerUrls(g_file).length)
 	{
 		setLastBoardIndex(index);
 
@@ -821,62 +822,50 @@ export function createEmptyBoard()
 			buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
 		}
 
-export function readText(file)
+export async function readText(file, travellerFile)
 		{
-			const reader = new FileReader();
-			reader.addEventListener(
-				"load",
-				(e) => {
-					var result = {};
-					result.handstr = e.target.result;
-
-					var filename = file.name.toUpperCase();
-
-					if (filename.endsWith(".PBN"))
-						result.handstrType = "pbn";
-					else if (filename.endsWith(".LIN"))
-						result.handstrType = "lin";
-					else
-						result.handstrType = "dlm";
-
-					result.board=1;
-
-					if (result!="")
-						buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
-				},
-				false,
-			);
-
-			reader.readAsText(file);
+			let contents;
+			try {
+				contents = await Promise.all([file, travellerFile].filter(Boolean).map(entry => entry.text()));
+			} catch (error) {
+				console.error("Could not read selected files:", error);
+				alert(language=="de" ? "Die ausgewählten Dateien konnten nicht gelesen werden."
+					: "Could not read the selected files.");
+				return false;
+			}
+			const result = {
+				handstr: contents[0],
+				handstrType: file.name.split(".").pop().toLowerCase(),
+				board: 1,
+			};
+			if (travellerFile)
+				result.xmlstr = contents[1];
+			buildPage(result,'{"options":{"ns":["true","false","false"],"ew":["true","false","false"],"mk":["true","false"],"auto":"true"}}');
+			return true;
 		}
 
-export function handleLoadFileSelect(evt)
+export async function handleLoadFileSelect(evt)
 		{
-			var files = evt.target.files;
-
-			if (files.length>0)
+			const files = Array.from(evt.target.files);
+			evt.target.value = "";
+			if (!files.length)
+				return;
+			const handFile = files.find(file => /\.(pbn|lin|dlm)$/i.test(file.name));
+			const travellerFile = files.find(file => /\.(xml|json)$/i.test(file.name));
+			const valid = files.length==1 ? !!handFile
+				: files.length==2 && handFile && /\.pbn$/i.test(handFile.name) && travellerFile;
+			if (!valid)
 			{
-				var infile = files[0];
-				if (infile.name.toUpperCase().endsWith(".PBN")||infile.name.toUpperCase().endsWith(".LIN")||infile.name.toUpperCase().endsWith(".DLM"))
-				{
-					readText(infile);
-					evt.target.value = null;
-					let fn = document.getElementById("filename");
-					let tmp = "<br>(" + infile.name +")";
-					const clean = DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true });
-					fn.replaceChildren(clean);
-				}
-				else
-				{
-					switch(language)
-					{
-						case "de":
-							alert("Keine PBN, LIN, oder DLM Datei");
-							break;
-						default:
-							alert("Not a PBN, LIN, or DLM file");
-					}
-				}
+				alert(language=="de"
+					? "Bitte eine PBN-, LIN- oder DLM-Datei auswählen, oder genau zwei Dateien: eine PBN-Datei und eine XML- oder JSON-Travellerdatei."
+					: "Please select one PBN, LIN or DLM file, or exactly two files: a PBN file and an XML or JSON traveller file.");
+				return;
+			}
+			if (await readText(handFile, travellerFile))
+			{
+				const fn = document.getElementById("filename");
+				const tmp = "<br>(" + files.map(file => file.name).join(", ") + ")";
+				fn.replaceChildren(DOMPurify.sanitize(tmp, { RETURN_DOM_FRAGMENT: true }));
 			}
 		}
 

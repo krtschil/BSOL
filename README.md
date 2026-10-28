@@ -76,14 +76,28 @@ and current play position expose appropriate labels or ARIA semantics.
 ### Loading of hands
 Hands can be entered and analyzed in various ways:
 
-- Choosing a local file by clicking the respective button on the frontpage
+- Choosing a local file by clicking the respective button on the frontpage.
+  Select one `.pbn`, `.lin`, or `.dlm` file, or select a `.pbn` file together
+  with one `.xml` or `.json` Traveller file. Other multi-file combinations are
+  rejected.
 - Dropping a file onto the area on the frontpage covering the buttons
 - Paste (CTRL-V on Windows/Linux, CMD-V on Mac) on the frontpage
 - Using the respective button on the frontpage to retrieve data from the clipboard (requires user consent to read from the clipboard)
 - Manual input of single hands by using the respective button on the frontpage
-- Loading a remote file via an URL parameter (e.g. `?file=https://example.com/tournament.pbn`). 
-The remote server has to allow loading data via HTTP header `Header set Access-Control-Allow-Origin *` or more specific `Header set Access-Control-Allow-Origin "https://thedomain.com"`.
-- Loading additional traveller data (if available) is possible through the URL parameter `xml`. (e.g. `?file=https://example.com/tournament.pbn&xml=https://example.com/tournament.json`). A live example can be found here: [Live example](https://krtschil.github.io/BSOL/?file=hands/sample-traveller.pbn&xml=hands/sample-traveller.json).
+- Loading a remote file via an URL parameter (e.g.
+  `?file=https://example.com/tournament.pbn`). The remote server has to allow
+  loading data via the HTTP header `Access-Control-Allow-Origin: *` or a
+  specific allowed origin.
+- Loading additional Traveller data through the `xml` URL parameter, which
+  accepts either XML or JSON (e.g.
+  `?file=https://example.com/tournament.pbn&xml=https://example.com/tournament.xml`).
+  An explicitly supplied `xml` parameter always takes priority. A live example
+  is available here: [Live example](https://krtschil.github.io/BSOL/?file=hands/sample-traveller.pbn&xml=hands/sample-traveller.json).
+- When a remote `.pbn` URL has no explicit `xml` parameter, BSOL automatically
+  looks for a same-basename `.xml` Traveller file beside the PBN, then tries
+  `.json` if the XML file is not found. If neither exists, the PBN is loaded
+  without Traveller data. CORS and other retrieval errors are reported rather
+  than treated as a missing file.
 - Board data can be provided completely with URL paramters
 - For an overview of all available URL parameters see the file `URL-Parameters.html`
 
@@ -92,6 +106,18 @@ Supported file formats:
 - .pbn 
 - .dlm
 - .lin (BBO play and hand record files)
+- .xml and .json Traveller/results data, when loaded with a PBN or its local
+  file selection
+
+### Traveller conversion and XML
+The BBO CSV and DBF Traveller converters in `scripts/` write the existing BSOL
+Traveller JSON and a sibling USEBIO 1.2 XML file. The XML includes the
+Bridgewebs-compatible USEBIO DTD reference and stores LIN play records in
+`<LIN_DATA>`. BSOL's XML importer reads LIN exclusively from `<LIN_DATA>`;
+`NOTES` carries other BSOL-specific metadata. For artificial adjusted results
+such as `A5050`, the XML omits `<CONTRACT>` to remain compatible with
+Bridgewebs' Results Analysis. See [`scripts/README.md`](scripts/README.md) for
+converter usage, the XML extension details, and format limitations.
 
 ### Handling of content in .pbn files
 The `[Result ` section of a .pbn file can optionally contain plain text enclosed in curly brackets. 

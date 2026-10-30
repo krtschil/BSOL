@@ -190,6 +190,18 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 		assert.equal(table.rows[4].cells[4].textContent, "50.0");
 		assert.match(table.rows[4].cells[6].innerHTML, /width:141px/);
 	}
+	context.g_travellers.event.ranking_method = "MATCH_POINTS";
+	pairs[0].percent = 80;
+	context.setupRanking(true);
+	assert.equal(table.rows[2].cells[3].textContent, "123.5");
+	assert.equal(table.rows[4].cells[3].textContent, "100.0");
+	assert.match(table.rows[2].cells[5].innerHTML, /width:56px/);
+	pairs[0].percent = 55.6789;
+	pairs[1].total_score = "";
+	context.setupRanking(true);
+	assert.equal(table.rows[4].cells[3].textContent, "60.0");
+	pairs[1].total_score = "100";
+	delete context.g_travellers.event.ranking_method;
 	context.g_validPercentageFields = false;
 	context.g_scoring = "IMP";
 	context.setupRanking(true);

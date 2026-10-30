@@ -8,8 +8,10 @@ tables, including little-endian binary integer fields.
 
 import argparse
 import re
+import sys
 from collections import defaultdict
 from datetime import date
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from usebio import imps, write_outputs
@@ -164,10 +166,19 @@ def convert_export(path, mode=None, pbn_output=None):
             raise ValueError("Unsupported export play table schema")
         if mode and mode != detected:
             raise ValueError(f"Export contains {detected} data, not {mode}")
-        if detected == "pairs" and str(metadata[0].get("WERTUNG", "")).strip() != "0":
-            raise ValueError("Only WERTUNG=0 (matchpoints) is supported for pair exports")
-        converter = convert_teams if detected == "teams" else convert
-        result = converter(paths["r"], paths["t"], paths["p"])
+        if detected == "teams":
+            result = convert_teams(paths["r"], paths["t"], paths["p"])
+        else:
+            scoring = str(metadata[0].get("WERTUNG", "")).strip()
+            if scoring not in ("0", "1"):
+                raise ValueError(f"Unsupported pair export WERTUNG={scoring!r}; supported values: 0, 1 (matchpoints)")
+            result = convert(
+                paths["r"], paths["t"], paths["p"],
+                winner_type=2 if scoring == "1" else 1,
+            )
+            if scoring == "1":
+                complete_pair_rankings(result["event"], metadata[0], play)
+                result["event"]["ranking_method"] = "MATCH_POINTS"
         event_date = metadata[0].get("DATUM", "")
         if event_date:
             if not re.fullmatch(r"\d{8}", event_date):
@@ -242,17 +253,19 @@ def normalize_card(value):
     return rank + suit
 
 
-def participant_map(path):
+def participant_map(path, winner_type=1):
     result = {}
     for row in read_dbf(path):
         pair = int(row.get("P_NUMMER") or 0)
         if pair and (row.get("NAME1") or row.get("NAME2")):
+            if winner_type == 2 and not isinstance(row.get("NS"), bool):
+                raise ValueError(f"Missing logical NS direction for pair {pair} in two-winner export")
             result[pair] = {
                 "pair_number": pair,
                 "place": "",
                 "total_score": "",
                 "percentage": "",
-                "direction": "N",
+                "direction": "N" if winner_type == 1 or row["NS"] else "E",
                 "player": [
                     {"player_name": row["NAME1"]},
                     {"player_name": row["NAME2"]},
@@ -271,6 +284,61 @@ def enrich_participants(participants, path):
             "total_score": str(number(row.get("PUNKTE"))),
             "percentage": str(number(row.get("PROZLANG") or row.get("PROZENT"))),
         })
+
+
+def complete_pair_rankings(event, metadata, play):
+    pairs = event["participants"]["pair"]
+    for direction, side in (("N", "NS"), ("E", "EW")):
+        group = [pair for pair in pairs if pair["direction"] == direction]
+        if not group or all(pair["place"] for pair in group):
+            continue
+        if any(pair["place"] for pair in group):
+            raise ValueError(f"Cannot reconstruct partially populated {side} ranking")
+        rounds, boards_per_round, maximum = (
+            int(metadata.get(key) or 0) for key in ("RUNDEN", "BPR", "MAXMPS")
+        )
+        if min(rounds, boards_per_round, maximum) <= 0:
+            raise ValueError(f"Cannot reconstruct {side} ranking without positive RUNDEN, BPR and MAXMPS")
+        board_count = rounds * boards_per_round
+        totals = {pair["pair_number"]: Decimal(0) for pair in group}
+        seen = {pair: set() for pair in totals}
+        for row in play:
+            pair = int(row.get(f"PAIR{side}") or 0)
+            board = int(row.get("BOARD") or 0)
+            if pair not in totals or not board:
+                continue
+            if board in seen[pair]:
+                raise ValueError(f"Duplicate board {board} for pair {pair} in {side} ranking")
+            try:
+                score = Decimal(str(row.get(f"MPS_{side}", "")).strip())
+                penalty = Decimal(str(row.get(f"PENAL_{side}") or 0))
+            except InvalidOperation as error:
+                raise ValueError(f"Invalid MP award or penalty for pair {pair} in {side} ranking") from error
+            if not score.is_finite() or not 0 <= score <= maximum or penalty != 0:
+                raise ValueError(f"Cannot reconstruct {side} ranking: invalid MPs or penalty for pair {pair}")
+            # Include stored bye/adjusted awards even when there is no contract.
+            totals[pair] += score
+            seen[pair].add(board)
+        if any(len(boards) != board_count for boards in seen.values()):
+            raise ValueError(f"Cannot reconstruct {side} ranking: expected {board_count} MP awards per pair")
+        rounded = {pair: total.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+                   for pair, total in totals.items()}
+        ordered = sorted(group, key=lambda pair: -rounded[pair["pair_number"]])
+        previous = None
+        for index, pair in enumerate(ordered, 1):
+            value = rounded[pair["pair_number"]]
+            if value != previous:
+                place = index
+            previous = value
+            pair.update({
+                "place": str(place),
+                "total_score": format(totals[pair["pair_number"]], "f"),
+                "percentage": format(
+                    (100 * value / (board_count * maximum)).quantize(
+                        Decimal("0.0001"), rounding=ROUND_HALF_UP,
+                    ), "f",
+                ),
+            })
 
 
 def play_line(row):
@@ -303,8 +371,8 @@ def play_line(row):
     return result
 
 
-def convert(play_path, participants_path, results_path):
-    participants = participant_map(participants_path)
+def convert(play_path, participants_path, results_path, winner_type=1):
+    participants = participant_map(participants_path, winner_type)
     enrich_participants(participants, results_path)
     all_boards = set()
     grouped = defaultdict(list)
@@ -329,7 +397,7 @@ def convert(play_path, participants_path, results_path):
             "match_scoring_method": "IMPS",
             "event_type": "PAIRS",
             "board_scoring_method": "MATCH_POINTS",
-            "winner_type": 1,
+            "winner_type": winner_type,
             "participants": {"pair": [
                 participants[pair] for pair in sorted(participants)
             ]},
@@ -632,6 +700,17 @@ def main():
             parser.error("--output must end in .json for a combined DAT export")
         pbn_output = Path(args.output).with_suffix(".pbn")
         result = convert_export(args.export_dat, args.mode, pbn_output)
+        if result["event"]["event_type"] == "PAIRS":
+            missing = [
+                str(pair["pair_number"]) for pair in result["event"]["participants"]["pair"]
+                if not pair["place"]
+            ]
+            if missing:
+                print(
+                    f"Warning: export has no official ranking for pairs {', '.join(missing)}; "
+                    "ranking fields are left empty.",
+                    file=sys.stderr,
+                )
     else:
         if not all(dbf_inputs):
             parser.error("Provide --export-dat or all three DBF inputs")

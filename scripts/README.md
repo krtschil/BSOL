@@ -21,8 +21,19 @@ deals (`b`). The converter checks table boundaries and markers, then uses the
 same result conversion as for individual DBF files. It takes the tournament
 date from `DATUM`, not the DBF header's last-update date. The format is detected
 from the play table (pairs or teams); an optional `--mode` must agree.
-Pair exports currently support `WERTUNG=0` (matchpoints); other values are
-rejected rather than silently exported with the wrong scoring method.
+Pair exports support matchpoints with `WERTUNG=0` (one combined ranking) and
+`WERTUNG=1` (separate NS/EW rankings). For separate rankings, the participant
+table's logical `NS` field determines each pair's starting direction.
+Other values are rejected rather than silently exported with the wrong scoring
+method. If a separate NS/EW ranking is entirely absent, it is reconstructed from
+all stored MP awards, including contractless bye and adjusted records. Each pair
+must have `RUNDEN * BPR` awards; `MAXMPS` supplies the maximum per board.
+Percentages use the MP total rounded to one decimal before division by the
+maximum, matching the source program. Equal rounded totals share a place.
+Existing official rankings are preserved; partial rankings, missing awards or
+penalties in a reconstructed direction cause an error rather than a guessed result.
+For these two-winner exports, BSOL displays the complete ranking totals, including
+awards, while traveller results and PBN deals still exclude unplayed boards.
 
 The output is `traveller.json`, `traveller.xml` and `traveller.pbn`, using the
 basename supplied via `--output` (which must end in `.json`).

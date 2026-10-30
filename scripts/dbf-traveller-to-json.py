@@ -172,12 +172,16 @@ def convert_export(path, mode=None, pbn_output=None):
             scoring = str(metadata[0].get("WERTUNG", "")).strip()
             if scoring not in ("0", "1"):
                 raise ValueError(f"Unsupported pair export WERTUNG={scoring!r}; supported values: 0, 1 (matchpoints)")
+            # A scrambled Mitchell combines both starting directions in one ranking.
+            scrambled = int(metadata[0].get("SCRAM_NACH") or 0) > 0
+            winner_type = 2 if scoring == "1" and not scrambled else 1
             result = convert(
                 paths["r"], paths["t"], paths["p"],
-                winner_type=2 if scoring == "1" else 1,
+                winner_type=winner_type,
             )
             if scoring == "1":
-                complete_pair_rankings(result["event"], metadata[0], play)
+                if result["event"]["winner_type"] == 2:
+                    complete_pair_rankings(result["event"], metadata[0], play)
                 result["event"]["ranking_method"] = "MATCH_POINTS"
         event_date = metadata[0].get("DATUM", "")
         if event_date:

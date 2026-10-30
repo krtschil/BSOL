@@ -1,14 +1,43 @@
-# DBF Traveller converter
+# DBF / DAT Traveller converter
 
 This directory contains an internal conversion utility for importing the
-three-file DBF export from the German bridge scoring application into BSOL
-Traveller JSON.
-
-The utility is intentionally not part of the published application. Keep
-`dbf-traveller-to-json.py` and this README on the development branch only; do not
-promote them to `main`.
+combined `exportid*.dat` export or the separate DBF tables from the German
+bridge scoring application into BSOL Traveller JSON and USEBIO XML.
+It is a command-line utility, not part of the browser UI.
 
 ## Usage
+
+The combined export is the simplest input:
+
+```sh
+python3 scripts/dbf-traveller-to-json.py \
+  --export-dat exportid2271.dat \
+  --output traveller.json
+```
+
+The `.dat` file contains five tagged Visual FoxPro DBF tables: tournament
+metadata (`u`), participants (`t`), ranking (`p`), play results (`r`) and board
+deals (`b`). The converter checks table boundaries and markers, then uses the
+same result conversion as for individual DBF files. It takes the tournament
+date from `DATUM`, not the DBF header's last-update date. The format is detected
+from the play table (pairs or teams); an optional `--mode` must agree.
+Pair exports currently support `WERTUNG=0` (matchpoints); other values are
+rejected rather than silently exported with the wrong scoring method.
+
+The output is `traveller.json`, `traveller.xml` and `traveller.pbn`, using the
+basename supplied via `--output` (which must end in `.json`).
+The PBN contains stored nonempty deals only for boards with traveller results,
+sorted by board number; unplayed boards are omitted.
+Stored hands are interpreted as N/E/S/W, with suits S/H/D/C.
+Dealer and vulnerability follow the standard board-number cycle; the tournament
+date is included when available. Invalid or duplicate deals cause conversion
+to fail. No bidding or play sequence is invented from the deals.
+The supplied pairs export has been verified; team export detection uses the
+existing team DBF schema and should be checked with a real team `.dat` export.
+
+`--export-dat` accepts a path directly, without `INPUT_DIRECTORIES`. It cannot
+be combined with individual DBF inputs. The previous three-file invocation
+remains supported:
 
 ```sh
 python3 scripts/dbf-traveller-to-json.py \
@@ -91,8 +120,9 @@ Other USEBIO consumers may ignore the notes.
 This is a traveller/results export, not a guaranteed complete federation
 submission. BBO's `#Date` field is retained as ISO date (`YYYY-MM-DD`) in
 `event.date` and exported as USEBIO `DATE` (`DD/MM/YYYY`). Missing dates are
-omitted; invalid dates cause conversion to fail. DBF exports currently provide
-no event date. The converters do not invent dates, federation IDs or master-point information.
+omitted; invalid dates cause conversion to fail. Combined DAT exports supply
+their tournament date from `DATUM`; the legacy three-DBF invocation still
+provides no event date. The converters do not invent dates, federation IDs or master-point information.
 DTD-valid structure alone does not guarantee acceptance by every USEBIO service.
 The BSOL importer also remains a reader for supported results structures, not
 an implementation of every USEBIO feature or version.

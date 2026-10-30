@@ -53,6 +53,45 @@ function importXml(xml) {
 	return JSON.parse(context.convertXML(xml)).event;
 }
 
+test("reconstructed two-winner rankings retain award totals through XML import", () => {
+	const converted = JSON.parse(python(`
+import importlib.util, json, sys
+sys.path.insert(0, ${JSON.stringify(path.join(root, "scripts"))})
+from usebio import to_xml
+spec = importlib.util.spec_from_file_location("conv", ${JSON.stringify(path.join(root, "scripts/dbf-traveller-to-json.py"))})
+conv = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(conv)
+event = {
+    "event_type":"PAIRS", "board_scoring_method":"MATCH_POINTS", "winner_type":2,
+    "ranking_method":"MATCH_POINTS",
+    "participants":{"pair":[
+        {"pair_number":1,"direction":"N","place":"1","total_score":"2.75","percentage":"70",
+         "player":[{"player_name":"North"},{"player_name":"South"}]},
+        {"pair_number":101,"direction":"E","place":"","total_score":"","percentage":"",
+         "player":[{"player_name":"East"},{"player_name":"West"}]},
+    ]},
+    "board":[{"board_no":1,"traveller_line":[{
+        "ns_pair_number":"1","ew_pair_number":"101","contract":"1NT","played_by":"N",
+        "tricks":7,"score":90,"ns_match_points":2,"ew_match_points":0,
+    }]}],
+}
+conv.complete_pair_rankings(event, {"RUNDEN":2,"BPR":1,"MAXMPS":2}, [
+    {"BOARD":1,"PAIREW":101,"MPS_EW":"0"},
+    {"BOARD":2,"PAIREW":101,"MPS_EW":"1.25"},
+])
+print(json.dumps({"event":event,"xml":to_xml({"event":event})}))
+`));
+	const restored = importXml(converted.xml);
+	assert.equal(restored.winner_type, 2);
+	assert.equal(restored.ranking_method, "MATCH_POINTS");
+	assert.deepEqual(restored.participants.pair, converted.event.participants.pair.map(pair => ({
+		...pair, pair_number: String(pair.pair_number),
+	})));
+	assert.equal(restored.participants.pair[1].total_score, "1.25");
+	assert.equal(restored.participants.pair[1].percentage, "32.5000");
+	assert.equal(restored.board.length, 1, "awards must not become invented played boards");
+});
+
 test("XML imports LIN data exclusively from LIN_DATA, not NOTES", () => {
 	for (const linElement of ["<LIN_DATA>qx|1|</LIN_DATA>", "<LIN_DATA />", ""]) {
 		const xml = `<USEBIO Version="1.2">

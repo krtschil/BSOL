@@ -753,6 +753,8 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 	}
 
 	var cellOffset = g_eventType!="Teams" && g_validPercentageFields ? 1 : 0;
+	const useRankingTotals = g_scoring=="MatchPoints" &&
+		g_travellers.event.ranking_method=="MATCH_POINTS";
 
 	if (g_eventType=="Teams")
 	{
@@ -831,7 +833,9 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		{
 			if (g_validPercentageFields)
 			{
-				row.cells[3].textContent = Number(pairs[i].plusMpts).toFixed(1);
+				const total = useRankingTotals &&
+					pairs[i].total_score!=="" ? pairs[i].total_score : pairs[i].plusMpts;
+				row.cells[3].textContent = Number(total).toFixed(1);
 				row.cells[3].style.textAlign = "right";
 				row.cells[3+cellOffset].textContent = pairs[i].percentage==="" ? "" : Number(pairs[i].percentage).toFixed(1);
 				row.cells[3+cellOffset].style.textAlign = "right";
@@ -853,7 +857,9 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 
 		if ((g_validPercentageFields)&&(g_eventType!="Teams"))	// Sometimes percentage field is erroneously non-blank for Teams
 		{
-			var width = (100*pairs[i].percent.toFixed(0))/100;
+			const percent = useRankingTotals && pairs[i].percentage!=="" ?
+				Number(pairs[i].percentage) : pairs[i].percent;
+			var width = (100*percent.toFixed(0))/100;
 			width = width + "px";
 			var pbar = "<div style=\"float:left;align:left;width:100px;min-width;100px;max-width:100px;height:16px;border:none;background-color:white;\">";
 			pbar = pbar + "<div style=\"float:left;position:absolute:top:0px;left:0px;height:100%;width:" + width + ";min-width:" + width + ";max-width:" + width + ";background-color:" + backColor + ";\">";

@@ -6,7 +6,7 @@ const test = require("node:test");
 test("combined DAT export converts all embedded tables and rejects malformed input", () => {
 	const script = path.resolve(__dirname, "../scripts/dbf-traveller-to-json.py");
 	const result = spawnSync("python3", ["-B", "-c", `
-import importlib.util, json, struct, sys, tempfile
+import copy, importlib.util, json, struct, sys, tempfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
 sys.path.insert(0, ${JSON.stringify(path.dirname(script))})
@@ -34,22 +34,24 @@ def dbf(fields, rows):
         for name, kind, size in fields:
             value = row.get(name, "")
             data += (struct.pack("<i", value or 0) if kind == "I"
+                else (b"T" if value else b"F") if kind == "L"
                 else str(value).encode("cp1252").ljust(size, b" "))
     return bytes(data) + b"\\x1a"
 
 u = dbf([("ID","I",4),("DATUM","D",8),("WERTUNG","N",1)],
         [{"ID":2271,"DATUM":"20261029","WERTUNG":0}])
-t = dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20)],
-        [{"P_NUMMER":1,"NAME1":"Müller","NAME2":"Süd"},
-         {"P_NUMMER":2,"NAME1":"Ost","NAME2":"West"}])
+t = dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20),("NS","L",1)],
+        [{"P_NUMMER":1,"NAME1":"Müller","NAME2":"Süd","NS":True},
+         {"P_NUMMER":2,"NAME1":"Ost","NAME2":"West","NS":False}])
 p = dbf([("PAARNR","I",4),("PLATZ","N",2),("PUNKTE","N",5),("PROZENT","N",5)],
         [{"PAARNR":1,"PLATZ":1,"PUNKTE":2,"PROZENT":60},
          {"PAARNR":2,"PLATZ":2,"PUNKTE":0,"PROZENT":40}])
-r = dbf([("BOARD","I",4),("PAIRNS","I",4),("PAIREW","I",4),("CONTRACT","C",7),
+r_fields = [("BOARD","I",4),("PAIRNS","I",4),("PAIREW","I",4),("CONTRACT","C",7),
          ("RESULT","C",5),("NS_EW","C",1),("RESVAL_NS","N",5),("RESVAL_EW","N",5),
-         ("MPS_NS","N",5),("MPS_EW","N",5),("LEADCARD","C",3)],
-        [{"BOARD":1,"PAIRNS":1,"PAIREW":2,"CONTRACT":"1 SA","RESULT":"=",
-          "NS_EW":"N","RESVAL_NS":90,"RESVAL_EW":-90,"MPS_NS":2,"MPS_EW":0,"LEADCARD":"P8"}])
+         ("MPS_NS","N",5),("MPS_EW","N",5),("LEADCARD","C",3)]
+r_rows = [{"BOARD":1,"PAIRNS":1,"PAIREW":2,"CONTRACT":"1 SA","RESULT":"=",
+          "NS_EW":"N","RESVAL_NS":90,"RESVAL_EW":-90,"MPS_NS":2,"MPS_EW":0,"LEADCARD":"P8"}]
+r = dbf(r_fields, r_rows)
 deal = "QJ984.6.J93.A983;AT.A954.Q864.K42;32.KJ73.AK52.JT6;K765.QT82.T7.Q75"
 b = dbf([("BOARD","N",3),("DEAL","C",67)],
         [{"BOARD":17,"DEAL":deal},{"BOARD":1,"DEAL":deal}])
@@ -77,6 +79,7 @@ with tempfile.TemporaryDirectory() as directory:
     cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
         "--export-dat",str(source),"--output",str(output)], capture_output=True, text=True)
     assert cli.returncode == 0, cli.stderr
+    assert not cli.stderr, cli.stderr
     assert json.loads(output.read_text()) == parsed
     xml = ET.parse(output.with_suffix(".xml"))
     assert xml.findtext(".//DATE") == "29/10/2026"
@@ -130,7 +133,7 @@ with tempfile.TemporaryDirectory() as directory:
     for change in [
         {"DATUM":"20260230","WERTUNG":0},
         {"DATUM":"bad","WERTUNG":0},
-        {"DATUM":"20261029","WERTUNG":1},
+        {"DATUM":"20261029","WERTUNG":2},
     ]:
         altered = dict(tables)
         altered["u"] = dbf([("DATUM","D",8),("WERTUNG","N",1)],[change])
@@ -141,6 +144,115 @@ with tempfile.TemporaryDirectory() as directory:
             pass
         else:
             raise AssertionError("Invalid metadata was accepted")
+    for scoring in (0, 1):
+        altered = dict(tables)
+        altered["u"] = dbf([("DATUM","D",8),("WERTUNG","N",1)],
+                           [{"DATUM":"20261029","WERTUNG":scoring}])
+        source.write_bytes(bundle(altered))
+        converted = conv.convert_export(source)
+        assert converted["event"]["board_scoring_method"] == "MATCH_POINTS"
+        assert converted["event"]["board"] == event["board"]
+        assert converted["event"]["winner_type"] == scoring + 1
+        if scoring:
+            assert converted["event"]["ranking_method"] == "MATCH_POINTS"
+        assert [pair["direction"] for pair in converted["event"]["participants"]["pair"]] == (
+            ["N", "E"] if scoring else ["N", "N"])
+        cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
+            "--export-dat",str(source),"--output",str(output)], capture_output=True, text=True)
+        assert cli.returncode == 0, cli.stderr
+        assert json.loads(output.read_text()) == converted
+        xml = ET.parse(output.with_suffix(".xml"))
+        assert xml.findtext(".//BOARD_SCORING_METHOD") == "MATCH_POINTS"
+        assert xml.findtext(".//WINNER_TYPE") == str(scoring + 1)
+        assert [pair.findtext("DIRECTION") for pair in xml.findall(".//PARTICIPANTS/PAIR")] == (
+            ["NS", "EW"] if scoring else ["NS", "NS"])
+        assert output.with_suffix(".pbn").read_text() == pbn
+    # Two-winner exports may contain only one direction's official ranking.
+    altered["p"] = dbf([("PAARNR","I",4),("PLATZ","N",2),("PUNKTE","N",5),("PROZENT","N",5)],
+                       [{"PAARNR":1,"PLATZ":1,"PUNKTE":2,"PROZENT":60}])
+    altered["u"] = dbf([("WERTUNG","N",1),("RUNDEN","N",2),("BPR","N",2),("MAXMPS","N",2)],
+                       [{"WERTUNG":1,"RUNDEN":2,"BPR":1,"MAXMPS":2}])
+    altered["r"] = dbf(r_fields, r_rows + [
+        {"BOARD":2,"PAIRNS":1,"PAIREW":2,"MPS_NS":1,"MPS_EW":1}])
+    source.write_bytes(bundle(altered))
+    pairs = conv.convert_export(source)["event"]["participants"]["pair"]
+    assert pairs[0]["place"] == "1" and pairs[0]["total_score"] == "2"
+    assert pairs[1]["direction"] == "E"
+    assert pairs[1]["place"] == "1"
+    assert pairs[1]["total_score"] == "1"
+    assert pairs[1]["percentage"] == "25.0000"
+    cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
+        "--export-dat",str(source),"--output",str(output)], capture_output=True, text=True)
+    assert cli.returncode == 0, cli.stderr
+    assert not cli.stderr, cli.stderr
+    assert json.loads(output.read_text())["event"]["participants"]["pair"] == pairs
+    ew = ET.parse(output.with_suffix(".xml")).findall(".//PARTICIPANTS/PAIR")[1]
+    assert ew.findtext("DIRECTION") == "EW"
+    assert ew.findtext("PLACE") == ew.findtext("TOTAL_SCORE") == "1"
+    assert ew.findtext("PERCENTAGE") == "25.0000"
+    assert "MATCH_POINTS" in ET.parse(output.with_suffix(".xml")).findtext(".//EVENT/NOTES")
+    assert output.with_suffix(".pbn").read_text().count('[Board ') == 1
+    converted = json.loads(output.read_text())["event"]
+    assert len(converted["board"][1]["traveller_line"]) == 0
+    for bad_u, bad_r in [
+        (dbf([("WERTUNG","N",1)],[{"WERTUNG":1}]), altered["r"]),
+        (altered["u"], r),
+        (altered["u"], dbf(r_fields, r_rows + r_rows)),
+    ]:
+        bad = dict(altered, u=bad_u, r=bad_r)
+        source.write_bytes(bundle(bad))
+        try:
+            conv.convert_export(source)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Incomplete or duplicate ranking awards were accepted")
+    altered["t"] = dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20)],
+                       [{"P_NUMMER":1,"NAME1":"North","NAME2":"South"}])
+    source.write_bytes(bundle(altered))
+    try:
+        conv.convert_export(source)
+    except ValueError as error:
+        assert "NS direction" in str(error)
+    else:
+        raise AssertionError("Missing two-winner directions were accepted")
+    ranking_event = {"participants":{"pair":[
+        {"pair_number":1,"direction":"N","place":"1","total_score":"9","percentage":"45"},
+        *[{"pair_number":n,"direction":"E","place":"","total_score":"","percentage":""}
+          for n in (101,102,103,104)],
+    ]}}
+    awards = [
+        {"BOARD":board,"PAIREW":pair,"MPS_EW":score}
+        for pair,first in [(101,"2.25"),(102,"2.245"),(103,"2.25"),(104,"0")]
+        for board,score in [(1,first),(2,"1")]
+    ]
+    metadata = {"RUNDEN":"2","BPR":"1","MAXMPS":10}
+    complete = copy.deepcopy(ranking_event)
+    conv.complete_pair_rankings(complete,metadata,awards)
+    ranked = complete["participants"]["pair"]
+    assert ranked[0] == ranking_event["participants"]["pair"][0]
+    assert [p["place"] for p in ranked[1:]] == ["1","3","1","4"]
+    assert [p["percentage"] for p in ranked[1:]] == ["16.5000","16.0000","16.5000","5.0000"]
+    assert ranked[1]["total_score"] == "3.25"
+    bad_award_sets = [awards[:-1], awards + [awards[0]]]
+    bad_award_sets += [[dict(awards[0],MPS_EW=value)] + awards[1:]
+                      for value in ("", "NaN", "Infinity", "-1", "11")]
+    bad_award_sets += [[dict(awards[0],PENAL_EW="1")] + awards[1:]]
+    for bad_awards in bad_award_sets:
+        try:
+            conv.complete_pair_rankings(copy.deepcopy(ranking_event),metadata,bad_awards)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid ranking awards were accepted")
+    partial = copy.deepcopy(ranking_event)
+    partial["participants"]["pair"][1]["place"] = "1"
+    try:
+        conv.complete_pair_rankings(partial,metadata,awards)
+    except ValueError as error:
+        assert "partially populated EW" in str(error)
+    else:
+        raise AssertionError("Partial official ranking was overwritten")
     source.write_bytes(bundle(tables))
     try:
         conv.convert_export(source, "teams")

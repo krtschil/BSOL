@@ -377,6 +377,21 @@ export function getRankingInfo()
 		}
 	}
 
+	if (g_scoring!="IMP")
+	{
+		for (const entry of rankNS.concat(rankEW))
+		{
+			entry.percent = (100*entry.plusMpts)/(entry.plusMpts + entry.minusMpts);
+			if (g_eventType!="Teams" && entry.boardsPlayed>0 && entry.boardsPlayed<maxPlayed)
+			{
+				const missing = maxPlayed - entry.boardsPlayed;
+				// Round each average board award as in the tournament scoring export.
+				entry.plusMpts += missing * Math.round(10*entry.plusMpts/entry.boardsPlayed)/10;
+				entry.minusMpts += missing * Math.round(10*entry.minusMpts/entry.boardsPlayed)/10;
+			}
+		}
+	}
+
 	var nsHigh = -65535;
 	var nsLow = 65535;
 	var ewHigh = -65535;
@@ -385,8 +400,7 @@ export function getRankingInfo()
 		// Calculate percentages, and high/low points for all positions
 	for (i=0;i<rankNS.length;i++)
 	{
-		if (g_scoring!="IMP") rankNS[i].percent = (100*rankNS[i].plusMpts)/(rankNS[i].plusMpts + rankNS[i].minusMpts);
-		else
+		if (g_scoring=="IMP")
 		{
 			rankNS[i].plusMpts = (maxPlayed*rankNS[i].plusMpts)/rankNS[i].boardsPlayed;
 			rankNS[i].minusMpts = (maxPlayed*rankNS[i].minusMpts)/rankNS[i].boardsPlayed;
@@ -401,8 +415,7 @@ export function getRankingInfo()
 
 	for (i=0;i<rankEW.length;i++)
 	{
-		if (g_scoring!="IMP") rankEW[i].percent = (100*rankEW[i].plusMpts)/(rankEW[i].plusMpts + rankEW[i].minusMpts);
-		else
+		if (g_scoring=="IMP")
 		{
 			rankEW[i].plusMpts = (maxPlayed*rankEW[i].plusMpts)/rankEW[i].boardsPlayed;
 			rankEW[i].minusMpts = (maxPlayed*rankEW[i].minusMpts)/rankEW[i].boardsPlayed;

@@ -24,9 +24,14 @@ from the play table (pairs or teams); an optional `--mode` must agree.
 Pair exports currently support `WERTUNG=0` (matchpoints); other values are
 rejected rather than silently exported with the wrong scoring method.
 
-The output is `traveller.json` plus `traveller.xml`. The embedded board-deal
-table is not currently exported to PBN; continue using the corresponding PBN
-file for the hands. No bidding or play sequence is invented from the deals.
+The output is `traveller.json`, `traveller.xml` and `traveller.pbn`, using the
+basename supplied via `--output` (which must end in `.json`).
+The PBN contains stored nonempty deals only for boards with traveller results,
+sorted by board number; unplayed boards are omitted.
+Stored hands are interpreted as N/E/S/W, with suits S/H/D/C.
+Dealer and vulnerability follow the standard board-number cycle; the tournament
+date is included when available. Invalid or duplicate deals cause conversion
+to fail. No bidding or play sequence is invented from the deals.
 The supplied pairs export has been verified; team export detection uses the
 existing team DBF schema and should be checked with a real team `.dat` export.
 

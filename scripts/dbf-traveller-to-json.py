@@ -103,7 +103,47 @@ def export_tables(path):
     return tables
 
 
-def convert_export(path, mode=None):
+def deals_to_pbn(rows, event_date=None):
+    boards = {}
+    vulnerability = (
+        "None", "NS", "EW", "All", "NS", "EW", "All", "None",
+        "EW", "All", "None", "NS", "All", "None", "NS", "EW",
+    )
+    for row in rows:
+        deal = str(row.get("DEAL", "")).strip()
+        if not deal:
+            continue
+        board = int(row.get("BOARD") or 0)
+        if board < 1 or board in boards:
+            raise ValueError(f"Invalid or duplicate deal board number: {board}")
+        hands = deal.upper().split(";")
+        cards = []
+        if len(hands) != 4:
+            raise ValueError(f"Board {board}: expected four hands in N/E/S/W order")
+        for hand in hands:
+            suits = hand.split(".")
+            if len(suits) != 4 or any(not re.fullmatch(r"[AKQJT98765432]*", suit) for suit in suits):
+                raise ValueError(f"Board {board}: invalid hand: {hand!r}")
+            if sum(map(len, suits)) != 13:
+                raise ValueError(f"Board {board}: each hand must contain 13 cards")
+            cards.extend((suit, rank) for suit, ranks in enumerate(suits) for rank in ranks)
+        if len(set(cards)) != 52:
+            raise ValueError(f"Board {board}: deal must contain 52 distinct cards")
+        tags = [f'[Board "{board}"]']
+        if event_date:
+            tags.append(f'[Date "{event_date.replace("-", ".")}"]')
+        tags += [
+            f'[Dealer "{"NESW"[(board - 1) % 4]}"]',
+            f'[Vulnerable "{vulnerability[(board - 1) % 16]}"]',
+            f'[Deal "N:{" ".join(hands)}"]',
+        ]
+        boards[board] = "\n".join(tags)
+    if not boards:
+        raise ValueError("Export contains no stored board deals")
+    return "% PBN 2.1\n% EXPORT\n\n" + "\n\n".join(boards[key] for key in sorted(boards)) + "\n"
+
+
+def convert_export(path, mode=None, pbn_output=None):
     tables = export_tables(path)
     with TemporaryDirectory(prefix="bsol-export-") as directory:
         paths = {}
@@ -135,6 +175,17 @@ def convert_export(path, mode=None):
             result["event"]["date"] = date(
                 int(event_date[:4]), int(event_date[4:6]), int(event_date[6:8])
             ).isoformat()
+        if pbn_output is not None:
+            played_boards = {
+                board["board_no"] for board in result["event"]["board"]
+                if board["traveller_line"]
+            }
+            deals = [
+                row for row in read_dbf(paths["b"])
+                if int(row.get("BOARD") or 0) in played_boards
+            ]
+            pbn = deals_to_pbn(deals, result["event"].get("date"))
+            Path(pbn_output).write_text(pbn, encoding="utf-8")
     return result
 
 
@@ -570,14 +621,17 @@ def main():
     )
     parser.add_argument(
         "-o", "--output", required=True,
-        help="Output JSON file (also writes sibling .xml)",
+        help="Output JSON file (also writes sibling .xml; with --export-dat also .pbn)",
     )
     args = parser.parse_args()
     dbf_inputs = (args.play_dbf, args.participants_dbf, args.results_dbf)
     if args.export_dat:
         if any(dbf_inputs):
             parser.error("--export-dat cannot be combined with individual DBF inputs")
-        result = convert_export(args.export_dat, args.mode)
+        if Path(args.output).suffix.lower() != ".json":
+            parser.error("--output must end in .json for a combined DAT export")
+        pbn_output = Path(args.output).with_suffix(".pbn")
+        result = convert_export(args.export_dat, args.mode, pbn_output)
     else:
         if not all(dbf_inputs):
             parser.error("Provide --export-dat or all three DBF inputs")
@@ -588,7 +642,8 @@ def main():
             INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,
         )
     xml_output = write_outputs(result, args.output)
-    print(f"wrote {args.output} and {xml_output}: {len(result['event']['board'])} boards, "
+    outputs = f"{args.output}, {xml_output}" + (f", {pbn_output}" if args.export_dat else "")
+    print(f"wrote {outputs}: {len(result['event']['board'])} boards, "
           f"{len(result['event']['participants']['pair'])} "
           f"{'teams' if result['event']['event_type'] == 'TEAMS' else 'pairs'}")
 

@@ -50,7 +50,9 @@ r = dbf([("BOARD","I",4),("PAIRNS","I",4),("PAIREW","I",4),("CONTRACT","C",7),
          ("MPS_NS","N",5),("MPS_EW","N",5),("LEADCARD","C",3)],
         [{"BOARD":1,"PAIRNS":1,"PAIREW":2,"CONTRACT":"1 SA","RESULT":"=",
           "NS_EW":"N","RESVAL_NS":90,"RESVAL_EW":-90,"MPS_NS":2,"MPS_EW":0,"LEADCARD":"P8"}])
-b = dbf([("BOARD","N",3),("DEAL","C",67)],[{"BOARD":1,"DEAL":"cards"}])
+deal = "QJ984.6.J93.A983;AT.A954.Q864.K42;32.KJ73.AK52.JT6;K765.QT82.T7.Q75"
+b = dbf([("BOARD","N",3),("DEAL","C",67)],
+        [{"BOARD":17,"DEAL":deal},{"BOARD":1,"DEAL":deal}])
 tables = dict(zip("utprb", [u,t,p,r,b]))
 def bundle(tables):
     return b"".join(data + b"###;" + key.encode() + b"**" for key,data in tables.items())
@@ -79,6 +81,35 @@ with tempfile.TemporaryDirectory() as directory:
     xml = ET.parse(output.with_suffix(".xml"))
     assert xml.findtext(".//DATE") == "29/10/2026"
     assert xml.findtext(".//TRAVELLER_LINE/SCORE") == "90"
+    pbn = output.with_suffix(".pbn").read_text()
+    assert '[Deal "N:' + deal.replace(";", " ") + '"]' in pbn
+    assert '[Date "2026.10.29"]' in pbn
+    assert '[Board "1"]' in pbn
+    assert '[Board "17"]' not in pbn
+    assert pbn.count('[Board ') == 1
+    assert pbn.count('[Dealer "N"]') == 1
+    assert pbn.count('[Vulnerable "None"]') == 1
+    rows = [{"BOARD":i,"DEAL":deal} for i in range(1,17)]
+    cycle = conv.deals_to_pbn(rows)
+    assert cycle.count('[Dealer "E"]') == 4
+    assert cycle.count('[Dealer "S"]') == 4
+    assert cycle.count('[Dealer "W"]') == 4
+    assert cycle.count('[Vulnerable "NS"]') == 4
+    assert '[Date ' not in cycle
+    for bad_rows in [
+        [], [{"BOARD":0,"DEAL":deal}],
+        [{"BOARD":1,"DEAL":deal},{"BOARD":1,"DEAL":deal}],
+        [{"BOARD":1,"DEAL":"cards"}],
+        [{"BOARD":1,"DEAL":deal.replace("QJ984","QJ98")}],
+        [{"BOARD":1,"DEAL":deal.replace("QJ984","QJ98A")}],
+        [{"BOARD":1,"DEAL":deal.replace("QJ984","QJ98X")}],
+    ]:
+        try:
+            conv.deals_to_pbn(bad_rows)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid deals were accepted")
     assert len(conv.read_dbf(source)) == 1
     # A marker-looking value inside a record must not split a table.
     marker_table = dbf([("TEXT","C",10)],[{"TEXT":"###;t**"}])

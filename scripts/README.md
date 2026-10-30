@@ -22,7 +22,9 @@ same result conversion as for individual DBF files. It takes the tournament
 date from `DATUM`, not the DBF header's last-update date. The format is detected
 from the play table (pairs or teams); an optional `--mode` must agree.
 Pair exports support matchpoints with `WERTUNG=0` (one combined ranking) and
-`WERTUNG=1` (separate NS/EW rankings). For separate rankings, the participant
+`WERTUNG=1`. For `WERTUNG=1`, a nonzero `SCRAM_NACH` identifies a scrambled
+Mitchell with one combined ranking despite the pairs' starting NS/EW directions;
+otherwise separate NS/EW rankings are used. For separate rankings, the participant
 table's logical `NS` field determines each pair's starting direction.
 Other values are rejected rather than silently exported with the wrong scoring
 method. If a separate NS/EW ranking is entirely absent, it is reconstructed from
@@ -32,7 +34,7 @@ Percentages use the MP total rounded to one decimal before division by the
 maximum, matching the source program. Equal rounded totals share a place.
 Existing official rankings are preserved; partial rankings, missing awards or
 penalties in a reconstructed direction cause an error rather than a guessed result.
-For these two-winner exports, BSOL displays the complete ranking totals, including
+For `WERTUNG=1` exports, BSOL displays the complete ranking totals, including
 awards, while traveller results and PBN deals still exclude unplayed boards.
 
 The output is `traveller.json`, `traveller.xml` and `traveller.pbn`, using the

@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const {spawnSync} = require("node:child_process");
 const path = require("node:path");
 const test = require("node:test");
+const {createContext, loadScript} = require("./test-helpers");
 
 test("combined DAT export converts all embedded tables and rejects malformed input", () => {
 	const script = path.resolve(__dirname, "../scripts/dbf-traveller-to-json.py");
@@ -253,6 +254,27 @@ with tempfile.TemporaryDirectory() as directory:
         assert "partially populated EW" in str(error)
     else:
         raise AssertionError("Partial official ranking was overwritten")
+    # A scrambled Mitchell retains WERTUNG=1 but has a single combined ranking.
+    combined_tables = dict(tables)
+    combined_tables["u"] = dbf([("WERTUNG","N",1),("SCRAM_NACH","N",2)],
+                               [{"WERTUNG":1,"SCRAM_NACH":9}])
+    combined_tables["r"] = dbf(r_fields, r_rows + [
+        dict(r_rows[0],BOARD=17,PAIRNS=2,PAIREW=1)])
+    source.write_bytes(bundle(combined_tables))
+    combined = conv.convert_export(source)["event"]
+    assert combined["winner_type"] == 1
+    assert combined["ranking_method"] == "MATCH_POINTS"
+    assert all(pair["direction"] == "N" for pair in combined["participants"]["pair"])
+    assert combined["participants"] == event["participants"]
+    assert len(combined["board"]) == 2
+    cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
+        "--export-dat",str(source),"--output",str(output)], capture_output=True, text=True)
+    assert cli.returncode == 0, cli.stderr
+    assert json.loads(output.read_text())["event"] == combined
+    xml = ET.parse(output.with_suffix(".xml"))
+    assert xml.findtext(".//WINNER_TYPE") == "1"
+    assert all(pair.findtext("DIRECTION") == "NS" for pair in xml.findall(".//PARTICIPANTS/PAIR"))
+    assert output.with_suffix(".pbn").read_text().count('[Board ') == 2
     source.write_bytes(bundle(tables))
     try:
         conv.convert_export(source, "teams")
@@ -270,8 +292,27 @@ with tempfile.TemporaryDirectory() as directory:
             *inputs,"--output",str(directory/"invalid.json")],capture_output=True)
         assert cli.returncode != 0
         assert not (directory/"invalid.json").exists()
-print("ok")
+print(json.dumps(combined))
 `], {encoding: "utf8"});
 	assert.equal(result.status, 0, result.stderr);
-	assert.equal(result.stdout.trim(), "ok");
+	const event = JSON.parse(result.stdout);
+	const context = createContext({
+		g_travellers: {event},
+		g_hands: {boards: event.board.map(board => ({board: board.board_no}))},
+		g_rankInfo: null, g_sessInfo: null,
+		g_scoring: "MatchPoints", g_eventType: "Paarturnier",
+		getMakeableTricksForContract: () => 8,
+		comparePositions: (a, b) => a - b,
+	});
+	loadScript(context, "js/scoring.mjs");
+	loadScript(context, "js/ranking.mjs");
+	const ranking = context.getRankingInfo();
+	assert.equal(ranking.sessInfo.singleWinner, true);
+	assert.equal(ranking.rankNS.length, 2);
+	assert.equal(ranking.rankEW.length, 0);
+	assert.doesNotThrow(() => context.ddComparisonAll());
+	for (const pair of ranking.rankNS) {
+		assert.equal(pair.boardsPlayed, 2);
+		assert.equal(pair.dd.ddUnderH + pair.dd.ddOverH, 2);
+	}
 });

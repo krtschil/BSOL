@@ -111,7 +111,9 @@ Supported file formats:
 
 ### Traveller conversion and XML
 The BBO CSV and DBF Traveller converters in `scripts/` write the existing BSOL
-Traveller JSON and a sibling USEBIO 1.2 XML file. The XML includes the
+Traveller JSON and a sibling USEBIO 1.2 XML file. The DBF converter also accepts
+a combined `exportid*.dat` file via `--export-dat`, avoiding the need to select
+three separate DBF files and retaining the tournament date. The XML includes the
 Bridgewebs-compatible USEBIO DTD reference and stores LIN play records in
 `<LIN_DATA>`. BSOL's XML importer reads LIN exclusively from `<LIN_DATA>`;
 `NOTES` carries other BSOL-specific metadata. For artificial adjusted results

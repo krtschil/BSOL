@@ -9,7 +9,9 @@ tables, including little-endian binary integer fields.
 import argparse
 import re
 from collections import defaultdict
+from datetime import date
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from usebio import imps, write_outputs
 
 
@@ -26,8 +28,13 @@ INPUT_DIRECTORIES = {
 
 def read_dbf(path):
     data = Path(path).read_bytes()
+    if len(data) < 32:
+        raise ValueError(f"Truncated DBF header: {path}")
+    record_count = int.from_bytes(data[4:8], "little")
     header_length = int.from_bytes(data[8:10], "little")
     record_length = int.from_bytes(data[10:12], "little")
+    if header_length < 33 or not record_length or header_length + record_count * record_length > len(data):
+        raise ValueError(f"Invalid or truncated DBF table: {path}")
     fields = []
     for offset in range(32, header_length - 1, 32):
         descriptor = data[offset:offset + 32]
@@ -37,7 +44,7 @@ def read_dbf(path):
         fields.append((name, chr(descriptor[11]), descriptor[16]))
 
     records = []
-    for offset in range(header_length, len(data), record_length):
+    for offset in range(header_length, header_length + record_count * record_length, record_length):
         record = data[offset:offset + record_length]
         if len(record) != record_length or record[0:1] == b"*":
             continue
@@ -57,6 +64,78 @@ def read_dbf(path):
             values[name] = value
         records.append(values)
     return records
+
+
+def export_tables(path):
+    """Split the tagged DBF tables without scanning binary records for markers."""
+    data = Path(path).read_bytes()
+    tables = {}
+    offset = 0
+    while offset < len(data):
+        if len(data) - offset < 32:
+            raise ValueError(f"Truncated export header at byte {offset}")
+        count = int.from_bytes(data[offset + 4:offset + 8], "little")
+        header = int.from_bytes(data[offset + 8:offset + 10], "little")
+        length = int.from_bytes(data[offset + 10:offset + 12], "little")
+        end = offset + header + count * length
+        if header < 33 or not length or end + 8 > len(data):
+            raise ValueError(f"Invalid or truncated export table at byte {offset}")
+        descriptor = offset + 32
+        field_length = 1
+        while descriptor < offset + header and data[descriptor] != 0x0D:
+            if descriptor + 32 > offset + header:
+                raise ValueError(f"Invalid DBF field descriptor at byte {descriptor}")
+            field_length += data[descriptor + 16]
+            descriptor += 32
+        if descriptor >= offset + header or field_length != length:
+            raise ValueError(f"Invalid DBF header or record length at byte {offset}")
+        marker = data[end:end + 8]
+        if not re.fullmatch(rb"\x1a###;[utprb]\*\*", marker):
+            raise ValueError(f"Invalid export table marker at byte {end}: {marker!r}")
+        tag = chr(marker[5])
+        if tag in tables:
+            raise ValueError(f"Duplicate export table: {tag}")
+        tables[tag] = data[offset:end + 1]
+        offset = end + 8
+    missing = set("utprb") - tables.keys()
+    if missing:
+        raise ValueError(f"Missing export tables: {', '.join(sorted(missing))}")
+    return tables
+
+
+def convert_export(path, mode=None):
+    tables = export_tables(path)
+    with TemporaryDirectory(prefix="bsol-export-") as directory:
+        paths = {}
+        for tag, data in tables.items():
+            paths[tag] = Path(directory) / f"{tag}.dbf"
+            paths[tag].write_bytes(data)
+        metadata = read_dbf(paths["u"])
+        if len(metadata) != 1:
+            raise ValueError("Export must contain exactly one active tournament record")
+        play = read_dbf(paths["r"])
+        if not play:
+            raise ValueError("Export contains no active play records")
+        if "CONTRACT_H" in play[0] and "CONTRACT_V" in play[0]:
+            detected = "teams"
+        elif "PAIRNS" in play[0] and "PAIREW" in play[0] and "CONTRACT" in play[0]:
+            detected = "pairs"
+        else:
+            raise ValueError("Unsupported export play table schema")
+        if mode and mode != detected:
+            raise ValueError(f"Export contains {detected} data, not {mode}")
+        if detected == "pairs" and str(metadata[0].get("WERTUNG", "")).strip() != "0":
+            raise ValueError("Only WERTUNG=0 (matchpoints) is supported for pair exports")
+        converter = convert_teams if detected == "teams" else convert
+        result = converter(paths["r"], paths["t"], paths["p"])
+        event_date = metadata[0].get("DATUM", "")
+        if event_date:
+            if not re.fullmatch(r"\d{8}", event_date):
+                raise ValueError(f"Invalid export tournament date: {event_date!r}")
+            result["event"]["date"] = date(
+                int(event_date[:4]), int(event_date[4:6]), int(event_date[6:8])
+            ).isoformat()
+    return result
 
 
 def number(value):
@@ -477,32 +556,41 @@ def convert_teams(play_path, participants_path, results_path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--play-dbf", required=True, help="Traveller play DBF")
+    parser.add_argument("--export-dat", help="Combined exportid*.dat file (all tables in one file)")
+    parser.add_argument("--play-dbf", help="Traveller play DBF")
     parser.add_argument(
-        "--participants-dbf", required=True, help="Participant/pair DBF"
+        "--participants-dbf", help="Participant/pair DBF"
     )
     parser.add_argument(
-        "--results-dbf", required=True, help="Ranking/result DBF"
+        "--results-dbf", help="Ranking/result DBF"
     )
     parser.add_argument(
-        "--mode", choices=("pairs", "teams"), default="pairs",
-        help="Tournament format (default: pairs)",
+        "--mode", choices=("pairs", "teams"),
+        help="Tournament format (auto-detected for .dat; otherwise defaults to pairs)",
     )
     parser.add_argument(
         "-o", "--output", required=True,
         help="Output JSON file (also writes sibling .xml)",
     )
     args = parser.parse_args()
-    converter = convert_teams if args.mode == "teams" else convert
-    result = converter(
-        INPUT_DIRECTORIES["play_dbf"] / args.play_dbf,
-        INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
-        INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,
-    )
+    dbf_inputs = (args.play_dbf, args.participants_dbf, args.results_dbf)
+    if args.export_dat:
+        if any(dbf_inputs):
+            parser.error("--export-dat cannot be combined with individual DBF inputs")
+        result = convert_export(args.export_dat, args.mode)
+    else:
+        if not all(dbf_inputs):
+            parser.error("Provide --export-dat or all three DBF inputs")
+        converter = convert_teams if args.mode == "teams" else convert
+        result = converter(
+            INPUT_DIRECTORIES["play_dbf"] / args.play_dbf,
+            INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
+            INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,
+        )
     xml_output = write_outputs(result, args.output)
     print(f"wrote {args.output} and {xml_output}: {len(result['event']['board'])} boards, "
           f"{len(result['event']['participants']['pair'])} "
-          f"{'teams' if args.mode == 'teams' else 'pairs'}")
+          f"{'teams' if result['event']['event_type'] == 'TEAMS' else 'pairs'}")
 
 
 if __name__ == "__main__":

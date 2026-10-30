@@ -109,6 +109,13 @@ Supported file formats:
 - .xml and .json Traveller/results data, when loaded with a PBN or its local
   file selection
 
+### Matchpoint rankings with sit-outs
+For matchpoint pair rankings with unequal numbers of played boards, BSOL adds
+each pair's average MPs (rounded to one decimal per board) for missing boards,
+up to the most boards actually played by any pair. Equal board counts require
+no compensation, even when every pair sits out. Actual played-board counts
+and percentages remain unchanged.
+
 ### Traveller conversion and XML
 The BBO CSV and DBF Traveller converters in `scripts/` write the existing BSOL
 Traveller JSON and a sibling USEBIO 1.2 XML file. The DBF converter also accepts

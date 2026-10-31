@@ -3,6 +3,7 @@ import { displayLeadCard, getLeadsIdx, leadCard, compareScores, played, makeColo
 import { getMakeableTricksForContract, getHighestScoringMakeableContractForDirection } from "./makeable.mjs";
 import { getTindexByName } from "./board-utils.mjs";
 import { drawMiniHand } from "./hand-renderer.mjs";
+import { isIndividual, sideNames } from "./participants.mjs";
 
 export function setBars(cells,value,cellindex,range,colorL,colorR,width)
 {
@@ -299,12 +300,15 @@ export function setupResultReasons(ctx,result)
 
 	ourVul = false;
 
-	var ourShortNames = ourInfo.player1.split(" ")[0] + "/" + ourInfo.player2.split(" ")[0];
+	var ourNames = isIndividual() ? sideNames(tline,ourDir) : ourInfo;
+	var ourShortNames = ourNames.player1.split(" ")[0] + "/" + ourNames.player2.split(" ")[0];
 
 	var oppsShortNames = "";
 	var oppsInfo = "";
 
-	if (oppsDir==1)
+	if (isIndividual())
+		oppsInfo = sideNames(tline,oppsDir);
+	else if (oppsDir==1)
 		oppsInfo  = getPlayerInfo(tline.ns_pair_number,1);
 	else
 		oppsInfo = getPlayerInfo(tline.ew_pair_number,2);
@@ -324,12 +328,12 @@ export function setupResultReasons(ctx,result)
 	if ((tline.played_by=="N")||(tline.played_by=="S"))
 	{
 		declDir = 1;
-		playerInfo = getPlayerInfo(tline.ns_pair_number,1);
+		playerInfo = isIndividual() ? sideNames(tline,1) : getPlayerInfo(tline.ns_pair_number,1);
 	}
 	else
 	{
 		declDir = 2;
-		playerInfo = getPlayerInfo(tline.ew_pair_number,2);
+		playerInfo = isIndividual() ? sideNames(tline,2) : getPlayerInfo(tline.ew_pair_number,2);
 	}
 
 	if ((tline.played_by=="N")||(tline.played_by=="E"))

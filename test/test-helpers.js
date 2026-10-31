@@ -33,6 +33,9 @@ function loadScript(context, relativePath)
 {
 	const filename = path.join(root, relativePath);
 	let source = fs.readFileSync(filename, "utf8");
+	if (source.includes("from './participants.mjs'") || source.includes('from "./participants.mjs"'))
+		if (typeof context.isIndividual !== "function")
+			loadScript(context, "js/participants.mjs");
 
 	// Files ending in .mjs are real ES modules (`export function foo(){}`).
 	// The regression tests run everything in a single shared vm context

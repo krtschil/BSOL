@@ -11,6 +11,28 @@ import './pbn.mjs';
 import './workers.mjs';
 import { drawBar, drawBoxedBar } from './scorecard.mjs';
 import './hand-entry.mjs';
+import { isIndividual, playerSeat, sidePlayers, playerName } from './participants.mjs';
+
+export function setIndividualPlayers(cell,line,direction)
+{
+	cell.textContent = "";
+	cell.style.textAlign = "right";
+	if (direction==2) cell.className = "divide";
+	if (!line.player_numbers) return;
+	for (const [index,number] of sidePlayers(line,direction).entries())
+	{
+		if (index) cell.appendChild(document.createTextNode(" / "));
+		const link = document.createElement("span");
+		link.textContent = number;
+		const seat = playerSeat(line,number);
+		link.title = playerName(number) + " (" + seat + ", " + line.player_match_points[seat] + " MP)";
+		link.className = "myLink";
+		setClickFunctionForNames(link,number,1);
+		cell.appendChild(link);
+	}
+	if (sidePlayers(line,direction).some(number => String(number)==String(g_hands.pair_number)))
+		cell.style.backgroundColor = "#bbbbff";
+}
 
 export function passedOutNavigationHTML(rowButtonsVisibility,score)
 {
@@ -452,6 +474,11 @@ export function getRowFromTraveller(pair,direction)
 	for (i=0;i<tlines.length;i++)
 	{
 		var line = tlines[i];
+		if (isIndividual())
+		{
+			if (playerSeat(line,pair)) return i;
+			continue;
+		}
 
 		if ((((direction==1)||singleWinner)&&(line.ns_pair_number==pair))||(((direction==2)||singleWinner)&&(line.ew_pair_number==pair)))
 		{
@@ -984,37 +1011,45 @@ export function displayTraveller(pdirection)
 			for (m=0;m<16;m++)
 				row.insertCell(-1);
 
-			row.cells[0].innerHTML = tline.ns_pair_number;
-			row.cells[0].onmouseover = function(){showNames(this,1);};
-			if (tline.ns_pair_number!="")
-				setClickFunctionForNames(row.cells[0],tline.ns_pair_number,1);
-			row.cells[0].onmouseout = function(){
-					var popup = document.getElementById("popup_box");
-					popup.textContent = "";
-					popup.style.display="none";
-					$("#popup_box").finish();
-				}
-			row.cells[0].style.textAlign="right";
-			row.cells[0].className = "myLink";
+			if (isIndividual())
+			{
+				setIndividualPlayers(row.cells[0],tline,1);
+				setIndividualPlayers(row.cells[1],tline,2);
+			}
+			else
+			{
+				row.cells[0].innerHTML = tline.ns_pair_number;
+				row.cells[0].onmouseover = function(){showNames(this,1);};
+				if (tline.ns_pair_number!="")
+					setClickFunctionForNames(row.cells[0],tline.ns_pair_number,1);
+				row.cells[0].onmouseout = function(){
+						var popup = document.getElementById("popup_box");
+						popup.textContent = "";
+						popup.style.display="none";
+						$("#popup_box").finish();
+					}
+				row.cells[0].style.textAlign="right";
+				row.cells[0].className = "myLink";
 
-			if ((sign==1)&&(tline.ns_pair_number==g_hands.pair_number))
-				row.cells[0].style.backgroundColor = "#bbbbff";
+				if ((sign==1)&&(tline.ns_pair_number==g_hands.pair_number))
+					row.cells[0].style.backgroundColor = "#bbbbff";
 
-			row.cells[1].innerHTML = tline.ew_pair_number;
-			row.cells[1].onmouseover = function(){showNames(this,2);};
-			if (tline.ew_pair_number!="")
-				setClickFunctionForNames(row.cells[1],tline.ew_pair_number,2);
-			row.cells[1].onmouseout = function(){
-					var popup = document.getElementById("popup_box");
-					popup.textContent = "";
-					popup.style.display="none";
-					$("#popup_box").finish();
-				}
-			row.cells[1].style.textAlign="right";
-			row.cells[1].className = "myLink divide";
+				row.cells[1].innerHTML = tline.ew_pair_number;
+				row.cells[1].onmouseover = function(){showNames(this,2);};
+				if (tline.ew_pair_number!="")
+					setClickFunctionForNames(row.cells[1],tline.ew_pair_number,2);
+				row.cells[1].onmouseout = function(){
+						var popup = document.getElementById("popup_box");
+						popup.textContent = "";
+						popup.style.display="none";
+						$("#popup_box").finish();
+					}
+				row.cells[1].style.textAlign="right";
+				row.cells[1].className = "myLink divide";
 
-			if ((sign==-1)&&(tline.ew_pair_number==g_hands.pair_number))
-				row.cells[1].style.backgroundColor = "#bbbbff";
+				if ((sign==-1)&&(tline.ew_pair_number==g_hands.pair_number))
+					row.cells[1].style.backgroundColor = "#bbbbff";
+			}
 
 			if (validContract(tline.contract))
 			{
@@ -2087,7 +2122,7 @@ export function loadTraveller_1(data,statusText,jqXHR,context)
 			getSessionInfo();	// Set up details of session.
 			document.getElementById("ascorecard").textContent = g_eventType=="Teams" ?
 				(language=="de" ? "Einzelergebnisse" : "Individual results") :
-				(language=="de" ? "Paaranalyse" : "Individual analysis");
+				(language=="de" ? (isIndividual() ? "Spieleranalyse" : "Paaranalyse") : "Individual analysis");
 
 			if (g_eventType=="Teams")
 			{
@@ -2269,6 +2304,11 @@ export function showCheckTraveller()
 		row.cells[0].innerHTML = tline.ns_pair_number;
 		row.insertCell(-1);
 		row.cells[1].innerHTML = tline.ew_pair_number;
+		if (isIndividual())
+		{
+			setIndividualPlayers(row.cells[0],tline,1);
+			setIndividualPlayers(row.cells[1],tline,2);
+		}
 		row.insertCell(-1);
 		row.cells[2].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
 		row.insertCell(-1);
@@ -2375,6 +2415,11 @@ export function checkAllContracts()
 		row.cells[1].innerHTML = tline.ns_pair_number;
 		row.insertCell(-1);
 		row.cells[2].innerHTML = tline.ew_pair_number;
+		if (isIndividual())
+		{
+			setIndividualPlayers(row.cells[1],tline,1);
+			setIndividualPlayers(row.cells[2],tline,2);
+		}
 		row.insertCell(-1);
 		row.cells[3].innerHTML = tline.contract.replaceAll(/C/g,"&#9827;").replaceAll(/D/g,"<span style='color:red'>&#9830;</span>").replaceAll(/H/g,"<span style='color:red'>&#9829;</span>").replaceAll(/S/g,"&#9824;");
 		row.insertCell(-1);

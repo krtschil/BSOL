@@ -92,6 +92,43 @@ print(json.dumps({"event":event,"xml":to_xml({"event":event})}))
 	assert.equal(restored.board.length, 1, "awards must not become invented played boards");
 });
 
+test("individual XML preserves all four players and seat-specific matchpoints", () => {
+	const event = {
+		event_type:"INDIVIDUAL", board_scoring_method:"MATCH_POINTS", winner_type:1,
+		ranking_method:"MATCH_POINTS",
+		participants:{pair:[1,2,3,4].map(number => ({
+			pair_number:number, direction:"N", place:String(number), total_score:"2",
+			percentage:"50", player:[{player_name:"Player "+number}],
+		}))},
+		board:[{board_no:1,traveller_line:[{
+			ns_pair_number:"1",ew_pair_number:"101",contract:"1NT",played_by:"N",
+			tricks:7,score:90,ns_score:90,ew_score:-90,
+			ns_match_points:2,ew_match_points:0,
+			player_numbers:{N:1,E:2,S:3,W:4},
+			player_match_points:{N:2,E:0,S:1.5,W:0.5},
+		}]}],
+	};
+	const xml = python(`
+import json, sys
+sys.path.insert(0, ${JSON.stringify(path.join(root,"scripts"))})
+from usebio import to_xml
+print(to_xml(json.load(sys.stdin)))
+`, JSON.stringify({event}));
+	assert.match(xml, /EVENT_TYPE="INDIVIDUAL"/);
+	assert.ok(xml.includes("<PLAYER_NUMBER>4</PLAYER_NUMBER>"));
+	const restored = importXml(xml);
+	assert.equal(restored.event_type,"Individual");
+	assert.deepEqual(restored.participants.pair,event.participants.pair.map(pair => ({
+		...pair,pair_number:String(pair.pair_number),
+	})));
+	assert.deepEqual(restored.board[0].traveller_line[0].player_numbers,
+		{N:"1",E:"2",S:"3",W:"4"});
+	assert.deepEqual(restored.board[0].traveller_line[0].player_match_points,
+		event.board[0].traveller_line[0].player_match_points);
+	assert.equal(restored.board[0].traveller_line[0].ns_pair_number,"1");
+	assert.equal(restored.board[0].traveller_line[0].ew_pair_number,"101");
+});
+
 test("XML imports LIN data exclusively from LIN_DATA, not NOTES", () => {
 	for (const linElement of ["<LIN_DATA>qx|1|</LIN_DATA>", "<LIN_DATA />", ""]) {
 		const xml = `<USEBIO Version="1.2">

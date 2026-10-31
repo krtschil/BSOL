@@ -271,6 +271,7 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 		},
 	});
 	loadScript(context, "js/ranking.mjs");
+	const individualRole = context.getPlayerAndRole;
 	Object.assign(context, {
 		g_scorecardContext: [],
 		setBars(cells, value, column) {
@@ -329,6 +330,41 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 	assert.equal(impResultRow.cells[13].style.display, "none");
 	assert.equal(matchPointsNSHeader.style.display, "none");
 	assert.equal(matchPointsEWHeader.style.display, "none");
+
+	context.g_eventType = "Individual";
+	context.g_scoring = "MatchPoints";
+	context.g_travellers = {event:{event_type:"INDIVIDUAL",participants:{pair:[1,2,3,4].map(number => ({
+		pair_number:number, player:[{player_name:"Player "+number}],
+	}))}}};
+	context.getPlayerAndRole = individualRole;
+	const individualInfo = {...info,pair_number:1};
+	const individualBoards = [
+		{board_no:1,traveller_line:[{...line,played_by:"N",
+			player_numbers:{N:2,S:1,E:3,W:4},player_match_points:{N:6.567,S:1.5,E:3.433,W:3.433}}]},
+		{board_no:2,traveller_line:[{...line,played_by:"W",
+			player_numbers:{N:2,S:3,E:1,W:4},player_match_points:{N:6.567,S:6.567,E:3,W:3.433}}]},
+	];
+	for (const sorted of [true,false]) {
+		context.setupScorecard2(table,stable,individualBoards,individualInfo,{singleWinner:true},4,sorted);
+		const first = table.rows.find(row=>String(row.cells[0]?.innerHTML)==="1");
+		const second = table.rows.find(row=>String(row.cells[0]?.innerHTML)==="2");
+		assert.ok(first && second);
+		assert.equal(first.cells[1].textContent,"Partner: Player 2\nPlayer 3 (E) & Player 4 (W)");
+		assert.equal(second.cells[1].textContent,"Partner: Player 4\nPlayer 2 (N) & Player 3 (S)");
+		assert.ok(first.cells.every(cell=>cell.style.borderBottom==="1px solid #cccccc"));
+		assert.ok(second.cells.every(cell=>cell.style.borderBottom==="1px solid #cccccc"));
+		assert.equal(first.cells[12].textContent,"1.5");
+		assert.equal(second.cells[13].textContent,"3.0");
+		assert.equal(first.cells[14].innerHTML,"15%");
+		assert.equal(second.cells[14].innerHTML,"30%");
+	}
+	context.language = "de";
+	context.setupScorecard2(table,stable,individualBoards,individualInfo,{singleWinner:true},4,false);
+	assert.equal(table.rows.find(row=>String(row.cells[0]?.innerHTML)==="1").cells[1].textContent,
+		"Partner: Player 2\nPlayer 3 (O) & Player 4 (W)");
+	context.language = "en";
+	context.g_eventType = "Paarturnier";
+	delete context.g_travellers;
 	assert.equal(Number(impResultRow.cells[14].innerHTML), 3.433);
 	assert.equal(impResultRow.cells[12].style.backgroundColor, undefined);
 	assert.equal(impResultRow.cells[13].style.backgroundColor, undefined);

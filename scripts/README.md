@@ -20,7 +20,8 @@ metadata (`u`), participants (`t`), ranking (`p`), play results (`r`) and board
 deals (`b`). The converter checks table boundaries and markers, then uses the
 same result conversion as for individual DBF files. It takes the tournament
 date from `DATUM`, not the DBF header's last-update date. The format is detected
-from the play table (pairs or teams); an optional `--mode` must agree.
+from the play table and tournament metadata (pairs, teams or individual);
+an optional `--mode` must agree.
 Pair exports support matchpoints with `WERTUNG=0` (one combined ranking) and
 `WERTUNG=1`. For `WERTUNG=1`, a nonzero `SCRAM_NACH` identifies a scrambled
 Mitchell with one combined ranking despite the pairs' starting NS/EW directions;
@@ -36,6 +37,21 @@ Existing official rankings are preserved; partial rankings, missing awards or
 penalties in a reconstructed direction cause an error rather than a guessed result.
 For `WERTUNG=1` exports, BSOL displays the complete ranking totals, including
 awards, while traveller results and PBN deals still exclude unplayed boards.
+
+Individual exports (`T_FORM=3`) use the four `N`/`E`/`S`/`W` player numbers
+instead of the table's temporary pair numbers. The `MPS_NS`, `MPS_S`, `MPS_EW`
+and `MPS_W` fields supply North, South, East and West's own matchpoints.
+The official individual ranking is retained. JSON uses `event_type: INDIVIDUAL`
+with one name per participant and `player_numbers` / `player_match_points`
+on each traveller line. USEBIO XML writes native `PLAYER` participants and
+`N_PLAYER_NUMBER` / `S_PLAYER_NUMBER` / `E_PLAYER_NUMBER` / `W_PLAYER_NUMBER`;
+seat-specific MP overrides are preserved in BSOL `NOTES`.
+BSOL shows a single player ranking and individual scorecards with each board's
+partner and opponents. Seats and declarer/defender roles are determined from the
+stored movement, without requiring a fixed partner or manually selected direction.
+The separate DBF invocation supports this format via `--mode individual`.
+Unknown/repeated player seats, invalid MPs and missing official individual
+rankings are rejected explicitly.
 
 The output is `traveller.json`, `traveller.xml` and `traveller.pbn`, using the
 basename supplied via `--output` (which must end in `.json`).

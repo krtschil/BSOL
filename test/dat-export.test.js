@@ -275,6 +275,56 @@ with tempfile.TemporaryDirectory() as directory:
     assert xml.findtext(".//WINNER_TYPE") == "1"
     assert all(pair.findtext("DIRECTION") == "NS" for pair in xml.findall(".//PARTICIPANTS/PAIR"))
     assert output.with_suffix(".pbn").read_text().count('[Board ') == 2
+    individual_tables = dict(tables)
+    individual_tables["u"] = dbf([("T_FORM","N",1),("WERTUNG","N",1)],
+                                 [{"T_FORM":3,"WERTUNG":1}])
+    individual_tables["t"] = dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20)],
+                                 [{"P_NUMMER":n,"NAME1":"Player "+str(n)} for n in range(1,5)])
+    individual_tables["p"] = dbf([("PAARNR","I",4),("PLATZ","N",2),("PUNKTE","N",5),("PROZENT","N",5)],
+        [{"PAARNR":n,"PLATZ":n,"PUNKTE":3,"PROZENT":50} for n in range(1,5)])
+    individual_fields = r_fields + [(seat,"N",2) for seat in "NESW"] + [
+        ("MPS_S","N",5),("MPS_W","N",5)]
+    individual_rows = [
+        dict(r_rows[0],N=1,E=2,S=3,W=4,MPS_NS=2,MPS_EW=0,MPS_S=1.5,MPS_W=0.5),
+        dict(r_rows[0],BOARD=17,N=4,E=2,S=3,W=1,NS_EW="W",
+             MPS_NS=0,MPS_EW=2,MPS_S=0.5,MPS_W=1.5),
+    ]
+    individual_tables["r"] = dbf(individual_fields,individual_rows)
+    source.write_bytes(bundle(individual_tables))
+    individual = conv.convert_export(source)["event"]
+    assert individual["event_type"] == "INDIVIDUAL" and individual["winner_type"] == 1
+    assert len(individual["participants"]["pair"]) == 4
+    assert all(len(p["player"]) == 1 for p in individual["participants"]["pair"])
+    assert individual["board"][0]["traveller_line"][0]["player_numbers"] == {"N":1,"E":2,"S":3,"W":4}
+    assert individual["board"][1]["traveller_line"][0]["player_match_points"]["W"] == 1.5
+    cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
+        "--export-dat",str(source),"--mode","individual","--output",str(output)],
+        capture_output=True,text=True)
+    assert cli.returncode == 0, cli.stderr
+    assert json.loads(output.read_text())["event"] == individual
+    xml = ET.parse(output.with_suffix(".xml"))
+    assert xml.find(".//EVENT").get("EVENT_TYPE") == "INDIVIDUAL"
+    assert len(xml.findall(".//PARTICIPANTS/PLAYER")) == 4
+    assert not xml.findall(".//PARTICIPANTS/PAIR")
+    assert xml.findtext(".//TRAVELLER_LINE/N_PLAYER_NUMBER") == "1"
+    assert xml.findtext(".//TRAVELLER_LINE/S_PLAYER_NUMBER") == "3"
+    assert output.with_suffix(".pbn").read_text().count('[Board ') == 2
+    for bad in [
+        dict(individual_tables,r=dbf(individual_fields,[dict(individual_rows[0],N=99)])),
+        dict(individual_tables,r=dbf(individual_fields,[dict(individual_rows[0],N=2)])),
+        dict(individual_tables,r=r),
+        dict(individual_tables,r=dbf(individual_fields,individual_rows + individual_rows)),
+        dict(individual_tables,r=dbf(individual_fields,[dict(individual_rows[0],MPS_S=-1)])),
+        dict(individual_tables,p=p),
+        dict(individual_tables,u=dbf([("T_FORM","N",1),("WERTUNG","N",1)],[{"T_FORM":3,"WERTUNG":2}])),
+    ]:
+        source.write_bytes(bundle(bad))
+        try:
+            conv.convert_export(source)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid individual export was accepted")
     source.write_bytes(bundle(tables))
     try:
         conv.convert_export(source, "teams")
@@ -292,10 +342,10 @@ with tempfile.TemporaryDirectory() as directory:
             *inputs,"--output",str(directory/"invalid.json")],capture_output=True)
         assert cli.returncode != 0
         assert not (directory/"invalid.json").exists()
-print(json.dumps(combined))
+print(json.dumps({"combined":combined,"individual":individual}))
 `], {encoding: "utf8"});
 	assert.equal(result.status, 0, result.stderr);
-	const event = JSON.parse(result.stdout);
+	const {combined: event, individual} = JSON.parse(result.stdout);
 	const context = createContext({
 		g_travellers: {event},
 		g_hands: {boards: event.board.map(board => ({board: board.board_no}))},
@@ -315,4 +365,53 @@ print(json.dumps(combined))
 		assert.equal(pair.boardsPlayed, 2);
 		assert.equal(pair.dd.ddUnderH + pair.dd.ddOverH, 2);
 	}
+	const individualContext = createContext({
+		g_travellers: {event:individual},
+		g_hands: {boards:individual.board.map(board => ({board:board.board_no}))},
+		g_currentTraveller: individual.board[1],
+		g_sessInfo:null, g_rankInfo:null,
+		getMakeableTricksForContract: () => 8,
+		document: {getElementById: () => ({checked:true,selectedIndex:0})},
+		getTravIndex: index => index,
+	});
+	loadScript(individualContext,"js/scoring.mjs");
+	loadScript(individualContext,"js/ranking.mjs");
+	loadScript(individualContext,"js/traveller.mjs");
+	const resultRanking = individualContext.getRankingInfo();
+	assert.equal(individualContext.g_eventType,"Individual");
+	assert.equal(resultRanking.rankNS.length,4);
+	assert.equal(resultRanking.rankEW.length,0);
+	const totals = resultRanking.rankNS.map(entry => entry.plusMpts);
+	assert.deepEqual(Array.from(totals),[3.5,2,2,0.5]);
+	assert.doesNotThrow(() => individualContext.ddComparisonAll());
+	for (const player of resultRanking.rankNS) assert.equal(player.boardsPlayed,2);
+	for (let number=1;number<=4;number++) {
+		assert.equal(individualContext.getRowFromTraveller(number,1),0);
+		const info = individualContext.getPlayerInfo(number,1);
+		assert.equal(info.player1,"Player "+number);
+		assert.equal(info.player2,"");
+		assert.ok(individualContext.getTlineForPair(0,info));
+		assert.ok(individualContext.getPlayerAndRole(info,individual.board[0].traveller_line[0]).found);
+	}
+	const selected = individualContext.getPlayerInfo(1,1);
+	const firstRole = individualContext.getPlayerAndRole(selected,individual.board[0].traveller_line[0]);
+	const secondRole = individualContext.getPlayerAndRole(selected,individual.board[1].traveller_line[0]);
+	assert.equal(firstRole.partner,3);
+	assert.equal(secondRole.partner,2);
+	assert.equal(firstRole.tdirection,1);
+	assert.equal(secondRole.tdirection,2);
+	assert.equal(firstRole.first,true);
+	assert.equal(secondRole.first,true);
+	const firstLine = individual.board[0].traveller_line[0];
+	const leadRole = individualContext.getPlayerAndRole(individualContext.getPlayerInfo(2,1),firstLine);
+	const dummyRole = individualContext.getPlayerAndRole(individualContext.getPlayerInfo(3,1),firstLine);
+	const otherDefender = individualContext.getPlayerAndRole(individualContext.getPlayerInfo(4,1),firstLine);
+	assert.equal(leadRole.declarer_pair,false);
+	assert.equal(leadRole.first,true);
+	assert.equal(dummyRole.declarer_pair,true);
+	assert.equal(dummyRole.first,false);
+	assert.equal(otherDefender.declarer_pair,false);
+	assert.equal(otherDefender.first,false);
+	const optimumCell = {textContent:"",style:{}};
+	assert.doesNotThrow(() => individualContext.setIndividualPlayers(optimumCell,{},1));
 });

@@ -7,6 +7,7 @@ import { getCachedAcc } from './accuracy.mjs';
 import './import.mjs';
 import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps, substituteSuitSymbol } from './scoring.mjs';
 import { hideAllPopups, showNames, hide } from './ui-popups.mjs';
+import { isIndividual, playerSeat, sidePlayers, playerName, sideNames } from './participants.mjs';
 
 export function comparePositions(a,b)
 {
@@ -92,6 +93,8 @@ export function getSessionInfo()
 
 	if ((evtype.toUpperCase()=="TEAMS")||(evtype.toUpperCase()=="SWISS_TEAMS"))
 		g_eventType = "Teams";
+	else if (isIndividual())
+		g_eventType = "Individual";
 	else
 		g_eventType = "Paarturnier";
 
@@ -346,6 +349,26 @@ export function getRankingInfo()
 
 			if (played(tline))
 			{
+				if (isIndividual())
+				{
+					for (const seat of ["N","E","S","W"])
+					{
+						const entry = getPairObject(tline.player_numbers[seat],1,rankNS,rankEW);
+						if (!entry) throw new Error("Unknown individual player " + tline.player_numbers[seat]);
+						const score = Number(tline.player_match_points[seat]);
+						const maximum = Number(tline.ns_match_points) + Number(tline.ew_match_points);
+						entry.plusMpts += score;
+						entry.minusMpts += maximum - score;
+						const boardKey = String(i);
+						if (!entry.boardsSeen[boardKey])
+						{
+							entry.boardsSeen[boardKey] = true;
+							entry.boardsPlayed++;
+						}
+						maxPlayed = Math.max(maxPlayed,entry.boardsPlayed);
+					}
+					continue;
+				}
 					// Note nsObj and ewObj will both be from rankNS array if singleWinner event
 				var nsObj = getPairObject(pairNS,1,rankNS,rankEW);
 				var ewObj = getPairObject(pairEW,2,rankNS,rankEW);
@@ -520,14 +543,14 @@ export function getPlayerInfo(pair,direction)
 		{
 			pair_found = true;
 			player1 = pairs[i].player[0].player_name;
-			player2 = pairs[i].player[1].player_name;
+			player2 = isIndividual() ? "" : pairs[i].player[1].player_name;
 			break;
 		}
 		else if (((pairs[i].direction=="E")&&((direction==2)||singleWinner))&&pair==pairs[i].pair_number)
 		{
 			pair_found = true;
 			player1 = pairs[i].player[0].player_name;
-			player2 = pairs[i].player[1].player_name;
+			player2 = isIndividual() ? "" : pairs[i].player[1].player_name;
 			break;
 		}
 	}
@@ -596,6 +619,12 @@ export function getTlineForPair(boardIndex,info)
 	{
 		var tline = tlines[k];
 		var x = tline.ns_pair_number;
+		if (isIndividual())
+		{
+			const seat = playerSeat(tline,info.pair_number);
+			if (seat) return {direction: seat=="N" || seat=="S" ? 1 : 2, tline};
+			continue;
+		}
 
 		if (((info.pair_number==tline.ns_pair_number)&&((info.direction==1)||info.singleWinner)))
 		{
@@ -825,7 +854,8 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		var pairInfo = getPlayerInfo(pairs[i].pair,pairs[i].direction);
 
 		setClickFunctionForNames(row.cells[2],pairs[i].pair,pairs[i].direction);
-		row.cells[2].innerHTML = pairInfo.player1 + " & " + pairInfo.player2;
+		if (isIndividual()) row.cells[2].textContent = pairInfo.player1;
+		else row.cells[2].innerHTML = pairInfo.player1 + " & " + pairInfo.player2;
 		row.cells[2].style.textAlign="left";
 		row.cells[2].className = "myLink";
 
@@ -972,6 +1002,35 @@ export function ddComparisonAll()
 				for (k=0;k<tlines.length;k++)
 				{
 					var tline = tlines[k];
+					if (isIndividual())
+					{
+						const makeable = tline.tricks!=="" ?
+							getMakeableTricksForContract(j,tline.contract,tline.played_by) : -1;
+						let declarerDifference = Number(tline.tricks) - makeable;
+						const etf = document.getElementById("ETFMode");
+						if (makeable>=0 && etf?.selectedIndex==1)
+						{
+							const leadTricks = getMakeableTricksForLead(j,tline);
+							if (leadTricks!=null) declarerDifference = Number(tline.tricks) - leadTricks;
+						}
+						for (const seat of ["N","E","S","W"])
+						{
+							const data = ddNS[tline.player_numbers[seat]];
+							if (!data) throw new Error("Unknown individual player " + tline.player_numbers[seat]);
+							if (makeable<0)
+							{
+								if (played(tline)) data.ddUnknown++;
+								continue;
+							}
+							const sameSide = (seat=="N" || seat=="S") ==
+								(tline.played_by=="N" || tline.played_by=="S");
+							const difference = sameSide ? declarerDifference : -declarerDifference;
+							if (difference==0) data.ddEqualsH++;
+							else if (difference<0) data.ddUnderH++;
+							else data.ddOverH++;
+						}
+						continue;
+					}
 
 					var ddUnknown = true;
 
@@ -1213,6 +1272,21 @@ export function checkHigherScoringPairs(traveller,prow,direction)
 
 export function getPlayerAndRole(info,tline)
 {
+	if (isIndividual())
+	{
+		const seat = playerSeat(tline,info.pair_number);
+		if (!seat) return {found:false};
+		const direction = seat=="N" || seat=="S" ? 1 : 2;
+		const partnerSeat = {N:"S",S:"N",E:"W",W:"E"}[seat];
+		const declarer = tline.played_by;
+		const declarerPair = direction==1 ? declarer=="N" || declarer=="S" :
+			declarer=="E" || declarer=="W";
+		const leadSeat = {N:"E",E:"S",S:"W",W:"N"}[declarer];
+		return {found:true, tdirection:direction, declarer_pair:declarerPair,
+			first:declarerPair ? declarer==seat : leadSeat==seat,
+			opp_pair:sidePlayers(tline,direction==1 ? 2 : 1).join("/"),
+			partner:tline.player_numbers[partnerSeat], seat};
+	}
 	var prole = {};
 	var found = false;
 	var tdirection = 1;
@@ -1314,7 +1388,8 @@ export function setupRanking(keepScrollSetting)
 			table.rows[0].cells[2].textContent = "Players";
 	}
 
-	table.rows[0].cells[1].textContent = g_eventType=="Teams" ? "Team" : (language=="de" ? "Paar" : "Pair");
+	table.rows[0].cells[1].textContent = g_eventType=="Teams" ? "Team" :
+		isIndividual() ? (language=="de" ? "Nr." : "No.") : (language=="de" ? "Paar" : "Pair");
 
 	while (rows.length>1) table.deleteRow(-1);
 	while (rows[0].cells.length>5) rows[0].deleteCell(3);
@@ -1569,6 +1644,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 	var mPlayer2 = info.player2.trim().split(" ");
 	if (mPlayer2.length>1) mPlayer2 = mPlayer2[0] + " " + mPlayer2[1].charAt(0); else mPlayer2 = mPlayer2[0];
+	if (isIndividual()) mPlayer2 = "Partner";
 
 	if (sortedBoards) upperLimit =1; else upperLimit = 5;
 
@@ -1668,6 +1744,8 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									else
 										str = "Passed, or no contract available";
 							}
+							if (isIndividual() && n==1)
+								str = language=="de" ? "Dummy - Partner ist Alleinspieler" : "Dummy - partner declares";
 
 							row.cells[0].innerHTML = "<span style=\"font-weight:600;\">" + str + "</span>";
 							srow.cells[0].innerHTML = "<span style=\"font-weight:bold;\">" + str + "</span>";
@@ -1712,7 +1790,8 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								if (g_hands.direction==1) oppDir = 2; else oppDir = 1;
 
-								oppInfo = getPlayerInfo(opp_pair,oppDir);
+								oppInfo = isIndividual() ? sideNames(tline,tdirection==1 ? 2 : 1) :
+									getPlayerInfo(opp_pair,oppDir);
 
 								var p1 = oppInfo.player1.trim().split(" ");
 								if (p1.length > 1) 
@@ -1726,7 +1805,14 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								else
 									p2 = p2[0];
 
-								if (sortedBoards)
+								if (isIndividual())
+								{
+									row.cells[1].textContent = "Partner: " +
+										playerName(prole.partner) + " (" + prole.partner + ")\n" +
+										opp_pair + " (" + p1 + " & " + p2 + ")";
+									row.cells[1].style.whiteSpace = "pre-line";
+								}
+								else if (sortedBoards)
 									//row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1[0] + " & " + p2[0] + ")";
 									row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1 + " & " + p2 + ")";
 								else
@@ -1796,6 +1882,12 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								}
 
 								if ((tdirection==2)&&(g_eventType!="Teams")) value = 100 - value;
+								if (isIndividual())
+								{
+									const personalPoints = Number(tline.player_match_points[prole.seat]);
+									value = 100 * personalPoints / (nspts + ewpts);
+									row.cells[(tdirection==1 ? 11 : 12)+g_ofs].textContent = personalPoints.toFixed(1);
+								}
 
 								sumOfPercent = sumOfPercent + value;
 
@@ -2348,6 +2440,7 @@ export function setupScorecard(keepScrollSetting)
 	{
 		$("#player_direction").hide();
 	}
+	if (isIndividual()) $("#player_direction").hide();
 
 	while (srows.length>1) stable.deleteRow(-1);
 
@@ -2356,7 +2449,9 @@ export function setupScorecard(keepScrollSetting)
 
 	var boards = g_travellers.event.board;
 
-	document.getElementById("scPlayerNames2").textContent = info.player1 + " & " + info.player2 + " - " + dirStr + g_hands.pair_number;
+	document.getElementById("scPlayerNames2").textContent = isIndividual() ?
+		info.player1 + " - " + (language=="de" ? "Spieler " : "Player ") + g_hands.pair_number :
+		info.player1 + " & " + info.player2 + " - " + dirStr + g_hands.pair_number;
 
 	var etfRange = 0;
 

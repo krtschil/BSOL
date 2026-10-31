@@ -36,6 +36,9 @@ def traveller(parent, line, scoring, teams=False, direction=None):
     node = ET.SubElement(parent, "TRAVELLER_LINE")
     if teams:
         element(node, "DIRECTION", direction)
+    elif line.get("player_numbers"):
+        for seat, number in line["player_numbers"].items():
+            element(node, f"{seat}_PLAYER_NUMBER", number)
     else:
         for side in ("ns", "ew"):
             element(node, f"{side.upper()}_PAIR_NUMBER", line[f"{side}_pair_number"])
@@ -55,7 +58,9 @@ def traveller(parent, line, scoring, teams=False, direction=None):
         }[scoring]
         for side in ("ns", "ew"):
             element(node, f"{side.upper()}_{suffix}", line[f"{side}_match_points"])
-    keys = ["lindata", "ns_score", "ew_score", "round"]
+    keys = ["lindata", "ns_score", "ew_score", "round", "player_match_points"]
+    if line.get("player_numbers"):
+        keys += ["ns_pair_number", "ew_pair_number"]
     if teams:
         keys += ["ns_pair_number", "ew_pair_number", "ns_match_points", "ew_match_points"]
     notes(node, line, keys)
@@ -64,6 +69,7 @@ def traveller(parent, line, scoring, teams=False, direction=None):
 def to_xml(result):
     event = result["event"]
     teams = event["event_type"] == "TEAMS"
+    individual = event["event_type"] == "INDIVIDUAL"
     scoring = event["board_scoring_method"]
     root = ET.Element("USEBIO", Version="1.2")
     node = ET.SubElement(root, "EVENT", EVENT_TYPE=event["event_type"])
@@ -76,8 +82,10 @@ def to_xml(result):
     counts = Counter()
     for board in event["board"]:
         participants = {
-            str(line[f"{side}_pair_number"])
-            for line in board["traveller_line"] for side in ("ns", "ew")
+            str(number)
+            for line in board["traveller_line"]
+            for number in (line["player_numbers"].values() if individual else
+                           [line[f"{side}_pair_number"] for side in ("ns", "ew")])
         }
         counts.update(participants)
     element(node, "BOARDS_PLAYED", max(counts.values(), default=0))
@@ -100,6 +108,9 @@ def to_xml(result):
     for pair in event["participants"]["pair"]:
         if teams:
             participant = ET.SubElement(participants, "TEAM", TEAM_ID=str(pair["pair_number"]))
+        elif individual:
+            participant = ET.SubElement(participants, "PLAYER")
+            element(participant, "PLAYER_NUMBER", pair["pair_number"])
         else:
             participant = ET.SubElement(participants, "PAIR")
             element(participant, "PAIR_NUMBER", pair["pair_number"])
@@ -117,7 +128,8 @@ def to_xml(result):
             ] or players
             notes(participant, pair, ("player", "team_points"))
         for player in players:
-            element(ET.SubElement(participant, "PLAYER"), "PLAYER_NAME", player["player_name"])
+            element(participant if individual else ET.SubElement(participant, "PLAYER"),
+                    "PLAYER_NAME", player["player_name"])
 
     if not teams:
         for board in event["board"]:

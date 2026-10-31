@@ -12,6 +12,7 @@ import sys
 from collections import defaultdict
 from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from math import isfinite
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from usebio import imps, write_outputs
@@ -158,7 +159,11 @@ def convert_export(path, mode=None, pbn_output=None):
         play = read_dbf(paths["r"])
         if not play:
             raise ValueError("Export contains no active play records")
-        if "CONTRACT_H" in play[0] and "CONTRACT_V" in play[0]:
+        if str(metadata[0].get("T_FORM", "")).strip() == "3":
+            detected = "individual"
+            if not all(key in play[0] for key in ("N", "S", "E", "W", "MPS_S", "MPS_W")):
+                raise ValueError("Missing individual player seats or matchpoints")
+        elif "CONTRACT_H" in play[0] and "CONTRACT_V" in play[0]:
             detected = "teams"
         elif "PAIRNS" in play[0] and "PAIREW" in play[0] and "CONTRACT" in play[0]:
             detected = "pairs"
@@ -168,6 +173,10 @@ def convert_export(path, mode=None, pbn_output=None):
             raise ValueError(f"Export contains {detected} data, not {mode}")
         if detected == "teams":
             result = convert_teams(paths["r"], paths["t"], paths["p"])
+        elif detected == "individual":
+            if str(metadata[0].get("WERTUNG", "")).strip() not in ("0", "1"):
+                raise ValueError("Only matchpoint individual DAT exports (WERTUNG=0 or 1) are supported")
+            result = convert_individual(paths["r"], paths["t"], paths["p"])
         else:
             scoring = str(metadata[0].get("WERTUNG", "")).strip()
             if scoring not in ("0", "1"):
@@ -373,6 +382,51 @@ def play_line(row):
         result["lead"] = ""
         result["tricks"] = ""
     return result
+
+
+def convert_individual(play_path, participants_path, results_path):
+    participants = participant_map(participants_path)
+    for participant in participants.values():
+        if not participant["player"][0]["player_name"] or participant["player"][1]["player_name"]:
+            raise ValueError(f"Expected one name for individual player {participant['pair_number']}")
+        participant["player"] = participant["player"][:1]
+    enrich_participants(participants, results_path)
+    for participant in participants.values():
+        if any(participant[key] == "" for key in ("place", "total_score", "percentage")):
+            raise ValueError(f"Missing official individual ranking for player {participant['pair_number']}")
+    boards = defaultdict(list)
+    seen = set()
+    for row in read_dbf(play_path):
+        board = int(row.get("BOARD") or 0)
+        if board <= 0:
+            continue
+        boards[board]
+        if not (str(row.get("CONTRACT", "")).strip() or str(row.get("RESULT", "")).strip()):
+            continue
+        numbers = {seat: int(row.get(seat) or 0) for seat in "NESW"}
+        if len(set(numbers.values())) != 4 or any(number not in participants for number in numbers.values()):
+            raise ValueError(f"Invalid individual player seats on board {board}")
+        for player in numbers.values():
+            if (board, player) in seen:
+                raise ValueError(f"Duplicate individual result for player {player} on board {board}")
+            seen.add((board, player))
+        line = play_line(row)
+        line["player_numbers"] = numbers
+        line["player_match_points"] = {
+            "N": number(row["MPS_NS"]), "E": number(row["MPS_EW"]),
+            "S": number(row["MPS_S"]), "W": number(row["MPS_W"]),
+        }
+        if any(not isinstance(score, (int, float)) or not isfinite(score) or score < 0
+               for score in line["player_match_points"].values()):
+            raise ValueError(f"Invalid individual matchpoints on board {board}")
+        line["round"] = number(row.get("ROUND"))
+        boards[board].append(line)
+    return {"event": {
+        "event_type": "INDIVIDUAL", "board_scoring_method": "MATCH_POINTS",
+        "winner_type": 1, "ranking_method": "MATCH_POINTS",
+        "participants": {"pair": [participants[key] for key in sorted(participants)]},
+        "board": [{"board_no": key, "traveller_line": boards[key]} for key in sorted(boards)],
+    }}
 
 
 def convert(play_path, participants_path, results_path, winner_type=1):
@@ -688,7 +742,7 @@ def main():
         "--results-dbf", help="Ranking/result DBF"
     )
     parser.add_argument(
-        "--mode", choices=("pairs", "teams"),
+        "--mode", choices=("pairs", "teams", "individual"),
         help="Tournament format (auto-detected for .dat; otherwise defaults to pairs)",
     )
     parser.add_argument(
@@ -718,7 +772,9 @@ def main():
     else:
         if not all(dbf_inputs):
             parser.error("Provide --export-dat or all three DBF inputs")
-        converter = convert_teams if args.mode == "teams" else convert
+        converter = convert_teams if args.mode == "teams" else (
+            convert_individual if args.mode == "individual" else convert
+        )
         result = converter(
             INPUT_DIRECTORIES["play_dbf"] / args.play_dbf,
             INPUT_DIRECTORIES["participants_dbf"] / args.participants_dbf,
@@ -728,7 +784,7 @@ def main():
     outputs = f"{args.output}, {xml_output}" + (f", {pbn_output}" if args.export_dat else "")
     print(f"wrote {outputs}: {len(result['event']['board'])} boards, "
           f"{len(result['event']['participants']['pair'])} "
-          f"{'teams' if result['event']['event_type'] == 'TEAMS' else 'pairs'}")
+          f"{'players' if result['event']['event_type'] == 'INDIVIDUAL' else 'teams' if result['event']['event_type'] == 'TEAMS' else 'pairs'}")
 
 
 if __name__ == "__main__":

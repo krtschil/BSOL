@@ -1,5 +1,6 @@
 /* UI localization */
 import { showBoardStatistics } from "./board-statistics.mjs";
+import { isIndividual } from './participants.mjs';
 
 export function changeLanguage(l) {
 	switch(l)
@@ -112,7 +113,8 @@ export function changeLanguage(l) {
 
 			document.getElementById("scoring_summary1").textContent = "Zusammenfassung";
 
-			document.getElementById("ascorecard").textContent = typeof g_eventType!="undefined" && g_eventType=="Teams" ? "Einzelergebnisse" : "Paaranalyse";
+			document.getElementById("ascorecard").textContent = typeof g_eventType!="undefined" && g_eventType=="Teams" ?
+				"Einzelergebnisse" : isIndividual() ? "Spieleranalyse" : "Paaranalyse";
 
 			document.getElementById("video-i").textContent = "Erklärvideo";
 			document.getElementById("clipboard").textContent = "Boards aus Zwischenablage";

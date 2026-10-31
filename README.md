@@ -129,6 +129,12 @@ such as `A5050`, the XML omits `<CONTRACT>` to remain compatible with
 Bridgewebs' Results Analysis. See [`scripts/README.md`](scripts/README.md) for
 converter usage, the XML extension details, and format limitations.
 
+Individual DAT tournaments are supported with a single player ranking and
+per-player analysis. Each board retains all four players and their own
+matchpoints; scorecards show the changing partner and opponents, and determine
+the player's seat and role automatically. XML uses USEBIO's native individual
+participants and player-number fields.
+
 ### Handling of content in .pbn files
 The `[Result ` section of a .pbn file can optionally contain plain text enclosed in curly brackets. 
 If present the text contained within is displayed at the bottom of the respective board in a highlighted box.

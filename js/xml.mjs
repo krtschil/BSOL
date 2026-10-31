@@ -72,9 +72,12 @@ export function convertXML(data)
 		json.event.event_type = "Teams";
 	else if (json.event.event_type=="SWISS_TEAMS")
 		json.event.event_type = "Swiss_Teams";
+	else if (json.event.event_type=="INDIVIDUAL")
+		json.event.event_type = "Individual";
 	else
 		json.event.event_type = "Pairs";
 	var teams = (json.event.event_type=="Teams")||(json.event.event_type=="Swiss_Teams");
+	var individual = json.event.event_type=="Individual";
 	readBsolNotes(evNode, json.event, ["ranking_method", "cross_table", "team_matches", "butler"]);
 	var boardMetadata = {};
 	readBsolNotes(evNode, boardMetadata, ["board_datums"]);
@@ -128,7 +131,7 @@ export function convertXML(data)
 	participants.pair = pair;
 	
 	var participants = evNode.getElementsByTagName("PARTICIPANTS")[0];
-	var pnodes = participants.getElementsByTagName(teams ? "TEAM" : "PAIR");
+	var pnodes = participants.getElementsByTagName(individual ? "PLAYER" : teams ? "TEAM" : "PAIR");
 	if (teams && pnodes.length==0)
 		pnodes = participants.getElementsByTagName("PAIR");
 	
@@ -151,7 +154,7 @@ export function convertXML(data)
 		}
 		
 		cpair.pair_number = teams && cpnode.nodeName=="TEAM" ?
-			getAttribute(cpnode,"TEAM_ID") : getNodeValueByName(cpnode,"PAIR_NUMBER");
+			getAttribute(cpnode,"TEAM_ID") : getNodeValueByName(cpnode,individual ? "PLAYER_NUMBER" : "PAIR_NUMBER");
 		cpair.place = getNodeValueByName(cpnode,"PLACE").replace("=","");
 		cpair.percentage = getNodeValueByName(cpnode,"PERCENTAGE");
 		if (cpair.percentage=="") cpair.percentage = "-";	// As used by Scorebridge to indicate percentage N/A
@@ -161,8 +164,11 @@ export function convertXML(data)
 		var players = [];
 		players[0] = {};
 		players[0].player_name = getNodeValue(playerNodes[0]);
-		players[1] = {};
-		players[1].player_name = getNodeValue(playerNodes[1]);
+		if (!individual)
+		{
+			players[1] = {};
+			players[1].player_name = getNodeValue(playerNodes[1]);
+		}
 		cpair.player = players;
 		readBsolNotes(cpnode, cpair, ["player", "team_points"]);
 		if (teams && !Object.prototype.hasOwnProperty.call(cpair, "team_points"))
@@ -269,6 +275,18 @@ export function convertXML(data)
 			tline.played_by = getNodeValueByName(cnTline,"PLAYED_BY");
 			tline.tricks = getNodeValueByName(cnTline,"TRICKS");
 			tline.ew_pair_number = getNodeValueByName(cnTline,"EW_PAIR_NUMBER")
+			if (individual)
+			{
+				tline.player_numbers = {};
+				for (const seat of ["N","E","S","W"])
+					tline.player_numbers[seat] = getNodeValueByName(cnTline,seat + "_PLAYER_NUMBER");
+				tline.ns_pair_number = tline.player_numbers.N;
+				tline.ew_pair_number = tline.player_numbers.E;
+				tline.player_match_points = {
+					N: tline.ns_match_points, S: tline.ns_match_points,
+					E: tline.ew_match_points, W: tline.ew_match_points,
+				};
+			}
 			if (teams && cnode.parentNode.nodeName=="MATCH")
 			{
 				var match = cnode.parentNode;
@@ -280,7 +298,8 @@ export function convertXML(data)
 				tline.round = Number(getNodeValueByName(match,"ROUND_NUMBER"));
 			}
 			readBsolNotes(cnTline, tline, ["ns_score", "ew_score", "round",
-				"ns_pair_number", "ew_pair_number", "ns_match_points", "ew_match_points"]);
+				"ns_pair_number", "ew_pair_number", "ns_match_points", "ew_match_points",
+				"player_match_points"]);
 			tlines.push(tline);
 		}
 	}

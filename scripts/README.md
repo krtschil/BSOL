@@ -37,6 +37,12 @@ Existing official rankings are preserved; partial rankings, missing awards or
 penalties in a reconstructed direction cause an error rather than a guessed result.
 For `WERTUNG=1` exports, BSOL displays the complete ranking totals, including
 awards, while traveller results and PBN deals still exclude unplayed boards.
+Pair tournaments split across multiple groups are also supported when the
+metadata identifies one shared tournament and the official ranking contains
+the combined results. Pair numbers are qualified with their group (for example
+`A-1` and `B-1`) to keep pairs with the same source number distinct. Traveller
+sections are mapped to groups in metadata ID order; multi-group team and
+individual exports are not supported.
 
 Individual exports (`T_FORM=3`) use the four `N`/`E`/`S`/`W` player numbers
 instead of the table's temporary pair numbers. The `MPS_NS`, `MPS_S`, `MPS_EW`

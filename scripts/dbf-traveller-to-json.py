@@ -154,8 +154,15 @@ def convert_export(path, mode=None, pbn_output=None):
             paths[tag] = Path(directory) / f"{tag}.dbf"
             paths[tag].write_bytes(data)
         metadata = read_dbf(paths["u"])
-        if len(metadata) != 1:
-            raise ValueError("Export must contain exactly one active tournament record")
+        if not metadata:
+            raise ValueError("Export contains no active tournament metadata")
+        if len(metadata) > 1:
+            groups = sorted({str(row.get("GRUPPE", "")).strip() for row in metadata})
+            if len(groups) != len(metadata) or "" in groups:
+                raise ValueError("Multi-group export has missing or duplicate group metadata")
+            tournament_ids = {row.get("ZUMTURNIER") for row in metadata}
+            if len(tournament_ids) != 1:
+                raise ValueError("Multi-group export metadata refers to different tournaments")
         play = read_dbf(paths["r"])
         if not play:
             raise ValueError("Export contains no active play records")
@@ -171,26 +178,33 @@ def convert_export(path, mode=None, pbn_output=None):
             raise ValueError("Unsupported export play table schema")
         if mode and mode != detected:
             raise ValueError(f"Export contains {detected} data, not {mode}")
+        if len(metadata) > 1 and detected != "pairs":
+            raise ValueError(f"Multi-group {detected} exports are not supported")
         if detected == "teams":
             result = convert_teams(paths["r"], paths["t"], paths["p"])
         elif detected == "individual":
+            if len(metadata) != 1:
+                raise ValueError("Multi-group individual exports are not supported")
             if str(metadata[0].get("WERTUNG", "")).strip() not in ("0", "1"):
                 raise ValueError("Only matchpoint individual DAT exports (WERTUNG=0 or 1) are supported")
             result = convert_individual(paths["r"], paths["t"], paths["p"])
         else:
-            scoring = str(metadata[0].get("WERTUNG", "")).strip()
-            if scoring not in ("0", "1"):
-                raise ValueError(f"Unsupported pair export WERTUNG={scoring!r}; supported values: 0, 1 (matchpoints)")
-            # A scrambled Mitchell combines both starting directions in one ranking.
-            scrambled = int(metadata[0].get("SCRAM_NACH") or 0) > 0
-            winner_type = 2 if scoring == "1" and not scrambled else 1
-            result = convert(
-                paths["r"], paths["t"], paths["p"],
-                winner_type=winner_type,
-            )
-            if scoring == "1":
-                if result["event"]["winner_type"] == 2:
+            if len(metadata) > 1:
+                result = convert_grouped_pairs(paths["r"], paths["t"], paths["p"], metadata)
+            else:
+                scoring = str(metadata[0].get("WERTUNG", "")).strip()
+                if scoring not in ("0", "1"):
+                    raise ValueError(f"Unsupported pair export WERTUNG={scoring!r}; supported values: 0, 1 (matchpoints)")
+                # A scrambled Mitchell combines both starting directions in one ranking.
+                scrambled = int(metadata[0].get("SCRAM_NACH") or 0) > 0
+                winner_type = 2 if scoring == "1" and not scrambled else 1
+                result = convert(
+                    paths["r"], paths["t"], paths["p"],
+                    winner_type=winner_type,
+                )
+                if scoring == "1" and result["event"]["winner_type"] == 2:
                     complete_pair_rankings(result["event"], metadata[0], play)
+            if any(str(row.get("WERTUNG", "")).strip() == "1" for row in metadata):
                 result["event"]["ranking_method"] = "MATCH_POINTS"
         event_date = metadata[0].get("DATUM", "")
         if event_date:
@@ -426,6 +440,89 @@ def convert_individual(play_path, participants_path, results_path):
         "winner_type": 1, "ranking_method": "MATCH_POINTS",
         "participants": {"pair": [participants[key] for key in sorted(participants)]},
         "board": [{"board_no": key, "traveller_line": boards[key]} for key in sorted(boards)],
+    }}
+
+
+def convert_grouped_pairs(play_path, participants_path, results_path, metadata):
+    ordered = sorted(metadata, key=lambda row: int(row.get("ID") or 0))
+    groups = [str(row["GRUPPE"]).strip() for row in ordered]
+    scoring_methods = {str(row.get("WERTUNG", "")).strip() for row in metadata}
+    if len(scoring_methods) != 1 or scoring_methods.pop() not in ("0", "1"):
+        raise ValueError("Multi-group pair exports must use the same supported matchpoint scoring")
+    if len({row.get("DATUM") for row in metadata}) != 1:
+        raise ValueError("Multi-group tournament metadata contains inconsistent dates")
+    section_groups = {str(index): group for index, group in enumerate(groups, 1)}
+    participant_rows = read_dbf(participants_path)
+    result_rows = read_dbf(results_path)
+    group_pairs = {}
+    participants = {}
+    for row in participant_rows:
+        group = str(row.get("GRUPPE", "")).strip()
+        source_number = int(row.get("P_NUMMER") or 0)
+        if not source_number or not (row.get("NAME1") or row.get("NAME2")):
+            continue
+        if group not in groups:
+            raise ValueError(f"Participant belongs to unknown group {group!r}")
+        source_key = (group, source_number)
+        if source_key in group_pairs:
+            raise ValueError(f"Duplicate participant {source_number} in group {group}")
+        pair_number = f"{group}-{source_number}"
+        group_pairs[source_key] = pair_number
+        participants[pair_number] = {
+            "pair_number": pair_number, "place": "", "total_score": "", "percentage": "",
+            "direction": "N", "player": [
+                {"player_name": row["NAME1"]}, {"player_name": row["NAME2"]},
+            ],
+        }
+    if not participants:
+        raise ValueError("Multi-group export contains no named pairs")
+    for row in result_rows:
+        group = str(row.get("GRUPPE", "")).strip()
+        source_number = int(row.get("PAARNR") or 0)
+        pair_number = group_pairs.get((group, source_number))
+        if pair_number is None:
+            raise ValueError(f"Ranking references unknown pair {source_number} in group {group!r}")
+        participants[pair_number].update({
+            "place": str(number(row.get("PLATZ"))),
+            "total_score": str(number(row.get("PUNKTE"))),
+            "percentage": str(number(row.get("PROZLANG") or row.get("PROZENT"))),
+        })
+    if any(not entry["place"] for entry in participants.values()):
+        raise ValueError("Multi-group ranking is missing one or more pairs")
+    grouped = defaultdict(list)
+    all_boards = set()
+    for row in read_dbf(play_path):
+        board = int(row.get("BOARD") or 0)
+        if board <= 0:
+            continue
+        all_boards.add(board)
+        section = str(row.get("SECTION", "")).strip()
+        group = section_groups.get(section)
+        if group is None:
+            raise ValueError(f"Unknown section {section!r} in multi-group traveller")
+        ns = group_pairs.get((group, int(row.get("PAIRNS") or 0)))
+        ew = group_pairs.get((group, int(row.get("PAIREW") or 0)))
+        contract = str(row.get("CONTRACT", "")).strip()
+        outcome = str(row.get("RESULT", "")).strip()
+        if ns is None or ew is None:
+            if contract or outcome:
+                raise ValueError(f"Played traveller line references an unknown pair in group {group}")
+            continue
+        if contract or outcome:
+            normalized = dict(row, PAIRNS=ns, PAIREW=ew)
+            grouped[board].append(play_line(normalized))
+    return {"event": {
+        "match_scoring_method": "IMPS", "event_type": "PAIRS",
+        "board_scoring_method": "MATCH_POINTS", "winner_type": 1,
+        "participants": {"pair": sorted(
+            participants.values(),
+            key=lambda entry: (
+                float(entry["place"]) if entry["place"].replace(".", "", 1).isdigit() else float("inf"),
+                entry["pair_number"],
+            ),
+        )},
+        "board": [{"board_no": board, "traveller_line": grouped.get(board, [])}
+                  for board in sorted(all_boards)],
     }}
 
 

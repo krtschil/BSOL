@@ -325,6 +325,69 @@ with tempfile.TemporaryDirectory() as directory:
             pass
         else:
             raise AssertionError("Invalid individual export was accepted")
+    group_tables = {
+        "u": dbf([("ID","I",4),("T_FORM","N",1),("DATUM","D",8),
+                  ("ZUMTURNIER","I",4),("GRUPPE","C",1),("GRUPPEN","N",1),
+                  ("WERTUNG","N",1)],
+                 [{"ID":100,"T_FORM":1,"DATUM":"20220723","ZUMTURNIER":100,
+                   "GRUPPE":"A","GRUPPEN":2,"WERTUNG":1},
+                  {"ID":101,"T_FORM":1,"DATUM":"20220723","ZUMTURNIER":100,
+                   "GRUPPE":"B","GRUPPEN":2,"WERTUNG":1}]),
+        "t": dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20),
+                  ("GRUPPE","C",1),("NS","L",1)],
+                 [{"P_NUMMER":n,"NAME1":group+" Player "+str(n),
+                   "NAME2":group+" Partner "+str(n),"GRUPPE":group,"NS":True}
+                  for group in ("A","B") for n in (1,2)]),
+        "p": dbf([("PLATZ","N",2),("PAARNR","N",2),("PUNKTE","N",5),
+                  ("PROZENT","N",5),("PROZLANG","N",5),("GRUPPE","C",1)],
+                 [{"PLATZ":place,"PAARNR":pair,"PUNKTE":score,"PROZENT":percent,
+                   "PROZLANG":percent,"GRUPPE":group}
+                  for place,pair,score,percent,group in
+                 [(1,1,4,100,"B"),(2,1,3,75,"A"),(3,2,2,50,"B"),(4,2,1,25,"A")]]),
+        "r": dbf(r_fields+[("SECTION","N",1),("SCOREGRUPP","N",1)],
+                 [dict(r_rows[0],BOARD=1,PAIRNS=1,PAIREW=2,MPS_NS=2,MPS_EW=0,
+                       SECTION=1,SCOREGRUPP=1),
+                  dict(r_rows[0],BOARD=1,PAIRNS=1,PAIREW=2,MPS_NS=0,MPS_EW=2,
+                       SECTION=2,SCOREGRUPP=1),
+                  dict(BOARD=2,PAIRNS=10,PAIREW=2,CONTRACT="",RESULT="",MPS_NS=0,
+                       MPS_EW=2,SECTION=2,SCOREGRUPP=0)]),
+        "b": dbf([("BOARD","N",3),("DEAL","C",67)],[{"BOARD":1,"DEAL":deal}]),
+    }
+    source.write_bytes(bundle(group_tables))
+    joint = conv.convert_export(source)["event"]
+    assert joint["event_type"] == "PAIRS" and joint["winner_type"] == 1
+    assert joint["ranking_method"] == "MATCH_POINTS"
+    assert [pair["pair_number"] for pair in joint["participants"]["pair"]] == ["B-1","A-1","B-2","A-2"]
+    assert [pair["place"] for pair in joint["participants"]["pair"]] == ["1","2","3","4"]
+    assert joint["participants"]["pair"][0]["player"][0]["player_name"] == "B Player 1"
+    assert len(joint["board"]) == 2 and len(joint["board"][0]["traveller_line"]) == 2
+    assert len(joint["board"][1]["traveller_line"]) == 0
+    assert {line["ns_pair_number"] for line in joint["board"][0]["traveller_line"]} == {"A-1","B-1"}
+    cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
+        "--export-dat",str(source),"--output",str(output)],capture_output=True,text=True)
+    assert cli.returncode == 0, cli.stderr
+    assert json.loads(output.read_text())["event"] == joint
+    xml = ET.parse(output.with_suffix(".xml"))
+    assert xml.findtext(".//WINNER_TYPE") == "1"
+    assert len(xml.findall(".//PARTICIPANTS/PAIR")) == 4
+    assert [pair.findtext("PAIR_NUMBER") for pair in xml.findall(".//PARTICIPANTS/PAIR")] == ["B-1","A-1","B-2","A-2"]
+    assert output.with_suffix(".pbn").read_text().count('[Board ') == 1
+    for bad_metadata in [
+        dbf([("ID","I",4),("ZUMTURNIER","I",4),("GRUPPE","C",1),("WERTUNG","N",1)],
+            [{"ID":1,"ZUMTURNIER":1,"GRUPPE":"A","WERTUNG":1},
+             {"ID":2,"ZUMTURNIER":1,"GRUPPE":"A","WERTUNG":1}]),
+        dbf([("ID","I",4),("ZUMTURNIER","I",4),("GRUPPE","C",1),("WERTUNG","N",1)],
+            [{"ID":1,"ZUMTURNIER":1,"GRUPPE":"A","WERTUNG":1},
+             {"ID":2,"ZUMTURNIER":2,"GRUPPE":"B","WERTUNG":1}]),
+    ]:
+        bad = dict(group_tables,u=bad_metadata)
+        source.write_bytes(bundle(bad))
+        try:
+            conv.convert_export(source)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid multi-group metadata was accepted")
     source.write_bytes(bundle(tables))
     try:
         conv.convert_export(source, "teams")

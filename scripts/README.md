@@ -59,10 +59,10 @@ The separate DBF invocation supports this format via `--mode individual`.
 Unknown/repeated player seats, invalid MPs and missing official individual
 rankings are rejected explicitly.
 
-The output is `traveller.json` and `traveller.xml`, using the basename supplied
-via `--output` (which must end in `.json`). A sibling `traveller.pbn` is written
-only when the export contains stored deals for boards with traveller results.
-Those deals are sorted by board number; unplayed boards are omitted.
+The output is `traveller.json`, `traveller.xml` and `traveller.pbn`, using the
+basename supplied via `--output` (which must end in `.json`).
+The PBN contains stored nonempty deals only for boards with traveller results,
+sorted by board number; unplayed boards are omitted.
 Stored hands are interpreted as N/E/S/W, with suits S/H/D/C.
 Dealer and vulnerability follow the standard board-number cycle; the tournament
 date is included when available. Invalid or duplicate deals cause conversion

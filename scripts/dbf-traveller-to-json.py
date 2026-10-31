@@ -81,7 +81,7 @@ def export_tables(path):
         header = int.from_bytes(data[offset + 8:offset + 10], "little")
         length = int.from_bytes(data[offset + 10:offset + 12], "little")
         end = offset + header + count * length
-        if header < 33 or not length or end > len(data):
+        if header < 33 or not length or end + 8 > len(data):
             raise ValueError(f"Invalid or truncated export table at byte {offset}")
         descriptor = offset + 32
         field_length = 1
@@ -93,20 +93,13 @@ def export_tables(path):
         if descriptor >= offset + header or field_length != length:
             raise ValueError(f"Invalid DBF header or record length at byte {offset}")
         marker = data[end:end + 8]
-        if marker.startswith(b"\x1a") and re.fullmatch(rb"\x1a###;[utprb]\*\*", marker):
-            table_data = data[offset:end + 1]
-            next_offset = end + 8
-            tag = chr(marker[5])
-        elif end + 7 == len(data) and re.fullmatch(rb"###;[utprb]\*\*", data[end:end + 7]):
-            table_data = data[offset:end]
-            next_offset = len(data)
-            tag = chr(data[end + 4])
-        else:
+        if not re.fullmatch(rb"\x1a###;[utprb]\*\*", marker):
             raise ValueError(f"Invalid export table marker at byte {end}: {marker!r}")
+        tag = chr(marker[5])
         if tag in tables:
             raise ValueError(f"Duplicate export table: {tag}")
-        tables[tag] = table_data
-        offset = next_offset
+        tables[tag] = data[offset:end + 1]
+        offset = end + 8
     missing = set("utprb") - tables.keys()
     if missing:
         raise ValueError(f"Missing export tables: {', '.join(sorted(missing))}")
@@ -229,9 +222,8 @@ def convert_export(path, mode=None, pbn_output=None):
                 row for row in read_dbf(paths["b"])
                 if int(row.get("BOARD") or 0) in played_boards
             ]
-            if deals:
-                pbn = deals_to_pbn(deals, result["event"].get("date"))
-                Path(pbn_output).write_text(pbn, encoding="utf-8")
+            pbn = deals_to_pbn(deals, result["event"].get("date"))
+            Path(pbn_output).write_text(pbn, encoding="utf-8")
     return result
 
 
@@ -886,7 +878,7 @@ def main():
             INPUT_DIRECTORIES["results_dbf"] / args.results_dbf,
         )
     xml_output = write_outputs(result, args.output)
-    outputs = f"{args.output}, {xml_output}"
+    outputs = f"{args.output}, {xml_output}" + (f", {pbn_output}" if args.export_dat else "")
     print(f"wrote {outputs}: {len(result['event']['board'])} boards, "
           f"{len(result['event']['participants']['pair'])} "
           f"{'players' if result['event']['event_type'] == 'INDIVIDUAL' else 'teams' if result['event']['event_type'] == 'TEAMS' else 'pairs'}")

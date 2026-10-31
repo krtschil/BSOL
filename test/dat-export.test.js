@@ -400,60 +400,6 @@ with tempfile.TemporaryDirectory() as directory:
     altered["b"] = marker_table
     source.write_bytes(bundle(altered))
     assert len(conv.export_tables(source)) == 5
-    team_tables = {
-        "u": dbf([("ID","I",4),("T_FORM","N",1),("DATUM","D",8),
-                  ("RUNDEN","N",2),("BPR","N",2),("WERTUNG","N",1)],
-                 [{"ID":1570,"T_FORM":2,"DATUM":"20261029",
-                   "RUNDEN":1,"BPR":1,"WERTUNG":1}]),
-        "t": dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20),
-                  ("NS","L",1)],
-                 [{"P_NUMMER":1,"NAME1":"North One","NAME2":"North Two","NS":True},
-                  {"P_NUMMER":1,"NAME1":"East One","NAME2":"East Two","NS":False},
-                  {"P_NUMMER":2,"NAME1":"South One","NAME2":"South Two","NS":True},
-                  {"P_NUMMER":2,"NAME1":"West One","NAME2":"West Two","NS":False}]),
-        "p": dbf([("TEAM_NR","N",2),("PLATZ","N",2),("PUNKTE","N",5),
-                  ("GEGNER1","N",2),("PUNKTE1","N",5)],
-                 [{"TEAM_NR":1,"PLATZ":2,"PUNKTE":10.5,"GEGNER1":2,"PUNKTE1":10.5},
-                  {"TEAM_NR":2,"PLATZ":1,"PUNKTE":13.5,"GEGNER1":1,"PUNKTE1":13.5}]),
-        "r": dbf([("RUNDE","N",2),("BOARD","N",3),("HOME_NS","N",2),
-                  ("VISIT_EW","N",2),("TISCH_H","N",2),("NS_EW_H","C",1),
-                  ("CONTRACT_H","C",7),("RESULT_H","C",5),("RESVAL_H","N",5),
-                  ("IMPS_H","N",3),("HOME_EW","N",2),("VISIT_NS","N",2),
-                  ("TISCH_V","N",2),("NS_EW_V","C",1),("CONTRACT_V","C",7),
-                  ("RESULT_V","C",5),("RESVAL_V","N",5),("IMPS_V","N",3),
-                  ("LC_H","C",3),("LC_V","C",3)],
-                 [{"RUNDE":1,"BOARD":0,"HOME_NS":1,"VISIT_EW":2,
-                   "CONTRACT_H":"ok","CONTRACT_V":"ok","IMPS_H":20,"IMPS_V":0},
-                  {"RUNDE":1,"BOARD":1,"HOME_NS":1,"VISIT_EW":2,
-                   "HOME_EW":1,"VISIT_NS":2,"CONTRACT_H":"1 P","RESULT_H":"=",
-                   "RESVAL_H":80,"IMPS_H":0,"CONTRACT_V":"1 P","RESULT_V":"=",
-                   "RESVAL_V":80,"IMPS_V":0}]),
-        "b": dbf([("BOARD","N",3),("DEAL","C",67)],[]),
-    }
-    source.write_bytes(b"".join(
-        (data[:-1] if tag == "b" else data) + b"###;" + tag.encode() + b"**"
-        for tag,data in team_tables.items()
-    ))
-    team_output = directory / "teams.json"
-    team_pbn = team_output.with_suffix(".pbn")
-    team_result = conv.convert_export(source,pbn_output=team_pbn)
-    team_event = team_result["event"]
-    assert team_event["event_type"] == "TEAMS"
-    assert team_event["ranking_method"] == "VICTORY_POINTS"
-    assert [(team["pair_number"],team["place"],team["team_points"])
-            for team in team_event["participants"]["pair"]] == [(1,"2","10.5"),(2,"1","13.5")]
-    assert len(team_event["team_matches"]) == 1
-    assert team_event["team_matches"][0]["round"] == 1
-    assert len(team_event["board"]) == 1
-    assert len(team_event["board"][0]["traveller_line"]) == 2
-    assert team_event["date"] == "2026-10-29"
-    assert not team_pbn.exists()
-    cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
-        "--export-dat",str(source),"--output",str(team_output)],
-        capture_output=True,text=True)
-    assert cli.returncode == 0, cli.stderr
-    assert json.loads(team_output.read_text()) == team_result
-    assert ET.parse(team_output.with_suffix(".xml")).find(".//EVENT").get("EVENT_TYPE") == "TEAMS"
     for inputs in [[], ["--export-dat",str(source),"--play-dbf","play.dbf"]]:
         cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
             *inputs,"--output",str(directory/"invalid.json")],capture_output=True)

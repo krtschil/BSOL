@@ -1807,10 +1807,15 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 
 								if (isIndividual())
 								{
+									const opponentSeats = tdirection==1 ?
+										[language=="de" ? "O" : "E","W"] : ["N","S"];
 									row.cells[1].textContent = "Partner: " +
-										playerName(prole.partner) + " (" + prole.partner + ")\n" +
-										opp_pair + " (" + p1 + " & " + p2 + ")";
+										playerName(prole.partner) + "\n" +
+										p1 + " (" + opponentSeats[0] + ") & " +
+										p2 + " (" + opponentSeats[1] + ")";
 									row.cells[1].style.whiteSpace = "pre-line";
+									for (const cell of row.cells)
+										cell.style.borderBottom = "1px solid #cccccc";
 								}
 								else if (sortedBoards)
 									//row.cells[1].innerHTML = opp_pair + dirChars + "<br>(" + p1[0] + " & " + p2[0] + ")";

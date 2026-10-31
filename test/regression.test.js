@@ -349,15 +349,20 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 		const first = table.rows.find(row=>String(row.cells[0]?.innerHTML)==="1");
 		const second = table.rows.find(row=>String(row.cells[0]?.innerHTML)==="2");
 		assert.ok(first && second);
-		assert.match(first.cells[1].textContent,/Partner: Player 2 \(2\)/);
-		assert.match(second.cells[1].textContent,/Partner: Player 4 \(4\)/);
-		assert.match(first.cells[1].textContent,/3\/4/);
-		assert.match(second.cells[1].textContent,/2\/3/);
+		assert.equal(first.cells[1].textContent,"Partner: Player 2\nPlayer 3 (E) & Player 4 (W)");
+		assert.equal(second.cells[1].textContent,"Partner: Player 4\nPlayer 2 (N) & Player 3 (S)");
+		assert.ok(first.cells.every(cell=>cell.style.borderBottom==="1px solid #cccccc"));
+		assert.ok(second.cells.every(cell=>cell.style.borderBottom==="1px solid #cccccc"));
 		assert.equal(first.cells[12].textContent,"1.5");
 		assert.equal(second.cells[13].textContent,"3.0");
 		assert.equal(first.cells[14].innerHTML,"15%");
 		assert.equal(second.cells[14].innerHTML,"30%");
 	}
+	context.language = "de";
+	context.setupScorecard2(table,stable,individualBoards,individualInfo,{singleWinner:true},4,false);
+	assert.equal(table.rows.find(row=>String(row.cells[0]?.innerHTML)==="1").cells[1].textContent,
+		"Partner: Player 2\nPlayer 3 (O) & Player 4 (W)");
+	context.language = "en";
 	context.g_eventType = "Paarturnier";
 	delete context.g_travellers;
 	assert.equal(Number(impResultRow.cells[14].innerHTML), 3.433);

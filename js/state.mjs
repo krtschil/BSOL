@@ -1,5 +1,5 @@
 export var clipBoardData;
-export var g_version = "Version: 2.1 (2026-09-03)";
+export var g_version = "Version: 2.2 (2026-11-23)";
 export var language = "de";  				// Sets the default language
 export var g_logging = false;
 export var g_credits =	"";

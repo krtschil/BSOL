@@ -2,7 +2,21 @@
 import { showBoardStatistics } from "./board-statistics.mjs";
 import { isIndividual } from './participants.mjs';
 
+function forkSourcesText(l) {
+	return l === "de" ? "GitHub-Quellen dieses Forks" : "GitHub source of this fork";
+}
+
+export function creditsForLanguage(l) {
+	return "<span style=\"font-size:12px;\"><a href=\"https://mirgo2.co.uk/bridgesolver\" target=\"_blank\">Bridge Solver Online (Original)</a>:<br><span style=\"font-weight:bold\">John Goacher</span></span><br><br><span style=\"font-size:12px;\"><a id=\"forkSourcesLink\" href=\"https://github.com/krtschil/BSOL\" target=\"_blank\">" + forkSourcesText(l) + "</a>:<br><span style=\"font-weight:bold\">Klaus Krtschil</span></span><br><br><span style=\"font-size:12px;\">Double Dummy Solver Module:<br><span style=\"font-weight:bold\">Bo Haglund</span></span>";
+}
+
 export function changeLanguage(l) {
+	if (typeof g_credits !== "undefined" && g_credits) {
+		g_credits = creditsForLanguage(l);
+		const forkSourcesLink = document.getElementById("forkSourcesLink");
+		if (forkSourcesLink)
+			forkSourcesLink.textContent = forkSourcesText(l);
+	}
 	switch(l)
 	{
 		case "de":

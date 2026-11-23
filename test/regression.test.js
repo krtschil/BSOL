@@ -495,7 +495,7 @@ test("converts PBN auctions with alert notes", () => {
 	});
 	loadScript(context, "js/scoring.mjs");
 	loadScript(context, "js/pbn.mjs");
-	const pbn = fs.readFileSync(`${root}/hands/test2.pbn`, "utf8");
+	const pbn = fs.readFileSync(`${root}/test/fixtures/test2.pbn`, "utf8");
 	const result = JSON.parse(context.pbnToJson(pbn));
 
 	assert.ok(result.boards.length > 0);
@@ -584,7 +584,7 @@ test("converts a LIN board into valid board JSON", () => {
 	loadScript(context, "js/play.mjs");
 	loadScript(context, "js/pbn.mjs");
 	loadScript(context, "js/import.mjs");
-	const lin = fs.readFileSync(`${root}/hands/4399982054.lin`, "utf8");
+	const lin = fs.readFileSync(`${root}/test/fixtures/4399982054.lin`, "utf8");
 	const result = JSON.parse(context.linToJson(lin));
 
 	assert.ok(result.boards.length > 0);

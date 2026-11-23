@@ -1862,7 +1862,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 							else if ((res.lower==0)&&(res.higher==0)) str = str + " Das war ein ganz flaches Board.";
 							else if (res.higher==0)
 							{
-								if (res.same==0) str = str + " Das war einsamer Top.";
+								if (res.same==0) str = str + " Das war ein einsamer Top.";
 								else str = str + " Das war ein geteilter Top mit " + res.same + " anderen Paaren.";
 							}
 							else if (res.lower==0)

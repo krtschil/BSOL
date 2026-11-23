@@ -1,0 +1,3 @@
+https://www.bridgewebs.com/cgi-bin/bwx/bw.cgi?pid=display_hands&deal_format=pbn&event=20261027_2&club=vanderbilt&sessid=//www.bridgewebs.com/&msec=
+
+https://www.bridgewebs.com/cgi-bin/bwx/bw.cgi?pid=display_hands&deal_format=json&event=20261027_2&club=vanderbilt&sessid=//www.bridgewebs.com/&msec=

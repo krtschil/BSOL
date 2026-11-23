@@ -217,7 +217,7 @@ export function buildPage1(data,options)
 	else
 		setOptions(defaultOptions);
 
-	g_credits = "<span style=\"font-size:12px;\"><a href=\"https://mirgo2.co.uk/bridgesolver\" target=\"_blank\">Bridge Solver Online</a>:<br><span style=\"font-weight:bold\">John Goacher</span></span><br><br><span style=\"font-size:12px;\">Double Dummy Solver Module:<br><span style=\"font-weight:bold\">Bo Haglund</span></span>";
+	g_credits = "<span style=\"font-size:12px;\"><a href=\"https://mirgo2.co.uk/bridgesolver\" target=\"_blank\">Bridge Solver Online (Original)</a>:<br><span style=\"font-weight:bold\">John Goacher</span></span><br><br><span style=\"font-size:12px;\"><a href=\"https://github.com/krtschil/BSOL\" target=\"_blank\">GitHub-Quellen dieses Forks</a>:<br><span style=\"font-weight:bold\">Klaus Krtschil</span></span><br><br><span style=\"font-size:12px;\">Double Dummy Solver Module:<br><span style=\"font-weight:bold\">Bo Haglund</span></span>";
 
 		// Make sure there is a defined "trim" function (needed for IE8 and earlier)
 	if(typeof String.prototype.trim !== 'function') {

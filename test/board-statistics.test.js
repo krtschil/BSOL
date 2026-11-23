@@ -47,6 +47,29 @@ test("language switches refresh visible statistics without opening hidden statis
 	assert.deepEqual(calls, ["en","de"]);
 });
 
+test("language switches update visible and subsequently displayed fork credits", () => {
+	const elements = new Map();
+	let visible = true;
+	const ctx = createContext({
+		g_credits: "initial credits",
+		document: {getElementById(id) {
+			if (id === "forkSourcesLink" && !visible) return null;
+			if (!elements.has(id)) elements.set(id, {style: {}, hidden: true});
+			return elements.get(id);
+		}},
+	});
+	loadScript(ctx, "js/localization.mjs");
+	ctx.changeLanguage("en");
+	assert.equal(elements.get("forkSourcesLink").textContent, "GitHub source of this fork");
+	assert.match(ctx.g_credits, />GitHub source of this fork<\/a>/);
+	visible = false;
+	ctx.changeLanguage("de");
+	assert.match(ctx.g_credits, />GitHub-Quellen dieses Forks<\/a>/);
+	visible = true;
+	ctx.changeLanguage("de");
+	assert.equal(elements.get("forkSourcesLink").textContent, "GitHub-Quellen dieses Forks");
+});
+
 test("board statistics enumerate all shapes with normalized theoretical probabilities", () => {
 	const stats = context().calculateBoardStatistics([]);
 	assert.equal(stats.distributions.length, 39);

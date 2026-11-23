@@ -88,12 +88,6 @@ video.addEventListener('click', function() {
 	window.open("Video/DD-Video.mp4", "_blank");
 });
 
-// Go to author's website
-const author = document.getElementById("author-reference-i");
-author.addEventListener('click', function() {
-	window.open("https://mirgo2.co.uk/bridgesolver/", "_blank");
-});
-
 // Open file
 const loadFile1 = document.getElementById("loadFile1");
 loadFile1.addEventListener('click', function() {

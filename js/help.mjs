@@ -248,7 +248,7 @@ export function setupGeneralHelp()
 			help = help + "<b>Legende:</b><br> ";
 			help = help + "<i>LoTT:</i> Law of total tricks: Gesetz von der Gesamtzahl der Stiche. Dies gibt an, ob und um wieviele Stiche die aktuelle Hand von diesem Gesetz abweicht (siehe <a href='https://en.wikipedia.org/wiki/Law_of_total_tricks' target='_blank'>englischer Artikel in der Wikipedia</a>).<p>&nbsp;</p>	";
 			help = help + "Boards können auf mehrere Arten eingegeben werden:<br><ul>";
-			help = help + "<li>Über 'Datei auswählen': <br>Dabei können mehrere Boards aus einer .pbn-Datei eingelesen und analysiert werden.</li>";
+			help = help + "<li>Über 'Datei auswählen': <br>Eine .pbn-, .lin- oder .dlm-Datei kann mehrere Boards enthalten. Liegen Travellerdaten als .xml oder .json vor, können die .pbn-Datei und die Travellerdatei gemeinsam ausgewählt werden.</li>";
 			help = help + "<li>Über 'Manuelle Eingabe': <br>Eine einzelne Hand kann durch Auswahl der jeweiligen Karten für jede Position eingegeben werden.</li>";
 			help = help + "<li>Über 'Boards aus Zwischenablage':<br>PBN-Daten aus anderen Quellen können hierüber durch Copy&Paste übergeben werden.</li>";
 			help = help + "<li>Mittels der Tastenkombination 'STRG-V / CMD-V' können PBN/LIN/DLM-Daten auch eingefügt werden.</li>";
@@ -264,7 +264,7 @@ export function setupGeneralHelp()
 			help = help + "<b>Legend:</b><br> ";
 			help = help + "<i>LoTT:</i> Law of total tricks: This indicates whether and by how many tricks the current hand deviates from this law (see <a href='https://en.wikipedia.org/wiki/Law_of_total_tricks'>Wikipedia</a>).<p>&nbsp;</p>	";
 			help = help + "Boards can be entered in different ways:<br><ul>";
-			help = help + "<li>'Open file': <br>Files can contain more than one board which are read and analyzed all.</li>";
+			help = help + "<li>'Open file': <br>A .pbn, .lin or .dlm file can contain multiple boards. If traveller data is available as .xml or .json, select the .pbn file and the traveller file together.</li>";
 			help = help + "<li>'Enter hand': <br>A single hand can be entered by selecting all cards for each position.</li>";
 			help = help + "<li>'Get boards data from clipboard':<br>PBN data from other sources can be entered via copy & paste.</li>";
 			help = help + "<li>You can also paste PBN/LIN/DLM data using the keyboard shortcut 'CTRL-V / CMD-V'.</li>";

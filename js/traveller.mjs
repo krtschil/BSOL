@@ -1,8 +1,8 @@
 import { getTindexByName, getTravellerForBoard, checkBoardValid } from './board-utils.mjs';
 import { getMakeableTricksForContract, calculateMakeableContracts, getRequestedLeads } from './makeable.mjs';
 import { getHands } from './import.mjs';
-import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo, setClickFunctionForNames } from './ranking.mjs';
-import { validContract, played, passed, getLeadsIdx, makeBoardNameString, substituteSuitSymbol } from './scoring.mjs';
+import { getSessionInfo, getRankingInfo, calculateCrossImps, calculateMaxImps, getPlayerInfo, getPlayerAndRole, setClickFunctionForNames } from './ranking.mjs';
+import { validContract, played, passed, getLeadsIdx, makeBoardNameString, substituteSuitSymbol, calcPercentage, matchPointPercentage } from './scoring.mjs';
 import { hideMenuItems, showMainMenuItems, show, hideAllPopups, showNames } from './ui-popups.mjs';
 import { drawMiniHand } from './hand-renderer.mjs';
 import './board-renderer.mjs';
@@ -704,7 +704,7 @@ export function computeTravellerStatistics(pdirection)
 					var percent;
 
 					if (g_scoring!="IMP")
-						percent = (100*Number(tline.ns_match_points))/(Number(tline.ns_match_points) + Number(tline.ew_match_points));
+						percent = matchPointPercentage(tline,pdirection==2 ? -1 : 1);
 					else if (g_eventType!="Teams")
 						percent = Number(tline.ns_match_points);
 					else
@@ -734,7 +734,7 @@ export function computeTravellerStatistics(pdirection)
 				var percent;
 
 				if (g_scoring!="IMP")
-					percent = (100*Number(tline.ns_match_points))/(Number(tline.ns_match_points) + Number(tline.ew_match_points));
+					percent = matchPointPercentage(tline,pdirection==2 ? -1 : 1);
 				else if (g_eventType!="Teams")
 					percent = Number(tline.ns_match_points);
 				else
@@ -834,12 +834,7 @@ export function computeTravellerStatistics(pdirection)
 		{
 			var tmp = percentLo;
 
-			if (g_scoring!="IMP")
-			{
-				percentLo = 100 - percentHi;
-				percentHi = 100 - tmp;
-			}
-			else if (g_eventType!="Teams")
+			if (g_scoring=="IMP" && g_eventType!="Teams")
 			{
 				percentLo = -percentHi;
 				percentHi = -tmp;
@@ -1194,7 +1189,8 @@ export function displayTraveller(pdirection)
 				}
 			}
 
-			row.cells[10].innerHTML = tline.score;
+			const adjustment = /^A(\d{2})(\d{2})$/i.exec(String(tline.score));
+			row.cells[10].textContent = adjustment ? Number(adjustment[1]) + "%-" + Number(adjustment[2]) + "%" : tline.score;
 			row.cells[10].style.textAlign="right";
 			row.cells[10].className = "divide";
 			row.cells[11].textContent = showMatchPoints && tline.ns_match_points!=null && tline.ns_match_points!=="" ? Number(tline.ns_match_points).toFixed(1) : "";
@@ -1211,7 +1207,7 @@ export function displayTraveller(pdirection)
 				if (g_scoring!="IMP")
 				{
 					percentNS = calcPercentage(tline,1);
-					percentEW = tline.match_points_max != null ? calcPercentage(tline,-1) : 100 - percentNS;
+					percentEW = tline.match_points_max != null || adjustment ? calcPercentage(tline,-1) : 100 - percentNS;
 				}
 				else
 				{
@@ -1808,9 +1804,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 
 							if (g_scoring!="IMP")
 							{
-								var percent = 100*(nspts/(nspts + ewpts));
-
-								if (pdirection==2) percent = 100 - percent;
+								var percent = matchPointPercentage(tline,pdirection==2 ? -1 : 1,isIndividual() ? prole.seat : null);
 
 								percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
 								var pbar = document.getElementById("pbar");
@@ -1949,9 +1943,7 @@ export function loadTraveller_2(data,statusText,jqXHR,bindex)
 
 							if (g_scoring!="IMP")
 							{
-								var percent = 100*(nspts/(nspts + ewpts));
-
-								if (pdirection==2) percent = 100 - percent;
+								var percent = matchPointPercentage(tline,pdirection==2 ? -1 : 1,isIndividual() ? prole.seat : null);
 
 								percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
 								var pbar = document.getElementById("pbar");

@@ -270,6 +270,7 @@ test("pair board scorecard splits unsigned NS and EW scores before matchpoints i
 			getElementById: (id) => ({scoring9: matchPointsHeader, scoring12: matchPointsNSHeader, scoring13: matchPointsEWHeader})[id] ?? null,
 		},
 	});
+	loadScript(context, "js/scoring.mjs");
 	loadScript(context, "js/ranking.mjs");
 	const individualRole = context.getPlayerAndRole;
 	Object.assign(context, {
@@ -1015,6 +1016,7 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 		rows: [{ cells: [{}, {}, {}, { textContent: "" }] }]
 	};
 	context.document.getElementById = (id) => (id === "contractTable" ? mockTable : { style: {}, replaceChildren: () => {} });
+	loadScript(context, "js/scoring.mjs");
 
 	assert.doesNotThrow(() => {
 		context.computeTravellerStatistics(1);
@@ -1022,6 +1024,78 @@ test("does not set g_defaultContract when board has no replayable play data", ()
 	const passedRow = mockTable.rows.find((row) => row.cells[0]?.textContent==="Durchgepasst");
 	assert.ok(passedRow);
 	assert.equal(passedRow.cells[0].innerHTML, "");
+	context.g_currentTraveller.traveller_line = [
+		{contract:"NP",played_by:"",score:"A4040",ns_match_points:4,ew_match_points:4,match_points_max:10},
+		{contract:"NP",played_by:"",score:"A4060",ns_match_points:4,ew_match_points:6,match_points_max:10},
+	];
+	context.computeTravellerStatistics(1);
+	assert.equal(mockTable.rows[1].cells[4].innerHTML, "40%");
+	context.computeTravellerStatistics(2);
+	assert.equal(mockTable.rows[1].cells[4].innerHTML, "40-60%");
+});
+
+test("adjusted traveller results show both percentages and the selected player's award", () => {
+	const cell = () => ({style:{},innerHTML:"",textContent:""});
+	const row = (columns = 0) => ({
+		style:{}, cells:Array.from({length:columns},cell),
+		insertCell() { const c = cell(); this.cells.push(c); return c; },
+	});
+	const table = {
+		rows:[row(16),row(16)],
+		deleteRow() { this.rows.pop(); },
+		insertRow() { this.rows.push(row()); },
+	};
+	const elements = {};
+	const getElementById = id => id==="travellerTable" ? table :
+		(elements[id] ||= {style:{},innerHTML:"",textContent:""});
+	const lines = [
+		{score:"A4040",ns_match_points:4,ew_match_points:4,match_points_max:10},
+		{score:"A4060",ns_match_points:4,ew_match_points:6},
+		{score:"A6040",ns_match_points:6,ew_match_points:4},
+	].map((line,i) => ({...line,contract:"NP",played_by:"",lead:"",tricks:"",
+		ns_pair_number:i+1,ew_pair_number:i+11,player_numbers:{N:1,E:2,S:3,W:4},
+		player_match_points:{N:line.ns_match_points,E:line.ew_match_points,S:line.ns_match_points,W:line.ew_match_points}}));
+	let seat = "N";
+	const context = createContext({
+		window:{scroll() {}},
+		document:{getElementById},
+		$: () => ({show(){},hide(){}}),
+		g_currentTraveller:{board_no:16,traveller_line:lines},
+		g_hands:{boards:[{Contract:"",OptimumContracts:[]}],pair_number:1,direction:1},
+		g_travellers:{event:{event_type:"PAIRS",participants:{pair:[]},board:[{traveller_line:lines}]}},
+		g_lastBindex:0,g_scoring:"MatchPoints",g_eventType:"Paarturnier",
+		checkBoardValid:()=>false, setClickFunctionForNames(){},drawMiniHand(){},
+		hideSpinner(){},hideAllPopups(){},hideRanking(){},
+		getPlayerInfo:()=>({pair_found:true,player1:"One",player2:"Two",singleWinner:true}),
+		getPlayerAndRole:()=>({found:true,tdirection:seat==="N" ? 1 : 2,seat}),
+		getRowFromTraveller:()=>0,getTravIndex:()=>0,
+	});
+	loadScript(context,"js/scoring.mjs");
+	loadScript(context,"js/traveller.mjs");
+	context.computeTravellerStatistics = () => {};
+	context.getRowFromTraveller = () => 0;
+	context.displayTraveller(1);
+	const rendered = Object.fromEntries(table.rows.slice(2).map(r => [r.cells[10].textContent,r]));
+	for (const [label,ns,ew] of [["40%-40%","40%","40%"],["40%-60%","40%","60%"],["60%-40%","60%","40%"]]) {
+		assert.ok(rendered[label]);
+		assert.equal(rendered[label].cells[13].innerHTML,ns);
+		assert.equal(rendered[label].cells[15].innerHTML,ew);
+	}
+	context.displayTraveller = () => {};
+	context.g_currentTraveller.traveller_line = [lines.find(line => line.score==="A4040")];
+	context.g_travellers.event.event_type = "INDIVIDUAL";
+	for (const language of ["de","en"]) {
+		context.language = language;
+		for (seat of ["N","E"]) {
+			context.loadTraveller_2("","","",0);
+			assert.equal(elements.percentValue.innerHTML,"40%");
+		}
+	}
+	const selectedLine = context.g_currentTraveller.traveller_line[0];
+	selectedLine.player_match_points.S = 3;
+	seat = "S";
+	context.loadTraveller_2("","","",0);
+	assert.equal(elements.percentValue.innerHTML,"30%");
 });
 
 test("calculates ranking info from traveller data", async () => {

@@ -5,7 +5,7 @@ import { getMakeableTricksForContract, getMakeableTricksForLead } from './makeab
 import { setBars, addSummarySection, mergeScorecardRows, setLeadForScorecardRow } from './scorecard.mjs';
 import { getCachedAcc } from './accuracy.mjs';
 import './import.mjs';
-import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps, substituteSuitSymbol } from './scoring.mjs';
+import { comparePairNumbers, played, getContractType, validContract, passed, convertAdjustmentToCrossImps, isValidCrossImps, scoreContainsAdjustment, convertScoreToImps, substituteSuitSymbol, matchPointPercentage } from './scoring.mjs';
 import { hideAllPopups, showNames, hide } from './ui-popups.mjs';
 import { isIndividual, playerSeat, sidePlayers, playerName, sideNames } from './participants.mjs';
 
@@ -1882,7 +1882,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									row.cells[(tdirection==1 ? 11 : 12)+g_ofs].style.backgroundColor = "#b8f5a2";
 
 								if (g_scoring!="IMP")
-									value = 100*(nspts/(nspts + ewpts));
+									value = matchPointPercentage(tline,tdirection==2 ? -1 : 1,isIndividual() ? prole.seat : null);
 								else
 								{
 									if (g_eventType!="Teams")
@@ -1896,11 +1896,10 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 									}
 								}
 
-								if ((tdirection==2)&&(g_eventType!="Teams")) value = 100 - value;
+								if ((tdirection==2)&&(g_eventType!="Teams") && g_scoring=="IMP") value = 100 - value;
 								if (isIndividual())
 								{
 									const personalPoints = Number(tline.player_match_points[prole.seat]);
-									value = 100 * personalPoints / (tline.match_points_max != null ? Number(tline.match_points_max) : nspts + ewpts);
 									row.cells[(tdirection==1 ? 11 : 12)+g_ofs].textContent = personalPoints.toFixed(1);
 								}
 

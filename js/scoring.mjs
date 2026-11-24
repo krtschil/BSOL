@@ -331,15 +331,27 @@ export function returnPoints(tline,sign)
 	else return nspts;
 }
 
-export function calcPercentage(tline,sign)
+export function matchPointPercentage(tline,sign,seat)
 {
 	var nspts = Number(tline.ns_match_points);
 	var ewpts = Number(tline.ew_match_points);
 
-	var percent = 100 * nspts / (tline.match_points_max != null ? Number(tline.match_points_max) : nspts + ewpts);
-	if (sign==-1)
-		percent = tline.match_points_max != null ? 100 * ewpts / Number(tline.match_points_max) : 100 - percent;
+	if (tline.match_points_max != null)
+	{
+		const points = seat && tline.player_match_points ? Number(tline.player_match_points[seat]) : (sign==-1 ? ewpts : nspts);
+		return 100 * points / Number(tline.match_points_max);
+	}
+	const adjustment = /^A(\d{2})(\d{2})$/i.exec(String(tline.score));
+	if (adjustment) return Number(adjustment[sign==-1 ? 2 : 1]);
+	if (seat && tline.player_match_points)
+		return 100 * Number(tline.player_match_points[seat]) / (nspts + ewpts);
+	var percent = 100 * nspts / (nspts + ewpts);
+	return sign==-1 ? 100 - percent : percent;
+}
 
+export function calcPercentage(tline,sign)
+{
+	var percent = matchPointPercentage(tline,sign);
 	percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
 	return Number(percent);
 }

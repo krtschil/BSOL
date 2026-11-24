@@ -58,7 +58,7 @@ def traveller(parent, line, scoring, teams=False, direction=None):
         }[scoring]
         for side in ("ns", "ew"):
             element(node, f"{side.upper()}_{suffix}", line[f"{side}_match_points"])
-    keys = ["lindata", "ns_score", "ew_score", "round", "player_match_points"]
+    keys = ["lindata", "ns_score", "ew_score", "round", "player_match_points", "match_points_max"]
     if line.get("player_numbers"):
         keys += ["ns_pair_number", "ew_pair_number"]
     if teams:

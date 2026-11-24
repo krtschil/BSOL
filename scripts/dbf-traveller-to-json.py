@@ -187,7 +187,7 @@ def convert_export(path, mode=None, pbn_output=None):
                 raise ValueError("Multi-group individual exports are not supported")
             if str(metadata[0].get("WERTUNG", "")).strip() not in ("0", "1"):
                 raise ValueError("Only matchpoint individual DAT exports (WERTUNG=0 or 1) are supported")
-            result = convert_individual(paths["r"], paths["t"], paths["p"])
+            result = convert_individual(paths["r"], paths["t"], paths["p"], metadata[0].get("MAXMPS"))
         else:
             if len(metadata) > 1:
                 result = convert_grouped_pairs(paths["r"], paths["t"], paths["p"], metadata)
@@ -398,7 +398,57 @@ def play_line(row):
     return result
 
 
-def convert_individual(play_path, participants_path, results_path):
+def individual_adjustment(row, board, maximum=None):
+    percentages = {}
+    for seat, field in (("N", "REM_NS"), ("S", "REM_S"),
+                        ("E", "REM_EW"), ("W", "REM_W")):
+        value = str(row.get(field, "")).strip()
+        if not value and seat in ("S", "W"):
+            percentages[seat] = percentages["N" if seat == "S" else "E"]
+            continue
+        match = re.fullmatch(r"(\d{1,2})[+-]?", value)
+        if not match or int(match.group(1)) > 99:
+            raise ValueError(f"Unsupported individual adjusted result on board {board}: {field}={value!r}")
+        percentages[seat] = int(match.group(1))
+    maximums = []
+    for seat, field in (("N", "MPS_NS"), ("S", "MPS_S"),
+                        ("E", "MPS_EW"), ("W", "MPS_W")):
+        try:
+            points = Decimal(str(row.get(field, "")).strip())
+            if not points.is_finite() or points < 0:
+                raise ValueError
+            if percentages[seat]:
+                maximums.append(points * 100 / percentages[seat])
+            elif points:
+                raise ValueError
+        except (InvalidOperation, ValueError) as error:
+            raise ValueError(f"Invalid individual adjustment points on board {board}") from error
+    try:
+        maximum = Decimal(str(maximum).strip()) if maximum else None
+    except InvalidOperation as error:
+        raise ValueError("Invalid individual matchpoint maximum") from error
+    if maximum is not None and (not maximum.is_finite() or maximum <= 0):
+        raise ValueError("Invalid individual matchpoint maximum")
+    if maximum is None:
+        if not maximums or any(abs(value - maximums[0]) > Decimal("0.001") for value in maximums):
+            raise ValueError(f"Cannot determine individual adjustment maximum on board {board}")
+        maximum = maximums[0]
+    ns, ew = percentages["N"], percentages["E"]
+    return {
+        "contract": "NP", "played_by": "", "lead": "", "tricks": "",
+        "score": f"A{ns:02d}{ew:02d}", "ns_score": f"{ns}%", "ew_score": f"{ew}%",
+        "match_points_max": float(maximum),
+    }
+
+
+def convert_individual(play_path, participants_path, results_path, maximum=None):
+    if maximum:
+        try:
+            maximum = Decimal(str(maximum).strip())
+            if not maximum.is_finite() or maximum <= 0:
+                raise ValueError
+        except (InvalidOperation, ValueError) as error:
+            raise ValueError("Invalid individual matchpoint maximum") from error
     participants = participant_map(participants_path)
     for participant in participants.values():
         if not participant["player"][0]["player_name"] or participant["player"][1]["player_name"]:
@@ -415,7 +465,9 @@ def convert_individual(play_path, participants_path, results_path):
         if board <= 0:
             continue
         boards[board]
-        if not (str(row.get("CONTRACT", "")).strip() or str(row.get("RESULT", "")).strip()):
+        adjusted = bool(str(row.get("REMARKS", "")).strip() or
+                        str(row.get("REM_NS", "")).strip() or str(row.get("REM_EW", "")).strip())
+        if not (str(row.get("CONTRACT", "")).strip() or str(row.get("RESULT", "")).strip() or adjusted):
             continue
         numbers = {seat: int(row.get(seat) or 0) for seat in "NESW"}
         if len(set(numbers.values())) != 4 or any(number not in participants for number in numbers.values()):
@@ -425,6 +477,10 @@ def convert_individual(play_path, participants_path, results_path):
                 raise ValueError(f"Duplicate individual result for player {player} on board {board}")
             seen.add((board, player))
         line = play_line(row)
+        if maximum:
+            line["match_points_max"] = float(maximum)
+        if adjusted and not (str(row.get("CONTRACT", "")).strip() or str(row.get("RESULT", "")).strip()):
+            line.update(individual_adjustment(row, board, maximum))
         line["player_numbers"] = numbers
         line["player_match_points"] = {
             "N": number(row["MPS_NS"]), "E": number(row["MPS_EW"]),

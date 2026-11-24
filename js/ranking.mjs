@@ -356,7 +356,8 @@ export function getRankingInfo()
 						const entry = getPairObject(tline.player_numbers[seat],1,rankNS,rankEW);
 						if (!entry) throw new Error("Unknown individual player " + tline.player_numbers[seat]);
 						const score = Number(tline.player_match_points[seat]);
-						const maximum = Number(tline.ns_match_points) + Number(tline.ew_match_points);
+						const maximum = tline.match_points_max != null ?
+							Number(tline.match_points_max) : Number(tline.ns_match_points) + Number(tline.ew_match_points);
 						entry.plusMpts += score;
 						entry.minusMpts += maximum - score;
 						const boardKey = String(i);
@@ -408,9 +409,17 @@ export function getRankingInfo()
 			if (g_eventType!="Teams" && entry.boardsPlayed>0 && entry.boardsPlayed<maxPlayed)
 			{
 				const missing = maxPlayed - entry.boardsPlayed;
-				// Round each average board award as in the tournament scoring export.
-				entry.plusMpts += missing * Math.round(10*entry.plusMpts/entry.boardsPlayed)/10;
-				entry.minusMpts += missing * Math.round(10*entry.minusMpts/entry.boardsPlayed)/10;
+				if (isIndividual())
+				{
+					entry.plusMpts *= maxPlayed / entry.boardsPlayed;
+					entry.minusMpts *= maxPlayed / entry.boardsPlayed;
+				}
+				else
+				{
+					// Round each average board award as in the tournament scoring export.
+					entry.plusMpts += missing * Math.round(10*entry.plusMpts/entry.boardsPlayed)/10;
+					entry.minusMpts += missing * Math.round(10*entry.minusMpts/entry.boardsPlayed)/10;
+				}
 			}
 		}
 	}
@@ -1853,8 +1862,9 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								var ewpts = Number(tline.ew_match_points);
 								var score = tline.score;
 								var numericScore = score!=null && String(score).trim()!=="" && Number.isFinite(Number(score));
-								row.cells[9+g_ofs].textContent = numericScore ? (Number(score)>=0 ? String(Number(score)) : "") : (score ?? "");
-								row.cells[10+g_ofs].textContent = numericScore && Number(score)<0 ? String(-Number(score)) : "";
+								const adjustedScore = /^A\d{4}$/i.test(String(score));
+								row.cells[9+g_ofs].textContent = adjustedScore ? tline.ns_score : numericScore ? (Number(score)>=0 ? String(Number(score)) : "") : (score ?? "");
+								row.cells[10+g_ofs].textContent = adjustedScore ? tline.ew_score : numericScore && Number(score)<0 ? String(-Number(score)) : "";
 								row.cells[9+g_ofs].style.textAlign = "right";
 								row.cells[9+g_ofs].style.borderRight = "1px dashed #aaa";
 								row.cells[10+g_ofs].style.textAlign = "right";
@@ -1890,7 +1900,7 @@ export function setupScorecard2(table,stable,boards,info,sessInfo,etfRange,sorte
 								if (isIndividual())
 								{
 									const personalPoints = Number(tline.player_match_points[prole.seat]);
-									value = 100 * personalPoints / (nspts + ewpts);
+									value = 100 * personalPoints / (tline.match_points_max != null ? Number(tline.match_points_max) : nspts + ewpts);
 									row.cells[(tdirection==1 ? 11 : 12)+g_ofs].textContent = personalPoints.toFixed(1);
 								}
 

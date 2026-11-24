@@ -52,6 +52,9 @@ with one name per participant and `player_numbers` / `player_match_points`
 on each traveller line. USEBIO XML writes native `PLAYER` participants and
 `N_PLAYER_NUMBER` / `S_PLAYER_NUMBER` / `E_PLAYER_NUMBER` / `W_PLAYER_NUMBER`;
 seat-specific MP overrides are preserved in BSOL `NOTES`.
+Artificial percentage adjustments are included in the traveller and scorecards.
+The individual matchpoint maximum is retained in BSOL `NOTES` when available,
+including for asymmetric awards.
 BSOL shows a single player ranking and individual scorecards with each board's
 partner and opponents. Seats and declarer/defender roles are determined from the
 stored movement, without requiring a fixed partner or manually selected direction.

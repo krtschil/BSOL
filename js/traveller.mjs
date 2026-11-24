@@ -1211,7 +1211,7 @@ export function displayTraveller(pdirection)
 				if (g_scoring!="IMP")
 				{
 					percentNS = calcPercentage(tline,1);
-					percentEW = 100 - percentNS;
+					percentEW = tline.match_points_max != null ? calcPercentage(tline,-1) : 100 - percentNS;
 				}
 				else
 				{

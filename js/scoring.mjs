@@ -336,9 +336,9 @@ export function calcPercentage(tline,sign)
 	var nspts = Number(tline.ns_match_points);
 	var ewpts = Number(tline.ew_match_points);
 
-	var percent = 100*(nspts/(nspts + ewpts));
-
-	if (sign==-1) percent = 100 - percent;
+	var percent = 100 * nspts / (tline.match_points_max != null ? Number(tline.match_points_max) : nspts + ewpts);
+	if (sign==-1)
+		percent = tline.match_points_max != null ? 100 * ewpts / Number(tline.match_points_max) : 100 - percent;
 
 	percent = parseFloat(Math.round(percent * 100) / 100).toFixed(0);
 	return Number(percent);

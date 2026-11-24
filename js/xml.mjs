@@ -299,7 +299,7 @@ export function convertXML(data)
 			}
 			readBsolNotes(cnTline, tline, ["ns_score", "ew_score", "round",
 				"ns_pair_number", "ew_pair_number", "ns_match_points", "ew_match_points",
-				"player_match_points"]);
+				"player_match_points", "match_points_max"]);
 			tlines.push(tline);
 		}
 	}

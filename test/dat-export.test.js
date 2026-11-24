@@ -309,6 +309,40 @@ with tempfile.TemporaryDirectory() as directory:
     assert xml.findtext(".//TRAVELLER_LINE/N_PLAYER_NUMBER") == "1"
     assert xml.findtext(".//TRAVELLER_LINE/S_PLAYER_NUMBER") == "3"
     assert output.with_suffix(".pbn").read_text().count('[Board ') == 2
+    adjustment_fields = individual_fields + [
+        ("REM_NS","C",4),("REM_EW","C",4),("REM_S","C",4),("REM_W","C",4),
+        ("REMARKS","C",12)]
+    awards = [
+        dict(individual_rows[0],BOARD=2,CONTRACT="",RESULT="",REM_NS="40-",REM_S="40-",
+             REM_EW="60+",REM_W="60+",REMARKS="40--60+",MPS_NS=4,MPS_S=4,MPS_EW=6,MPS_W=6),
+        dict(individual_rows[0],BOARD=3,CONTRACT="",RESULT="",REM_NS="60+",REM_S="60+",
+             REM_EW="40-",REM_W="40-",REMARKS="60+-40-",MPS_NS=6,MPS_S=6,MPS_EW=4,MPS_W=4),
+        dict(individual_rows[0],BOARD=4,CONTRACT="",RESULT="",REM_NS="40-",REM_S="40-",
+             REM_EW="40-",REM_W="40-",REMARKS="40--40-",MPS_NS=4,MPS_S=4,MPS_EW=4,MPS_W=4),
+        dict(individual_rows[0],BOARD=5,CONTRACT="",RESULT="",N=0,E=0,S=0,W=0),
+    ]
+    source.write_bytes(bundle(dict(individual_tables, r=dbf(adjustment_fields, awards))))
+    adjusted = conv.convert_export(source)["event"]
+    lines = [board["traveller_line"][0] for board in adjusted["board"] if board["traveller_line"]]
+    assert [line["score"] for line in lines] == ["A4060","A6040","A4040"]
+    assert all(line["match_points_max"] == 10 for line in lines)
+    assert lines[2]["player_numbers"] == {"N":1,"E":2,"S":3,"W":4}
+    with_max = dict(individual_tables,
+        u=dbf([("T_FORM","N",1),("WERTUNG","N",1),("MAXMPS","N",2)],
+              [{"T_FORM":3,"WERTUNG":1,"MAXMPS":10}]),
+        r=dbf(adjustment_fields,[dict(individual_rows[0],MPS_NS=6,MPS_EW=6)] + awards[:1]))
+    source.write_bytes(bundle(with_max))
+    with_max_event = conv.convert_export(source)["event"]
+    assert with_max_event["board"][0]["traveller_line"][0]["match_points_max"] == 10
+    assert with_max_event["board"][1]["traveller_line"][0]["match_points_max"] == 10
+    for bad_award in [dict(awards[0], REM_EW="unknown"), dict(awards[2], MPS_W=7)]:
+        source.write_bytes(bundle(dict(individual_tables, r=dbf(adjustment_fields, [bad_award]))))
+        try:
+            conv.convert_export(source)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid adjustment was accepted")
     for bad in [
         dict(individual_tables,r=dbf(individual_fields,[dict(individual_rows[0],N=99)])),
         dict(individual_tables,r=dbf(individual_fields,[dict(individual_rows[0],N=2)])),
@@ -405,10 +439,10 @@ with tempfile.TemporaryDirectory() as directory:
             *inputs,"--output",str(directory/"invalid.json")],capture_output=True)
         assert cli.returncode != 0
         assert not (directory/"invalid.json").exists()
-print(json.dumps({"combined":combined,"individual":individual}))
+print(json.dumps({"combined":combined,"individual":individual,"adjusted":adjusted,"with_max":with_max_event}))
 `], {encoding: "utf8"});
 	assert.equal(result.status, 0, result.stderr);
-	const {combined: event, individual} = JSON.parse(result.stdout);
+	const {combined: event, individual, adjusted, with_max} = JSON.parse(result.stdout);
 	const context = createContext({
 		g_travellers: {event},
 		g_hands: {boards: event.board.map(board => ({board: board.board_no}))},
@@ -440,6 +474,38 @@ print(json.dumps({"combined":combined,"individual":individual}))
 	loadScript(individualContext,"js/scoring.mjs");
 	loadScript(individualContext,"js/ranking.mjs");
 	loadScript(individualContext,"js/traveller.mjs");
+	const adjustment = adjusted.board.find(board => board.board_no === 4).traveller_line[0];
+	assert.equal(individualContext.calcPercentage(adjustment,1),40);
+	assert.equal(individualContext.calcPercentage(adjustment,-1),40);
+	const compensated = with_max.board[0].traveller_line[0];
+	assert.equal(individualContext.calcPercentage(compensated,1),60);
+	assert.equal(individualContext.calcPercentage(compensated,-1),60);
+	const adjustmentContext = createContext({
+		g_travellers: {event:adjusted},
+		g_hands: {boards:adjusted.board.map(board => ({board:board.board_no}))},
+		g_sessInfo:null, g_rankInfo:null,
+		getMakeableTricksForContract: () => 8,
+	});
+	loadScript(adjustmentContext,"js/scoring.mjs");
+	loadScript(adjustmentContext,"js/ranking.mjs");
+	const adjustedRanking = adjustmentContext.getRankingInfo();
+	assert.deepEqual(Array.from(adjustedRanking.rankNS, entry => entry.boardsPlayed), [3,3,3,3]);
+	assert.deepEqual(Array.from(adjustedRanking.rankNS, entry => entry.plusMpts), [14,14,14,14]);
+	assert.deepEqual(Array.from(adjustedRanking.rankNS, entry => entry.minusMpts), [16,16,16,16]);
+	const unequal = JSON.parse(JSON.stringify(adjusted));
+	unequal.participants.pair.push({...unequal.participants.pair[0],pair_number:5});
+	const extra = JSON.parse(JSON.stringify(adjustment));
+	extra.player_numbers.N = 5;
+	unequal.board.push({board_no:6,traveller_line:[extra]});
+	const unequalContext = createContext({
+		g_travellers: {event:unequal},
+		g_hands: {boards:unequal.board.map(board => ({board:board.board_no}))},
+		g_sessInfo:null, g_rankInfo:null, getMakeableTricksForContract: () => 8,
+	});
+	loadScript(unequalContext,"js/scoring.mjs");
+	loadScript(unequalContext,"js/ranking.mjs");
+	const absentPlayer = unequalContext.getRankingInfo().rankNS.find(entry => entry.pair == 1);
+	assert.ok(Math.abs(absentPlayer.plusMpts - 14 * 4 / 3) < 1e-10);
 	const resultRanking = individualContext.getRankingInfo();
 	assert.equal(individualContext.g_eventType,"Individual");
 	assert.equal(resultRanking.rankNS.length,4);

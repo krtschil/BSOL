@@ -106,6 +106,12 @@ test("individual XML preserves all four players and seat-specific matchpoints", 
 			ns_match_points:2,ew_match_points:0,
 			player_numbers:{N:1,E:2,S:3,W:4},
 			player_match_points:{N:2,E:0,S:1.5,W:0.5},
+		}, {
+			ns_pair_number:"1",ew_pair_number:"101",contract:"NP",played_by:"",
+			tricks:"",score:"A4040",ns_score:"40%",ew_score:"40%",
+			ns_match_points:4,ew_match_points:4,match_points_max:10,
+			player_numbers:{N:1,E:2,S:3,W:4},
+			player_match_points:{N:4,E:4,S:4,W:4},
 		}]}],
 	};
 	const xml = python(`
@@ -127,6 +133,13 @@ print(to_xml(json.load(sys.stdin)))
 		event.board[0].traveller_line[0].player_match_points);
 	assert.equal(restored.board[0].traveller_line[0].ns_pair_number,"1");
 	assert.equal(restored.board[0].traveller_line[0].ew_pair_number,"101");
+	const award = restored.board[0].traveller_line[1];
+	assert.equal(award.score,"A4040");
+	assert.equal(award.contract,"NP");
+	assert.equal(award.ns_score,"40%");
+	assert.equal(award.ew_score,"40%");
+	assert.equal(award.match_points_max,10);
+	assert.deepEqual(award.player_match_points,{N:4,E:4,S:4,W:4});
 });
 
 test("XML imports LIN data exclusively from LIN_DATA, not NOTES", () => {

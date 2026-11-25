@@ -24,7 +24,8 @@ from the play table and tournament metadata (pairs, teams or individual);
 an optional `--mode` must agree.
 Pair exports support matchpoints with `WERTUNG=0` (one combined ranking) and
 `WERTUNG=1`. For `WERTUNG=1`, a nonzero `SCRAM_NACH` identifies a scrambled
-Mitchell with one combined ranking despite the pairs' starting NS/EW directions;
+Mitchell with one combined ranking despite the pairs' starting NS/EW directions
+(including the value `-1`);
 otherwise separate NS/EW rankings are used. For separate rankings, the participant
 table's logical `NS` field determines each pair's starting direction.
 Other values are rejected rather than silently exported with the wrong scoring

@@ -196,7 +196,7 @@ def convert_export(path, mode=None, pbn_output=None):
                 if scoring not in ("0", "1"):
                     raise ValueError(f"Unsupported pair export WERTUNG={scoring!r}; supported values: 0, 1 (matchpoints)")
                 # A scrambled Mitchell combines both starting directions in one ranking.
-                scrambled = int(metadata[0].get("SCRAM_NACH") or 0) > 0
+                scrambled = int(metadata[0].get("SCRAM_NACH") or 0) != 0
                 winner_type = 2 if scoring == "1" and not scrambled else 1
                 result = convert(
                     paths["r"], paths["t"], paths["p"],

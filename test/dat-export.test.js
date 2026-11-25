@@ -267,6 +267,10 @@ with tempfile.TemporaryDirectory() as directory:
     assert all(pair["direction"] == "N" for pair in combined["participants"]["pair"])
     assert combined["participants"] == event["participants"]
     assert len(combined["board"]) == 2
+    combined_tables["u"] = dbf([("WERTUNG","N",1),("SCRAM_NACH","N",2)],
+                               [{"WERTUNG":1,"SCRAM_NACH":-1}])
+    source.write_bytes(bundle(combined_tables))
+    assert conv.convert_export(source)["event"] == combined
     cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
         "--export-dat",str(source),"--output",str(output)], capture_output=True, text=True)
     assert cli.returncode == 0, cli.stderr

@@ -267,6 +267,10 @@ with tempfile.TemporaryDirectory() as directory:
     assert all(pair["direction"] == "N" for pair in combined["participants"]["pair"])
     assert combined["participants"] == event["participants"]
     assert len(combined["board"]) == 2
+    combined_tables["u"] = dbf([("WERTUNG","N",1),("SCRAM_NACH","N",2)],
+                               [{"WERTUNG":1,"SCRAM_NACH":-1}])
+    source.write_bytes(bundle(combined_tables))
+    assert conv.convert_export(source)["event"] == combined
     cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},
         "--export-dat",str(source),"--output",str(output)], capture_output=True, text=True)
     assert cli.returncode == 0, cli.stderr
@@ -280,8 +284,9 @@ with tempfile.TemporaryDirectory() as directory:
                                  [{"T_FORM":3,"WERTUNG":1}])
     individual_tables["t"] = dbf([("P_NUMMER","N",2),("NAME1","C",20),("NAME2","C",20)],
                                  [{"P_NUMMER":n,"NAME1":"Player "+str(n)} for n in range(1,5)])
-    individual_tables["p"] = dbf([("PAARNR","I",4),("PLATZ","N",2),("PUNKTE","N",5),("PROZENT","N",5)],
-        [{"PAARNR":n,"PLATZ":n,"PUNKTE":3,"PROZENT":50} for n in range(1,5)])
+    individual_tables["p"] = dbf([("PAARNR","I",4),("PLATZ","N",2),("PUNKTE","N",5),("PROZENT","N",5),("CPS","N",3)],
+        [{"PAARNR":n,"PLATZ":n,"PUNKTE":3,"PROZENT":50,"CPS":cp}
+         for n,cp in zip(range(1,5),(3,0,1,0))])
     individual_fields = r_fields + [(seat,"N",2) for seat in "NESW"] + [
         ("MPS_S","N",5),("MPS_W","N",5)]
     individual_rows = [
@@ -295,6 +300,7 @@ with tempfile.TemporaryDirectory() as directory:
     assert individual["event_type"] == "INDIVIDUAL" and individual["winner_type"] == 1
     assert len(individual["participants"]["pair"]) == 4
     assert all(len(p["player"]) == 1 for p in individual["participants"]["pair"])
+    assert [p["club_points"] for p in individual["participants"]["pair"]] == ["3","0","1","0"]
     assert individual["board"][0]["traveller_line"][0]["player_numbers"] == {"N":1,"E":2,"S":3,"W":4}
     assert individual["board"][1]["traveller_line"][0]["player_match_points"]["W"] == 1.5
     cli = subprocess.run([sys.executable,"-B",${JSON.stringify(script)},

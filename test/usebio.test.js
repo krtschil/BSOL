@@ -65,9 +65,9 @@ event = {
     "event_type":"PAIRS", "board_scoring_method":"MATCH_POINTS", "winner_type":2,
     "ranking_method":"MATCH_POINTS",
     "participants":{"pair":[
-        {"pair_number":1,"direction":"N","place":"1","total_score":"2.75","percentage":"70",
+        {"pair_number":1,"direction":"N","place":"1","total_score":"2.75","percentage":"70","club_points":"11",
          "player":[{"player_name":"North"},{"player_name":"South"}]},
-        {"pair_number":101,"direction":"E","place":"","total_score":"","percentage":"",
+        {"pair_number":101,"direction":"E","place":"","total_score":"","percentage":"","club_points":"0",
          "player":[{"player_name":"East"},{"player_name":"West"}]},
     ]},
     "board":[{"board_no":1,"traveller_line":[{
@@ -89,6 +89,8 @@ print(json.dumps({"event":event,"xml":to_xml({"event":event})}))
 	})));
 	assert.equal(restored.participants.pair[1].total_score, "1.25");
 	assert.equal(restored.participants.pair[1].percentage, "32.5000");
+	assert.equal(restored.participants.pair[0].club_points, "11");
+	assert.equal(restored.participants.pair[1].club_points, "0");
 	assert.equal(restored.board.length, 1, "awards must not become invented played boards");
 });
 
@@ -256,8 +258,8 @@ participants = [
 if ${JSON.stringify(mode)} == "pairs":
     participants = [p for p in participants if p["NS"]]
 results = [
-    {"TEAM_NR": 1, "PAARNR": 1, "PLATZ": 1, "PUNKTE": 12, "PROZENT": 60, "GEGNER1": 2, "PUNKTE1": 12},
-    {"TEAM_NR": 2, "PAARNR": 2, "PLATZ": 2, "PUNKTE": 8, "PROZENT": 40, "GEGNER1": 1, "PUNKTE1": 8},
+    {"TEAM_NR": 1, "PAARNR": 1, "PLATZ": 1, "PUNKTE": 12, "PROZENT": 60, "GEGNER1": 2, "PUNKTE1": 12, "CPS": 35},
+    {"TEAM_NR": 2, "PAARNR": 2, "PLATZ": 2, "PUNKTE": 8, "PROZENT": 40, "GEGNER1": 1, "PUNKTE1": 8, "CPS": 0},
 ]
 play = [
     {"BOARD": 1, "RUNDE": 3, "HOME_NS": 2, "HOME_EW": 2, "VISIT_NS": 1, "VISIT_EW": 1,

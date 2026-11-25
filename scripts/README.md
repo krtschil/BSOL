@@ -24,7 +24,8 @@ from the play table and tournament metadata (pairs, teams or individual);
 an optional `--mode` must agree.
 Pair exports support matchpoints with `WERTUNG=0` (one combined ranking) and
 `WERTUNG=1`. For `WERTUNG=1`, a nonzero `SCRAM_NACH` identifies a scrambled
-Mitchell with one combined ranking despite the pairs' starting NS/EW directions;
+Mitchell with one combined ranking despite the pairs' starting NS/EW directions
+(including the value `-1`);
 otherwise separate NS/EW rankings are used. For separate rankings, the participant
 table's logical `NS` field determines each pair's starting direction.
 Other values are rejected rather than silently exported with the wrong scoring
@@ -37,6 +38,9 @@ Existing official rankings are preserved; partial rankings, missing awards or
 penalties in a reconstructed direction cause an error rather than a guessed result.
 For `WERTUNG=1` exports, BSOL displays the complete ranking totals, including
 awards, while traveller results and PBN deals still exclude unplayed boards.
+Club points from the ranking table's `CPS` field are retained as
+`club_points` and shown in the overall ranking's `CP` column; zero awards are
+displayed as blank.
 Pair tournaments split across multiple groups are also supported when the
 metadata identifies one shared tournament and the official ranking contains
 the combined results. Pair numbers are qualified with their group (for example
@@ -214,6 +218,8 @@ python3 scripts/dbf-traveller-to-json.py \
 The generated `TEAMS` JSON contains one participant per team and two Traveller
 lines per played board (`*_H` and `*_V`). BSOL counts the board once per team,
 while the ranking is taken from the team victory points in the result DBF.
+The team ranking shows club points (`CP`) after victory points, leaving zero
+awards blank. `Bds` is followed directly by the Double Dummy column.
 The result analysis also shows a match cross table between the ranking and
 Butler table. Cells contain both teams' victory-point scores and match IMP
 totals for each match; hovering over a team number shows the names of all four

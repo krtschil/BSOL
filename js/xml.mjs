@@ -170,7 +170,7 @@ export function convertXML(data)
 			players[1].player_name = getNodeValue(playerNodes[1]);
 		}
 		cpair.player = players;
-		readBsolNotes(cpnode, cpair, ["player", "team_points"]);
+		readBsolNotes(cpnode, cpair, ["player", "team_points", "club_points"]);
 		if (teams && !Object.prototype.hasOwnProperty.call(cpair, "team_points"))
 			cpair.team_points = cpair.total_score;
 		pair.push(cpair);

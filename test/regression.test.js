@@ -150,10 +150,10 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	};
 	for (let i=0; i<5; i++) table.rows[0].insertCell(-1);
 	const pairs = [
-		{pair: 1, direction: 1, boardsPlayed: 12, percentage: "55.6789", percent: 55.6789, total_score: "123.5", plusMpts: 74.5,
+		{pair: 1, direction: 1, boardsPlayed: 12, percentage: "55.6789", percent: 55.6789, total_score: "123.5", plusMpts: 74.5, club_points:"7",
 			samePosition: "", position: 1, crossImpsBoardsPlayed: 24, crossImpsPerBoard: 1,
 			dd: {ddOverH: 0, ddEqualsH: 0, ddUnderH: 0, ddUnknown: 12}},
-		{pair: 2, direction: 2, boardsPlayed: 12, percentage: "50", percent: 50, total_score: "100", plusMpts: 60,
+		{pair: 2, direction: 2, boardsPlayed: 12, percentage: "50", percent: 50, total_score: "100", plusMpts: 60, club_points:"0",
 			samePosition: "", position: 2, crossImpsBoardsPlayed: 24, crossImpsPerBoard: 0,
 			dd: {ddOverH: 0, ddEqualsH: 0, ddUnderH: 0, ddUnknown: 12}},
 	];
@@ -177,25 +177,29 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	});
 	for (let i=0; i<2; i++) {
 		context.setupRanking(true);
-		assert.equal(table.rows[0].cells.length, 6);
+		assert.equal(table.rows[0].cells.length, 8);
 		assert.equal(table.rows[0].cells[3].textContent, "MP");
 		assert.equal(table.rows[0].cells[4].textContent, "%");
-		assert.equal(table.rows[1].cells[0].colSpan, 7);
-		assert.equal(table.rows[2].cells.length, 7);
+		assert.equal(table.rows[0].cells[5].textContent, "CP");
+		assert.equal(table.rows[1].cells[0].colSpan, 8);
+		assert.equal(table.rows[2].cells.length, 8);
 		assert.equal(table.rows[2].cells[1].style.textAlign, "right");
 		assert.equal(table.rows[2].cells[3].textContent, "74.5");
 		assert.equal(table.rows[2].cells[4].textContent, "55.7");
-		assert.equal(table.rows[3].cells[0].colSpan, 7);
+		assert.equal(table.rows[2].cells[5].textContent, "7");
+		assert.match(table.rows[2].cells[6].innerHTML, /width:56px/);
+		assert.equal(table.rows[4].cells[5].textContent, "");
+		assert.equal(table.rows[3].cells[0].colSpan, 8);
 		assert.equal(table.rows[4].cells[3].textContent, "60.0");
 		assert.equal(table.rows[4].cells[4].textContent, "50.0");
-		assert.match(table.rows[4].cells[6].innerHTML, /width:141px/);
+		assert.match(table.rows[4].cells[7].innerHTML, /width:141px/);
 	}
 	context.g_travellers.event.ranking_method = "MATCH_POINTS";
 	pairs[0].percent = 80;
 	context.setupRanking(true);
 	assert.equal(table.rows[2].cells[3].textContent, "123.5");
 	assert.equal(table.rows[4].cells[3].textContent, "100.0");
-	assert.match(table.rows[2].cells[5].innerHTML, /width:56px/);
+	assert.match(table.rows[2].cells[6].innerHTML, /width:56px/);
 	pairs[0].percent = 55.6789;
 	pairs[1].total_score = "";
 	context.setupRanking(true);
@@ -220,7 +224,7 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	context.g_scoring = "MatchPoints";
 	context.g_validPercentageFields = true;
 	context.setupRanking(true);
-	assert.equal(table.rows[0].cells.length, 6);
+	assert.equal(table.rows[0].cells.length, 8);
 	assert.equal(table.rows[0].cells[1].textContent, "Pair");
 	assert.equal(table.rows[2].cells[4].textContent, "55.7");
 });
@@ -1116,6 +1120,7 @@ test("calculates ranking info from traveller data", async () => {
 
 	try {
 		globalThis.g_travellers = traveller;
+		traveller.event.participants.pair[0].club_points = "4";
 		globalThis.g_sessInfo = null;
 		globalThis.g_rankInfo = null;
 		globalThis.g_uniquePairNumbers = "";
@@ -1130,6 +1135,7 @@ test("calculates ranking info from traveller data", async () => {
 
 		assert.ok(rankInfo.rankNS.length > 0);
 		assert.equal(rankInfo.sessInfo.singleWinner, true);
+		assert.equal(rankInfo.rankNS.find(pair => pair.pair==traveller.event.participants.pair[0].pair_number).club_points,"4");
 	} finally {
 		Object.assign(globalThis, previous);
 	}

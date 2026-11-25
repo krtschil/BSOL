@@ -37,6 +37,9 @@ Existing official rankings are preserved; partial rankings, missing awards or
 penalties in a reconstructed direction cause an error rather than a guessed result.
 For `WERTUNG=1` exports, BSOL displays the complete ranking totals, including
 awards, while traveller results and PBN deals still exclude unplayed boards.
+Club points from the ranking table's `CPS` field are retained as
+`club_points` and shown in the overall ranking's `CP` column; zero awards are
+displayed as blank.
 Pair tournaments split across multiple groups are also supported when the
 metadata identifies one shared tournament and the official ranking contains
 the combined results. Pair numbers are qualified with their group (for example

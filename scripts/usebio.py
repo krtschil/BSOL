@@ -126,7 +126,12 @@ def to_xml(result):
                 if str(entry["team_number"]) == str(pair["pair_number"])
                 for player in entry["player"]
             ] or players
-            notes(participant, pair, ("player", "team_points"))
+            participant_notes = ("player", "team_points")
+        else:
+            participant_notes = ()
+        if pair.get("club_points") not in (None, ""):
+            participant_notes += ("club_points",)
+        notes(participant, pair, participant_notes)
         for player in players:
             element(participant if individual else ET.SubElement(participant, "PLAYER"),
                     "PLAYER_NAME", player["player_name"])

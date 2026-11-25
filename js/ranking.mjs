@@ -321,6 +321,7 @@ export function getRankingInfo()
 
 			data.percentage = pairs[i].percentage;
 			data.total_score = pairs[i].total_score;
+			data.club_points = pairs[i].club_points;
 
 			if ((pairs[i].direction)=="N")
 				data.direction = 1;
@@ -790,7 +791,7 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 		}
 	}
 
-	var cellOffset = g_eventType!="Teams" && g_validPercentageFields ? 1 : 0;
+	var cellOffset = g_eventType!="Teams" && g_validPercentageFields ? 2 : 0;
 	const useRankingTotals = g_scoring=="MatchPoints" &&
 		g_travellers.event.ranking_method=="MATCH_POINTS";
 
@@ -876,11 +877,14 @@ export function setupRankingTable(table,dir,rankInfo,winners)
 					pairs[i].total_score!=="" ? pairs[i].total_score : pairs[i].plusMpts;
 				row.cells[3].textContent = Number(total).toFixed(1);
 				row.cells[3].style.textAlign = "right";
-				row.cells[3+cellOffset].textContent = pairs[i].percentage==="" ? "" : Number(pairs[i].percentage).toFixed(1);
-				row.cells[3+cellOffset].style.textAlign = "right";
+				row.cells[4].textContent = pairs[i].percentage==="" ? "" : Number(pairs[i].percentage).toFixed(1);
+				row.cells[4].style.textAlign = "right";
+				const clubPoints = Number(pairs[i].club_points);
+				row.cells[5].textContent = Number.isFinite(clubPoints) && clubPoints!==0 ? String(pairs[i].club_points) : "";
+				row.cells[5].style.textAlign = "right";
 			}
 			else
-				row.cells[3+cellOffset].innerHTML = Number(pairs[i].total_score).toFixed(2);
+				row.cells[3].innerHTML = Number(pairs[i].total_score).toFixed(2);
 		}
 		else
 		{
@@ -1403,6 +1407,7 @@ export function setupRanking(keepScrollSetting)
 	while (rows.length>1) table.deleteRow(-1);
 	while (rows[0].cells.length>5) rows[0].deleteCell(3);
 	rows[0].cells[3].textContent = "%";
+	rows[0].cells[3].colSpan = 2;
 	cellOffset = 0;
 
 	if (g_eventType=="Teams")
@@ -1423,7 +1428,14 @@ export function setupRanking(keepScrollSetting)
 		var mpHeader = document.createElement("th");
 		mpHeader.textContent = "MP";
 		rows[0].insertBefore(mpHeader, rows[0].cells[3]);
-		cellOffset = 1;
+		rows[0].cells[4].colSpan = 1;
+		const clubPointsHeader = document.createElement("th");
+		clubPointsHeader.textContent = "CP";
+		clubPointsHeader.title = language=="de" ? "Clubpunkte" : "Club points";
+		rows[0].insertBefore(clubPointsHeader, rows[0].cells[5]);
+		const percentageBarHeader = document.createElement("th");
+		rows[0].insertBefore(percentageBarHeader, rows[0].cells[6]);
+		cellOffset = 2;
 	}
 	colcount = 6 + cellOffset;
 

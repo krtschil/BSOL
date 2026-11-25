@@ -292,6 +292,7 @@ def participant_map(path, winner_type=1):
                 "place": "",
                 "total_score": "",
                 "percentage": "",
+                "club_points": "",
                 "direction": "N" if winner_type == 1 or row["NS"] else "E",
                 "player": [
                     {"player_name": row["NAME1"]},
@@ -310,6 +311,7 @@ def enrich_participants(participants, path):
             "place": str(number(row.get("PLATZ"))),
             "total_score": str(number(row.get("PUNKTE"))),
             "percentage": str(number(row.get("PROZLANG") or row.get("PROZENT"))),
+            "club_points": str(number(row.get("CPS"))),
         })
 
 
@@ -525,7 +527,7 @@ def convert_grouped_pairs(play_path, participants_path, results_path, metadata):
         pair_number = f"{group}-{source_number}"
         group_pairs[source_key] = pair_number
         participants[pair_number] = {
-            "pair_number": pair_number, "place": "", "total_score": "", "percentage": "",
+            "pair_number": pair_number, "place": "", "total_score": "", "percentage": "", "club_points": "",
             "direction": "N", "player": [
                 {"player_name": row["NAME1"]}, {"player_name": row["NAME2"]},
             ],
@@ -542,6 +544,7 @@ def convert_grouped_pairs(play_path, participants_path, results_path, metadata):
             "place": str(number(row.get("PLATZ"))),
             "total_score": str(number(row.get("PUNKTE"))),
             "percentage": str(number(row.get("PROZLANG") or row.get("PROZENT"))),
+            "club_points": str(number(row.get("CPS"))),
         })
     if any(not entry["place"] for entry in participants.values()):
         raise ValueError("Multi-group ranking is missing one or more pairs")
@@ -633,6 +636,7 @@ def team_participant_map(path):
             "place": "",
             "total_score": "",
             "percentage": "-",
+            "club_points": "",
             "direction": "N",
             "player": [
                 {"player_name": names[0] if names else ""},
@@ -652,6 +656,7 @@ def enrich_teams(teams, path):
                 "place": str(number(row.get("PLATZ"))),
                 "total_score": str(number(row.get("PUNKTE"))),
                 "team_points": str(number(row.get("PUNKTE"))),
+                "club_points": str(number(row.get("CPS"))),
             })
 
 

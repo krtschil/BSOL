@@ -218,8 +218,14 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	context.setupRanking(true);
 	assert.equal(table.rows[0].cells.length, 7);
 	assert.equal(table.rows[0].cells[3].textContent, "Victory points");
-	assert.equal(table.rows[1].cells.length, 8);
+	assert.equal(table.rows[1].cells.length, 7);
 	assert.equal(table.rows[1].cells[3].innerHTML, "123.50");
+	assert.equal(table.rows[0].cells[4].textContent, "CP");
+	assert.equal(table.rows[0].cells[5].textContent, "Bds");
+	assert.equal(table.rows[1].cells[4].textContent, "7");
+	assert.equal(table.rows[2].cells[4].textContent, "");
+	assert.equal(table.rows[1].cells[5].innerHTML, 24);
+	assert.match(table.rows[1].cells[6].innerHTML, /width:141px/);
 	context.g_eventType = "Paarturnier";
 	context.g_scoring = "MatchPoints";
 	context.g_validPercentageFields = true;

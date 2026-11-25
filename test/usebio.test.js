@@ -258,8 +258,8 @@ participants = [
 if ${JSON.stringify(mode)} == "pairs":
     participants = [p for p in participants if p["NS"]]
 results = [
-    {"TEAM_NR": 1, "PAARNR": 1, "PLATZ": 1, "PUNKTE": 12, "PROZENT": 60, "GEGNER1": 2, "PUNKTE1": 12},
-    {"TEAM_NR": 2, "PAARNR": 2, "PLATZ": 2, "PUNKTE": 8, "PROZENT": 40, "GEGNER1": 1, "PUNKTE1": 8},
+    {"TEAM_NR": 1, "PAARNR": 1, "PLATZ": 1, "PUNKTE": 12, "PROZENT": 60, "GEGNER1": 2, "PUNKTE1": 12, "CPS": 35},
+    {"TEAM_NR": 2, "PAARNR": 2, "PLATZ": 2, "PUNKTE": 8, "PROZENT": 40, "GEGNER1": 1, "PUNKTE1": 8, "CPS": 0},
 ]
 play = [
     {"BOARD": 1, "RUNDE": 3, "HOME_NS": 2, "HOME_EW": 2, "VISIT_NS": 1, "VISIT_EW": 1,

@@ -1422,6 +1422,7 @@ export function setupRanking(keepScrollSetting)
 		rows[0].cells[4].outerHTML = "<th title='" + (language=="de" ? "Clubpunkte" : "Club points") + "'>CP</th>";
 		cellOffset = 2;	// Allow for extra column which has been inserted.
 		rows[0].cells[3 + cellOffset].textContent = "Bds";
+		rows[0].cells[3 + cellOffset].colSpan = 1;
 	}
 	else if (g_validPercentageFields)
 	{

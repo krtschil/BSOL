@@ -222,6 +222,8 @@ test("pair ranking shows MP and one decimal percent without changing IMP or team
 	assert.equal(table.rows[1].cells[3].innerHTML, "123.50");
 	assert.equal(table.rows[0].cells[4].textContent, "CP");
 	assert.equal(table.rows[0].cells[5].textContent, "Bds");
+	assert.equal(table.rows[0].cells[5].colSpan, 1);
+	assert.equal(table.rows[0].cells.reduce((total,cell) => total + cell.colSpan,0), 7);
 	assert.equal(table.rows[1].cells[4].textContent, "7");
 	assert.equal(table.rows[2].cells[4].textContent, "");
 	assert.equal(table.rows[1].cells[5].innerHTML, 24);
